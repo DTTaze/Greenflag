@@ -1,7 +1,9 @@
 import { io } from "socket.io-client";
 
+import { VITE_BACKEND_URL } from "./env.js";
+
 // Create socket connection
-const SOCKET_URL = import.meta.env.VITE_BACKEND_URL;
+const SOCKET_URL = VITE_BACKEND_URL;
 
 if (!SOCKET_URL) {
   console.error("SOCKET_URL is not defined");

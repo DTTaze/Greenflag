@@ -1,11 +1,9 @@
-import React from "react";
 import "../../styles/components/SocialLoginIcons.css";
+import { VITE_BACKEND_URL } from "../../config/env.js";
+
 const SocialLoginIcons = () => {
   const handleGoogleLogin = () => {
-    window.location.href = `${
-      import.meta.env.VITE_BACKEND_URL
-    }/api/auth/login/google`;
-
+    window.location.href = `${VITE_BACKEND_URL}/api/auth/login/google`;
   };
 
   return (

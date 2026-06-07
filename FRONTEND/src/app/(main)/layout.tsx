@@ -1,26 +1,27 @@
-import { useState, useContext, useEffect } from "react";
-import { Outlet } from "react-router-dom";
-import { AuthContext } from "./contexts/auth.context";
-import UserHeader from "./layouts/Header";
-import { getUserApi } from "./utils/api";
-import Loader from "./components/ui/Loader";
-import { io } from "socket.io-client";
-import { SocketProvider } from "./contexts/socket.context";
+"use client";
 
-import { VITE_BACKEND_URL } from "./config/env.js";
+import React, { useState, useContext, useEffect } from "react";
+import { AuthContext } from "@/src/contexts/auth.context";
+import UserHeader from "@/src/layouts/Header";
+import { getUserApi } from "@/src/utils/api";
+import Loader from "@/src/components/ui/Loader";
+import { io } from "socket.io-client";
+import { SocketProvider } from "@/src/contexts/socket.context";
+import { Outlet } from "react-router-dom";
+import { VITE_BACKEND_URL } from "@/src/config/env.js";
 
 const socket = io(VITE_BACKEND_URL, {
-  withCredentials: true, 
+  withCredentials: true,
 });
 
-function App() {
+export default function MainLayout({ children }: { children: React.ReactNode }) {
   const { setAuth } = useContext(AuthContext);
   const [appLoading, setAppLoading] = useState(true);
 
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        const res = await getUserApi(); 
+        const res = await getUserApi();
         if (res && res.status === 200) {
           setAuth({
             isAuthenticated: true,
@@ -39,8 +40,10 @@ function App() {
     initializeAuth();
   }, [setAuth]);
 
+  const SocketProviderCast = SocketProvider as any;
+
   return (
-    <SocketProvider value={socket}>
+    <SocketProviderCast value={socket}>
       <div>
         {appLoading ? (
           <div style={styles.spinnerWrapper}>
@@ -49,21 +52,19 @@ function App() {
         ) : (
           <>
             <UserHeader />
-            <Outlet />
+            <Outlet>{children}</Outlet>
           </>
         )}
       </div>
-    </SocketProvider>
+    </SocketProviderCast>
   );
 }
 
 const styles = {
   spinnerWrapper: {
-    position: "fixed",
+    position: "fixed" as const,
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
   },
 };
-
-export default App;

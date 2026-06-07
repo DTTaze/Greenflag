@@ -24,7 +24,7 @@ instance.interceptors.request.use(
   (config) => {
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 instance.interceptors.response.use(
@@ -52,7 +52,7 @@ instance.interceptors.response.use(
         await axios.post(
           `${import.meta.env.VITE_BACKEND_URL}/api/auth/refresh_token`,
           {},
-          { withCredentials: true }
+          { withCredentials: true },
         );
 
         processQueue(null);
@@ -66,7 +66,7 @@ instance.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default instance;

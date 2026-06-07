@@ -1,12 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 
 :root {
-  --primary-green: #0B6E4F; 
-  --secondary-green: #10A56C;
-  --light-green: #7DCE82;
+  --primary-green: #0b6e4f;
+  --secondary-green: #10a56c;
+  --light-green: #7dce82;
   --dark-bg: #121212;
   --overlay-bg: rgba(0, 0, 0, 0.8);
-  --text-light: #FFFFFF;
+  --text-light: #ffffff;
   --text-dark: #333333;
 }
 
@@ -83,6 +83,8 @@ body {
   .grid {
     grid-template-columns: 1fr;
   }
-  background-color: #FFFFFF;
-  overflow: hidden;
+  .mission-video-container {
+    background-color: #ffffff;
+    overflow: hidden;
+  }
 }

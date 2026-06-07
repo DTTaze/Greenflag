@@ -15,17 +15,14 @@ export default defineConfig({
     //   credentials: true,
     // },
     proxy: {
-      '/socket.io': {
-        target: 'http://localhost:6060',
+      "/socket.io": {
+        target: "http://localhost:6060",
         ws: true,
-        changeOrigin: true
-      }
+        changeOrigin: true,
+      },
     },
     cors: {
-      origin: [
-        "https://localhost:6060",
-        "http://localhost:6060",
-      ],
+      origin: ["https://localhost:6060", "http://localhost:6060"],
       credentials: true,
     },
     allowedHosts: ["greenflag.id.vn"],

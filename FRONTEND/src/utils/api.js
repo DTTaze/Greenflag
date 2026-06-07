@@ -497,7 +497,7 @@ export const createDeliveryOrderFromTransactionApi = (
   transaction_id,
   data,
   token,
-  shop_id
+  shop_id,
 ) => {
   return axios.post(
     `api/delivery/carrier/ghn/create-order-from-transaction/${transaction_id}`,
@@ -507,7 +507,7 @@ export const createDeliveryOrderFromTransactionApi = (
         token: token,
         shop_id: shop_id,
       },
-    }
+    },
   );
 };
 
@@ -539,7 +539,7 @@ export const getAllDistrictsByProvinceApi = (province_id, token) => {
       headers: {
         token: token,
       },
-    }
+    },
   );
 };
 
@@ -550,7 +550,7 @@ export const getAllWardsByDistrictApi = (district_id, token) => {
       headers: {
         token: token,
       },
-    }
+    },
   );
 };
 

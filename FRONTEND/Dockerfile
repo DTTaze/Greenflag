@@ -1,5 +1,5 @@
-# Sử dụng image Node.js phiên bản 18 (có thể thay đổi nếu cần)
-FROM node:18
+# Sử dụng image Node.js phiên bản 20
+FROM node:20
 
 # Đặt thư mục làm việc
 WORKDIR /app
@@ -12,8 +12,8 @@ RUN npm install
 # Copy toàn bộ source code vào container
 COPY . .
 
-# Expose cổng của Vite (mặc định là 5173)
+# Expose cổng chạy ứng dụng (ở đây ta cấu hình port 5173)
 EXPOSE 5173
 
-# Dùng lệnh này để phát triển với hot reload
-CMD ["npm", "run", "dev", "--", "--host"]
+# Chạy dev server của Next.js trên port 5173 và lắng nghe mọi interface
+CMD ["npm", "run", "dev", "--", "-p", "5173", "-H", "0.0.0.0"]

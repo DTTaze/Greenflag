@@ -186,17 +186,20 @@ services:
       - ./FRONTEND:/app
       - /app/node_modules
     working_dir: /app
-    command: ["npm", "run", "dev", "--", "--host"]
+    command: ["npm", "run", "dev", "--", "-p", "5173", "-H", "0.0.0.0"]
     networks:
       - greenflag_network
 
   bullboard:
-    image: node:20
+    build:
+      context: ./BACKEND
+      dockerfile: Dockerfile
     container_name: bullboard_container
     restart: always
-    working_dir: /app
     volumes:
       - ./BACKEND:/app
+      - /app/node_modules
+    working_dir: /app
     env_file:
       - ./BACKEND/.env
     ports:

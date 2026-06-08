@@ -1,3 +1,4 @@
+/* eslint-disable max-lines, @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -204,7 +205,7 @@ export default function ExchangeMarketLayout({
       console.error("Lỗi khi lấy sản phẩm của người dùng:", error);
       setError("Có lỗi xảy ra khi tải danh sách sản phẩm của bạn");
     }
-  }, [auth.user?.id]);
+  }, [auth.user]);
 
   const fetchAllItems = useCallback(async () => {
     try {

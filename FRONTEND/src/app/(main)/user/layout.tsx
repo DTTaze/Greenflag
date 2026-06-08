@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { Outlet } from "react-router-dom";
 
 import ProtectedRoute from "@/src/components/common/ProtectedRoute.jsx";
@@ -15,15 +15,7 @@ export default function UserLayout({
   children: React.ReactNode;
 }) {
   const { auth } = useContext(AuthContext);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (auth.isAuthenticated && auth.user) {
-      setIsLoading(false);
-    } else {
-      setIsLoading(true);
-    }
-  }, [auth]);
+  const isLoading = !(auth.isAuthenticated && auth.user);
 
   return (
     <ProtectedRoute requiredRole={undefined}>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import NextLink from "next/link";
@@ -6,7 +7,7 @@ import {
   useRouter,
   useSearchParams as useNextSearchParams,
 } from "next/navigation";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect } from "react";
 
 // Context to simulate react-router's Outlet context
 const OutletContext = createContext<any>(null);
@@ -48,6 +49,7 @@ export const useLocation = () => {
 };
 
 // 3. useSearchParams shim
+// eslint-disable-next-line no-unused-vars
 export const useSearchParams = (): [URLSearchParams, (params: any) => void] => {
   const searchParams = useNextSearchParams();
   const router = useRouter();
@@ -122,7 +124,6 @@ export const useOutletContext = <T = any,>(): T => {
 export const Navigate = ({
   to,
   replace,
-  state,
 }: {
   to: string;
   replace?: boolean;

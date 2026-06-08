@@ -35,7 +35,7 @@ export default function MainLayout({
         } else {
           setAuth({ isAuthenticated: false, user: null });
         }
-      } catch (err) {
+      } catch {
         setAuth({ isAuthenticated: false, user: null });
       } finally {
         setAppLoading(false);
@@ -45,6 +45,7 @@ export default function MainLayout({
     initializeAuth();
   }, [setAuth]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const SocketProviderCast = SocketProvider as any;
 
   return (

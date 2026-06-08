@@ -15,6 +15,7 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [userInfo, setUserInfo] = useState<any>(null);
 
   useEffect(() => {

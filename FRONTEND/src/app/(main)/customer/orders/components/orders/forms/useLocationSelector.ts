@@ -8,17 +8,17 @@ import {
 } from "@/src/utils/api";
 
 export default function useLocationSelector(
-  initialProvinceId = null,
-  initialDistrictId = null,
-  initialWardCode = "",
+  initialProvinceId: number | null = null,
+  initialDistrictId: number | null = null,
+  initialWardCode: string = "",
 ) {
-  const [provinces, setProvinces] = useState([]);
-  const [districts, setDistricts] = useState([]);
-  const [wards, setWards] = useState([]);
+  const [provinces, setProvinces] = useState<any[]>([]);
+  const [districts, setDistricts] = useState<any[]>([]);
+  const [wards, setWards] = useState<any[]>([]);
 
-  const [provinceId, setProvinceId] = useState(initialProvinceId);
-  const [districtId, setDistrictId] = useState(initialDistrictId);
-  const [wardCode, setWardCode] = useState(initialWardCode);
+  const [provinceId, setProvinceId] = useState<number | null>(initialProvinceId);
+  const [districtId, setDistrictId] = useState<number | null>(initialDistrictId);
+  const [wardCode, setWardCode] = useState<string>(initialWardCode);
 
   const [loadingProvinces, setLoadingProvinces] = useState(false);
   const [loadingDistricts, setLoadingDistricts] = useState(false);
@@ -49,13 +49,13 @@ export default function useLocationSelector(
         }
 
         const defaultAccount =
-          accountsResponse.data.find((acc) => acc.is_default) ||
+          accountsResponse.data.find((acc: any) => acc.is_default) ||
           accountsResponse.data[0];
-        const response = await getAllProvinces(defaultAccount.token);
+        const response: any = await getAllProvinces(defaultAccount.token);
 
         if (response.code === 200) {
           setProvinces(
-            response.data.map((province) => ({
+            response.data.map((province: any) => ({
               id: province.ProvinceID,
               name: province.ProvinceName,
               code: province.Code,
@@ -94,17 +94,17 @@ export default function useLocationSelector(
         }
 
         const defaultAccount =
-          accountsResponse.data.find((acc) => acc.is_default) ||
+          accountsResponse.data.find((acc: any) => acc.is_default) ||
           accountsResponse.data[0];
 
-        const response = await getAllDistrictsByProvince(
+        const response: any = await getAllDistrictsByProvince(
           provinceId,
           defaultAccount.token,
         );
 
         if (response.code === 200) {
           setDistricts(
-            response.data.map((district) => ({
+            response.data.map((district: any) => ({
               id: district.DistrictID,
               name: district.DistrictName,
               province_id: provinceId,
@@ -140,17 +140,17 @@ export default function useLocationSelector(
         }
 
         const defaultAccount =
-          accountsResponse.data.find((acc) => acc.is_default) ||
+          accountsResponse.data.find((acc: any) => acc.is_default) ||
           accountsResponse.data[0];
 
-        const response = await getAllWardsByDistrict(
+        const response: any = await getAllWardsByDistrict(
           districtId,
           defaultAccount.token,
         );
 
         if (response.code === 200) {
           setWards(
-            response.data.map((ward) => ({
+            response.data.map((ward: any) => ({
               code: ward.WardCode,
               name: ward.WardName,
               district_id: districtId,

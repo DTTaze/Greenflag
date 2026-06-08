@@ -4,7 +4,7 @@ export const initialOrderPayload = {
   required_note: "KHONGCHOXEMHANG",
   return_phone: "",
   return_address: "",
-  return_district_id: null,
+  return_district_id: null as number | null,
   return_ward_code: "",
   client_order_code: "",
   from_name: "",
@@ -26,13 +26,13 @@ export const initialOrderPayload = {
   height: 0,
   weight: 0,
   cod_failed_amount: 0,
-  pick_station_id: null,
-  deliver_station_id: null,
+  pick_station_id: null as number | null,
+  deliver_station_id: null as number | null,
   insurance_value: 0,
   service_type_id: 2,
-  coupon: null,
-  pickup_time: null,
-  pick_shift: [],
+  coupon: null as string | null,
+  pickup_time: null as string | null,
+  pick_shift: [] as number[],
   items: [
     {
       name: "",
@@ -50,7 +50,7 @@ export const initialOrderPayload = {
   ],
 };
 
-export const mapEditableOrder = (order) => {
+export const mapEditableOrder = (order: any) => {
   return {
     ...order,
     from_phone: order.from_phone || "",
@@ -84,7 +84,7 @@ export const mapEditableOrder = (order) => {
   };
 };
 
-export const mapBasedOnOrder = (order) => {
+export const mapBasedOnOrder = (order: any) => {
   return {
     from_phone: order.from_phone || "",
     from_address: order.from_address || "",
@@ -117,9 +117,9 @@ export const mapBasedOnOrder = (order) => {
   };
 };
 
-export const calculatePoints = (items) => {
+export const calculatePoints = (items: any[]) => {
   let total = 0;
-  const wasteTypesMap = {
+  const wasteTypesMap: Record<string, number> = {
     paper: 10,
     plastic: 15,
     metal: 20,

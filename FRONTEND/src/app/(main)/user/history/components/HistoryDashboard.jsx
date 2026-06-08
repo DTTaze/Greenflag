@@ -11,7 +11,7 @@ import {
   getEventSignedByUserId,
 } from "@/src/utils/api";
 
-import { aggregateActivityLogs, aggregateCoinLogs } from "./historyHelpers.js";
+import { aggregateActivityLogs, aggregateCoinLogs } from "./historyHelpers";
 import HistoryStats from "./HistoryStats.jsx";
 import HistoryTabs from "./HistoryTabs.jsx";
 

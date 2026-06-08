@@ -1,4 +1,4 @@
-export const statusStyles = {
+export const statusStyles: Record<string, string> = {
   ready_to_pick: "bg-blue-100 text-blue-800",
   picking: "bg-blue-100 text-blue-800",
   money_collect_picking: "bg-blue-100 text-blue-800",
@@ -24,7 +24,7 @@ export const statusStyles = {
   pending: "bg-yellow-100 text-yellow-800",
 };
 
-export const statusLabels = {
+export const statusLabels: Record<string, string> = {
   pending: "Chờ xác nhận",
   ready_to_pick: "Chờ lấy hàng",
   picking: "Đang lấy hàng",
@@ -50,7 +50,7 @@ export const statusLabels = {
   damage: "Hàng hư hỏng",
 };
 
-export const statusToTab = {
+export const statusToTab: Record<string, string> = {
   pending: "pending",
   ready_to_pick: "shipping",
   picking: "shipping",
@@ -77,7 +77,7 @@ export const statusToTab = {
   cancelled: "cancelled",
 };
 
-export const normalizeTransaction = (tx, source) => {
+export const normalizeTransaction = (tx: any, source: string) => {
   if (source === "transaction") {
     return {
       id: `transaction-${tx.id}`,

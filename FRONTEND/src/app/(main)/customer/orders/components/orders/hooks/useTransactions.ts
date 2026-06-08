@@ -7,6 +7,18 @@ import {
   updateShippingOrder,
 } from "@/src/utils/api";
 
+interface UseTransactionsProps {
+  shippingAccounts: any[];
+  showAlert: (message: string, severity?: string) => void;
+  selectedOrder: any;
+  setSelectedOrder: React.Dispatch<React.SetStateAction<any>>;
+  setDetailsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setNewOrder: React.Dispatch<React.SetStateAction<any>>;
+  setIsCreatingBasedOn: React.Dispatch<React.SetStateAction<boolean>>;
+  setCreateDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  fetchOrders: () => Promise<void>;
+}
+
 export default function useTransactions({
   shippingAccounts,
   showAlert,
@@ -17,11 +29,11 @@ export default function useTransactions({
   setIsCreatingBasedOn,
   setCreateDialogOpen,
   fetchOrders,
-}) {
-  const [transactions, setTransactions] = useState([]);
-  const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
-  const [buyerInfoDialogOpen, setBuyerInfoDialogOpen] = useState(false);
-  const [buyerInfo, setBuyerInfo] = useState({
+}: UseTransactionsProps) {
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [isLoadingTransactions, setIsLoadingTransactions] = useState<boolean>(false);
+  const [buyerInfoDialogOpen, setBuyerInfoDialogOpen] = useState<boolean>(false);
+  const [buyerInfo, setBuyerInfo] = useState<any>({
     name: "",
     phone: "",
     email: "",
@@ -31,7 +43,7 @@ export default function useTransactions({
   const fetchTransactions = async () => {
     try {
       setIsLoadingTransactions(true);
-      const response = await getSellerTransactionHistory();
+      const response: any = await getSellerTransactionHistory();
       if (response && response.data) {
         setTransactions(response.data);
       }
@@ -43,9 +55,9 @@ export default function useTransactions({
     }
   };
 
-  const handleCancelOrder = async (transactionId) => {
+  const handleCancelOrder = async (transactionId: any) => {
     try {
-      const response = await makeTransactionDecision(transactionId, "rejected");
+      const response: any = await makeTransactionDecision(transactionId, "rejected");
       if (response && response.data) {
         showAlert("Transaction has been rejected successfully!");
         fetchTransactions();
@@ -56,9 +68,9 @@ export default function useTransactions({
     }
   };
 
-  const handleConfirmOrder = async (transactionId) => {
+  const handleConfirmOrder = async (transactionId: any) => {
     try {
-      const response = await makeTransactionDecision(transactionId, "accepted");
+      const response: any = await makeTransactionDecision(transactionId, "accepted");
       if (response && response.data) {
         showAlert("Transaction has been accepted successfully!");
         fetchTransactions();
@@ -69,9 +81,9 @@ export default function useTransactions({
     }
   };
 
-  const handleViewDetails = async (transaction) => {
+  const handleViewDetails = async (transaction: any) => {
     try {
-      const response = await getTransactionById(transaction.id);
+      const response: any = await getTransactionById(transaction.id);
       if (response && response.data) {
         const transactionDetails = {
           ...response.data,
@@ -107,7 +119,7 @@ export default function useTransactions({
     }
   };
 
-  const handleOpenEditBuyerInfo = (order) => {
+  const handleOpenEditBuyerInfo = (order: any) => {
     setSelectedOrder(order);
     setBuyerInfo({
       name: order.buyerName || "",
@@ -118,7 +130,7 @@ export default function useTransactions({
     setBuyerInfoDialogOpen(true);
   };
 
-  const handleUpdateBuyerInfo = async (ordersList, setOrdersList) => {
+  const handleUpdateBuyerInfo = async (ordersList: any[], setOrdersList: React.Dispatch<React.SetStateAction<any[]>>) => {
     try {
       if (!selectedOrder) {
         throw new Error("No order selected");
@@ -177,9 +189,9 @@ export default function useTransactions({
     }
   };
 
-  const handleCreateOrderFromTransaction = async (transaction) => {
+  const handleCreateOrderFromTransaction = async (transaction: any) => {
     try {
-      const response = await getTransactionById(transaction.id);
+      const response: any = await getTransactionById(transaction.id);
 
       if (response && response.data) {
         const transactionDetails = response.data;

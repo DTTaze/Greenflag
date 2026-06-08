@@ -13,20 +13,20 @@ import {
 
 export default function useCustomerProfile() {
   const { user } = useAuthStore();
-  const userInfo = user;
-  const { notify } = useNotification();
-  const [activeTab, setActiveTab] = useState("profile");
-  const [editMode, setEditMode] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [qrCode, setQrCode] = useState(null);
-  const [showQrDialog, setShowQrDialog] = useState(false);
-  const [avatarUploading, setAvatarUploading] = useState(false);
-  const [transactions, setTransactions] = useState([]);
-  const [loadingTransactions, setLoadingTransactions] = useState(false);
-  const [userData, setUserData] = useState(null);
-  const [loadingUserData, setLoadingUserData] = useState(true);
+  const userInfo = user as any;
+  const { notify } = useNotification() as any;
+  const [activeTab, setActiveTab] = useState<string>("profile");
+  const [editMode, setEditMode] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [qrCode, setQrCode] = useState<any>(null);
+  const [showQrDialog, setShowQrDialog] = useState<boolean>(false);
+  const [avatarUploading, setAvatarUploading] = useState<boolean>(false);
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [loadingTransactions, setLoadingTransactions] = useState<boolean>(false);
+  const [userData, setUserData] = useState<any>(null);
+  const [loadingUserData, setLoadingUserData] = useState<boolean>(true);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<any>({
     full_name: "",
     email: "",
     phone_number: "",
@@ -38,7 +38,7 @@ export default function useCustomerProfile() {
     const fetchUserData = async () => {
       setLoadingUserData(true);
       try {
-        const response = await getUser();
+        const response: any = await getUser();
         if (response?.data) {
           setUserData(response.data);
           setFormData({
@@ -65,7 +65,7 @@ export default function useCustomerProfile() {
       const fetchTransactions = async () => {
         setLoadingTransactions(true);
         try {
-          const response = await getBuyerTransactionHistory(userInfo.id);
+          const response: any = await getBuyerTransactionHistory();
           if (response?.data) {
             setTransactions(response.data);
           }
@@ -83,7 +83,7 @@ export default function useCustomerProfile() {
 
   const generateQRCode = async () => {
     try {
-      const response = await getQR(userInfo?.public_id || "");
+      const response: any = await getQR(userInfo?.public_id || "");
       if (response?.data) {
         setQrCode(response.data);
         setShowQrDialog(true);
@@ -94,19 +94,19 @@ export default function useCustomerProfile() {
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData((prev: any) => ({
       ...prev,
       [name]: value,
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: any) => {
     if (e) e.preventDefault();
     setLoading(true);
     try {
-      const response = await updateUser(userInfo?.id, formData);
+      const response: any = await updateUser(userInfo?.id, formData);
       if (response?.data) {
         notify("success", "Profile updated successfully!");
         setEditMode(false);
@@ -121,7 +121,7 @@ export default function useCustomerProfile() {
     }
   };
 
-  const handleAvatarChange = async (e) => {
+  const handleAvatarChange = async (e: any) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -137,7 +137,7 @@ export default function useCustomerProfile() {
 
     setAvatarUploading(true);
     try {
-      const response = await uploadUserAvatar(userInfo?.id, file);
+      const response: any = await uploadUserAvatar(userInfo?.id, file);
       if (response?.data) {
         notify("success", "Profile picture updated successfully!");
         window.location.reload();
@@ -153,14 +153,14 @@ export default function useCustomerProfile() {
     }
   };
 
-  const copyToClipboard = (text) => {
+  const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     notify("success", "Copied to clipboard!");
   };
 
   const handleLogout = async () => {
     try {
-      const response = await logoutUser();
+      const response: any = await logoutUser();
       if (response?.success) {
         notify("success", "Đăng xuất thành công");
         window.location.href = "/";

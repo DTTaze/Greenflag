@@ -14,6 +14,16 @@ import {
   mapEditableOrder,
 } from "../ordersHelpers";
 
+interface UseOrdersProps {
+  shippingAccounts: any[];
+  hasLinkedShippingAccounts: () => boolean;
+  showAlert: (message: string, severity?: string) => void;
+  selectedOrder: any;
+  setSelectedOrder: React.Dispatch<React.SetStateAction<any>>;
+  setDetailsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setShippingAccountsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 export default function useOrders({
   shippingAccounts,
   hasLinkedShippingAccounts,
@@ -22,20 +32,20 @@ export default function useOrders({
   setSelectedOrder,
   setDetailsDialogOpen,
   setShippingAccountsDialogOpen,
-}) {
-  const [orders, setOrders] = useState([]);
-  const [isLoadingOrders, setIsLoadingOrders] = useState(false);
-  const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [isEditingOrder, setIsEditingOrder] = useState(false);
-  const [isCreatingBasedOn, setIsCreatingBasedOn] = useState(false);
-  const [newOrder, setNewOrder] = useState(initialOrderPayload);
+}: UseOrdersProps) {
+  const [orders, setOrders] = useState<any[]>([]);
+  const [isLoadingOrders, setIsLoadingOrders] = useState<boolean>(false);
+  const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
+  const [isEditingOrder, setIsEditingOrder] = useState<boolean>(false);
+  const [isCreatingBasedOn, setIsCreatingBasedOn] = useState<boolean>(false);
+  const [newOrder, setNewOrder] = useState<any>(initialOrderPayload);
 
   const fetchOrders = async () => {
     try {
       setIsLoadingOrders(true);
-      const response = await getAllShippingOrdersBySeller();
+      const response: any = await getAllShippingOrdersBySeller();
       if (response && response.data) {
-        const formattedOrders = response.data.map((order) => {
+        const formattedOrders = response.data.map((order: any) => {
           let status;
           switch (order.status) {
             case "ready_to_pick":
@@ -129,7 +139,7 @@ export default function useOrders({
 
     try {
       const selectedAccount = shippingAccounts[0];
-      let response;
+      let response: any;
       if (isCreatingBasedOn && selectedOrder) {
         response = await createDeliveryOrderFromTransaction(
           selectedOrder.id,
@@ -203,26 +213,26 @@ export default function useOrders({
     }
   };
 
-  const handleEditOrder = (order) => {
+  const handleEditOrder = (order: any) => {
     setIsEditingOrder(true);
     setSelectedOrder(order);
     setNewOrder(mapEditableOrder(order));
     setCreateDialogOpen(true);
   };
 
-  const handleCreateBasedOn = (order) => {
+  const handleCreateBasedOn = (order: any) => {
     setIsCreatingBasedOn(true);
     setNewOrder(mapBasedOnOrder(order));
     setCreateDialogOpen(true);
   };
 
-  const handleViewOrderDetails = async (transaction) => {
+  const handleViewOrderDetails = async (transaction: any) => {
     try {
       const selectedAccount =
         shippingAccounts.find((acc) => acc.is_default === true) ||
         shippingAccounts[0];
 
-      const response = await getShippingOrderDetail(
+      const response: any = await getShippingOrderDetail(
         transaction.orderCode,
         selectedAccount.token,
         selectedAccount.shop_id,
@@ -263,24 +273,27 @@ export default function useOrders({
   };
 
   const handleAddItem = () => {
-    setNewOrder((prev) => ({
+    setNewOrder((prev: any) => ({
       ...prev,
       items: [...prev.items, { type: "", quantity: 1, unit: "kg" }],
     }));
   };
 
-  const handleRemoveItem = (index) => {
-    setNewOrder((prev) => {
+  const handleRemoveItem = (index: number) => {
+    setNewOrder((prev: any) => {
       const items = [...prev.items];
       items.splice(index, 1);
       return { ...prev, items };
     });
   };
 
-  const handleItemChange = (index, field, value) => {
-    setNewOrder((prev) => {
+  const handleItemChange = (index: number, field: string, value: any) => {
+    setNewOrder((prev: any) => {
       const items = [...prev.items];
-      items[index][field] = value;
+      items[index] = {
+        ...items[index],
+        [field]: value,
+      };
       return { ...prev, items };
     });
   };

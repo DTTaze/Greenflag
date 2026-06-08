@@ -9,14 +9,22 @@ import {
   updateReceiverInfoById,
 } from "@/src/utils/api";
 
+interface UseAddressFormProps {
+  isOpen: boolean;
+  onClose: () => void;
+  editingAddress: any;
+  userId: any;
+  onSuccess: (savedAddress: any) => void;
+}
+
 export default function useAddressForm({
   isOpen,
   onClose,
   editingAddress,
   userId,
   onSuccess,
-}) {
-  const [newAddress, setNewAddress] = useState({
+}: UseAddressFormProps) {
+  const [newAddress, setNewAddress] = useState<any>({
     fullName: "",
     phoneNumber: "",
     province: "",
@@ -27,13 +35,13 @@ export default function useAddressForm({
     isDefault: false,
   });
 
-  const [errors, setErrors] = useState({});
-  const [provinces, setProvinces] = useState([]);
-  const [districts, setDistricts] = useState([]);
-  const [wards, setWards] = useState([]);
-  const [token] = useState("c3f24415-29b9-11f0-9b81-222185cb68c8");
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [provinces, setProvinces] = useState<any[]>([]);
+  const [districts, setDistricts] = useState<any[]>([]);
+  const [wards, setWards] = useState<any[]>([]);
+  const [token] = useState<string>("c3f24415-29b9-11f0-9b81-222185cb68c8");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   // Load initial provinces and resolve editing address hierarchy
   useEffect(() => {
@@ -41,7 +49,7 @@ export default function useAddressForm({
       setIsLoading(true);
       setErrorMessage("");
       try {
-        const provResponse = await getAllProvinces(token);
+        const provResponse: any = await getAllProvinces(token);
         if (provResponse.code !== 200) {
           setErrorMessage("Failed to fetch provinces. Please try again.");
           setIsLoading(false);
@@ -52,13 +60,13 @@ export default function useAddressForm({
 
         if (editingAddress) {
           const matchedProvince = provinceList.find(
-            (p) => p.ProvinceName === editingAddress.to_province_name,
+            (p: any) => p.ProvinceName === editingAddress.to_province_name,
           );
 
           let matchedDistrictId = "";
           let districtList = [];
           if (matchedProvince) {
-            const distResponse = await getAllDistrictsByProvince(
+            const distResponse: any = await getAllDistrictsByProvince(
               matchedProvince.ProvinceID,
               token,
             );
@@ -66,7 +74,7 @@ export default function useAddressForm({
               districtList = distResponse.data;
               setDistricts(districtList);
               const matchedDistrict = districtList.find(
-                (d) => d.DistrictName === editingAddress.to_district_name,
+                (d: any) => d.DistrictName === editingAddress.to_district_name,
               );
               if (matchedDistrict) {
                 matchedDistrictId = matchedDistrict.DistrictID;
@@ -77,7 +85,7 @@ export default function useAddressForm({
           let matchedWardCode = "";
           let wardList = [];
           if (matchedDistrictId) {
-            const wardResponse = await getAllWardsByDistrict(
+            const wardResponse: any = await getAllWardsByDistrict(
               matchedDistrictId,
               token,
             );
@@ -85,7 +93,7 @@ export default function useAddressForm({
               wardList = wardResponse.data;
               setWards(wardList);
               const matchedWard = wardList.find(
-                (w) => w.WardName === editingAddress.to_ward_name,
+                (w: any) => w.WardName === editingAddress.to_ward_name,
               );
               if (matchedWard) {
                 matchedWardCode = matchedWard.WardCode;
@@ -137,14 +145,14 @@ export default function useAddressForm({
         Number.isInteger(newAddress.province)
       ) {
         try {
-          const response = await getAllDistrictsByProvince(
+          const response: any = await getAllDistrictsByProvince(
             newAddress.province,
             token,
           );
           if (response.code === 200) {
             setDistricts(response.data);
             setWards([]);
-            setNewAddress((prev) => ({ ...prev, district: "", ward: "" }));
+            setNewAddress((prev: any) => ({ ...prev, district: "", ward: "" }));
           }
         } catch (error) {
           console.error("Error fetching districts:", error);
@@ -163,13 +171,13 @@ export default function useAddressForm({
         Number.isInteger(newAddress.district)
       ) {
         try {
-          const response = await getAllWardsByDistrict(
+          const response: any = await getAllWardsByDistrict(
             newAddress.district,
             token,
           );
           if (response.code === 200) {
             setWards(response.data);
-            setNewAddress((prev) => ({ ...prev, ward: "" }));
+            setNewAddress((prev: any) => ({ ...prev, ward: "" }));
           }
         } catch (error) {
           console.error("Error fetching wards:", error);
@@ -179,7 +187,7 @@ export default function useAddressForm({
     fetchWards();
   }, [newAddress.district, token, isLoading]);
 
-  const validateField = (name, value) => {
+  const validateField = (name: string, value: any): string => {
     let error = "";
     switch (name) {
       case "fullName":
@@ -212,28 +220,28 @@ export default function useAddressForm({
     return error;
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: any) => {
     const { name, value } = e.target;
     const parsedValue =
       name === "province" || name === "district"
         ? parseInt(value, 10) || ""
         : value;
-    setNewAddress((prev) => ({ ...prev, [name]: parsedValue }));
+    setNewAddress((prev: any) => ({ ...prev, [name]: parsedValue }));
 
     const error = validateField(name, parsedValue);
     setErrors((prev) => ({ ...prev, [name]: error }));
   };
 
-  const handleTypeChange = (e) => {
-    setNewAddress((prev) => ({ ...prev, type: e.target.value }));
+  const handleTypeChange = (e: any) => {
+    setNewAddress((prev: any) => ({ ...prev, type: e.target.value }));
   };
 
-  const handleDefaultChange = (e) => {
-    setNewAddress((prev) => ({ ...prev, isDefault: e.target.checked }));
+  const handleDefaultChange = (e: any) => {
+    setNewAddress((prev: any) => ({ ...prev, isDefault: e.target.checked }));
   };
 
   const handleAddOrUpdateAddress = async () => {
-    const newErrors = {};
+    const newErrors: Record<string, string> = {};
     [
       "fullName",
       "phoneNumber",
@@ -252,13 +260,13 @@ export default function useAddressForm({
     }
 
     const provinceName =
-      provinces.find((p) => p.ProvinceID === newAddress.province)
+      provinces.find((p: any) => p.ProvinceID === newAddress.province)
         ?.ProvinceName || "";
     const districtName =
-      districts.find((d) => d.DistrictID === newAddress.district)
+      districts.find((d: any) => d.DistrictID === newAddress.district)
         ?.DistrictName || "";
     const wardName =
-      wards.find((w) => w.WardCode === newAddress.ward)?.WardName || "";
+      wards.find((w: any) => w.WardCode === newAddress.ward)?.WardName || "";
 
     const addressData = {
       user_id: userId,
@@ -274,9 +282,9 @@ export default function useAddressForm({
 
     setIsLoading(true);
     try {
-      let savedAddress;
+      let savedAddress: any = null;
       if (editingAddress) {
-        const response = await updateReceiverInfoById(
+        const response: any = await updateReceiverInfoById(
           editingAddress.id,
           addressData,
         );
@@ -284,14 +292,14 @@ export default function useAddressForm({
           savedAddress = { ...response.data, id: editingAddress.id };
         }
       } else {
-        const response = await createReceiverInfo(addressData);
+        const response: any = await createReceiverInfo(addressData);
         if (response.data) {
           savedAddress = response.data;
         }
       }
 
       if (savedAddress && newAddress.isDefault) {
-        const defaultResponse = await setDefaultReceiverInfoById(
+        const defaultResponse: any = await setDefaultReceiverInfoById(
           savedAddress.id,
         );
         if (defaultResponse.data) {

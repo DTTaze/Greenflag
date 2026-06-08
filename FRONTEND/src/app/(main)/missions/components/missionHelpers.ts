@@ -2,13 +2,13 @@ import { getAllTasksByTypeName, getTaskById } from "@/src/utils/api";
 
 // Helper function to fetch tasks and map with user tasks progress
 export const fetchTasksHelper = async (
-  typeName,
-  userTasks,
-  excludeCompleted = false,
+  typeName: string,
+  userTasks: any[],
+  excludeCompleted: boolean = false,
 ) => {
   const TasksByTypeName = await getAllTasksByTypeName(typeName);
   const tasksData = await Promise.all(
-    TasksByTypeName.data.map(async (task) => (await getTaskById(task.id)).data),
+    TasksByTypeName.data.map(async (task: any) => (await getTaskById(task.id)).data),
   );
 
   let filteredUserTasks = userTasks;
@@ -21,7 +21,7 @@ export const fetchTasksHelper = async (
   const userTasksProcessed = await Promise.all(
     filteredUserTasks
       .filter((userTask) =>
-        TasksByTypeName.data.some((task) => task.id === userTask.task_id),
+        TasksByTypeName.data.some((task: any) => task.id === userTask.task_id),
       )
       .map(async (userTask) => {
         const taskData = await getTaskById(userTask.task_id);
@@ -42,7 +42,7 @@ export const fetchTasksHelper = async (
   const unstartedTasks = tasksData
     .filter(
       (task) =>
-        !validUserTasks.some((userTask) => userTask.id === task.id) &&
+        !validUserTasks.some((userTask: any) => userTask.id === task.id) &&
         !userTasks.some(
           (userTask) =>
             userTask.task_id === task.id &&
@@ -59,12 +59,12 @@ export const fetchTasksHelper = async (
   return [...validUserTasks, ...unstartedTasks];
 };
 
-export const filterTasksByDifficulty = (tasksList, difficulty) => {
+export const filterTasksByDifficulty = (tasksList: any[], difficulty: string) => {
   if (difficulty === "all") return tasksList;
   return tasksList.filter((task) => task.difficulty === difficulty);
 };
 
-export const getTaskCategory = (title = "", description = "") => {
+export const getTaskCategory = (title: string = "", description: string = ""): string => {
   const text = `${title} ${description}`.toLowerCase();
   if (text.match(/cây|trồng|rừng|hoa|xanh|vườn/)) return "planting";
   if (text.match(/rác|nhựa|chai|lon|túi|nilon|gom|giấy|phế liệu|pin|sắt/))
@@ -73,8 +73,8 @@ export const getTaskCategory = (title = "", description = "") => {
   return "other";
 };
 
-export const extractTasksData = (taskResponse) => {
-  let tasksData = [];
+export const extractTasksData = (taskResponse: any) => {
+  let tasksData: any[] = [];
   if (taskResponse?.data) {
     if (taskResponse.data.success && Array.isArray(taskResponse.data.data)) {
       tasksData = taskResponse.data.data;
@@ -87,7 +87,7 @@ export const extractTasksData = (taskResponse) => {
       tasksData = Object.values(taskResponse.data.data);
     }
   }
-  return tasksData.map((task) => ({
+  return tasksData.map((task: any) => ({
     id: task.id,
     title: task.title,
     description: task.description,
@@ -99,9 +99,9 @@ export const extractTasksData = (taskResponse) => {
   }));
 };
 
-export const mapUserTasksData = (userTasksData, userId) => {
+export const mapUserTasksData = (userTasksData: any, userId: any) => {
   if (!userTasksData?.data) return [];
-  return userTasksData.data.map((task) => ({
+  return userTasksData.data.map((task: any) => ({
     id: task.id,
     task_id: task.task_id,
     user_id: userId,

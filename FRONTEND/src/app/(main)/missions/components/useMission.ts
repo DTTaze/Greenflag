@@ -15,34 +15,34 @@ import {
   filterTasksByDifficulty,
   getTaskCategory,
   mapUserTasksData,
-} from "./missionHelpers.js";
+} from "./missionHelpers";
 
 export default function useMission() {
-  const [tasks, setTasks] = useState([]);
-  const [userTasks, setUserTasks] = useState([]);
-  const [userInfo, setUserInfo] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [completingTask, setCompletingTask] = useState(null);
-  const [dailyCurrentPage, setDailyCurrentPage] = useState(1);
-  const [otherCurrentPage, setOtherCurrentPage] = useState(1);
-  const [selectedTask, setSelectedTask] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [userTasks, setUserTasks] = useState<any[]>([]);
+  const [userInfo, setUserInfo] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [completingTask, setCompletingTask] = useState<any>(null);
+  const [dailyCurrentPage, setDailyCurrentPage] = useState<number>(1);
+  const [otherCurrentPage, setOtherCurrentPage] = useState<number>(1);
+  const [selectedTask, setSelectedTask] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const taskPerPage = 4;
-  const [selectedTab, setSelectedTab] = useState("daily");
-  const [dailyTasks, setDailyTasks] = useState([]);
-  const [otherTasks, setOtherTasks] = useState([]);
-  const [dailyDifficultyFilter, setDailyDifficultyFilter] = useState("all");
-  const [otherDifficultyFilter, setOtherDifficultyFilter] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("all");
-  const [sortByCoins, setSortByCoins] = useState("none");
+  const [selectedTab, setSelectedTab] = useState<string>("daily");
+  const [dailyTasks, setDailyTasks] = useState<any[]>([]);
+  const [otherTasks, setOtherTasks] = useState<any[]>([]);
+  const [dailyDifficultyFilter, setDailyDifficultyFilter] = useState<string>("all");
+  const [otherDifficultyFilter, setOtherDifficultyFilter] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [sortByCoins, setSortByCoins] = useState<string>("none");
 
   // Fetch data from backend
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [taskResponse, userResponse] = await Promise.all([
+        const [taskResponse, userResponse]: any[] = await Promise.all([
           getAllTasks(),
           getUser(),
         ]);
@@ -70,7 +70,7 @@ export default function useMission() {
 
         if (tasksData.length > 0) {
           setTasks(tasksData);
-          const userTasksData = await getAllTasksByUserId(userResponse.data.id);
+          const userTasksData: any = await getAllTasksByUserId(userResponse.data.id);
           const processedUserTasksData = mapUserTasksData(
             userTasksData,
             userResponse.data.id,
@@ -93,7 +93,7 @@ export default function useMission() {
 
   // Handle task completion
   const handleTaskCompletion = useCallback(
-    async (userId, taskId, numOfProgress) => {
+    async (userId: any, taskId: any, numOfProgress: number) => {
       try {
         const userTask = userTasks.find(
           (ut) => ut.user_id === userId && ut.task_id === taskId,
@@ -105,12 +105,12 @@ export default function useMission() {
         const task = tasks.find((t) => t.id === taskId);
         if (!task) return;
 
-        let updatedTaskUser = null;
+        let updatedTaskUser: any = null;
         for (let i = 0; i < numOfProgress; i++) {
           updatedTaskUser = await increaseProgressCount(userTask.id);
         }
 
-        if (updatedTaskUser.data) {
+        if (updatedTaskUser && updatedTaskUser.data) {
           setUserTasks((prevUserTasks) =>
             prevUserTasks.map((ut) =>
               ut.id === updatedTaskUser.data.id
@@ -124,11 +124,11 @@ export default function useMission() {
           );
         }
 
-        if (updatedTaskUser.data.completed_at) {
+        if (updatedTaskUser && updatedTaskUser.data.completed_at) {
           try {
             await receiveCoins(task.coins);
-            const responseUser = await getUser();
-            setUserInfo((prev) => ({
+            const responseUser: any = await getUser();
+            setUserInfo((prev: any) => ({
               ...prev,
               coins: responseUser?.data?.coins.amount || 0,
             }));
@@ -161,7 +161,7 @@ export default function useMission() {
     [tasks, userTasks],
   );
 
-  const handleTaskSelect = useCallback((task) => {
+  const handleTaskSelect = useCallback((task: any) => {
     setSelectedTask(task);
     setIsModalOpen(true);
   }, []);
@@ -244,7 +244,7 @@ export default function useMission() {
   }, [selectedTab, dailyCurrentPage, otherCurrentPage]);
 
   const goToPage = useCallback(
-    (pageNumber) => {
+    (pageNumber: number) => {
       if (selectedTab === "daily") {
         if (pageNumber >= 1 && pageNumber <= dailyTotalPages) {
           setDailyCurrentPage(pageNumber);
@@ -259,7 +259,7 @@ export default function useMission() {
   );
 
   const getFilteredTasks = () => {
-    let list = [];
+    let list: any[] = [];
     if (selectedTab === "daily") {
       list = filterTasksByDifficulty(dailyTasks, dailyDifficultyFilter);
     } else if (selectedTab === "other") {

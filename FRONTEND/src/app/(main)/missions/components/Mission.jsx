@@ -14,7 +14,7 @@ import MissionTabs from "./MissionTabs.jsx";
 import QrTaskSubmissionModal from "./QrTaskSubmissionModal.jsx";
 import TasksList from "./TasksList.jsx";
 import TaskSubmissionModal from "./TaskSubmissionModal.jsx";
-import useMission from "./useMission.js";
+import useMission from "./useMission";
 
 function Mission() {
   const {

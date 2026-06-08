@@ -1,7 +1,7 @@
 import { Coins } from "lucide-react";
 import { useState } from "react";
 
-import { statusStyles } from "./purchaseHelpers.js";
+import { statusStyles } from "./purchaseHelpers";
 
 const OrderItem = ({ transaction, onClick, onCancel }) => {
   const item = transaction.item_snapshot;

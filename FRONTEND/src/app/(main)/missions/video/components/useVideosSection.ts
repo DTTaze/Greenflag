@@ -3,36 +3,36 @@ import { createRef, useEffect, useRef, useState } from "react";
 import { initialVideoData, taskData, userStats } from "./videoConfig";
 
 export default function useVideosSection() {
-  const [videoData, setVideoData] = useState(initialVideoData);
-  const [user, setUser] = useState({
+  const [videoData, setVideoData] = useState<any[]>(initialVideoData);
+  const [user, setUser] = useState<any>({
     id: 1,
     username: "user1",
     coins: { amount: 0 },
   });
-  const [playingStates, setPlayingStates] = useState(null);
-  const [isActuallyPlaying, setIsActuallyPlaying] = useState(false);
-  const [timer, setTimer] = useState(30);
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [isMuted, setIsMuted] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const [tooltipPosition, setTooltipPosition] = useState(0);
-  const [tooltipTime, setTooltipTime] = useState("00:00");
+  const [playingStates, setPlayingStates] = useState<number | null>(null);
+  const [isActuallyPlaying, setIsActuallyPlaying] = useState<boolean>(false);
+  const [timer, setTimer] = useState<number>(30);
+  const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
+  const [isInitialized, setIsInitialized] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [duration, setDuration] = useState<number>(0);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [tooltipPosition, setTooltipPosition] = useState<number>(0);
+  const [tooltipTime, setTooltipTime] = useState<string>("00:00");
 
-  const intervalRef = useRef(null);
-  const progressIntervalRef = useRef(null);
-  const progressBarRef = useRef(null);
+  const intervalRef = useRef<any>(null);
+  const progressIntervalRef = useRef<any>(null);
+  const progressBarRef = useRef<HTMLDivElement | null>(null);
 
   // Mảng ref cho ReactPlayer và container
-  const videoRefs = useRef(videoData.map(() => createRef()));
-  const containerRefs = useRef(videoData.map(() => createRef()));
-  const observerRef = useRef(null);
+  const videoRefs = useRef<any[]>(videoData.map(() => createRef<any>()));
+  const containerRefs = useRef<any[]>(videoData.map(() => createRef<any>()));
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   // Format time display (seconds -> MM:SS)
-  const formatTime = (seconds) => {
+  const formatTime = (seconds: number): string => {
     if (isNaN(seconds)) return "00:00";
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
@@ -40,7 +40,7 @@ export default function useVideosSection() {
   };
 
   // Handle play/pause toggle anywhere on video
-  const togglePlay = (e) => {
+  const togglePlay = (e: any) => {
     if (
       e &&
       (e.target.closest(".interaction-buttons") ||
@@ -60,7 +60,7 @@ export default function useVideosSection() {
   };
 
   // Handle progress bar interactions
-  const handleProgressBarClick = (e) => {
+  const handleProgressBarClick = (e: any) => {
     if (!progressBarRef.current || playingStates === null) return;
 
     const rect = progressBarRef.current.getBoundingClientRect();
@@ -75,7 +75,7 @@ export default function useVideosSection() {
   };
 
   // Handle progress bar mouse move (for tooltip)
-  const handleProgressBarMouseMove = (e) => {
+  const handleProgressBarMouseMove = (e: any) => {
     if (!progressBarRef.current || playingStates === null) return;
 
     const rect = progressBarRef.current.getBoundingClientRect();
@@ -89,7 +89,7 @@ export default function useVideosSection() {
   };
 
   // Handle mouse move during dragging
-  const handleMouseMove = (e) => {
+  const handleMouseMove = (e: any) => {
     if (isDragging) {
       handleProgressBarMouseMove(e);
       handleProgressBarClick(e);
@@ -104,7 +104,7 @@ export default function useVideosSection() {
   };
 
   // Handle progress bar mouse down (start dragging)
-  const handleProgressBarMouseDown = (e) => {
+  const handleProgressBarMouseDown = (e: any) => {
     setIsDragging(true);
     handleProgressBarClick(e);
     window.addEventListener("mousemove", handleMouseMove);
@@ -112,7 +112,7 @@ export default function useVideosSection() {
   };
 
   // Update progress based on current time
-  const handleProgress = (state) => {
+  const handleProgress = (state: any) => {
     if (playingStates !== null && !isDragging) {
       setCurrentTime(state.playedSeconds);
       const progressPercent = (state.playedSeconds / duration) * 100;
@@ -121,12 +121,12 @@ export default function useVideosSection() {
   };
 
   // Set duration when video is ready
-  const handleDuration = (duration) => {
-    setDuration(duration);
+  const handleDuration = (durationValue: number) => {
+    setDuration(durationValue);
   };
 
   // Hàm cập nhật số lượt like
-  const updateLike = (index, isLiked) => {
+  const updateLike = (index: number, isLiked: boolean) => {
     setVideoData((prevData) => {
       const newData = [...prevData];
       const currentLikes = newData[index].likes;
@@ -138,7 +138,7 @@ export default function useVideosSection() {
     });
   };
 
-  const handleShare = async (videoId) => {
+  const handleShare = async (videoId: any) => {
     try {
       await navigator.share({
         title: "Check out this eco-friendly video!",
@@ -162,7 +162,7 @@ export default function useVideosSection() {
 
   // Xử lý sự kiện scroll để chỉ chuyển giữa các video
   useEffect(() => {
-    const handleWheel = (e) => {
+    const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
       const direction = e.deltaY > 0 ? 1 : -1;
 
@@ -183,12 +183,12 @@ export default function useVideosSection() {
 
     const container = document.querySelector(".video-section-container");
     if (container) {
-      container.addEventListener("wheel", handleWheel, { passive: false });
+      container.addEventListener("wheel", handleWheel as any, { passive: false });
     }
 
     return () => {
       if (container) {
-        container.removeEventListener("wheel", handleWheel);
+        container.removeEventListener("wheel", handleWheel as any);
       }
     };
   }, [videoData.length, playingStates]);
@@ -227,7 +227,7 @@ export default function useVideosSection() {
         intervalRef.current = setInterval(() => {
           setTimer((prev) => {
             if (prev <= 1) {
-              setUser((prevUser) => ({
+              setUser((prevUser: any) => ({
                 ...prevUser,
                 coins: { amount: prevUser.coins.amount + 3 },
               }));
@@ -256,7 +256,7 @@ export default function useVideosSection() {
     observerRef.current = new IntersectionObserver(
       (entries) => {
         let maxRatio = 0;
-        let activeIndex = null;
+        let activeIndex: number | null = null;
         entries.forEach((entry) => {
           if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
             maxRatio = entry.intersectionRatio;

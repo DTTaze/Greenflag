@@ -7,27 +7,35 @@ import {
   previewOrderWithoutOrderCode,
 } from "@/src/utils/api";
 
+interface UsePurchaseModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  item: any;
+  userCoins: number;
+  onConfirm: (quantity: number, shippingData: any) => void;
+}
+
 export default function usePurchaseModal({
   isOpen,
   onClose,
   item,
   userCoins,
   onConfirm,
-}) {
-  const [quantity, setQuantity] = useState(1);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [shippingInfo, setShippingInfo] = useState(null);
-  const [shippingFee, setShippingFee] = useState(0);
-  const [isShippingModalOpen, setIsShippingModalOpen] = useState(false);
-  const [isLoadingShipping, setIsLoadingShipping] = useState(false);
-  const modalRef = useRef(null);
-  const shippingModalRef = useRef(null);
+}: UsePurchaseModalProps) {
+  const [quantity, setQuantity] = useState<number>(1);
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [shippingInfo, setShippingInfo] = useState<any>(null);
+  const [shippingFee, setShippingFee] = useState<number>(0);
+  const [isShippingModalOpen, setIsShippingModalOpen] = useState<boolean>(false);
+  const [isLoadingShipping, setIsLoadingShipping] = useState<boolean>(false);
+  const modalRef = useRef<HTMLDivElement | null>(null);
+  const shippingModalRef = useRef<HTMLDivElement | null>(null);
   const { user } = useAuthStore();
   const token = "c3f24415-29b9-11f0-9b81-222185cb68c8";
   const shop_id = 196506;
-  const [currentStock, setCurrentStock] = useState(item.stock);
+  const [currentStock, setCurrentStock] = useState<number>(item.stock);
 
-  const fetchShippingFee = async (selectedShipping) => {
+  const fetchShippingFee = async (selectedShipping: any) => {
     try {
       const orderData = {
         payment_type_id: 2,
@@ -100,7 +108,7 @@ export default function usePurchaseModal({
           const response = await getReceiverInfoByUserId(user.id);
           if (response?.data?.length > 0) {
             const defaultShipping =
-              response.data.find((info) => info.is_default) || response.data[0];
+              response.data.find((info: any) => info.is_default) || response.data[0];
             setShippingInfo(defaultShipping);
             await fetchShippingFee(defaultShipping);
           }
@@ -117,7 +125,7 @@ export default function usePurchaseModal({
   useEffect(() => {
     socket.emit("join-item-room", item.id);
 
-    socket.on("stock-update", (data) => {
+    socket.on("stock-update", (data: any) => {
       if (data.itemId === item.id) {
         console.log("Stock update received:", data);
         setCurrentStock(data.stock);
@@ -131,13 +139,13 @@ export default function usePurchaseModal({
   }, [item.id]);
 
   useEffect(() => {
-    function handleClickOutside(event) {
+    function handleClickOutside(event: MouseEvent) {
       if (
         modalRef.current &&
-        !modalRef.current.contains(event.target) &&
+        !modalRef.current.contains(event.target as Node) &&
         (!isShippingModalOpen ||
           (shippingModalRef.current &&
-            !shippingModalRef.current.contains(event.target)))
+            !shippingModalRef.current.contains(event.target as Node)))
       ) {
         onClose();
       }
@@ -177,7 +185,7 @@ export default function usePurchaseModal({
     currentStock,
   );
 
-  const handleQuantityChange = (e) => {
+  const handleQuantityChange = (e: any) => {
     const value = Math.max(
       1,
       Math.min(maxQuantity, parseInt(e.target.value) || 1),
@@ -211,7 +219,7 @@ export default function usePurchaseModal({
     setIsShippingModalOpen(true);
   };
 
-  const handleSelectShipping = async (selectedInfo) => {
+  const handleSelectShipping = async (selectedInfo: any) => {
     try {
       setIsLoadingShipping(true);
       setShippingInfo(selectedInfo);

@@ -1,4 +1,4 @@
-export const getStatusColor = (status) => {
+export const getStatusColor = (status: string): string => {
   switch (status) {
     case "active":
       return "success";
@@ -11,7 +11,7 @@ export const getStatusColor = (status) => {
   }
 };
 
-export const getStatusLabel = (status) => {
+export const getStatusLabel = (status: string): string => {
   switch (status) {
     case "active":
       return "In Progress";

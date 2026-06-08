@@ -16,24 +16,27 @@ const emptyShippingAccountForm = {
   is_default: false,
 };
 
-export default function useShippingAccounts(userId, showAlert) {
-  const [shippingAccounts, setShippingAccounts] = useState([]);
-  const [isLoadingAccounts, setIsLoadingAccounts] = useState(false);
+export default function useShippingAccounts(
+  userId: any,
+  showAlert: (message: string, severity?: string) => void,
+) {
+  const [shippingAccounts, setShippingAccounts] = useState<any[]>([]);
+  const [isLoadingAccounts, setIsLoadingAccounts] = useState<boolean>(false);
   const [shippingAccountsDialogOpen, setShippingAccountsDialogOpen] =
-    useState(false);
+    useState<boolean>(false);
   const [addShippingAccountDialogOpen, setAddShippingAccountDialogOpen] =
-    useState(false);
+    useState<boolean>(false);
   const [isEditingShippingAccount, setIsEditingShippingAccount] =
-    useState(false);
-  const [selectedShippingAccount, setSelectedShippingAccount] = useState(null);
-  const [newShippingAccount, setNewShippingAccount] = useState(
+    useState<boolean>(false);
+  const [selectedShippingAccount, setSelectedShippingAccount] = useState<any>(null);
+  const [newShippingAccount, setNewShippingAccount] = useState<any>(
     emptyShippingAccountForm,
   );
 
   const fetchShippingAccounts = async () => {
     try {
       setIsLoadingAccounts(true);
-      const response = await getShippingAccountsByUser();
+      const response: any = await getShippingAccountsByUser();
       if (response.status === 200) {
         setShippingAccounts(response.data);
       }
@@ -57,7 +60,7 @@ export default function useShippingAccounts(userId, showAlert) {
         is_default: shippingAccounts.length === 0,
       };
 
-      const response = await createShippingAccount(accountData);
+      const response: any = await createShippingAccount(accountData);
       if (response && response.data) {
         setShippingAccounts((prev) => [...prev, response.data]);
         setAddShippingAccountDialogOpen(false);
@@ -69,7 +72,7 @@ export default function useShippingAccounts(userId, showAlert) {
         showAlert("Shipping account added successfully!");
         resetShippingAccountForm();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error adding shipping account:", error);
       let errorMessage = "Failed to add shipping account. Please try again.";
       if (error.response?.data?.message) {
@@ -79,7 +82,7 @@ export default function useShippingAccounts(userId, showAlert) {
     }
   };
 
-  const handleEditShippingAccount = (account) => {
+  const handleEditShippingAccount = (account: any) => {
     setSelectedShippingAccount(account);
     setNewShippingAccount({
       name: account.name,
@@ -94,7 +97,7 @@ export default function useShippingAccounts(userId, showAlert) {
 
   const handleUpdateShippingAccount = async () => {
     try {
-      const response = await updateShippingAccount(
+      const response: any = await updateShippingAccount(
         selectedShippingAccount.id,
         newShippingAccount,
       );
@@ -118,7 +121,7 @@ export default function useShippingAccounts(userId, showAlert) {
     }
   };
 
-  const handleDeleteShippingAccount = async (accountId) => {
+  const handleDeleteShippingAccount = async (accountId: any) => {
     try {
       await deleteShippingAccount(accountId);
       const updatedAccounts = shippingAccounts.filter(
@@ -144,9 +147,9 @@ export default function useShippingAccounts(userId, showAlert) {
     }
   };
 
-  const handleSetDefaultShippingAccount = async (accountId) => {
+  const handleSetDefaultShippingAccount = async (accountId: any) => {
     try {
-      const response = await setDefaultShippingAccount(accountId);
+      const response: any = await setDefaultShippingAccount(accountId);
       if (response && response.data) {
         setShippingAccounts((prev) =>
           prev.map((account) =>

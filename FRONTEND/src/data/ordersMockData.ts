@@ -2,7 +2,18 @@
  * Waste categories with types for recycling orders module
  */
 
-export const wasteCategories = [
+export interface WasteType {
+  id: string;
+  label: string;
+  points: number;
+}
+
+export interface WasteCategory {
+  name: string;
+  types: WasteType[];
+}
+
+export const wasteCategories: WasteCategory[] = [
   {
     name: "Paper Products",
     types: [

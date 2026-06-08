@@ -1,3 +1,9 @@
+const formatDateValue = (params: any): string => {
+  if (!params) return "";
+  const date = new Date(params);
+  return date.toLocaleString();
+};
+
 export const transactionsColumns = [
   { field: "id", headerName: "ID", width: 100 },
   { field: "public_id", headerName: "ID công khai", width: 200 },
@@ -6,13 +12,13 @@ export const transactionsColumns = [
     field: "buyer",
     headerName: "Tên tài khoản người mua",
     width: 200,
-    valueGetter: (params) => params?.username || "Unknown",
+    valueGetter: (params: any) => params?.username || "Unknown",
   },
   {
     field: "item_snapshot",
     headerName: "Tên tài khoản người bán",
     width: 200,
-    valueGetter: (params) => params?.creator?.username || "Unknown",
+    valueGetter: (params: any) => params?.creator?.username || "Unknown",
   },
   { field: "total_price", headerName: "Tổng giá trị (xu)", width: 150 },
   { field: "quantity", headerName: "Số lượng sản phẩm", width: 150 },
@@ -21,21 +27,13 @@ export const transactionsColumns = [
     field: "updated_at",
     headerName: "Ngày cập nhật",
     width: 200,
-    valueGetter: (params) => {
-      let date = new Date(params);
-      let str = date.toLocaleString();
-      return str;
-    },
+    valueGetter: formatDateValue,
   },
   {
     field: "created_at",
     headerName: "Ngày khởi tạo",
     width: 200,
-    valueGetter: (params) => {
-      let date = new Date(params);
-      let str = date.toLocaleString();
-      return str;
-    },
+    valueGetter: formatDateValue,
   },
 ];
 
@@ -69,21 +67,13 @@ export const ordersColumns = [
     field: "updated_at",
     headerName: "Ngày cập nhật",
     width: 200,
-    valueGetter: (params) => {
-      let date = new Date(params);
-      let str = date.toLocaleString();
-      return str;
-    },
+    valueGetter: formatDateValue,
   },
   {
     field: "created_at",
     headerName: "Ngày khởi tạo",
     width: 200,
-    valueGetter: (params) => {
-      let date = new Date(params);
-      let str = date.toLocaleString();
-      return str;
-    },
+    valueGetter: formatDateValue,
   },
 ];
 
@@ -95,7 +85,7 @@ export const eventsColumns = [
     field: "creator",
     headerName: "Tên tài khoản người mua",
     width: 200,
-    valueGetter: (params) => params?.username || "Unknown",
+    valueGetter: (params: any) => params?.username || "Unknown",
   },
   { field: "description", headerName: "Tổng giá trị (xu)", width: 150 },
   {
@@ -110,31 +100,19 @@ export const eventsColumns = [
     field: "end_sign",
     headerName: "Hạn chót đăng kí",
     width: 200,
-    valueGetter: (params) => {
-      let date = new Date(params);
-      let str = date.toLocaleString();
-      return str;
-    },
+    valueGetter: formatDateValue,
   },
   {
     field: "start_time",
     headerName: "Ngày bắt đầu",
     width: 200,
-    valueGetter: (params) => {
-      let date = new Date(params);
-      let str = date.toLocaleString();
-      return str;
-    },
+    valueGetter: formatDateValue,
   },
   {
     field: "end_time",
     headerName: "Ngày kết thúc",
     width: 200,
-    valueGetter: (params) => {
-      let date = new Date(params);
-      let str = date.toLocaleString();
-      return str;
-    },
+    valueGetter: formatDateValue,
   },
   {
     field: "status",
@@ -145,20 +123,12 @@ export const eventsColumns = [
     field: "updated_at",
     headerName: "Ngày cập nhật",
     width: 200,
-    valueGetter: (params) => {
-      let date = new Date(params);
-      let str = date.toLocaleString();
-      return str;
-    },
+    valueGetter: formatDateValue,
   },
   {
     field: "created_at",
     headerName: "Ngày khởi tạo",
     width: 200,
-    valueGetter: (params) => {
-      let date = new Date(params);
-      let str = date.toLocaleString();
-      return str;
-    },
+    valueGetter: formatDateValue,
   },
 ];

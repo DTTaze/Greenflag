@@ -1,3 +1,9 @@
+const formatDateValue = (params: any): string => {
+  if (!params) return "";
+  const date = new Date(params);
+  return date.toLocaleString();
+};
+
 export const userColumns = [
   { field: "id", headerName: "ID", width: 100 },
   { field: "public_id", headerName: "ID công khai", width: 200 },
@@ -15,27 +21,19 @@ export const userColumns = [
     field: "roles",
     headerName: "Vai trò",
     width: 120,
-    valueGetter: (params) => params?.name || "Unknown",
+    valueGetter: (params: any) => params?.name || "Unknown",
   },
   {
     field: "updated_at",
     headerName: "Ngày cập nhật",
     width: 200,
-    valueGetter: (params) => {
-      let date = new Date(params);
-      let str = date.toLocaleString();
-      return str;
-    },
+    valueGetter: formatDateValue,
   },
   {
     field: "created_at",
     headerName: "Ngày khởi tạo",
     width: 200,
-    valueGetter: (params) => {
-      let date = new Date(params);
-      let str = date.toLocaleString();
-      return str;
-    },
+    valueGetter: formatDateValue,
   },
 ];
 
@@ -47,21 +45,13 @@ export const roleColumns = [
     field: "updated_at",
     headerName: "Ngày cập nhật",
     width: 200,
-    valueGetter: (params) => {
-      let date = new Date(params);
-      let str = date.toLocaleString();
-      return str;
-    },
+    valueGetter: formatDateValue,
   },
   {
     field: "created_at",
     headerName: "Ngày khởi tạo",
     width: 200,
-    valueGetter: (params) => {
-      let date = new Date(params);
-      let str = date.toLocaleString();
-      return str;
-    },
+    valueGetter: formatDateValue,
   },
 ];
 
@@ -73,21 +63,13 @@ export const permissionColumns = [
     field: "updated_at",
     headerName: "Ngày cập nhật",
     width: 200,
-    valueGetter: (params) => {
-      let date = new Date(params);
-      let str = date.toLocaleString();
-      return str;
-    },
+    valueGetter: formatDateValue,
   },
   {
     field: "created_at",
     headerName: "Ngày khởi tạo",
     width: 200,
-    valueGetter: (params) => {
-      let date = new Date(params);
-      let str = date.toLocaleString();
-      return str;
-    },
+    valueGetter: formatDateValue,
   },
 ];
 
@@ -97,32 +79,24 @@ export const rolesPermissionsColumns = [
     field: "role",
     headerName: "Name",
     width: 250,
-    valueGetter: (params) => params?.name || "Unknown",
+    valueGetter: (params: any) => params?.name || "Unknown",
   },
   {
     field: "permission",
     headerName: "Subject",
     width: 150,
-    valueGetter: (params) => params?.subject || "Unknown",
+    valueGetter: (params: any) => params?.subject || "Unknown",
   },
   {
     field: "updated_at",
     headerName: "Ngày cập nhật",
     width: 200,
-    valueGetter: (params) => {
-      let date = new Date(params);
-      let str = date.toLocaleString();
-      return str;
-    },
+    valueGetter: formatDateValue,
   },
   {
     field: "created_at",
     headerName: "Ngày khởi tạo",
     width: 200,
-    valueGetter: (params) => {
-      let date = new Date(params);
-      let str = date.toLocaleString();
-      return str;
-    },
+    valueGetter: formatDateValue,
   },
 ];

@@ -4,17 +4,23 @@ import { getShippingAccountsByUser } from "@/src/utils/api";
 
 import useLocationSelector from "./useLocationSelector";
 
+interface UseCreateOrderStateProps {
+  newOrder: any;
+  setNewOrder: React.Dispatch<React.SetStateAction<any>>;
+  isViewMode: boolean;
+}
+
 export default function useCreateOrderState({
   newOrder,
   setNewOrder,
   isViewMode,
-}) {
-  const [servicePackage] = useState(newOrder.servicePackage || "light");
-  const [pickupOption, setPickupOption] = useState(
+}: UseCreateOrderStateProps) {
+  const [servicePackage] = useState<string>(newOrder.servicePackage || "light");
+  const [pickupOption, setPickupOption] = useState<string>(
     newOrder.pickupOption || "pickup",
   );
-  const [productListDialogOpen, setProductListDialogOpen] = useState(false);
-  const [formValid, setFormValid] = useState(false);
+  const [productListDialogOpen, setProductListDialogOpen] = useState<boolean>(false);
+  const [formValid, setFormValid] = useState<boolean>(false);
 
   // Hook instances for sender & receiver locations
   const senderLocation = useLocationSelector(
@@ -30,8 +36,8 @@ export default function useCreateOrderState({
   );
 
   // Functional update helper to ensure merged state updates
-  const updateOrder = (updatedValues) => {
-    setNewOrder((prev) => ({
+  const updateOrder = (updatedValues: any) => {
+    setNewOrder((prev: any) => ({
       ...prev,
       ...updatedValues,
     }));
@@ -88,7 +94,7 @@ export default function useCreateOrderState({
     }
 
     // Clean location IDs and codes from parent state to avoid sending in payload
-    setNewOrder((prev) => {
+    setNewOrder((prev: any) => {
       const cleaned = { ...prev };
       delete cleaned.from_province_id;
       delete cleaned.from_district_id;
@@ -100,13 +106,13 @@ export default function useCreateOrderState({
     });
   }, []);
 
-  const handlePickupOptionChange = (event) => {
+  const handlePickupOptionChange = (event: any) => {
     if (isViewMode) return;
     setPickupOption(event.target.value);
     updateOrder({ pickupOption: event.target.value });
   };
 
-  const handleAddProduct = (product) => {
+  const handleAddProduct = (product: any) => {
     if (isViewMode) return;
 
     const newItem = {
@@ -147,7 +153,7 @@ export default function useCreateOrderState({
       }
 
       const defaultAccount =
-        accountsResponse.data.find((acc) => acc.is_default) ||
+        accountsResponse.data.find((acc: any) => acc.is_default) ||
         accountsResponse.data[0];
 
       alert("Successfully retrieved sender information from GHN account");
@@ -164,7 +170,7 @@ export default function useCreateOrderState({
   };
 
   // Wrapped location setters to properly clear lower-level states
-  const handleSetFromProvinceId = (id) => {
+  const handleSetFromProvinceId = (id: any) => {
     senderLocation.setProvinceId(id);
     senderLocation.setDistrictId(null);
     senderLocation.setWardCode("");
@@ -174,7 +180,7 @@ export default function useCreateOrderState({
     });
   };
 
-  const handleSetFromDistrictId = (id) => {
+  const handleSetFromDistrictId = (id: any) => {
     senderLocation.setDistrictId(id);
     senderLocation.setWardCode("");
     updateOrder({
@@ -182,7 +188,7 @@ export default function useCreateOrderState({
     });
   };
 
-  const handleSetToProvinceId = (id) => {
+  const handleSetToProvinceId = (id: any) => {
     receiverLocation.setProvinceId(id);
     receiverLocation.setDistrictId(null);
     receiverLocation.setWardCode("");
@@ -192,7 +198,7 @@ export default function useCreateOrderState({
     });
   };
 
-  const handleSetToDistrictId = (id) => {
+  const handleSetToDistrictId = (id: any) => {
     receiverLocation.setDistrictId(id);
     receiverLocation.setWardCode("");
     updateOrder({

@@ -34,6 +34,20 @@
 }
 
 @theme inline {
+  --animate-spinner-cube: spinner-y0fdc1 2s infinite ease;
+
+  @keyframes spinner-y0fdc1 {
+    0% {
+      transform: rotate(45deg) rotateX(-25deg) rotateY(25deg);
+    }
+    50% {
+      transform: rotate(45deg) rotateX(-385deg) rotateY(25deg);
+    }
+    100% {
+      transform: rotate(45deg) rotateX(-385deg) rotateY(385deg);
+    }
+  }
+
   --font-heading: var(--font-sans);
   --font-sans: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -155,4 +169,8 @@
   html {
     @apply font-sans;
   }
+}
+
+@utility pulse {
+  @apply animate-pulse;
 }

@@ -1,5 +1,3 @@
-import "@/src/styles/components/Calendar.scss";
-
 import dayjs from "dayjs";
 import range from "lodash-es/range";
 import React, { useEffect, useState } from "react";
@@ -60,10 +58,10 @@ const Calendar = ({ streak = 0, lastLogin = null }) => {
 
   return (
     <div className="calendar-container overflow-hidden rounded-lg border border-green-100 shadow-sm">
-      <div className="header_calendar flex items-center justify-between rounded-t-lg bg-gradient-to-r from-green-600 to-green-500 p-4 text-white">
+      <div className="flex items-center justify-between rounded-t-lg bg-gradient-to-r from-green-600 to-green-500 p-4 text-white">
         <button
           type="button"
-          className="nav nav--prev bg-opacity-20 hover:bg-opacity-30 flex h-8 w-8 items-center justify-center rounded-full bg-white transition-colors"
+          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-white bg-white/20 text-white transition-colors outline-none hover:bg-white/30"
           onClick={handlePrev}
         >
           <svg
@@ -81,12 +79,12 @@ const Calendar = ({ streak = 0, lastLogin = null }) => {
             />
           </svg>
         </button>
-        <div className="datetime text-lg font-semibold tracking-wide">
+        <div className="mx-auto text-lg font-semibold tracking-wide">
           {dayObj.format("MMMM YYYY")}
         </div>
         <button
           type="button"
-          className="nav nav--next bg-opacity-20 hover:bg-opacity-30 flex h-8 w-8 items-center justify-center rounded-full bg-white transition-colors"
+          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-white bg-white/20 text-white transition-colors outline-none hover:bg-white/30"
           onClick={handleNext}
         >
           <svg
@@ -131,7 +129,7 @@ const Calendar = ({ streak = 0, lastLogin = null }) => {
       <div className="week-container grid grid-cols-7 bg-green-50">
         {weekDays.map((d) => (
           <div
-            className="week-cell py-3 text-center text-xs font-semibold text-green-700"
+            className="flex h-[30px] items-center justify-center py-3 text-center text-xs font-semibold text-green-700"
             key={d}
           >
             {d}
@@ -142,7 +140,7 @@ const Calendar = ({ streak = 0, lastLogin = null }) => {
       <div className="day-container grid grid-cols-7 bg-white">
         {range(weekDayObjOf1).map((i) => (
           <div
-            className="day-cell day-cell--faded flex h-10 items-center justify-center text-sm text-gray-400"
+            className="flex h-10 items-center justify-center text-sm text-gray-400 opacity-40"
             key={i}
           >
             {dayObjOf1.subtract(weekDayObjOf1 - i, "day").date()}
@@ -172,7 +170,7 @@ const Calendar = ({ streak = 0, lastLogin = null }) => {
 
         {range(6 - weekDayObjOfLast).map((i) => (
           <div
-            className="day-cell day-cell--faded flex h-10 items-center justify-center text-sm text-gray-400"
+            className="flex h-10 items-center justify-center text-sm text-gray-400 opacity-40"
             key={i}
           >
             {dayObjOfLast.add(i + 1, "day").date()}

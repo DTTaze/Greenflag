@@ -1,5 +1,3 @@
-import "../styles/components/HomepageSection.css";
-
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
@@ -110,6 +108,7 @@ function Section({ imagePath, H2Text, PText, ButtonText, path, reverse }) {
           {PText}
         </p>
         <button
+          className="ease w-1/2 cursor-pointer rounded-[50px] border-0 bg-[#65b444] px-[40px] py-[17px] text-[15px] font-bold tracking-[1.5px] uppercase shadow-[0_0_8px_rgba(0,0,0,0.05)] transition-all duration-500 hover:bg-[#059212] hover:tracking-[3px] hover:text-white hover:shadow-[#059212_0px_7px_29px_0px] active:translate-y-[10px] active:bg-[#059212] active:tracking-[3px] active:text-white active:shadow-none active:duration-100"
           onClick={() => {
             if (isAuthenticated) {
               router.push(path);

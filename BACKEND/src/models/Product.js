@@ -48,13 +48,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       category: {
-        type: DataTypes.ENUM(
-          "recycled",
-          "handicraft",
-          "organic",
-          "plants",
-          "other"
-        ),
+        type: DataTypes.ENUM("recycled", "handicraft", "organic", "plants", "other"),
         allowNull: false,
       },
       product_status: {
@@ -72,7 +66,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "Product",
       tableName: "products",
-    }
+    },
   );
 
   return Product;

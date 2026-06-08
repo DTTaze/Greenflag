@@ -9,8 +9,8 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "permission_id",
         otherKey: "role_id",
         as: "roles",
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       });
     }
   }
@@ -34,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "Permission",
       tableName: "permissions",
-    }
+    },
   );
   return Permission;
 };

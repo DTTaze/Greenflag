@@ -10,11 +10,15 @@ const Image = db.Image;
 const cloudinary = require("cloudinary").v2;
 const { emitStockUpdate } = require("./socketService");
 const { getCache, setCache, deleteCache } = require("../utils/cache");
+const { CACHE_KEYS } = require("../constants/cacheKeys");
+const BadRequestError = require("../errors/BadRequestError");
+const NotFoundError = require("../errors/NotFoundError");
+const AppError = require("../errors/AppError");
 
-const cacheItemAll = "items:all";
-const cacheItemId = (id) => `item:${id}` ;
-const cacheItemPublicId = (id) => `item:public_id:${id}`;
-const cacheItemUserId = (id) => `items:user:${id}`;
+const cacheItemAll = CACHE_KEYS.COMMERCE.ALL_ITEMS;
+const cacheItemId = (id) => CACHE_KEYS.COMMERCE.ITEM_BY_ID(id);
+const cacheItemPublicId = (id) => CACHE_KEYS.COMMERCE.ITEM_BY_PUBLIC_ID(id);
+const cacheItemUserId = (id) => CACHE_KEYS.COMMERCE.ITEMS_BY_USER_ID(id);
 
 const createItem = async (itemData, user_id, images) => {
   try {
@@ -32,19 +36,15 @@ const createItem = async (itemData, user_id, images) => {
     } = itemData;
 
     if (!name || !price || !stock || !weight || !length || !width || !height) {
-      throw new Error(
-        "Missing required fields (name, price, stock, weight, length, width, height)"
+      throw new BadRequestError(
+        "Missing required fields (name, price, stock, weight, length, width, height)",
       );
     }
-
-    if (!user_id) {
-      throw new Error("Creator ID is required");
+    if (user_id === undefined) {
+      throw new BadRequestError("Creator ID is required");
     }
-
-    if (price < 1 || stock < 1 || purchase_limit_per_day < 1) {
-      throw new Error(
-        "Price, stock and purchase_limit_per_day must be at least 1"
-      );
+    if (Number(price) < 1 || Number(stock) < 1 || Number(purchase_limit_per_day) < 1) {
+      throw new BadRequestError("Price, stock and purchase_limit_per_day must be at least 1");
     }
 
     const result = await sequelize.transaction(async (t) => {
@@ -63,19 +63,19 @@ const createItem = async (itemData, user_id, images) => {
           width,
           height,
         },
-        { transaction: t }
+        { transaction: t },
       );
 
       if (images && images.length > 0) {
         const uploadedImages = await uploadImages(images, newItem.id, "item");
         if (uploadedImages.length === 0) {
-          throw new Error("Failed to upload images");
+          throw new AppError("Failed to upload images", 500);
         }
       }
       return newItem;
     });
 
-    //cache 
+    //cache
     await deleteCache(cacheItemAll);
     await deleteCache(cacheItemUserId(user_id));
 
@@ -128,7 +128,7 @@ const getItemByIdItem = async (item_id) => {
 
   if (!item) {
     const dbItem = await Item.findByPk(item_id);
-    if (!dbItem) throw new Error("Item not found");
+    if (!dbItem) throw new NotFoundError("Item not found");
 
     const images = await Image.findAll({
       where: { reference_id: item_id, reference_type: "item" },
@@ -156,9 +156,7 @@ const getItemByIdUser = async (user_id) => {
 
     items = dbItems.map((item) => ({
       ...item.toJSON(),
-      images: images
-        .filter((img) => img.reference_id === item.id)
-        .map((img) => img.url),
+      images: images.filter((img) => img.reference_id === item.id).map((img) => img.url),
     }));
     await setCache(cacheItemUserId(user_id), items);
   }
@@ -182,25 +180,23 @@ const updateItem = async (id, data, images) => {
     } = data;
     let item = await Item.findByPk(id);
     if (!item) {
-      throw new Error("Item not found");
+      throw new NotFoundError("Item not found");
     }
 
     const originalStock = item.stock;
     const originalStatus = item.status;
 
-    name ? (item.name = name) : (item.name = item.name);
-    purchase_limit_per_day
-      ? (item.purchase_limit_per_day = purchase_limit_per_day)
-      : (item.purchase_limit_per_day = item.purchase_limit_per_day);
-    status ? (item.status = status) : (item.status = item.status);
-    description
-      ? (item.description = description)
-      : (item.description = item.description);
-    price ? (item.price = price) : (item.price = item.price);
+    if (name) item.name = name;
+    if (purchase_limit_per_day !== undefined) {
+      item.purchase_limit_per_day = purchase_limit_per_day;
+    }
+    if (status) item.status = status;
+    if (description) item.description = description;
+    if (price !== undefined) item.price = price;
 
     if (stock !== undefined) {
       if (stock < 0) {
-        throw new Error("Stock cannot be negative");
+        throw new BadRequestError("Stock cannot be negative");
       }
       item.stock = stock;
     }
@@ -236,13 +232,13 @@ const updateItem = async (id, data, images) => {
 
       uploadedImages = await uploadImages(images, id, "item");
       if (!uploadedImages || uploadedImages.length === 0) {
-        throw new Error("Failed to upload images");
+        throw new AppError("Failed to upload images", 500);
       }
     }
 
     await item.save();
 
-    //cache 
+    //cache
     await deleteCache(cacheItemId(item.id));
     await deleteCache(cacheItemUserId(item.creator_id));
     await deleteCache(cacheItemAll);
@@ -259,12 +255,11 @@ const updateItem = async (id, data, images) => {
 const deleteItem = async (item_id) => {
   try {
     if (!item_id) {
-      throw new Error("Item ID is required");
+      throw new BadRequestError("Item ID is required");
     }
-
     const item = await Item.findByPk(item_id);
     if (!item) {
-      throw new Error("Item not found");
+      throw new NotFoundError("Item not found");
     }
 
     const images = await Image.findAll({
@@ -283,10 +278,10 @@ const deleteItem = async (item_id) => {
     }
 
     await item.destroy();
-    await deleteCache(`item:${item_id}`);
-    await deleteCache("items:all");
-    await deleteCache(`items:user:${item.creator_id}`);
-    await deleteCache(`item:public_id:${item.public_id}`);
+    await deleteCache(cacheItemId(item_id));
+    await deleteCache(cacheItemAll);
+    await deleteCache(cacheItemUserId(item.creator_id));
+    await deleteCache(cacheItemPublicId(item.public_id));
     return { message: "Item and associated images deleted successfully" };
   } catch (e) {
     throw e;
@@ -297,10 +292,10 @@ const purchaseItem = async (user_id, item_id, data) => {
   try {
     let { name, quantity, receiver_information_id } = data;
     if (!user_id || !item_id || quantity <= 0) {
-      throw new Error("Invalid input data");
+      throw new BadRequestError("Invalid input data");
     }
-    if (!receiver_information_id) {
-      throw new Error("Missing receiver information");
+    if (!data.to_name || !data.to_phone || !data.to_address) {
+      throw new BadRequestError("Missing receiver information");
     }
     const result = await purchaseQueue.add("purchase", {
       receiver_information_id,
@@ -322,7 +317,7 @@ const getItemByPublicId = async (public_id) => {
 
   if (!item) {
     const dbItem = await Item.findOne({ where: { public_id } });
-    if (!dbItem) throw new Error("Item not found");
+    if (!dbItem) throw new NotFoundError("Item not found");
 
     const images = await Image.findAll({
       where: { reference_id: dbItem.id, reference_type: "item" },
@@ -340,22 +335,19 @@ const getItemByPublicId = async (public_id) => {
 
 const updateItemByPublicId = async (public_id, data, images) => {
   try {
-    let { name, price, stock, description, weight, length, width, height } =
-      data;
+    let { name, price, stock, description, weight, length, width, height } = data;
     let item = await Item.findOne({ where: { public_id } });
     if (!item) {
-      throw new Error("Item not found");
+      throw new NotFoundError("Item not found");
     }
-    name ? (item.name = name) : (item.name = item.name);
+    if (name) item.name = name;
     item.status = "pending";
-    description
-      ? (item.description = description)
-      : (item.description = item.description);
-    price ? (item.price = price) : (item.price = item.price);
+    if (description) item.description = description;
+    if (price !== undefined) item.price = price;
 
     if (stock !== undefined) {
       if (stock < 0) {
-        throw new Error("Stock cannot be negative");
+        throw new BadRequestError("Stock cannot be negative");
       }
       item.stock = stock;
     }
@@ -383,14 +375,14 @@ const updateItemByPublicId = async (public_id, data, images) => {
 
       uploadedImages = await uploadImages(images, item.id, "item");
       if (!uploadedImages || uploadedImages.length === 0) {
-        throw new Error("Failed to upload images");
+        throw new AppError("Failed to upload images", 500);
       }
     }
 
     await item.save();
-    await deleteCache(`item:${item.id}`);
-    await deleteCache("items:all");
-    await deleteCache(`items:user:${item.creator_id}`);
+    await deleteCache(cacheItemId(item.id));
+    await deleteCache(cacheItemAll);
+    await deleteCache(cacheItemUserId(item.creator_id));
     return {
       ...item.toJSON(),
       images: uploadedImages.map((image) => image.url),
@@ -404,7 +396,7 @@ const deleteItemByPublicId = async (public_id) => {
   try {
     const item = await Item.findOne({ where: { public_id } });
     if (!item) {
-      throw new Error("Item not found");
+      throw new NotFoundError("Item not found");
     }
 
     return await deleteItem(item.id);

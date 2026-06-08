@@ -1,124 +1,63 @@
 const userService = require("../services/userService");
+const { setAuthCookies, clearAuthCookies } = require("../helpers/cookieHelper");
 const ms = require("ms");
 
 const handleGetAllUsers = async (req, res) => {
-  try {
-    let result = await userService.getAllUsers();
-    return res.success("Get list of users success", result);
-  } catch (error) {
-    return res.error(500, "Failed to fetch user list", error.message);
-  }
+  const result = await userService.getAllUsers();
+  return res.success("Get list of users success", result);
 };
 
 const handleCreateUser = async (req, res) => {
-  try {
-    let result = await userService.createUser(req.body);
-    return res.success("Create user success", result);
-  } catch (error) {
-    return res.error(500, "Failed to create user", error.message);
-  }
+  const result = await userService.createUser(req.body);
+  return res.success("Create user success", result);
 };
 
 const handleLoginUser = async (req, res) => {
-  try {
-    const user = req.user;
-    const email = req.body.email;
-    const password = req.body.password;
-    const clientIP = req.ip || req.connection.remoteAddress;
-    const userAgent = req.headers["user-agent"] || "unknown";
-    let result = await userService.loginUser(
-      user,
-      email,
-      password,
-      clientIP,
-      userAgent
-    );
-    res.cookie("access_token", result.access_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: ms(process.env.JWT_AT_EXPIRE),
-      path: "/",
-    });
-    res.cookie("refresh_token", result.refresh_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      path: "/",
-      maxAge: ms(process.env.JWT_RF_EXPIRE),
-    });
-    return res.success("Login success", result);
-  } catch (error) {
-    return res.error(401, "Failed to login user", error.message);
-  }
+  const user = req.user;
+  const email = req.body.email;
+  const password = req.body.password;
+  const clientIP = req.ip || req.connection.remoteAddress;
+  const userAgent = req.headers["user-agent"] || "unknown";
+  const result = await userService.loginUser(user, email, password, clientIP, userAgent);
+  setAuthCookies(res, result);
+  return res.success("Login success", result);
 };
 
 const handleRefreshAccessToken = async (req, res) => {
-  try {
-    const refreshToken = req.cookies.refresh_token;
-    const newAccessToken = userService.refreshAccessToken(refreshToken);
+  const refreshToken = req.cookies.refresh_token;
+  const newAccessToken = userService.refreshAccessToken(refreshToken);
 
-    res.cookie("access_token", newAccessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      path: "/",
-      maxAge: ms(process.env.JWT_AT_EXPIRE),
-    });
+  res.cookie("access_token", newAccessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    path: "/",
+    maxAge: ms(process.env.JWT_AT_EXPIRE),
+  });
 
-    return res.success("Access token refreshed", {
-      access_token: newAccessToken,
-    });
-  } catch (error) {
-    return res.error(401, "Invalid refresh token", error.message);
-  }
+  return res.success("Access token refreshed", {
+    access_token: newAccessToken,
+  });
 };
 
 const handleLogoutUser = async (req, res) => {
-  try {
-    res.clearCookie("access_token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      path: "/",
-    });
-    res.clearCookie("refresh_token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      path: "/",
-    });
-    return res.success("Logout success");
-  } catch (error) {
-    return res.error(500, "Failed to logout user", error.message);
-  }
+  clearAuthCookies(res);
+  return res.success("Logout success");
 };
 
 const handleDeleteUser = async (req, res) => {
-  try {
-    let result = await userService.deleteUser(req.params.id);
-    return res.success("Delete user success", result);
-  } catch (error) {
-    return res.error(500, "Failed to delete user", error.message);
-  }
+  const result = await userService.deleteUser(req.params.id);
+  return res.success("Delete user success", result);
 };
 
 const handleGetUser = async (req, res) => {
-  try {
-    let result = await userService.getUserByID(Number(req.params.id));
-    return res.success("Get user by ID success", result);
-  } catch (error) {
-    return res.error(500, "Failed to get user by ID", error.message);
-  }
+  const result = await userService.getUserByID(Number(req.params.id));
+  return res.success("Get user by ID success", result);
 };
 
 const handleUpdateUserById = async (req, res) => {
-  try {
-    let result = await userService.updateUserById(req.params.id, req.body);
-    return res.success("Update user success", result);
-  } catch (error) {
-    return res.error(500, "Failed to update user", error.message);
-  }
+  const result = await userService.updateUserById(req.params.id, req.body);
+  return res.success("Update user success", result);
 };
 
 const handleGetProfile = async (req, res) => {
@@ -126,60 +65,33 @@ const handleGetProfile = async (req, res) => {
 };
 
 const handleGetTaskCompleted = async (req, res) => {
-  try {
-    let result = await userService.getTaskCompleted(req.user.id);
-    return res.success("Get task completed success", result);
-  } catch (error) {
-    return res.error(500, "Failed to get task completed", error.message);
-  }
+  const result = await userService.getTaskCompleted(req.user.id);
+  return res.success("Get task completed success", result);
 };
 
 const handleGetAllTasksById = async (req, res) => {
-  try {
-    let result = await userService.getAllTasksById(req.user.id);
-    return res.success("Get all task by ID success", result);
-  } catch (error) {
-    return res.error(500, "Failed to get all task by ID", error.message);
-  }
+  const result = await userService.getAllTasksById(req.user.id);
+  return res.success("Get all task by ID success", result);
 };
 
 const handleGetItemByIdUser = async (req, res) => {
-  try {
-    let result = await userService.getItemByIdUser(req.params.user_id);
-    return res.success("Get item by user ID success", result);
-  } catch (error) {
-    return res.error(500, "Failed to get item by user ID", error.message);
-  }
+  const result = await userService.getItemByIdUser(req.params.user_id);
+  return res.success("Get item by user ID success", result);
 };
 
 const handleGetUserByPublicId = async (req, res) => {
-  try {
-    let result = await userService.getUserByPublicID(req.params.public_id);
-    return res.success("Get user by public ID success", result);
-  } catch (error) {
-    return res.error(500, "Failed to get user by public ID", error.message);
-  }
+  const result = await userService.getUserByPublicID(req.params.public_id);
+  return res.success("Get user by public ID success", result);
 };
 
 const handleUpdateUserByPublicId = async (req, res) => {
-  try {
-    let result = await userService.updateUserByPublicID(
-      req.params.public_id,
-      req.body
-    );
-    return res.success("Update user success", result);
-  } catch (error) {
-    return res.error(500, "Failed to update user", error.message);
-  }
+  const result = await userService.updateUserByPublicID(req.params.public_id, req.body);
+  return res.success("Update user success", result);
 };
 
 const handleDeleteUserByPublicId = async (req, res) => {
-  try {
-    let result = await userService.deleteUserByPublicID(req.params.public_id);
-    return res.success("Delete user success", result);
-  } catch (error) {
-    return res.error(500, "Failed to delete user", error.message);
-  }
+  const result = await userService.deleteUserByPublicID(req.params.public_id);
+  return res.success("Delete user success", result);
 };
 
 module.exports = {

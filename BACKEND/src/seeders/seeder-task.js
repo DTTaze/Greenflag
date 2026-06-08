@@ -49,8 +49,7 @@ module.exports = {
         public_id: nanoid(),
         creator_id: 3,
         title: "Tái chế rác thải",
-        description:
-          "Thu gom ít nhất 5kg rác thải tái chế và đem đến điểm thu gom.",
+        description: "Thu gom ít nhất 5kg rác thải tái chế và đem đến điểm thu gom.",
         coins: 30,
         difficulty: "hard",
         total: 3,
@@ -128,8 +127,7 @@ module.exports = {
         public_id: nanoid(),
         creator_id: 4,
         title: "Sử dụng bình nước cá nhân",
-        description:
-          "Mang theo bình nước cá nhân thay vì mua chai nhựa dùng một lần.",
+        description: "Mang theo bình nước cá nhân thay vì mua chai nhựa dùng một lần.",
         coins: 15,
         difficulty: "easy",
         total: 1,
@@ -168,8 +166,7 @@ module.exports = {
         public_id: nanoid(),
         creator_id: 4,
         title: "Chia sẻ kiến thức môi trường",
-        description:
-          "Viết bài chia sẻ hoặc đăng video tuyên truyền bảo vệ môi trường.",
+        description: "Viết bài chia sẻ hoặc đăng video tuyên truyền bảo vệ môi trường.",
         coins: 30,
         difficulty: "medium",
         total: 1,
@@ -260,8 +257,7 @@ module.exports = {
         public_id: nanoid(),
         creator_id: 1,
         title: "Tham gia workshop môi trường",
-        description:
-          "Tham gia một buổi hội thảo hoặc lớp học liên quan đến môi trường.",
+        description: "Tham gia một buổi hội thảo hoặc lớp học liên quan đến môi trường.",
         coins: 25,
         difficulty: "medium",
         total: 1,
@@ -274,8 +270,7 @@ module.exports = {
         public_id: nanoid(),
         creator_id: 1,
         title: "Tiết kiệm nước khi rửa bát",
-        description:
-          "Dùng chậu hoặc vòi tiết kiệm nước khi rửa bát trong một tuần.",
+        description: "Dùng chậu hoặc vòi tiết kiệm nước khi rửa bát trong một tuần.",
         coins: 10,
         difficulty: "easy",
         total: 7,
@@ -328,8 +323,7 @@ module.exports = {
         public_id: nanoid(),
         creator_id: 1,
         title: "Ủng hộ tổ chức môi trường",
-        description:
-          "Quyên góp hoặc hỗ trợ truyền thông cho một tổ chức bảo vệ môi trường.",
+        description: "Quyên góp hoặc hỗ trợ truyền thông cho một tổ chức bảo vệ môi trường.",
         coins: 35,
         difficulty: "medium",
         total: 1,

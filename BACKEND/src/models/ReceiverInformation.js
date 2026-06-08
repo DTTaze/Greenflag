@@ -70,7 +70,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "ReceiverInformation",
       tableName: "receiver_informations",
-    }
+    },
   );
 
   return ReceiverInformation;

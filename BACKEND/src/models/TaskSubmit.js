@@ -35,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
       description: {
         type: DataTypes.TEXT,
         allowNull: true,
-      },    
+      },
       status: {
         type: DataTypes.ENUM("pending", "approved", "rejected"),
         defaultValue: "pending",
@@ -50,7 +50,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "TaskSubmit",
       tableName: "task_submits",
-    }
+    },
   );
 
   return TaskSubmit;

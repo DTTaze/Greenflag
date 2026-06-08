@@ -8,7 +8,7 @@ const redis = {
   retryStrategy: (times) => {
     const delay = Math.min(times * 50, 2000);
     return delay;
-  }
+  },
 };
 
 const redisClient = new Redis(redis);

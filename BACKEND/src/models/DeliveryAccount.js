@@ -8,11 +8,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "user_id",
         onDelete: "CASCADE",
       });
-     DeliveryAccount.hasMany(models.DeliveryOrder, {
-       foreignKey: "delivery_account_id",
-       onDelete: "CASCADE",
-     });
-
+      DeliveryAccount.hasMany(models.DeliveryOrder, {
+        foreignKey: "delivery_account_id",
+        onDelete: "CASCADE",
+      });
     }
   }
 
@@ -58,7 +57,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "DeliveryAccount",
       tableName: "delivery_accounts",
-    }
+    },
   );
 
   return DeliveryAccount;

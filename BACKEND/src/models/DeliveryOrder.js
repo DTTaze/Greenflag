@@ -78,7 +78,7 @@ module.exports = (sequelize, DataTypes) => {
           "cancel", // Đơn huỷ
           "exception", // Hàng ngoại lệ
           "lost", // Hàng thất lạc
-          "damage" // Hàng hư hỏng
+          "damage", // Hàng hư hỏng
         ),
         allowNull: false,
         defaultValue: "ready_to_pick",
@@ -129,7 +129,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "DeliveryOrder",
       tableName: "delivery_orders",
-    }
+    },
   );
 
   return DeliveryOrder;

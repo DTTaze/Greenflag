@@ -9,6 +9,7 @@ const { redis } = require("../config/configRedis");
 const Redis = require("ioredis");
 const { generateCode } = require("../utils/generateCode");
 const { getCache, setCache, deleteCache } = require("../utils/cache");
+const { CACHE_KEYS } = require("../constants/cacheKeys");
 require("dotenv").config();
 
 const publisher = new Redis(redis);
@@ -16,25 +17,21 @@ const publisher = new Redis(redis);
 const worker = new Worker(
   "purchase",
   async (job) => {
-    const { receiver_information_id, user_id, item_id, quantity, name } =
-      job.data;
+    const { receiver_information_id, user_id, item_id, quantity, name } = job.data;
 
     if (!user_id || !item_id || !quantity || quantity <= 0) {
-      throw new Error(
-        "Invalid job data: missing or invalid user_id, item_id, or quantity"
-      );
+      throw new Error("Invalid job data: missing or invalid user_id, item_id, or quantity");
     }
 
     try {
       return await sequelize.transaction(async (t) => {
-        const cacheKeyItem = `item:${item_id}`;
+        const cacheKeyItem = CACHE_KEYS.COMMERCE.ITEM_BY_ID(item_id);
         let itemData = await getCache(cacheKeyItem);
 
         let item;
         if (itemData) {
           item = Item.build(itemData, { isNewRecord: false });
-          item.creator =
-            item.creator || (await item.getCreator({ transaction: t }));
+          item.creator = item.creator || (await item.getCreator({ transaction: t }));
         } else {
           item = await Item.findByPk(item_id, {
             include: [
@@ -55,7 +52,7 @@ const worker = new Worker(
           throw new Error("Item not available or insufficient stock");
         }
 
-        const cacheKeyUser = `user:${user_id}`;
+        const cacheKeyUser = CACHE_KEYS.IDENTITY.USER_BY_ID(user_id);
         let userData = await getCache(cacheKeyUser);
 
         let user;
@@ -88,7 +85,7 @@ const worker = new Worker(
 
         await user.coins.update(
           { amount: user.coins.amount - item.price * quantity },
-          { transaction: t }
+          { transaction: t },
         );
 
         const newStock = item.stock - quantity;
@@ -97,14 +94,14 @@ const worker = new Worker(
             stock: newStock,
             status: newStock === 0 ? "sold_out" : "available",
           },
-          { transaction: t }
+          { transaction: t },
         );
 
         await deleteCache(cacheKeyItem);
         await deleteCache(cacheKeyUser);
-        await deleteCache("items:all");
-        await deleteCache(`items:user:${item.creator.id}`);
-        await deleteCache(`item:public_id:${item.public_id}`);
+        await deleteCache(CACHE_KEYS.COMMERCE.ALL_ITEMS);
+        await deleteCache(CACHE_KEYS.COMMERCE.ITEMS_BY_USER_ID(item.creator.id));
+        await deleteCache(CACHE_KEYS.COMMERCE.ITEM_BY_PUBLIC_ID(item.public_id));
 
         await publisher.publish(
           "stock-update",
@@ -114,7 +111,7 @@ const worker = new Worker(
             name: item.name,
             price: item.price,
             status: item.status,
-          })
+          }),
         );
 
         let uniqueCode, exists;
@@ -146,22 +143,22 @@ const worker = new Worker(
             quantity,
             status: "pending",
           },
-          { transaction: t }
+          { transaction: t },
         );
 
         await setCache(
-          `transaction:id:${transaction.id}`,
+          CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transaction.id),
           transaction.toJSON(),
-          300
+          300,
         );
 
-        const buyerCacheKey = `buyer:transaction:id:${user.id}`;
+        const buyerCacheKey = CACHE_KEYS.COMMERCE.TRANSACTION_BUYER(user.id);
         await deleteCache(buyerCacheKey);
 
-        const sellerCacheKey = `seller:transaction:id:${item.creator.dataValues.id}`;
+        const sellerCacheKey = CACHE_KEYS.COMMERCE.TRANSACTION_SELLER(item.creator.dataValues.id);
         await deleteCache(sellerCacheKey);
 
-        await deleteCache(`coin:id:${user.coins.id}`);
+        await deleteCache(CACHE_KEYS.COMMERCE.COIN_BY_ID(user.coins.id));
 
         return transaction;
       });
@@ -170,7 +167,7 @@ const worker = new Worker(
       throw error;
     }
   },
-  { connection: redis }
+  { connection: redis },
 );
 
 worker.on("completed", (job) => {

@@ -1,25 +1,24 @@
 const express = require("express");
 const permissionController = require("../controllers/permissionController");
-const checkPermission = require("../middlewares/checkPermission");
 
 const router = express.Router();
 
 router.post(
   "/create",
   // checkPermission("post", "permission"),
-  permissionController.handleCreatePermission
+  permissionController.handleCreatePermission,
 );
 router.get("/", permissionController.handleGetAllPermissions);
 router.get("/:id", permissionController.handleGetPermission);
 router.put(
   "/:id",
   // checkPermission("put", "permission_id"),
-  permissionController.handleUpdatePermission
+  permissionController.handleUpdatePermission,
 );
 router.delete(
   "/:id",
   // checkPermission("delete", "permission_id"),
-  permissionController.handleDeletePermission
+  permissionController.handleDeletePermission,
 );
 
 module.exports = router;

@@ -12,7 +12,7 @@ const worker = new Worker(
     const apiRes = await getDeliveryOrderInfo(
       orderCode,
       deliveryAccountId.token,
-      deliveryAccountId.shop_id
+      deliveryAccountId.shop_id,
     );
     console.log("check api res", apiRes);
     if (apiRes.message != "Success") {
@@ -52,7 +52,7 @@ const worker = new Worker(
 
     return { updated: true, orderCode };
   },
-  { connection: redis }
+  { connection: redis },
 );
 
 worker.on("completed", (job) => {
@@ -60,7 +60,5 @@ worker.on("completed", (job) => {
 });
 
 worker.on("failed", (job, err) => {
-  console.error(
-    `❌ Failed to sync ${job.data.orderCode}: ${JSON.stringify(err.message)}`
-  );
+  console.error(`❌ Failed to sync ${job.data.orderCode}: ${JSON.stringify(err.message)}`);
 });

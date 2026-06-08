@@ -1,6 +1,6 @@
 const db = require("../models/index.js");
-const { redisClient } = require("../config/configRedis.js");
 const { getCache, setCache, deleteCache } = require("../utils/cache");
+const { CACHE_KEYS } = require("../constants/cacheKeys");
 const Transaction = db.Transaction;
 const ReceiverInformation = db.ReceiverInformation;
 const Item = db.Item;
@@ -8,17 +8,20 @@ const User = db.User;
 const { updateIncreaseCoin } = require("./coinService.js");
 const { getUserByID } = require("./userService.js");
 const { emitStockUpdate } = require("./socketService");
+const BadRequestError = require("../errors/BadRequestError");
+const NotFoundError = require("../errors/NotFoundError");
+const AppError = require("../errors/AppError");
 
-const cacheItemAll = "items:all";
-const cacheItemId = (id) => `item:${id}`;
-const cacheItemUserId = (id) => `items:user:${id}`;
+const cacheItemAll = CACHE_KEYS.COMMERCE.ALL_ITEMS;
+const cacheItemId = (id) => CACHE_KEYS.COMMERCE.ITEM_BY_ID(id);
+const cacheItemUserId = (id) => CACHE_KEYS.COMMERCE.ITEMS_BY_USER_ID(id);
 
 const createTransaction = async (transactionData) => {
   try {
     const { name, quantity, buyer_id, item_id, status } = transactionData;
 
     if (!name || !buyer_id || !item_id) {
-      throw new Error("Name, buyer_id, and item_id are required fields.");
+      throw new BadRequestError("Name, buyer_id, and item_id are required fields.");
     }
 
     const parsedQuantity = Number(quantity);
@@ -26,23 +29,22 @@ const createTransaction = async (transactionData) => {
     const parsedItemId = Number(item_id);
 
     if (isNaN(parsedBuyerId) || isNaN(parsedItemId)) {
-      throw new Error("buyer_id, and item_id must be valid numbers.");
+      throw new BadRequestError("buyer_id, and item_id must be valid numbers.");
     }
 
     // Nếu `quantity` không hợp lệ, mặc định là 1
-    const finalQuantity =
-      isNaN(parsedQuantity) || parsedQuantity <= 0 ? 1 : parsedQuantity;
+    const finalQuantity = isNaN(parsedQuantity) || parsedQuantity <= 0 ? 1 : parsedQuantity;
 
     // Nếu `status` không hợp lệ, mặc định là "pending"
     const finalStatus = status?.trim() ? status : "pending";
 
     const item = await Item.findOne({ where: { id: parsedItemId } });
     if (!item) {
-      throw new Error("Item not found.");
+      throw new NotFoundError("Item not found.");
     }
 
     if (!item.price || isNaN(item.price)) {
-      throw new Error("Invalid item price.");
+      throw new BadRequestError("Invalid item price.");
     }
 
     const total_price = item.price * finalQuantity;
@@ -57,50 +59,38 @@ const createTransaction = async (transactionData) => {
     });
 
     // Add transaction to Redis
-    const redisKey = `transaction:id:${transaction.id}`;
-    await redisClient.set(
-      redisKey,
-      JSON.stringify(transaction),
-      "EX",
-      3600 // Set expiration time to 1 hour
-    );
+    const redisKey = CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transaction.id);
+    await setCache(redisKey, transaction);
 
     return transaction;
   } catch (error) {
-    throw error;
+    if (error.statusCode) throw error;
+    throw new AppError("Failed to create transaction", 500);
   }
 };
 
 const getTransactionByBuyerId = async (buyer_id) => {
   try {
-    const listBuyerTransactioncacheId = await redisClient.get(
-      `buyer:transaction:id:${buyer_id}`
-    );
+    const buyerCacheKey = CACHE_KEYS.COMMERCE.TRANSACTION_BUYER(buyer_id);
+    const listBuyerTransactioncacheId = await getCache(buyerCacheKey);
     if (listBuyerTransactioncacheId) {
       console.log("listBuyerTransactioncacheId", listBuyerTransactioncacheId);
-      const listTransactionId = JSON.parse(listBuyerTransactioncacheId);
+      const listTransactionId = listBuyerTransactioncacheId;
       let result = [];
       for (const transactionId of listTransactionId) {
-        const transactioncache = await redisClient.get(
-          `transaction:id:${transactionId}`
-        );
-        if (transactioncache) {
-          const transactionData = JSON.parse(transactioncache);
-          result.push(transactionData);
+        const transactionCacheKey = CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transactionId);
+        const transactionCache = await getCache(transactionCacheKey);
+        if (transactionCache) {
+          result.push(transactionCache);
         } else {
           const transaction = await Transaction.findOne({
             where: { id: transactionId },
           });
           if (transaction) {
-            result.push(transaction);
-            await redisClient.set(
-              `transaction:id:${transaction.id}`,
-              JSON.stringify(transaction),
-              "EX",
-              3600
-            );
+            result.push(transaction.toJSON());
+            await setCache(transactionCacheKey, transaction.toJSON());
           } else {
-            throw new Error("Transaction not found.");
+            throw new NotFoundError("Transaction not found.");
           }
         }
       }
@@ -126,61 +116,44 @@ const getTransactionByBuyerId = async (buyer_id) => {
       ],
     });
     if (!transaction) {
-      throw new Error("Transaction not found.");
+      throw new NotFoundError("Transaction not found.");
     }
     const transactionIds = transaction.map((item) => item.id);
-    await redisClient.set(
-      `buyer:transaction:id:${buyer_id}`,
-      JSON.stringify(transactionIds),
-      "EX",
-      3600
-    );
+    await setCache(buyerCacheKey, transactionIds);
     for (const newTransaction of transaction) {
       const transactionData = newTransaction.toJSON();
-      await redisClient.set(
-        `transaction:id:${newTransaction.id}`,
-        JSON.stringify(transactionData),
-        "EX",
-        3600
-      );
+      await setCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(newTransaction.id), transactionData);
     }
 
     return transaction.map((t) => t.toJSON());
   } catch (error) {
-    throw error;
+    if (error.statusCode) throw error;
+    throw new AppError("Failed to retrieve buyer transactions", 500);
   }
 };
 
 const getTransactionBySellerId = async (seller_id) => {
   try {
-    const listSellerTransactionCacheId = await redisClient.get(
-      `seller:transaction:id:${seller_id}`
-    );
+    const sellerCacheKey = CACHE_KEYS.COMMERCE.TRANSACTION_SELLER(seller_id);
+    const listSellerTransactionCacheId = await getCache(sellerCacheKey);
     if (listSellerTransactionCacheId) {
       console.log("listSellerTransactionCacheId", listSellerTransactionCacheId);
-      const listTransactionId = JSON.parse(listSellerTransactionCacheId);
+      const listTransactionId = listSellerTransactionCacheId;
       let result = [];
       for (const transactionId of listTransactionId) {
-        const transactionCache = await redisClient.get(
-          `transaction:id:${transactionId}`
-        );
+        const transactionCacheKey = CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transactionId);
+        const transactionCache = await getCache(transactionCacheKey);
         if (transactionCache) {
-          const transactionData = JSON.parse(transactionCache);
-          result.push(transactionData);
+          result.push(transactionCache);
         } else {
           const transaction = await Transaction.findOne({
             where: { id: transactionId },
           });
           if (transaction) {
-            result.push(transaction);
-            await redisClient.set(
-              `transaction:id:${transaction.id}`,
-              JSON.stringify(transaction),
-              "EX",
-              3600
-            );
+            result.push(transaction.toJSON());
+            await setCache(transactionCacheKey, transaction.toJSON());
           } else {
-            throw new Error("Transaction not found.");
+            throw new NotFoundError("Transaction not found.");
           }
         }
       }
@@ -206,28 +179,19 @@ const getTransactionBySellerId = async (seller_id) => {
       ],
     });
     if (!transaction || transaction.length === 0) {
-      throw new Error("Transaction not found.");
+      throw new NotFoundError("Transaction not found.");
     }
     const transactionIds = transaction.map((item) => item.id);
-    await redisClient.set(
-      `seller:transaction:id:${seller_id}`,
-      JSON.stringify(transactionIds),
-      "EX",
-      3600
-    );
+    await setCache(sellerCacheKey, transactionIds);
     for (const newTransaction of transaction) {
       const transactionData = newTransaction.toJSON();
-      await redisClient.set(
-        `transaction:id:${newTransaction.id}`,
-        JSON.stringify(transactionData),
-        "EX",
-        3600
-      );
+      await setCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(newTransaction.id), transactionData);
     }
 
     return transaction.map((t) => t.toJSON());
   } catch (error) {
-    throw error;
+    if (error.statusCode) throw error;
+    throw new AppError("Failed to retrieve seller transactions", 500);
   }
 };
 
@@ -243,14 +207,15 @@ const getAllTransactions = async () => {
       ],
     });
   } catch (e) {
-    throw e;
+    if (e.statusCode) throw e;
+    throw new AppError("Failed to retrieve all transactions", 500);
   }
 };
 
 const getTransactionById = async (id) => {
   try {
     if (!id) {
-      throw new Error("Missing parameters");
+      throw new BadRequestError("Missing parameters");
     }
     return await Transaction.findByPk(id, {
       include: [
@@ -265,51 +230,49 @@ const getTransactionById = async (id) => {
       ],
     });
   } catch (e) {
-    throw e;
+    if (e.statusCode) throw e;
+    throw new AppError("Failed to retrieve transaction by ID", 500);
   }
 };
 
 const cancelTransactionById = async (id) => {
   if (typeof id !== "number" && typeof id !== "string") {
-    throw new Error("Invalid id type");
+    throw new BadRequestError("Invalid id type");
   }
   if (!id) {
-    throw new Error("Missing parameters");
+    throw new BadRequestError("Missing parameters");
   }
 
   const t = await Transaction.sequelize.transaction();
   try {
     const transaction = await Transaction.findByPk(id, { transaction: t });
     if (!transaction) {
-      throw new Error("Transaction not found");
+      throw new NotFoundError("Transaction not found");
     }
     if (transaction.status === "cancelled") {
-      throw new Error("Transaction is already cancelled");
+      throw new BadRequestError("Transaction is already cancelled");
     }
     if (transaction.status === "accepted") {
-      throw new Error("Cannot cancel accepted transaction");
+      throw new BadRequestError("Cannot cancel accepted transaction");
     }
-    if (
-      !transaction.item_snapshot ||
-      typeof transaction.item_snapshot.price !== "number"
-    ) {
-      throw new Error("Invalid transaction price");
+    if (!transaction.item_snapshot || typeof transaction.item_snapshot.price !== "number") {
+      throw new BadRequestError("Invalid transaction price");
     }
 
     transaction.status = "cancelled";
     await transaction.save({ transaction: t });
-    await deleteCache(`transaction:id:${id}`);
+    await deleteCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(id));
 
     const data = await getUserByID(transaction.buyer_id);
     if (!data || !data.coins.id) {
-      throw new Error("Invalid user or coin_id");
+      throw new BadRequestError("Invalid user or coin_id");
     }
     await updateIncreaseCoin(data.coins.id, transaction.item_snapshot.price, {
       transaction: t,
     });
     const item = await Item.findByPk(transaction.item_id, { transaction: t });
     if (!item) {
-      throw new Error("Item not found");
+      throw new NotFoundError("Item not found");
     }
 
     const originalStock = item.stock;
@@ -336,37 +299,42 @@ const cancelTransactionById = async (id) => {
     return transaction;
   } catch (e) {
     await t.rollback();
-    throw e;
+    if (e.statusCode) throw e;
+    throw new AppError("Failed to cancel transaction", 500);
   }
 };
 
 const deleteTransaction = async (transaction_id) => {
   try {
     if (!transaction_id) {
-      throw new Error("Missing parameters");
+      throw new BadRequestError("Missing parameters");
     }
-    const transaction = await Transaction.destroy({
+    const transaction = await Transaction.findByPk(transaction_id);
+    if (!transaction) {
+      throw new NotFoundError("Transaction not found.");
+    }
+    await Transaction.destroy({
       where: { id: transaction_id },
     });
-    if (!transaction) {
-      throw new Error("Transaction not found.");
-    }
-    const buyerCacheKey = `buyer:transaction:id:${transaction.buyer_id}`;
+    const buyerCacheKey = CACHE_KEYS.COMMERCE.TRANSACTION_BUYER(transaction.buyer_id);
     await deleteCache(buyerCacheKey);
 
-    const sellerCacheKey = `seller:transaction:id:${transaction.seller_id}`;
+    const sellerCacheKey = CACHE_KEYS.COMMERCE.TRANSACTION_SELLER(transaction.seller_id);
     await deleteCache(sellerCacheKey);
+
+    await deleteCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transaction_id));
 
     return "Transaction deleted successfully.";
   } catch (error) {
-    throw error;
+    if (error.statusCode) throw error;
+    throw new AppError("Failed to delete transaction", 500);
   }
 };
 
 const getAllTransactionsByStatus = async (status) => {
   try {
     if (!status) {
-      throw new Error("Missing parameters");
+      throw new BadRequestError("Missing parameters");
     }
 
     const transactions = await Transaction.findAll({
@@ -374,30 +342,28 @@ const getAllTransactionsByStatus = async (status) => {
     });
 
     if (!transactions || transactions.length === 0) {
-      throw new Error("Transaction not found with the specified status");
+      throw new NotFoundError("Transaction not found with the specified status");
     }
 
     return transactions;
   } catch (error) {
-    throw error;
+    if (error.statusCode) throw error;
+    throw new AppError("Failed to retrieve transactions by status", 500);
   }
 };
 
 const makeDecision = async (transaction_id, decision) => {
-  if (
-    typeof transaction_id !== "number" &&
-    typeof transaction_id !== "string"
-  ) {
-    throw new Error("Invalid transaction_id type");
+  if (typeof transaction_id !== "number" && typeof transaction_id !== "string") {
+    throw new BadRequestError("Invalid transaction_id type");
   }
   if (typeof decision !== "string") {
-    throw new Error("Invalid decision type");
+    throw new BadRequestError("Invalid decision type");
   }
   if (!transaction_id || !decision) {
-    throw new Error("Missing parameters");
+    throw new BadRequestError("Missing parameters");
   }
   if (!["accepted", "rejected", "pending"].includes(decision)) {
-    throw new Error("Wrong new status to make decision");
+    throw new BadRequestError("Wrong new status to make decision");
   }
 
   const t = await Transaction.sequelize.transaction();
@@ -406,25 +372,22 @@ const makeDecision = async (transaction_id, decision) => {
       transaction: t,
     });
     if (!transaction) {
-      throw new Error("Transaction not found");
+      throw new NotFoundError("Transaction not found");
     }
     if (transaction.status === decision) {
-      throw new Error("Transaction is already in this status");
+      throw new BadRequestError("Transaction is already in this status");
     }
     if (transaction.status === "accepted" && decision === "pending") {
-      throw new Error("Cannot revert accepted transaction to pending");
+      throw new BadRequestError("Cannot revert accepted transaction to pending");
     }
-    if (
-      !transaction.item_snapshot ||
-      typeof transaction.item_snapshot.price !== "number"
-    ) {
-      throw new Error("Invalid transaction price");
+    if (!transaction.item_snapshot || typeof transaction.item_snapshot.price !== "number") {
+      throw new BadRequestError("Invalid transaction price");
     }
 
     transaction.status = decision;
     await transaction.save({ transaction: t });
 
-    await deleteCache(`transaction:id:${transaction_id}`);
+    await deleteCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transaction_id));
     const item = await Item.findByPk(transaction.dataValues.item_id, {
       transaction: t,
     });
@@ -432,7 +395,7 @@ const makeDecision = async (transaction_id, decision) => {
     if (decision === "rejected") {
       const data = await getUserByID(transaction.buyer_id);
       if (!data || !data.coins.id) {
-        throw new Error("Invalid user or coin_id");
+        throw new BadRequestError("Invalid user or coin_id");
       }
       await updateIncreaseCoin(data.coins.id, transaction.item_snapshot.price, {
         transaction: t,
@@ -458,7 +421,8 @@ const makeDecision = async (transaction_id, decision) => {
     return transaction;
   } catch (error) {
     await t.rollback();
-    throw error;
+    if (error.statusCode) throw error;
+    throw new AppError("Failed to make decision on transaction", 500);
   }
 };
 

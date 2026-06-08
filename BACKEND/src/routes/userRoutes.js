@@ -17,18 +17,18 @@ router.delete("/public/:public_id", userController.handleDeleteUserByPublicId);
 router.get(
   "/:id",
   // checkPermission("get", "user_id"),
-  userController.handleGetUser
+  userController.handleGetUser,
 );
 
 router.put(
   "/:id",
   // checkPermission("put", "user_id"),
-  userController.handleUpdateUserById
+  userController.handleUpdateUserById,
 );
 router.delete(
   "/:id",
   // checkPermission("delete", "user_id"),
-  userController.handleDeleteUser
+  userController.handleDeleteUser,
 );
 
 router.post("/receiver/create", receiverController.handleCreateReceiverInfo);

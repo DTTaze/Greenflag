@@ -16,7 +16,8 @@ module.exports = {
         full_name: "Admin User",
         phone_number: "0907713012",
         rank_id: 1,
-        avatar_url: "https://res.cloudinary.com/dygavzq8m/image/upload/v1746718905/avatars/sjya6w8uj53rjsa0trla.jpg",
+        avatar_url:
+          "https://res.cloudinary.com/dygavzq8m/image/upload/v1746718905/avatars/sjya6w8uj53rjsa0trla.jpg",
         last_completed_task: Sequelize.literal("CURDATE() - INTERVAL 1 DAY"),
         created_at: new Date(),
         updated_at: new Date(),
@@ -32,7 +33,8 @@ module.exports = {
         full_name: "Normal User",
         phone_number: "0788529112",
         rank_id: 2,
-        avatar_url: "https://res.cloudinary.com/dygavzq8m/image/upload/v1746718918/avatars/dv79x5hzo3id9ssrnwlb.jpg",
+        avatar_url:
+          "https://res.cloudinary.com/dygavzq8m/image/upload/v1746718918/avatars/dv79x5hzo3id9ssrnwlb.jpg",
         last_completed_task: Sequelize.literal("CURDATE() - INTERVAL 1 DAY"),
         created_at: new Date(),
         updated_at: new Date(),
@@ -48,7 +50,8 @@ module.exports = {
         full_name: "Normal User",
         phone_number: "0346024177",
         rank_id: 3,
-        avatar_url: "https://res.cloudinary.com/dygavzq8m/image/upload/v1746729040/avatars/giqnk58t6g7aw7obwnwp.jpg",
+        avatar_url:
+          "https://res.cloudinary.com/dygavzq8m/image/upload/v1746729040/avatars/giqnk58t6g7aw7obwnwp.jpg",
         last_completed_task: Sequelize.literal("CURDATE() - INTERVAL 1 DAY"),
         created_at: new Date(),
         updated_at: new Date(),
@@ -64,7 +67,8 @@ module.exports = {
         full_name: "John Doe",
         phone_number: "0898693660",
         rank_id: 4,
-        avatar_url: "https://res.cloudinary.com/dygavzq8m/image/upload/v1746581627/avatars/p2olhpe0hjxcmldhggvn.jpg",
+        avatar_url:
+          "https://res.cloudinary.com/dygavzq8m/image/upload/v1746581627/avatars/p2olhpe0hjxcmldhggvn.jpg",
         last_completed_task: Sequelize.literal("CURDATE() - INTERVAL 1 DAY"),
         created_at: new Date(),
         updated_at: new Date(),
@@ -80,7 +84,8 @@ module.exports = {
         full_name: "Jane Smith",
         phone_number: "0708681209",
         rank_id: 5,
-        avatar_url: "https://res.cloudinary.com/dygavzq8m/image/upload/v1746855505/images/f3149daa-7858-4d16-a3c8-237cbd88e210_ijyls7.jpg",
+        avatar_url:
+          "https://res.cloudinary.com/dygavzq8m/image/upload/v1746855505/images/f3149daa-7858-4d16-a3c8-237cbd88e210_ijyls7.jpg",
         last_completed_task: Sequelize.literal("CURDATE() - INTERVAL 1 DAY"),
         created_at: new Date(),
         updated_at: new Date(),
@@ -96,7 +101,8 @@ module.exports = {
         full_name: "David Nguyen",
         phone_number: "7897849789",
         rank_id: 6,
-        avatar_url: "https://res.cloudinary.com/dygavzq8m/image/upload/v1746581627/avatars/p2olhpe0hjxcmldhggvn.jpg",
+        avatar_url:
+          "https://res.cloudinary.com/dygavzq8m/image/upload/v1746581627/avatars/p2olhpe0hjxcmldhggvn.jpg",
         last_completed_task: Sequelize.literal("CURDATE() - INTERVAL 1 DAY"),
         created_at: new Date(),
         updated_at: new Date(),
@@ -112,7 +118,8 @@ module.exports = {
         full_name: "Sophia Lee",
         phone_number: "1591529159",
         rank_id: 7,
-        avatar_url: "https://res.cloudinary.com/dygavzq8m/image/upload/v1746896378/avatars/abdaff8c-0ce5-4f75-86b7-420f85fc7cba_k9gmqd.jpg",
+        avatar_url:
+          "https://res.cloudinary.com/dygavzq8m/image/upload/v1746896378/avatars/abdaff8c-0ce5-4f75-86b7-420f85fc7cba_k9gmqd.jpg",
         last_completed_task: Sequelize.literal("CURDATE() - INTERVAL 1 DAY"),
         created_at: new Date(),
         updated_at: new Date(),
@@ -128,7 +135,8 @@ module.exports = {
         full_name: "Michael Brown",
         phone_number: "7537563753",
         rank_id: 8,
-        avatar_url: "https://res.cloudinary.com/dygavzq8m/image/upload/v1746896514/avatars/tien-ao-pi_uxzzud.jpg",
+        avatar_url:
+          "https://res.cloudinary.com/dygavzq8m/image/upload/v1746896514/avatars/tien-ao-pi_uxzzud.jpg",
         last_completed_task: Sequelize.literal("CURDATE() - INTERVAL 1 DAY"),
         created_at: new Date(),
         updated_at: new Date(),
@@ -144,7 +152,8 @@ module.exports = {
         full_name: "Emma Wilson",
         phone_number: "9519514951",
         rank_id: 9,
-        avatar_url: "https://res.cloudinary.com/dygavzq8m/image/upload/v1746896623/avatars/fe04a19a-9f3e-4ac3-85e2-7c4023053607_ir1d8s.jpg",
+        avatar_url:
+          "https://res.cloudinary.com/dygavzq8m/image/upload/v1746896623/avatars/fe04a19a-9f3e-4ac3-85e2-7c4023053607_ir1d8s.jpg",
         last_completed_task: Sequelize.literal("CURDATE() - INTERVAL 1 DAY"),
         created_at: new Date(),
         updated_at: new Date(),
@@ -160,7 +169,8 @@ module.exports = {
         full_name: "Oliver Jones",
         phone_number: "3573575357",
         rank_id: 10,
-        avatar_url: "https://res.cloudinary.com/dygavzq8m/image/upload/v1746896704/avatars/7872f704-f7f6-45d5-bfe2-b346bf02e950_xjdmww.jpg",
+        avatar_url:
+          "https://res.cloudinary.com/dygavzq8m/image/upload/v1746896704/avatars/7872f704-f7f6-45d5-bfe2-b346bf02e950_xjdmww.jpg",
         last_completed_task: Sequelize.literal("CURDATE() - INTERVAL 1 DAY"),
         created_at: new Date(),
         updated_at: new Date(),
@@ -176,7 +186,8 @@ module.exports = {
         full_name: "Lucas Martin",
         phone_number: "1237896456",
         rank_id: 11,
-        avatar_url: "https://res.cloudinary.com/dygavzq8m/image/upload/v1746896801/avatars/a27a86a1-9509-4a30-9540-81100775348b_uralsi.jpg",
+        avatar_url:
+          "https://res.cloudinary.com/dygavzq8m/image/upload/v1746896801/avatars/a27a86a1-9509-4a30-9540-81100775348b_uralsi.jpg",
         last_completed_task: Sequelize.literal("CURDATE() - INTERVAL 1 DAY"),
         created_at: new Date(),
         updated_at: new Date(),
@@ -192,7 +203,8 @@ module.exports = {
         full_name: "Mia Davis",
         phone_number: "4564123789",
         rank_id: 12,
-        avatar_url: "https://res.cloudinary.com/dygavzq8m/image/upload/v1746897177/avatars/3902e7a3e2e57df9dc5e254e41cde03d_xkfizh.jpg",
+        avatar_url:
+          "https://res.cloudinary.com/dygavzq8m/image/upload/v1746897177/avatars/3902e7a3e2e57df9dc5e254e41cde03d_xkfizh.jpg",
         last_completed_task: Sequelize.literal("CURDATE() - INTERVAL 1 DAY"),
         created_at: new Date(),
         updated_at: new Date(),

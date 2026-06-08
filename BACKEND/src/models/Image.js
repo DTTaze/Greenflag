@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       reference_type: {
-        type: DataTypes.ENUM("avatar", "taskSubmit", "item", "product","event"),
+        type: DataTypes.ENUM("avatar", "taskSubmit", "item", "product", "event"),
         allowNull: false,
       },
     },
@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "Image",
       tableName: "images",
-    }
+    },
   );
 
   return Image;

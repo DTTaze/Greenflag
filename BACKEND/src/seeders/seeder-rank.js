@@ -100,7 +100,6 @@ module.exports = {
         updated_at: new Date(),
       },
     ]);
-
   },
 
   down: async (queryInterface, Sequelize) => {

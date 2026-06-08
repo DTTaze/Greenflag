@@ -9,8 +9,7 @@ module.exports = {
         creator_id: 1,
         public_id: nanoid(),
         name: "Bình nước giữ nhiệt",
-        description:
-          "Bình nước giữ nhiệt giúp giảm thiểu sử dụng chai nhựa dùng một lần.",
+        description: "Bình nước giữ nhiệt giúp giảm thiểu sử dụng chai nhựa dùng một lần.",
         price: 150,
         status: "available",
         stock: 5,

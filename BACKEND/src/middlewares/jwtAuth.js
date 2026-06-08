@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const {getUserByID} = require("../services/userService");
+const { getUserByID } = require("../services/userService");
 const db = require("../models/index.js");
 const User = db.User;
 const Role = db.Role;

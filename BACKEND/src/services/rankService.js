@@ -1,11 +1,10 @@
 const db = require("../models/index");
 const Rank = db.Rank;
 const { getCache, setCache } = require("../utils/cache");
-
-const RANK_KEY_PREFIX = "rank:id:";
+const { CACHE_KEYS } = require("../constants/cacheKeys");
 
 const getRankById = async (rank_id) => {
-  const key = `${RANK_KEY_PREFIX}${rank_id}`;
+  const key = CACHE_KEYS.IDENTITY.RANK_BY_ID(rank_id);
 
   const cached = await getCache(key);
   if (cached) return cached;
@@ -25,7 +24,7 @@ const rearrangeRanks = async () => {
       const rank = ranks[i];
       await rank.update({ order: i + 1 });
 
-      const key = `${RANK_KEY_PREFIX}${rank.id}`;
+      const key = CACHE_KEYS.IDENTITY.RANK_BY_ID(rank.id);
       await setCache(key, rank);
     }
 

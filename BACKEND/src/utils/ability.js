@@ -1,5 +1,6 @@
 import { AbilityBuilder, PureAbility } from "@casl/ability";
-import { User, Role, Permission } from "../models";
+
+import { Permission, Role, User } from "../models";
 
 export const defineAbilitiesFor = async (user) => {
   const { can, build } = new AbilityBuilder(PureAbility);
@@ -29,12 +30,10 @@ export const defineAbilitiesFor = async (user) => {
       throw new Error("User not found or does not have any assigned roles");
     }
 
-    const roles = Array.isArray(userWithRoles.roles)
-      ? userWithRoles.roles
-      : [userWithRoles.roles];
+    const roles = Array.isArray(userWithRoles.roles) ? userWithRoles.roles : [userWithRoles.roles];
 
     const permissions = roles.flatMap((role) =>
-      Array.isArray(role.permissions) ? role.permissions : [role.permissions]
+      Array.isArray(role.permissions) ? role.permissions : [role.permissions],
     );
 
     if (permissions.length === 0) {

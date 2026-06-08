@@ -1,4 +1,4 @@
-const { sequelize } = require("../../models");
+const { sequelize } = require("../models");
 const roleSeeder = require("./seeder-role");
 const permissionSeeder = require("./seeder-permission");
 const rolePermissionSeeder = require("./seeder-role_permission");
@@ -22,30 +22,29 @@ const imageSeeder = require("./seeder-images");
 const receiverInfo = require("./seeder-receiver_info");
 
 const seeders = [
-  { model: require("../../models").Role, seeder: roleSeeder },
-  { model: require("../../models").Permission, seeder: permissionSeeder },
+  { model: require("../models").Role, seeder: roleSeeder },
+  { model: require("../models").Permission, seeder: permissionSeeder },
   {
-    model: require("../../models").RolePermission,
+    model: require("../models").RolePermission,
     seeder: rolePermissionSeeder,
   },
-  { model: require("../../models").Rank, seeder: rankSeeder },
-  { model: require("../../models").User, seeder: userSeeder },
-  { model: require("../../models").Coin, seeder: coinsSeeder },
+  { model: require("../models").Rank, seeder: rankSeeder },
+  { model: require("../models").User, seeder: userSeeder },
+  { model: require("../models").Coin, seeder: coinsSeeder },
   { seeder: userankSeeder },
-  { model: require("../../models").Item, seeder: itemSeeder },
-  { model: require("../../models").Product, seeder: productSeeder },
-  { model: require("../../models").ReceiverInformation, seeder: receiverInfo },
-  { model: require("../../models").Transaction, seeder: transactionSeeder },
-  { model: require("../../models").Task, seeder: taskSeeder },
-  { model: require("../../models").Type, seeder: typeSeeder },
-  { model: require("../../models").TaskType, seeder: taskTypeSeeder },
-  { model: require("../../models").TaskUser, seeder: taskUserSeeder },
-  { model: require("../../models").Event, seeder: eventSeeder },
-  { model: require("../../models").EventUser, seeder: eventuserSeeder },
-  { model: require("../../models").DeliveryAccount, seeder: deliveryAccount },
-  { model: require("../../models").DeliveryOrder, seeder: deliveryOrder },
-  { model: require("../../models").Image, seeder: imageSeeder },
-
+  { model: require("../models").Item, seeder: itemSeeder },
+  { model: require("../models").Product, seeder: productSeeder },
+  { model: require("../models").ReceiverInformation, seeder: receiverInfo },
+  { model: require("../models").Transaction, seeder: transactionSeeder },
+  { model: require("../models").Task, seeder: taskSeeder },
+  { model: require("../models").Type, seeder: typeSeeder },
+  { model: require("../models").TaskType, seeder: taskTypeSeeder },
+  { model: require("../models").TaskUser, seeder: taskUserSeeder },
+  { model: require("../models").Event, seeder: eventSeeder },
+  { model: require("../models").EventUser, seeder: eventuserSeeder },
+  { model: require("../models").DeliveryAccount, seeder: deliveryAccount },
+  { model: require("../models").DeliveryOrder, seeder: deliveryOrder },
+  { model: require("../models").Image, seeder: imageSeeder },
 ];
 
 (async () => {

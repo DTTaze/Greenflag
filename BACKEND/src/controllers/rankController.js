@@ -1,25 +1,17 @@
 const rankService = require("../services/rankService.js");
 
 const handleGetRankById = async (req, res) => {
-  try {
-    const rank_id = req.params.id;
-    const rank = await rankService.getRankById(rank_id);
-    return res.success("Get rank success", rank);
-  } catch (error) {
-    return res.error(500, "Failed to get rank", error.message);
-  }
+  const rank_id = req.params.id;
+  const rank = await rankService.getRankById(rank_id);
+  return res.success("Get rank success", rank);
 };
 
 const handleRearrangeRanks = async (req, res) => {
-  try {
-    const result = await rankService.rearrangeRanks();
-    res.success("Rearrange ranks success", result);
-  } catch (error) {
-    res.error(500, "Failed to rearrange ranks", error.message);
-  }
+  const result = await rankService.rearrangeRanks();
+  return res.success("Rearrange ranks success", result);
 };
 
 module.exports = {
   handleGetRankById,
-  handleRearrangeRanks
+  handleRearrangeRanks,
 };

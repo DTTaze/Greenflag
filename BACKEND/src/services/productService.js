@@ -7,6 +7,10 @@ const { uploadImages } = require("../services/imageService");
 const { sequelize } = require("../models");
 const cloudinary = require("cloudinary").v2;
 const { getCache, setCache, deleteCache } = require("../utils/cache");
+const { CACHE_KEYS } = require("../constants/cacheKeys");
+const BadRequestError = require("../errors/BadRequestError");
+const NotFoundError = require("../errors/NotFoundError");
+const AppError = require("../errors/AppError");
 
 const createProduct = async (productData, user_id, images) => {
   try {
@@ -17,17 +21,17 @@ const createProduct = async (productData, user_id, images) => {
       !productData.category ||
       !productData.product_status
     ) {
-      throw new Error(
-        "Missing required fields (name, price, stock, category, product_status)"
+      throw new BadRequestError(
+        "Missing required fields (name, price, stock, category, product_status)",
       );
     }
 
-    if (productData.price < 1) {
-      throw new Error("Price must be at least 1");
+    if (Number(productData.price) < 1) {
+      throw new BadRequestError("Price must be at least 1");
     }
 
-    if (productData.stock < 1) {
-      throw new Error("Stock must be at least 1");
+    if (Number(productData.stock) < 1) {
+      throw new BadRequestError("Stock must be at least 1");
     }
 
     const result = await sequelize.transaction(async (t) => {
@@ -43,17 +47,13 @@ const createProduct = async (productData, user_id, images) => {
           category: productData.category,
           product_status: productData.product_status,
         },
-        { transaction: t }
+        { transaction: t },
       );
 
       if (images && images.length > 0) {
-        const uploadedImages = await uploadImages(
-          images,
-          newProduct.id,
-          "product"
-        );
+        const uploadedImages = await uploadImages(images, newProduct.id, "product");
         if (uploadedImages.length === 0) {
-          throw new Error("Failed to upload images");
+          throw new AppError("Failed to upload images", 500);
         }
         productFormat = {
           ...newProduct.toJSON(),
@@ -66,17 +66,17 @@ const createProduct = async (productData, user_id, images) => {
         };
       }
 
-      await setCache(`product:id:${newProduct.id}`, productFormat, 60 * 60);
+      await setCache(CACHE_KEYS.COMMERCE.PRODUCT_BY_ID(newProduct.id), productFormat, 60 * 60);
       await setCache(
-        `product:public_id:${newProduct.public_id}`,
+        CACHE_KEYS.COMMERCE.PRODUCT_BY_PUBLIC_ID(newProduct.public_id),
         newProduct.id,
-        60 * 60
+        60 * 60,
       );
-      const cachedProductIds = await getCache("products:all");
+      const cachedProductIds = await getCache(CACHE_KEYS.COMMERCE.ALL_PRODUCTS);
       if (cachedProductIds) {
         const productIds = cachedProductIds || [];
         productIds.push(newProduct.id);
-        await setCache("products:all", productIds, 60 * 60);
+        await setCache(CACHE_KEYS.COMMERCE.ALL_PRODUCTS, productIds, 60 * 60);
       }
 
       return newProduct;
@@ -93,7 +93,7 @@ const getImagesFromListOfIds = async (imagesId) => {
   try {
     let images = [];
     for (const imageId of imagesId) {
-      const cacheImage = await getCache(`image:id:${imageId}`);
+      const cacheImage = await getCache(CACHE_KEYS.SYSTEM.IMAGE_BY_ID(imageId));
       if (cacheImage) {
         images.push(cacheImage);
         continue;
@@ -101,7 +101,7 @@ const getImagesFromListOfIds = async (imagesId) => {
       const image = await Image.findByPk(imageId);
       if (image) {
         images.push(image);
-        await setCache(`image:id:${imageId}`, image, 60 * 60);
+        await setCache(CACHE_KEYS.SYSTEM.IMAGE_BY_ID(imageId), image, 60 * 60);
       }
     }
     const imagesByProductId = images.reduce((acc, image) => {
@@ -119,7 +119,7 @@ const getImagesFromListOfIds = async (imagesId) => {
 
 const getSellerFromProduct = async (seller_id) => {
   try {
-    const cacheUser = await getCache(`user:id:${seller_id}`);
+    const cacheUser = await getCache(CACHE_KEYS.IDENTITY.USER_BY_ID(seller_id));
     if (cacheUser) {
       const user = cacheUser;
       const userFormat = {
@@ -143,7 +143,7 @@ const getProductFromListOfIds = async (productIds) => {
   try {
     let products = [];
     for (const productId of productIds) {
-      const cacheProduct = await getCache(`product:id:${productId}`);
+      const cacheProduct = await getCache(CACHE_KEYS.COMMERCE.PRODUCT_BY_ID(productId));
       if (cacheProduct) {
         const product = cacheProduct;
         let imagesOfProduct;
@@ -164,7 +164,7 @@ const getProductFromListOfIds = async (productIds) => {
 
       const product = await Product.findByPk(productId);
       if (!product) {
-        throw new Error("Product not found");
+        throw new NotFoundError("Product not found");
       }
 
       const seller = await getSellerFromProduct(product.seller_id);
@@ -194,7 +194,7 @@ const getProductFromListOfIds = async (productIds) => {
         ...product.toJSON(),
         imagesId: imagesOfProduct.map((img) => img.id),
       };
-      await setCache(`product:id:${productId}`, productFormatCache, 60 * 60);
+      await setCache(CACHE_KEYS.COMMERCE.PRODUCT_BY_ID(productId), productFormatCache, 60 * 60);
     }
 
     return products.filter((product) => product !== null);
@@ -206,7 +206,7 @@ const getProductFromListOfIds = async (productIds) => {
 
 const getAllProducts = async () => {
   try {
-    const cachedProductIds = await getCache("products:all");
+    const cachedProductIds = await getCache(CACHE_KEYS.COMMERCE.ALL_PRODUCTS);
     if (cachedProductIds) {
       const productIds = cachedProductIds;
 
@@ -215,7 +215,7 @@ const getAllProducts = async () => {
         const products = await getProductFromListOfIds(productIds);
         return products.filter((product) => product !== null);
       } else {
-        throw new Error("Product IDs in cache do not match database count");
+        throw new AppError("Product IDs in cache do not match database count", 500);
       }
     }
 
@@ -253,11 +253,11 @@ const getAllProducts = async () => {
       imagesId: images.map((img) => img.id),
     }));
 
-    await setCache("products:all", productIds, 60 * 60);
+    await setCache(CACHE_KEYS.COMMERCE.ALL_PRODUCTS, productIds, 60 * 60);
     await Promise.all(
       productFormat.map((product) =>
-        setCache(`product:id:${product.id}`, product, 60 * 60)
-      )
+        setCache(CACHE_KEYS.COMMERCE.PRODUCT_BY_ID(product.id), product, 60 * 60),
+      ),
     );
 
     return result;
@@ -269,9 +269,7 @@ const getAllProducts = async () => {
 const getAllAvailableProducts = async () => {
   try {
     const products = await getAllProducts();
-    const availableProducts = products.filter(
-      (product) => product.post_status === "public"
-    );
+    const availableProducts = products.filter((product) => product.post_status === "public");
     return availableProducts;
   } catch (e) {
     throw e;
@@ -280,14 +278,12 @@ const getAllAvailableProducts = async () => {
 
 const getProductByIdUser = async (user_id) => {
   try {
-    if (!user_id) throw new Error("User ID is required");
+    if (!user_id) throw new BadRequestError("User ID is required");
 
     const products = await getAllProducts();
-    const userProducts = products.filter(
-      (product) => product.seller.id === user_id
-    );
+    const userProducts = products.filter((product) => product.seller.id === user_id);
     if (userProducts.length === 0) {
-      throw new Error("No products found for this seller");
+      throw new NotFoundError("No products found for this seller");
     }
     return userProducts;
   } catch (e) {
@@ -297,10 +293,9 @@ const getProductByIdUser = async (user_id) => {
 
 const updateProduct = async (product, data, images) => {
   try {
-    let { name, price, description, post_status, category, product_status } =
-      data;
+    let { name, price, description, post_status, category, product_status } = data;
 
-    if (!product) throw new Error("Product not found");
+    if (!product) throw new NotFoundError("Product not found");
 
     if (name) product.name = name;
     if (price !== undefined) product.price = price;
@@ -327,16 +322,16 @@ const updateProduct = async (product, data, images) => {
         await image.destroy();
       }
 
-      const cacheProduct = await getCache(`product:id:${id}`);
+      const cacheProduct = await getCache(CACHE_KEYS.COMMERCE.PRODUCT_BY_ID(id));
       if (cacheProduct && cacheProduct.imagesId) {
         for (const imageId of cacheProduct.imagesId) {
-          await deleteCache(`image:id:${imageId}`);
+          await deleteCache(CACHE_KEYS.SYSTEM.IMAGE_BY_ID(imageId));
         }
       }
 
       uploadedImages = await uploadImages(images, id, "product");
       if (!uploadedImages || uploadedImages.length === 0) {
-        throw new Error("Failed to upload images");
+        throw new AppError("Failed to upload images", 500);
       }
     }
 
@@ -346,16 +341,16 @@ const updateProduct = async (product, data, images) => {
       ...product.toJSON(),
       imagesId: uploadedImages.map((img) => img.id),
     };
-    await setCache(`product:id:${id}`, productFormat, 60 * 60);
-    await setCache(`product:public_id:${product.public_id}`, id, 60 * 60);
+    await setCache(CACHE_KEYS.COMMERCE.PRODUCT_BY_ID(id), productFormat, 60 * 60);
+    await setCache(CACHE_KEYS.COMMERCE.PRODUCT_BY_PUBLIC_ID(product.public_id), id, 60 * 60);
 
-    const cachedProductIds = await getCache("products:all");
+    const cachedProductIds = await getCache(CACHE_KEYS.COMMERCE.ALL_PRODUCTS);
     if (cachedProductIds) {
       const productIds = cachedProductIds;
       const index = productIds.indexOf(id);
       if (index !== -1) {
         productIds[index] = id;
-        await setCache("products:all", productIds, 60 * 60);
+        await setCache(CACHE_KEYS.COMMERCE.ALL_PRODUCTS, productIds, 60 * 60);
       }
     }
 
@@ -380,10 +375,10 @@ const updateProductById = async (id, data, images) => {
 
 const deleteProduct = async (product_id) => {
   try {
-    if (!product_id) throw new Error("Product ID is required");
+    if (!product_id) throw new BadRequestError("Product ID is required");
 
     const product = await Product.findByPk(product_id);
-    if (!product) throw new Error("Product not found");
+    if (!product) throw new NotFoundError("Product not found");
 
     const images = await Image.findAll({
       where: {
@@ -400,21 +395,21 @@ const deleteProduct = async (product_id) => {
       await image.destroy();
     }
 
-    await deleteCache(`product:id:${product_id}`);
-    await deleteCache(`product:public_id:${product.public_id}`);
+    await deleteCache(CACHE_KEYS.COMMERCE.PRODUCT_BY_ID(product_id));
+    await deleteCache(CACHE_KEYS.COMMERCE.PRODUCT_BY_PUBLIC_ID(product.public_id));
     for (const image of images) {
-      await deleteCache(`image:id:${image.id}`);
+      await deleteCache(CACHE_KEYS.SYSTEM.IMAGE_BY_ID(image.id));
     }
 
     await product.destroy();
 
-    const cachedProductIds = await getCache("products:all");
+    const cachedProductIds = await getCache(CACHE_KEYS.COMMERCE.ALL_PRODUCTS);
     if (cachedProductIds) {
       const productIds = cachedProductIds;
       const index = productIds.indexOf(product_id);
       if (index !== -1) {
         productIds.splice(index, 1);
-        await setCache("products:all", productIds, 60 * 60);
+        await setCache(CACHE_KEYS.COMMERCE.ALL_PRODUCTS, productIds, 60 * 60);
       }
     }
 
@@ -427,7 +422,7 @@ const deleteProduct = async (product_id) => {
 const updateProductByPublicId = async (public_id, data, images) => {
   try {
     const product = await Product.findOne({ where: { public_id } });
-    if (!product) throw new Error("Product not found");
+    if (!product) throw new NotFoundError("Product not found");
     const result = await updateProduct(product, data, images);
     return result;
   } catch (e) {

@@ -2,7 +2,7 @@ import { X } from "lucide-react";
 import React from "react";
 import { toast } from "react-toastify";
 
-import { acceptTaskByIdApi } from "@/src/utils/api.js";
+import { acceptTaskByIdApi } from "@/src/utils/api";
 
 export default function TaskDetailModal({
   isOpen,

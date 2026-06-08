@@ -7,7 +7,7 @@ import {
   getAllWardsByDistrictApi,
   SetDefaultReceiverInfoByIdAPI,
   updateReceiverInfoByIdAPI,
-} from "@/src/utils/api.js";
+} from "@/src/utils/api";
 
 export default function useAddressForm({
   isOpen,

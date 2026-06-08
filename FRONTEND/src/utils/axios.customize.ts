@@ -1,4 +1,13 @@
-import axios from "axios";
+import axios, { AxiosResponse, InternalAxiosRequestConfig } from "axios";
+
+interface FailedQueueItem {
+  resolve: (value: any) => void;
+  reject: (reason: any) => void;
+}
+
+interface CustomRequestConfig extends InternalAxiosRequestConfig {
+  _retry?: boolean;
+}
 
 const instance = axios.create({
   baseURL: "",
@@ -6,9 +15,9 @@ const instance = axios.create({
 });
 
 let isRefreshing = false;
-let failedQueue = [];
+let failedQueue: FailedQueueItem[] = [];
 
-const processQueue = (error, token = null) => {
+const processQueue = (error: any, token: string | null = null) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
@@ -21,18 +30,24 @@ const processQueue = (error, token = null) => {
 };
 
 instance.interceptors.request.use(
-  (config) => {
+  (config: InternalAxiosRequestConfig) => {
     return config;
   },
   (error) => Promise.reject(error),
 );
 
 instance.interceptors.response.use(
-  (response) => response.data,
-  async (error) => {
-    const originalRequest = error.config;
+  (response: AxiosResponse) => {
+    return response.data;
+  },
+  async (error: any) => {
+    const originalRequest = error.config as CustomRequestConfig;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      error.response?.status === 401 &&
+      originalRequest &&
+      !originalRequest._retry
+    ) {
       if (isRefreshing) {
         return new Promise(function (resolve, reject) {
           failedQueue.push({ resolve, reject });

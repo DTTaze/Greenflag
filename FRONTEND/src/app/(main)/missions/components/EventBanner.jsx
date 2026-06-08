@@ -2,7 +2,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-import { getAllEventsApi, getEventSignedByUserIdApi } from "@/src/utils/api.js";
+import { getAllEventsApi, getEventSignedByUserIdApi } from "@/src/utils/api";
 
 import EventDetailsModal from "./EventDetailsModal";
 

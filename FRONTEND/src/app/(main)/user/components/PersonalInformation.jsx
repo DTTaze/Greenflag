@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import Button from "@/src/components/ui/button";
 import InputField from "@/src/components/ui/InputField.jsx";
 import { useAuthStore } from "@/src/store/auth/authStore";
-import { getQRApi, updateUserPublicApi } from "@/src/utils/api.js";
+import { getQRApi, updateUserPublicApi } from "@/src/utils/api";
 
 import PersonalInfomationSkeleton from "./PersonalInfomationSkeleton.jsx";
 

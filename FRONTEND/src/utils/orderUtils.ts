@@ -4,10 +4,12 @@
 
 /**
  * Returns the appropriate MUI color for a given order status
- * @param {string} status - The order status (Completed, In Progress, etc.)
- * @returns {string} MUI color value (success, warning, info, error, default)
+ * @param status - The order status (Completed, In Progress, etc.)
+ * @returns MUI color value (success, warning, info, error, default)
  */
-export const getStatusColor = (status) => {
+export const getStatusColor = (
+  status: string,
+): "success" | "warning" | "info" | "error" | "default" => {
   switch (status) {
     case "delivered":
       return "success";
@@ -22,27 +24,37 @@ export const getStatusColor = (status) => {
   }
 };
 
+export interface OrderItem {
+  type: string | number;
+  quantity: number;
+}
+
 /**
  * Calculate points based on waste types and quantities
- * @param {Array} items - Array of order items, each with type and quantity
- * @param {Object} typesPointsMap - Map of waste type IDs to their point values
- * @returns {number} Total calculated points
+ * @param items - Array of order items, each with type and quantity
+ * @param typesPointsMap - Map of waste type IDs to their point values
+ * @returns Total calculated points
  */
-export const calculateOrderPoints = (items, typesPointsMap) => {
+export const calculateOrderPoints = (
+  items: OrderItem[] | null | undefined,
+  typesPointsMap: Record<string | number, number> | null | undefined,
+): number => {
   if (!items || !Array.isArray(items) || !typesPointsMap) return 0;
 
-  return items.reduce((total, item) => {
-    const pointsPerUnit = typesPointsMap[item.type] || 5; // Default to 5 points if type not found
+  return items.reduce((total: number, item: OrderItem) => {
+    const pointsPerUnit = typesPointsMap[item.type] ?? 5; // Default to 5 points if type not found
     return total + pointsPerUnit * item.quantity;
   }, 0);
 };
 
 /**
  * Format date string to locale format with time
- * @param {string} dateString - Date string to format
- * @returns {string} Formatted date string
+ * @param dateString - Date string to format
+ * @returns Formatted date string
  */
-export const formatOrderDate = (dateString) => {
+export const formatOrderDate = (
+  dateString: string | null | undefined,
+): string => {
   if (!dateString) return "";
 
   try {
@@ -54,12 +66,24 @@ export const formatOrderDate = (dateString) => {
   }
 };
 
+export interface LocationHistoryItem {
+  location: string;
+}
+
+export interface OrderWithLocation {
+  locationHistory?: LocationHistoryItem[];
+  currentLocation?: string;
+  address?: string;
+}
+
 /**
  * Get the current display location for an order
- * @param {Object} order - Order object
- * @returns {string} Current location text
+ * @param order - Order object
+ * @returns Current location text
  */
-export const getCurrentLocation = (order) => {
+export const getCurrentLocation = (
+  order: OrderWithLocation | null | undefined,
+): string => {
   if (!order) return "Location unavailable";
 
   if (order.locationHistory && order.locationHistory.length > 0) {

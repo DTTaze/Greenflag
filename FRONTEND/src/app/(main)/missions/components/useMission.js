@@ -7,7 +7,7 @@ import {
   getUserApi,
   increaseProgressCountApi,
   receiveCoinApi,
-} from "@/src/utils/api.js";
+} from "@/src/utils/api";
 
 import { fetchTasksHelper, filterTasksByDifficulty } from "./missionHelpers.js";
 

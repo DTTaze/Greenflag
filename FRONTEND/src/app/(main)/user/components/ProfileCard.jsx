@@ -21,7 +21,7 @@ import {
   getUserAvatarByIdApi,
   updateUserAvatarApi,
   uploadUserAvatarApi,
-} from "@/src/utils/api.js";
+} from "@/src/utils/api";
 
 function MenuItem({ text, path, hasSubmenu, isOpen, onClick, children }) {
   return (

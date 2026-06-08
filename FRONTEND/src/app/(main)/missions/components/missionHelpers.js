@@ -1,4 +1,4 @@
-import { getAllTasksByTypeNameApi, getTaskByIdApi } from "@/src/utils/api.js";
+import { getAllTasksByTypeNameApi, getTaskByIdApi } from "@/src/utils/api";
 
 // Helper function to fetch tasks and map with user tasks progress
 export const fetchTasksHelper = async (

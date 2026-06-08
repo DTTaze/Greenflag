@@ -1,6 +1,6 @@
 import axios from "../axios.customize";
 
-export const uploadUserAvatarApi = (user_id, file) => {
+export const uploadUserAvatarApi = (user_id: string | number, file: File) => {
   const formData = new FormData();
   formData.append("avatar", file);
 
@@ -11,7 +11,7 @@ export const uploadUserAvatarApi = (user_id, file) => {
   });
 };
 
-export const getUserAvatarByIdApi = (user_id) => {
+export const getUserAvatarByIdApi = (user_id: string | number) => {
   return axios.get(`api/avatars/${user_id}`);
 };
 
@@ -19,7 +19,7 @@ export const getAllUserAvatarsApi = () => {
   return axios.get("api/avatars/");
 };
 
-export const updateUserAvatarApi = (user_id, file) => {
+export const updateUserAvatarApi = (user_id: string | number, file: File) => {
   const formData = new FormData();
   formData.append("avatar", file);
 
@@ -30,6 +30,6 @@ export const updateUserAvatarApi = (user_id, file) => {
   });
 };
 
-export const deleteUserAvatarApi = (user_id) => {
+export const deleteUserAvatarApi = (user_id: string | number) => {
   return axios.delete(`api/avatars/${user_id}`);
 };

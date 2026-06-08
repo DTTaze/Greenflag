@@ -6,7 +6,7 @@ import {
   deleteReceiverInfoByIdAPI,
   getReceiverInfoByUserIDAPI,
   SetDefaultReceiverInfoByIdAPI,
-} from "@/src/utils/api.js";
+} from "@/src/utils/api";
 
 import AddressFormDialog from "./AddressFormDialog";
 

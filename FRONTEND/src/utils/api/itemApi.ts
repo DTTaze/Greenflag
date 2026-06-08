@@ -4,19 +4,19 @@ export const getAllItemsApi = () => {
   return axios.get("api/items");
 };
 
-export const deleteItemApi = (id) => {
+export const deleteItemApi = (id: string | number) => {
   return axios.delete(`api/items/${id}`);
 };
 
-export const createItemApi = (data) => {
+export const createItemApi = (data: any) => {
   return axios.post("api/items/upload", data);
 };
 
-export const updateItemApi = (id, data) => {
+export const updateItemApi = (id: string | number, data: any) => {
   return axios.put(`api/items/${id}`, data);
 };
 
-export const createProductApi = (formData) => {
+export const createProductApi = (formData: FormData) => {
   return axios.post("api/products/upload", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
@@ -32,11 +32,11 @@ export const getAllProductsApi = () => {
   return axios.get("api/products");
 };
 
-export const getProductByIdUser = (id) => {
+export const getProductByIdUser = (id: string | number) => {
   return axios.get(`api/products/users/${id}`);
 };
 
-export const updateProductApi = (id, formData) => {
+export const updateProductApi = (id: string | number, formData: FormData) => {
   return axios.put(`api/products/${id}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
@@ -44,11 +44,14 @@ export const updateProductApi = (id, formData) => {
   });
 };
 
-export const deleteProductApi = (id) => {
+export const deleteProductApi = (id: string | number) => {
   return axios.delete(`api/products/${id}`);
 };
 
-export const upLoadItemApi = (formItemData, images) => {
+export const upLoadItemApi = (
+  formItemData: Record<string, any>,
+  images?: File[],
+) => {
   const formData = new FormData();
 
   Object.keys(formItemData).forEach((key) => {
@@ -68,11 +71,15 @@ export const upLoadItemApi = (formItemData, images) => {
   });
 };
 
-export const getItemByIdUserApi = (id) => {
+export const getItemByIdUserApi = (id: string | number) => {
   return axios.get(`api/items/users/${id}`);
 };
 
-export const updateItemOfCustomerApi = (id, formItemData, images) => {
+export const updateItemOfCustomerApi = (
+  id: string | number,
+  formItemData: Record<string, any>,
+  images?: File[],
+) => {
   const formData = new FormData();
 
   Object.keys(formItemData).forEach((key) => {
@@ -92,6 +99,6 @@ export const updateItemOfCustomerApi = (id, formItemData, images) => {
   });
 };
 
-export const deleteItemOfCustomerApi = (id) => {
+export const deleteItemOfCustomerApi = (id: string | number) => {
   return axios.delete(`api/items/${id}`);
 };

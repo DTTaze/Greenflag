@@ -1,6 +1,6 @@
 "use client";
 
-import ItemsManagement from "@/src/components/admin/ItemsManagement.jsx";
+import ItemsManagement from "./components/ItemsManagement.jsx";
 
 export default function Page() {
   return <ItemsManagement />;

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useContext } from "react";
-import UserItemsTab from "@/src/components/features/exchangemarket/UserItemsTab";
+import UserItemsTab from "../components/UserItemsTab";
 import { MarketplaceContext } from "../layout";
 
 export default function Page() {

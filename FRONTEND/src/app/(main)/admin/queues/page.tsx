@@ -1,6 +1,6 @@
 "use client";
 
-import AdminQueue from "@/src/pages/AdminQueue.jsx";
+import AdminQueue from "./components/AdminQueue.jsx";
 
 export default function Page() {
   return <AdminQueue />;

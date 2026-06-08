@@ -1,6 +1,6 @@
 "use client";
 
-import CustomerItems from "@/src/components/customer/CustomerItems/index.jsx";
+import CustomerItems from "./components/CustomerItems.jsx";
 
 export default function Page() {
   return <CustomerItems />;

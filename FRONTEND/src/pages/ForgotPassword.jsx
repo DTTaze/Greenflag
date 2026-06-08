@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useNotification } from "../components/ui/NotificationProvider";
 import { forgotPasswordApi, resetPasswordApi } from "../utils/api";
 import InputField from "../components/ui/InputField";
-import Button from "../components/ui/Button";
+import Button from "../components/ui/button";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();

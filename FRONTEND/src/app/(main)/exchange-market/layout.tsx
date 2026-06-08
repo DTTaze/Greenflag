@@ -19,10 +19,10 @@ import {
   deleteProductApi,
 } from "@/src/utils/api";
 import { AuthContext } from "@/src/contexts/auth.context";
-import ItemCatalogSkeleton from "@/src/components/features/exchangemarket/ItemCatalogSkeleton";
-import CatalogHeader from "@/src/components/features/exchangemarket/CatalogHeader";
-import MarketViewNavigation from "@/src/components/features/exchangemarket/MarketViewNavigation";
-import PurchaseModal from "@/src/components/features/exchangemarket/PurchaseModal";
+import ItemCatalogSkeleton from "./components/ItemCatalogSkeleton";
+import CatalogHeader from "./components/CatalogHeader";
+import MarketViewNavigation from "./components/MarketViewNavigation";
+import PurchaseModal from "./components/PurchaseModal";
 import {
   Filter,
   CheckCircle,

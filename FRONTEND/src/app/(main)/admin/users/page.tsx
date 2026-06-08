@@ -1,6 +1,6 @@
 "use client";
 
-import UsersManagement from "@/src/components/admin/UsersManagement.jsx";
+import UsersManagement from "./components/UsersManagement.jsx";
 
 export default function Page() {
   return <UsersManagement />;

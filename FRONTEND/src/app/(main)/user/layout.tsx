@@ -3,8 +3,8 @@
 import React, { useEffect, useContext, useState } from "react";
 import { AuthContext } from "@/src/contexts/auth.context";
 import { Outlet } from "react-router-dom";
-import ProfileCard from "@/src/components/features/user/ProfileCard.jsx";
-import ProfileCardSkeleton from "@/src/components/features/user/ProfileCardSkeleton.jsx";
+import ProfileCard from "./components/ProfileCard.jsx";
+import ProfileCardSkeleton from "./components/ProfileCardSkeleton.jsx";
 import ProtectedRoute from "@/src/components/common/ProtectedRoute.jsx";
 
 export default function UserLayout({ children }: { children: React.ReactNode }) {

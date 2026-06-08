@@ -6,7 +6,7 @@ import { Eye, EyeOff } from "lucide-react";
 import InputField from "../components/ui/InputField";
 import SelectField from "../components/ui/SelectField";
 import SocialLoginIcons from "../components/ui/SocialLoginIcons";
-import SubmitButton from "../components/ui/Button";
+import SubmitButton from "../components/ui/button";
 
 const initialFormData = {
   full_name: "",

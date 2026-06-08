@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useContext } from "react";
-import RedeemTab from "@/src/components/features/exchangemarket/RedeemTab";
+import RedeemTab from "../components/RedeemTab";
 import { MarketplaceContext } from "../layout";
 
 export default function Page() {

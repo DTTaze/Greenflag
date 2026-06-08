@@ -1,6 +1,6 @@
 "use client";
 
-import MissionsManagement from "@/src/components/admin/MissionsManagement.jsx";
+import MissionsManagement from "./components/MissionsManagement.jsx";
 
 export default function Page() {
   return <MissionsManagement />;

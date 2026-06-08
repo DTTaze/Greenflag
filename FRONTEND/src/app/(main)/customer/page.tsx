@@ -1,6 +1,6 @@
 "use client";
 
-import CustomerDashboard from "@/src/components/customer/CustomerDashboard.jsx";
+import CustomerDashboard from "./components/CustomerDashboard.jsx";
 
 export default function Page() {
   return <CustomerDashboard />;

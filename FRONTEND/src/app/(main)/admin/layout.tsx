@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import "@/src/styles/pages/admin.css";
-import TemporaryDrawer from "@/src/components/admin/SidebarAdmin";
+import TemporaryDrawer from "./components/SidebarAdmin";
 import { Outlet } from "react-router-dom";
 import { getUserApi } from "@/src/utils/api";
 import ProtectedRoute from "@/src/components/common/ProtectedRoute";

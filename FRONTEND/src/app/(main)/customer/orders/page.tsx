@@ -1,6 +1,6 @@
 "use client";
 
-import CustomerOrders from "@/src/components/customer/CustomerOrders.jsx";
+import CustomerOrders from "./components/CustomerOrders.jsx";
 
 export default function Page() {
   return <CustomerOrders />;

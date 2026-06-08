@@ -1,6 +1,6 @@
 "use client";
 
-import CustomerQRScanner from "@/src/components/customer/CustomerQRScanner/CustomerQRScanner.jsx";
+import CustomerQRScanner from "./components/CustomerQRScanner.jsx";
 
 export default function Page() {
   return <CustomerQRScanner />;

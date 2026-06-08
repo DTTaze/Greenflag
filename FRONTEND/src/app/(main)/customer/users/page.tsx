@@ -1,6 +1,6 @@
 "use client";
 
-import CustomerUsers from "@/src/components/customer/CustomerUsers/CustomerUsers.jsx";
+import CustomerUsers from "./components/CustomerUsers.jsx";
 
 export default function Page() {
   return <CustomerUsers />;

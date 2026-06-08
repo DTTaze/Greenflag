@@ -1,6 +1,6 @@
 "use client";
 
-import Address from "@/src/components/features/user/Address.jsx";
+import Address from "./components/Address.jsx";
 
 export default function Page() {
   return <Address />;

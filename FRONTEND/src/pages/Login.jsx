@@ -4,7 +4,7 @@ import { useNotification } from "../components/ui/NotificationProvider";
 import { AuthContext } from "../contexts/auth.context";
 import { loginUserApi } from "../utils/api";
 import InputField from "../components/ui/InputField";
-import Button from "../components/ui/Button";
+import Button from "../components/ui/button";
 import SocialLoginIcons from "../components/ui/SocialLoginIcons";
 import { Eye, EyeOff } from "lucide-react";
 

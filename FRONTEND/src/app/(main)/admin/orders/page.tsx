@@ -1,6 +1,6 @@
 "use client";
 
-import OrdersManagement from "@/src/components/admin/OrdersManagement.jsx";
+import OrdersManagement from "./components/OrdersManagement.jsx";
 
 export default function Page() {
   return <OrdersManagement />;

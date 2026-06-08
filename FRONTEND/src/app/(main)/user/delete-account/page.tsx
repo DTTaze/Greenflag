@@ -1,6 +1,6 @@
 "use client";
 
-import DeleteAccount from "@/src/components/features/user/DeleteAccount.jsx";
+import DeleteAccount from "./components/DeleteAccount.jsx";
 
 export default function Page() {
   return <DeleteAccount />;

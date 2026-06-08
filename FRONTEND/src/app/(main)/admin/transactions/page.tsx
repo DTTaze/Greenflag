@@ -1,6 +1,6 @@
 "use client";
 
-import TransactionsManagement from "@/src/components/admin/TransactionsManagement.jsx";
+import TransactionsManagement from "./components/TransactionsManagement.jsx";
 
 export default function Page() {
   return <TransactionsManagement />;

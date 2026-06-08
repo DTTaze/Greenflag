@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { Box } from "@mui/material";
 import { Outlet } from "react-router-dom";
-import CustomerDrawer from "@/src/components/customer/layout/CustomerDrawer";
-import CustomerAppBar from "@/src/components/customer/layout/CustomerAppBar";
+import CustomerDrawer from "./components/layout/CustomerDrawer";
+import CustomerAppBar from "./components/layout/CustomerAppBar";
 import "@/src/styles/pages/customer.css";
 import { getUserApi } from "@/src/utils/api";
 import ProtectedRoute from "@/src/components/common/ProtectedRoute";

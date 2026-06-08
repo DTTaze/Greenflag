@@ -1,6 +1,6 @@
 "use client";
 
-import MissionCompleted from "@/src/components/features/user/MissionCompleted.jsx";
+import MissionCompleted from "./components/MissionCompleted.jsx";
 
 export default function Page() {
   return <MissionCompleted />;

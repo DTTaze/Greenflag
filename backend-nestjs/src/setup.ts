@@ -1,3 +1,6 @@
+import * as cookieParser from 'cookie-parser';
+import { json, urlencoded } from 'express';
+
 import {
   INestApplication,
   ValidationPipe,
@@ -17,6 +20,13 @@ import { HttpResponseInterceptor } from '@shared/interceptors/http-response.inte
 
 export function setup(app: INestApplication) {
   const configService = app.get(ConfigService);
+
+  // Increase body size limits for uploads/ffmpeg conversions
+  app.use(json({ limit: '500mb' }));
+  app.use(urlencoded({ limit: '500mb', extended: true }));
+
+  // Cookie parser for state-less cookie JWT auth
+  app.use(cookieParser());
 
   // Enable graceful shutdown
   app.enableShutdownHooks();

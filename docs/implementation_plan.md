@@ -45,16 +45,16 @@ We will implement/modify the following additions to the boilerplate:
 ## Phased Execution Roadmap
 
 ### Phase 1: Boilerplate Alignment & Shared Setup
-- [ ] Verify `yarn install` and `yarn build` on the boilerplate completes successfully.
-- [ ] Modify `tsconfig.json` to configure path aliases matching the project:
+- [x] Verify `yarn install` and `yarn build` on the boilerplate completes successfully.
+- [x] Modify `tsconfig.json` to configure path aliases matching the project:
   - `@configs/*` -> `src/configs/*`
   - `@modules/*` -> `src/modules/*`
   - `@shared/*` -> `src/shared/*`
-- [ ] Add `.env` file containing database connections and external credentials.
-- [ ] Update `configs/database.config.ts` to map `database: process.env.DB_NAME`.
-- [ ] Create `shared/enums.ts` containing the required application enums (`ROLE`, `ITEM_STATUS`, `PRODUCT_CATEGORY`, etc.).
-- [ ] Add `shared/guards/auth.guard.ts` and `shared/guards/roles.guard.ts`.
-- [ ] Verify basic health check `/api/v1/health` compiles and runs.
+- [x] Add `.env` file containing database connections and external credentials.
+- [x] Update `configs/database.config.ts` to map `database: process.env.DB_NAME`.
+- [x] Create `shared/enums.ts` containing the required application enums (`ROLE`, `ITEM_STATUS`, `PRODUCT_CATEGORY`, etc.).
+- [x] Add `shared/guards/auth.guard.ts` and `shared/guards/roles.guard.ts`.
+- [x] Verify basic health check `/api/v1/health` compiles and runs.
 
 ### Phase 2: Identity & Access Context (`auth`, `user`, `role`, `permission`)
 - [ ] Define TypeORM entities: `User`, `Role`, `Permission`, `Rank`, `Coin`.

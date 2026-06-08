@@ -1,3 +1,13 @@
+import {
+  CONFIG_KEY,
+  ENTITY_STATUS,
+  HEADER_KEY,
+  METADATA_KEY,
+  PARTNER_AUTH_TYPE,
+  PARTNER_DIRECTION,
+  PARTNER_TYPE,
+} from './enums';
+
 export const INJECTION_TOKEN = {
   AUDIT_SERVICE: Symbol.for('AUDIT_SERVICE'),
   HTTP_SERVICE: Symbol.for('HTTP_SERVICE'),
@@ -22,10 +32,15 @@ export const APP_ACTION = {
   SEND_TO_PARTNER: 'SEND_TO_PARTNER'.toLowerCase(),
 };
 
-export enum CONFIG_KEY {
-  APP = 'app',
-  DATABASE = 'database',
-}
+export {
+  CONFIG_KEY,
+  ENTITY_STATUS,
+  HEADER_KEY,
+  METADATA_KEY,
+  PARTNER_AUTH_TYPE,
+  PARTNER_DIRECTION,
+  PARTNER_TYPE,
+};
 
 export const ENV_KEY = {
   PORT: CONFIG_KEY.APP + '.port',
@@ -52,41 +67,4 @@ export const ENV_KEY = {
   AUDIT_WEBHOOK_URL: CONFIG_KEY.APP + '.auditWebhookUrl',
 };
 
-export enum METADATA_KEY {
-  MAX_CONCURRENCY_CALL = 'max_concurrency_call',
-  RATE_LIMITING = 'rate_limiting',
-}
-
 export const DEFAULT_MAX_CONCURRENT_CALL = 1;
-
-export enum HEADER_KEY {
-  CAPTCHA_TOKEN = 'X-Captcha-Token',
-  LOG_ID = 'X-Log-ID',
-  SESSION_TOKEN = 'X-Session-Token',
-  ACCESS_KEY_ID = 'X-Access-Key-ID',
-  ACCESS_KEY_SECRET = 'X-Access-Key-Secret',
-  PARTNER_ACCESS_SECRET = 'X-Partner-Access-Secret',
-}
-
-export enum ENTITY_STATUS {
-  ACTIVE = 'active',
-  SUSPENDED = 'suspended',
-  INACTIVE = 'inactive',
-  DELETED = 'deleted',
-}
-
-export enum PARTNER_DIRECTION {
-  INBOUND = 'inbound',
-  OUTBOUND = 'outbound',
-}
-
-export enum PARTNER_TYPE {
-  INTERNAL = 'internal',
-  EXTERNAL = 'external',
-}
-
-export enum PARTNER_AUTH_TYPE {
-  ID_AND_SECRET = 'idAndSecret',
-  MASTER_TOKEN = 'masterToken',
-  API_KEY = 'apiKey',
-}

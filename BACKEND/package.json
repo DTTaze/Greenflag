@@ -4,7 +4,9 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --runInBand",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --runInBand --coverage",
     "start": "nodemon --exec ./node_modules/.bin/babel-node src/server.js",
     "migrate": "docker compose exec backend npx sequelize-cli db:migrate",
     "seed": "node src/seeders/index.js",
@@ -15,8 +17,7 @@
     "db": "docker exec mysql_container sh -c \"mysqldump -h localhost -u root --no-data techsolve25\" > ./mysql_schema.sql",
     "rsr": "docker exec -it redis_container redis-cli FLUSHALL",
     "lint": "eslint \"src/**/*.js\" --fix",
-    "format": "prettier --write \"src/**/*.js\"",
-    "prepare": "husky install"
+    "format": "prettier --write \"src/**/*.js\""
   },
   "repository": {
     "type": "git",
@@ -63,6 +64,8 @@
     "nodemon": "3.1.7",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+    "pg": "^8.21.0",
+    "pg-hstore": "^2.3.4",
     "qrcode": "^1.5.4",
     "sequelize": "^6.37.8",
     "sequelize-cli": "6.6.2",
@@ -73,6 +76,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/jsonwebtoken": "^9.0.9",
+    "babel-jest": "^30.4.1",
     "babel-plugin-module-resolver": "^5.0.3",
     "eslint": "^10.4.1",
     "eslint-config-prettier": "^10.1.8",
@@ -80,8 +84,12 @@
     "eslint-plugin-simple-import-sort": "^13.0.0",
     "eslint-plugin-unused-imports": "^4.4.1",
     "husky": "^9.1.7",
+    "ioredis-mock": "^8.13.1",
+    "jest": "^30.4.2",
     "lint-staged": "^17.0.7",
-    "prettier": "^3.8.3"
+    "nock": "^14.0.15",
+    "prettier": "^3.8.3",
+    "supertest": "^7.2.2"
   },
   "lint-staged": {
     "src/**/*.js": [

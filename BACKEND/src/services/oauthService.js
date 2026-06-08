@@ -11,10 +11,6 @@ const NotFoundError = require("../errors/NotFoundError.js");
 const BadRequestError = require("../errors/BadRequestError.js");
 
 const googleAuthCallback = async (user) => {
-  let today = new Date();
-  today.setHours(0, 0, 0, 0);
-  let todayStr = today.toISOString().split("T")[0];
-
   const userWithRoles = await User.findOne({
     where: { id: user.id },
     include: [

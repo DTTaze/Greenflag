@@ -25,15 +25,15 @@
 
 After scanning **all 19 controllers, 24 services, 8 middlewares, 17 route files, 2 workers, 1 cron job, 2 queues, 3 utils, and 7 config files**, the following systemic issues were identified:
 
-| Category | Issues Found | Severity |
-|---|---|---|
-| Missing Repository Layer (Services = DB + Logic) | **24 service files** | 🔴 High |
-| Hard-coded magic strings/numbers | **60+ instances** across 15+ files | 🔴 High |
-| Duplicated code patterns (DRY) | **8 major patterns** repeated across files | 🟡 Medium |
-| No request validation / DTO layer | **All 19 controllers** accept raw `req.body` | 🔴 High |
-| Scattered error handling, no custom errors | **Every controller** has identical try/catch | 🟡 Medium |
+| Category                                         | Issues Found                                     | Severity  |
+| ------------------------------------------------ | ------------------------------------------------ | --------- |
+| Missing Repository Layer (Services = DB + Logic) | **24 service files**                             | 🔴 High   |
+| Hard-coded magic strings/numbers                 | **60+ instances** across 15+ files               | 🔴 High   |
+| Duplicated code patterns (DRY)                   | **8 major patterns** repeated across files       | 🟡 Medium |
+| No request validation / DTO layer                | **All 19 controllers** accept raw `req.body`     | 🔴 High   |
+| Scattered error handling, no custom errors       | **Every controller** has identical try/catch     | 🟡 Medium |
 | Inconsistent response format in some controllers | **3 controllers** bypass `res.success/res.error` | 🟡 Medium |
-| Background jobs have no centralized config | Queue names are magic strings | 🟢 Low |
+| Background jobs have no centralized config       | Queue names are magic strings                    | 🟢 Low    |
 
 ---
 
@@ -120,7 +120,8 @@ src/
 // ❌ BEFORE: Service directly calls Sequelize
 const getAllUsers = async () => {
   try {
-    const users = await User.findAll({                    // DB query in service
+    const users = await User.findAll({
+      // DB query in service
       attributes: { exclude: ["password"] },
       include: [
         { model: Role, as: "roles", attributes: ["id", "name"] },
@@ -241,7 +242,13 @@ const handleLoginUser = async (req, res) => {
   const { email, password } = req.body;
   const clientIP = req.ip || req.connection.remoteAddress;
   const userAgent = req.headers["user-agent"] || "unknown";
-  const result = await userService.loginUser(req.user, email, password, clientIP, userAgent);
+  const result = await userService.loginUser(
+    req.user,
+    email,
+    password,
+    clientIP,
+    userAgent,
+  );
   setAuthCookies(res, result);
   return res.success("Login success", result);
 };
@@ -256,6 +263,7 @@ const handleLoginUser = async (req, res) => {
 > The `userService` (655 lines) contains `getAllTasksById`, `getTaskCompleted`, and `getItemByIdUser`. These functions deal with Tasks, TaskUsers, Transactions, and Items — none of which are "User" domain concerns.
 
 **Suggestion:** Move these functions to their respective services:
+
 - `getAllTasksById` → `taskService.js`
 - `getTaskCompleted` → `taskService.js`
 - `getItemByIdUser` → `transactionService.js` or `itemService.js`
@@ -267,11 +275,13 @@ const handleLoginUser = async (req, res) => {
 **File:** [rateLimit.js L13-118](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/middlewares/rateLimit.js#L13-L118)
 
 This single middleware:
+
 1. Looks up the user from the database (L25)
 2. Caches the user in Redis (L32-36) with a different key format than `cache.js`
 3. Performs rate limiting (L49-115)
 
 **Suggestion:** Split into two middlewares:
+
 - `resolveUser.js` — find user, attach to `req.user`
 - `rateLimit.js` — pure rate limiting logic only
 
@@ -281,10 +291,10 @@ This single middleware:
 
 ### 4.1 Magic Strings — Role Names
 
-| File | Line | Magic String |
-|---|---|---|
-| [userService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/userService.js#L67) | 67 | `["user", "customer"]` |
-| [userService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/userService.js#L461) | 461 | `role_id: 2` (hard-coded user role) |
+| File                                                                                                                      | Line | Magic String                        |
+| ------------------------------------------------------------------------------------------------------------------------- | ---- | ----------------------------------- |
+| [userService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/userService.js#L67)  | 67   | `["user", "customer"]`              |
+| [userService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/userService.js#L461) | 461  | `role_id: 2` (hard-coded user role) |
 
 ```javascript
 // ❌ BEFORE
@@ -308,11 +318,11 @@ if (!ASSIGNABLE_ROLES.includes(roledata.name.toLowerCase())) { ... }
 
 ### 4.2 Magic Strings — Task Difficulty & Status
 
-| File | Lines | Magic Strings |
-|---|---|---|
-| [taskService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/taskService.js#L24) | 24, 104, 322 | `"easy"`, `"medium"`, `"hard"`, `"event"` |
-| [taskService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/taskService.js#L43) | 43, 117, 383, 430 | `"public"`, `"private"` |
-| [taskService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/taskService.js#L190) | 190, 279 | `"pending"`, `"approved"`, `"rejected"` |
+| File                                                                                                                      | Lines             | Magic Strings                             |
+| ------------------------------------------------------------------------------------------------------------------------- | ----------------- | ----------------------------------------- |
+| [taskService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/taskService.js#L24)  | 24, 104, 322      | `"easy"`, `"medium"`, `"hard"`, `"event"` |
+| [taskService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/taskService.js#L43)  | 43, 117, 383, 430 | `"public"`, `"private"`                   |
+| [taskService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/taskService.js#L190) | 190, 279          | `"pending"`, `"approved"`, `"rejected"`   |
 
 ```javascript
 // ✅ AFTER — src/constants/taskStatus.js
@@ -333,8 +343,8 @@ module.exports = { TASK_DIFFICULTY, TASK_VISIBILITY, TASK_SUBMIT_STATUS };
 
 ### 4.3 Magic Strings — Transaction Status
 
-| File | Lines | Magic Strings |
-|---|---|---|
+| File                                                                                                                                   | Lines                     | Magic Strings                                          |
+| -------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- | ------------------------------------------------------ |
 | [transactionService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/transactionService.js#L37) | 37, 56, 147, 286-290, 399 | `"pending"`, `"cancelled"`, `"accepted"`, `"rejected"` |
 
 ```javascript
@@ -350,10 +360,10 @@ module.exports = { TRANSACTION_STATUS };
 
 ### 4.4 Magic Strings — Item Status
 
-| File | Lines | Magic Strings |
-|---|---|---|
-| [itemService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/itemService.js#L350) | 350 | `"pending"` |
-| [purchaseWorker.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/workers/purchaseWorker.js#L54) | 54, 98 | `"available"`, `"sold_out"` |
+| File                                                                                                                                    | Lines    | Magic Strings               |
+| --------------------------------------------------------------------------------------------------------------------------------------- | -------- | --------------------------- |
+| [itemService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/itemService.js#L350)               | 350      | `"pending"`                 |
+| [purchaseWorker.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/workers/purchaseWorker.js#L54)           | 54, 98   | `"available"`, `"sold_out"` |
 | [transactionService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/transactionService.js#L319) | 319, 443 | `"available"`, `"sold_out"` |
 
 ```javascript
@@ -368,46 +378,58 @@ module.exports = { ITEM_STATUS };
 
 ### 4.5 Magic Strings — Event Status
 
-| File | Lines | Magic Strings |
-|---|---|---|
-| [eventService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/eventService.js#L461) | 461 | `["upcoming", "ongoing", "finished"]` |
+| File                                                                                                                        | Lines | Magic Strings                         |
+| --------------------------------------------------------------------------------------------------------------------------- | ----- | ------------------------------------- |
+| [eventService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/eventService.js#L461) | 461   | `["upcoming", "ongoing", "finished"]` |
 
 ### 4.6 Magic Strings — Delivery Order Status
 
-| File | Lines | Magic Strings |
-|---|---|---|
-| [syncGHNOrdersCron.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/cron/syncGHNOrdersCron.js#L7-L25) | 7-25 | 16 hard-coded GHN statuses |
+| File                                                                                                                                | Lines | Magic Strings              |
+| ----------------------------------------------------------------------------------------------------------------------------------- | ----- | -------------------------- |
+| [syncGHNOrdersCron.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/cron/syncGHNOrdersCron.js#L7-L25) | 7-25  | 16 hard-coded GHN statuses |
 
 ```javascript
 // ✅ AFTER — src/constants/deliveryStatus.js
 const GHN_ACTIVE_STATUSES = Object.freeze([
-  "ready_to_pick", "picking", "money_collect_picking", "picked",
-  "storing", "transporting", "sorting", "delivering",
-  "money_collect_delivering", "waiting_to_return", "return",
-  "return_transporting", "return_sorting", "returning",
-  "exception", "lost", "damage",
+  "ready_to_pick",
+  "picking",
+  "money_collect_picking",
+  "picked",
+  "storing",
+  "transporting",
+  "sorting",
+  "delivering",
+  "money_collect_delivering",
+  "waiting_to_return",
+  "return",
+  "return_transporting",
+  "return_sorting",
+  "returning",
+  "exception",
+  "lost",
+  "damage",
 ]);
 module.exports = { GHN_ACTIVE_STATUSES };
 ```
 
 ### 4.7 Magic Numbers — Cache TTL, Salt Rounds, Redis Expiration
 
-| File | Lines | Value | Meaning |
-|---|---|---|---|
-| [cache.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/utils/cache.js#L2) | 2 | `60 * 60` | 1 hour default TTL |
-| [userService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/userService.js#L13) | 13 | `10` (bcrypt salt rounds) | Salt rounds |
-| [rateLimit.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/middlewares/rateLimit.js#L32) | 32-36 | `60 * 60 * 24` | 24h Redis TTL |
-| [transactionService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/transactionService.js#L65) | 65, 100, 144 | `3600` | 1 hour Redis TTL |
-| [productService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/productService.js#L69) | 69, 73, 79 | `60 * 60` | Repeated TTL |
-| [taskService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/taskService.js#L311) | 311, 332, 392 | `300` | 5 min cache TTL |
-| [server.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/server.js#L72) | 72 | `"secret"` | Session secret |
+| File                                                                                                                                   | Lines         | Value                     | Meaning            |
+| -------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------------------------- | ------------------ |
+| [cache.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/utils/cache.js#L2)                               | 2             | `60 * 60`                 | 1 hour default TTL |
+| [userService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/userService.js#L13)               | 13            | `10` (bcrypt salt rounds) | Salt rounds        |
+| [rateLimit.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/middlewares/rateLimit.js#L32)                | 32-36         | `60 * 60 * 24`            | 24h Redis TTL      |
+| [transactionService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/transactionService.js#L65) | 65, 100, 144  | `3600`                    | 1 hour Redis TTL   |
+| [productService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/productService.js#L69)         | 69, 73, 79    | `60 * 60`                 | Repeated TTL       |
+| [taskService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/taskService.js#L311)              | 311, 332, 392 | `300`                     | 5 min cache TTL    |
+| [server.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/server.js#L72)                                  | 72            | `"secret"`                | Session secret     |
 
 ```javascript
 // ✅ AFTER — src/constants/cache.js (or extend config)
 const CACHE_TTL = Object.freeze({
-  DEFAULT: 60 * 60,       // 1 hour
-  SHORT: 300,             // 5 minutes
-  LONG: 60 * 60 * 24,    // 24 hours
+  DEFAULT: 60 * 60, // 1 hour
+  SHORT: 300, // 5 minutes
+  LONG: 60 * 60 * 24, // 24 hours
 });
 const BCRYPT_SALT_ROUNDS = 10;
 module.exports = { CACHE_TTL, BCRYPT_SALT_ROUNDS };
@@ -415,12 +437,12 @@ module.exports = { CACHE_TTL, BCRYPT_SALT_ROUNDS };
 
 ### 4.8 Magic Strings — Queue Names
 
-| File | Lines | Magic String |
-|---|---|---|
-| [purchaseQueue.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/queues/purchaseQueue.js#L5) | 5 | `"purchase"` |
-| [purchaseWorker.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/workers/purchaseWorker.js#L17) | 17 | `"purchase"` |
-| [orderSyncQueue.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/queues/orderSyncQueue.js#L4) | 4 | `"orderSync"` |
-| [orderSyncWorker.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/workers/orderSyncWorker.js#L9) | 9 | `"orderSync"` |
+| File                                                                                                                           | Lines | Magic String  |
+| ------------------------------------------------------------------------------------------------------------------------------ | ----- | ------------- |
+| [purchaseQueue.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/queues/purchaseQueue.js#L5)      | 5     | `"purchase"`  |
+| [purchaseWorker.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/workers/purchaseWorker.js#L17)  | 17    | `"purchase"`  |
+| [orderSyncQueue.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/queues/orderSyncQueue.js#L4)    | 4     | `"orderSync"` |
+| [orderSyncWorker.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/workers/orderSyncWorker.js#L9) | 9     | `"orderSync"` |
 
 ```javascript
 // ✅ AFTER — src/constants/queueNames.js
@@ -632,7 +654,7 @@ The `updateItemByPublicId` function (60 lines) is a near-complete copy of `updat
 
 ```javascript
 // ❌ Anti-pattern repeated in both functions (L191-199 and L349-354)
-name ? (item.name = name) : (item.name = item.name);  // no-op assignment
+name ? (item.name = name) : (item.name = item.name); // no-op assignment
 ```
 
 **Fix:** Both `updateItem` and `updateItemByPublicId` should share a single `_applyItemUpdates(item, data)` helper.
@@ -646,7 +668,10 @@ name ? (item.name = name) : (item.name = item.name);  // no-op assignment
 ```javascript
 // ✅ Move to src/utils/stringUtils.js
 const removeSpecialChars = (str) => {
-  return str.replace(/[^a-zA-Z0-9\u00C0-\u1EF9\s]/g, " ").trim().replace(/\s+/g, " ");
+  return str
+    .replace(/[^a-zA-Z0-9\u00C0-\u1EF9\s]/g, " ")
+    .trim()
+    .replace(/\s+/g, " ");
 };
 module.exports = { removeSpecialChars };
 ```
@@ -665,13 +690,13 @@ module.exports = { removeSpecialChars };
 
 **Examples of inline validation that should be DTOs:**
 
-| File | Lines | Manual Check |
-|---|---|---|
-| [taskService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/taskService.js#L18-L33) | 18-33 | `if (!user_id \|\| !title \|\| ...` |
-| [itemService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/itemService.js#L34-L48) | 34-48 | `if (!name \|\| !price \|\| ...` |
-| [productService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/productService.js#L13-L31) | 13-31 | `if (!productData.name \|\| ...` |
-| [eventService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/eventService.js#L294-L315) | 294-315 | `if (!title \|\| !description \|\| ...` |
-| [transactionService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/transactionService.js#L20-L30) | 20-30 | `if (!name \|\| !buyer_id \|\| ...` |
+| File                                                                                                                                       | Lines   | Manual Check                            |
+| ------------------------------------------------------------------------------------------------------------------------------------------ | ------- | --------------------------------------- |
+| [taskService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/taskService.js#L18-L33)               | 18-33   | `if (!user_id \|\| !title \|\| ...`     |
+| [itemService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/itemService.js#L34-L48)               | 34-48   | `if (!name \|\| !price \|\| ...`        |
+| [productService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/productService.js#L13-L31)         | 13-31   | `if (!productData.name \|\| ...`        |
+| [eventService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/eventService.js#L294-L315)           | 294-315 | `if (!title \|\| !description \|\| ...` |
+| [transactionService.js](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/BACKEND/src/services/transactionService.js#L20-L30) | 20-30   | `if (!name \|\| !buyer_id \|\| ...`     |
 
 ### 6.2 Proposed Solution — Zod + Validation Middleware
 
@@ -858,6 +883,7 @@ All 429 responses use raw `res.status(429).json(...)` with a different response 
 - Cron: `src/cron/syncGHNOrdersCron.js`
 
 **Refactoring Direction:**
+
 1. Chỉ tập trung vào `bullmq` và `redis`.
 2. Gỡ bỏ hoàn toàn bảng điều khiển UI (Bull Board) để tinh gọn server, giảm bề mặt tấn công (attack surface) và bớt dependency thừa.
 3. Đồng bộ hóa việc nhập kết nối Redis và loại bỏ chuỗi cứng trùng lặp tên Queue.
@@ -888,8 +914,10 @@ const { QUEUE_NAMES } = require("../../constants/queueNames");
 
 const worker = new Worker(
   QUEUE_NAMES.PURCHASE,
-  async (job) => { /* ... processor logic ... */ },
-  { connection: redis }
+  async (job) => {
+    /* ... processor logic ... */
+  },
+  { connection: redis },
 );
 module.exports = worker;
 ```
@@ -902,6 +930,7 @@ module.exports = worker;
 > Each phase should be a separate PR to minimize risk and enable incremental review.
 
 ### Phase -1 — 🚨 Hotfix: Critical Runtime Bugs
+
 > These are **fatal bugs** that crash the app, NOT technical debt. Fix immediately.
 
 - [x] Fix `findOrCreateUser` in `userService.js` L480 — `roledata` is undefined (ReferenceError on Google OAuth signup)
@@ -909,6 +938,7 @@ module.exports = worker;
 - [x] Standardize cache key format in `rateLimit.js` — change `user:${id}` → `user:id:${id}` to prevent Data Ghosting
 
 ### Phase 0 — Foundation (No logic changes)
+
 - [x] Install `express-async-errors` (`npm install express-async-errors`)
 - [x] Create `src/constants/` directory with all enum/constant files
 - [x] Create `src/errors/` directory with `AppError`, `NotFoundError`, `BadRequestError`, etc.
@@ -920,6 +950,7 @@ module.exports = worker;
 - [x] Create `src/middlewares/validate.js`
 
 ### Phase 0.2 — Clean up Dependencies (Gỡ bỏ Bull Board)
+
 - [x] Chạy lệnh gỡ bỏ các thư viện Bull Board:
   ```bash
   npm uninstall @bull-board/api @bull-board/express @bull-board/ui
@@ -928,6 +959,7 @@ module.exports = worker;
 - [x] Xóa route `/api/admin/queues` gắn với Bull Board trong file `server.js` hoặc `routes/index.js`
 
 ### Phase 1 — Error Handling & Response Standardization
+
 - [x] Add `require("express-async-errors")` at top of `server.js`
 - [x] Register `errorHandler` as last middleware in `server.js`
 - [x] Remove ALL `try/catch` blocks from controllers (express-async-errors handles them)
@@ -935,6 +967,7 @@ module.exports = worker;
 - [x] Fix `deliveryOrderController.js`, `checkPermission.js`, `rateLimit.js` to use `res.success/res.error`
 
 ### Phase 2 — Constants & Enums
+
 - [x] Replace all magic strings in services with constants
 - [x] Replace all magic numbers (TTL, salt, etc.) with named constants
 - [x] Replace queue name strings with `QUEUE_NAMES`
@@ -943,6 +976,7 @@ module.exports = worker;
 - [x] Thay thế mảng string cứng trong Model bằng cú pháp `...Object.values(CONSTANT_NAME)`
 
 ### Phase 3 — DRY Refactoring
+
 - [x] Extract cookie helper and use in `userController.js`
 - [x] Extract `cacheThrough` helper and apply across all services
 - [x] Extract `destroyImagesByReference` and apply in item/product/event services
@@ -953,6 +987,7 @@ module.exports = worker;
 - [x] Move task/item functions out of `userService.js`
 
 ### Phase 4 — DTO & Validation Layer
+
 - [x] Install Zod (`npm install zod`)
 - [x] Create DTO schemas for all entities
 - [x] Export Zod-inferred types via JSDoc `@typedef {z.infer<typeof schema>}` for IDE autocompletion
@@ -960,6 +995,7 @@ module.exports = worker;
 - [x] Remove inline validation from services (move DTOs)
 
 ### Phase 5 — Repository Layer
+
 - [x] Create `src/repositories/` for each entity
 - [x] **All repository methods MUST accept `options = {}` param** to support `{ transaction: t }` passthrough
 - [x] Move all Sequelize `findAll`, `findByPk`, `create`, `update`, `destroy` calls from services to repositories
@@ -967,28 +1003,38 @@ module.exports = worker;
 - [x] Verify all existing `sequelize.transaction()` flows still work correctly
 
 ### Phase 6 — Background Jobs Consolidation
+
 - [x] Move queues, workers, cron under `src/jobs/`
 - [x] Create centralized queue factory
 - [x] Remove `bullboard.js` (uninstalled and dropped in Phase 2)
 
 ### Phase 6.5 — Dynamic RBAC/ABAC
+
 - [x] Add explicit CASL rule mappings in `src/utils/ability.js` for `ReceiverInformation` and `DeliveryAccount` using `{ user_id: user.id }`.
 - [x] Update `userController.js` to implement ownership checks using `req.ability.can('action', subject('User', user))` on update/delete endpoints.
 - [x] Update `receiverController.js` to implement ownership checks using `req.ability.can('action', subject('ReceiverInformation', receiverInfo))` on update/delete/setDefault endpoints.
 - [x] Update `deliveryAccountController.js` to implement ownership checks using `req.ability.can('action', subject('DeliveryAccount', account))` on update/delete/setDefault endpoints.
 - [x] Verify everything compiles cleanly and run the linter.
 
-### Phase 7 — Testing (Deferred)
-- [ ] Add Jest + Supertest as dev dependencies
-- [ ] Write integration tests for critical API flows (Login, Create Order, Purchase)
-- [ ] Write unit tests for services and helpers
-- [ ] Set up CI pipeline to run tests on PR
+### Phase 7 — Testing
+
+- [x] Add Jest + Supertest as dev dependencies
+- [x] Configure `jest.config.js` and Babel transformation
+- [x] Setup testing database environment (PostgreSQL `greenflag` test schema)
+- [x] Mock Redis, BullMQ, and third-party APIs (GHN)
+- [x] Write integration tests for:
+  - Auth Flow (Login, logout, token refresh)
+  - Item Upload & Purchase Flow
+  - Task Acceptance & Submission Flow
+- [x] Write unit tests for services/helpers (`stringUtils.js`, `cacheHelper.js`)
+- [x] Configure `package.json` test scripts (`npm run test`, `npm run test:watch`, `npm run test:coverage`)
 
 ---
 
 ## 10. Verification Plan
 
 ### Automated Tests
+
 ```bash
 # After each phase, verify the server starts correctly
 npm start
@@ -1001,35 +1047,59 @@ npm run lint
 ```
 
 ### Manual Verification
-- [ ] Test login/logout/refresh flow (cookie handling)
-- [ ] Test CRUD operations for users, tasks, items, products, events, transactions
-- [ ] Test purchase queue flow (BullMQ)
-- [ ] Test delivery order creation (GHN integration)
-- [ ] Verify dynamic permission checks block unauthorized edits on Task, Item, Transaction, User, ReceiverInfo, and DeliveryAccount.
+
+- [x] Test login/logout/refresh flow (cookie handling) (Verified via auth.test.js integration tests)
+- [x] Test CRUD operations for users, tasks, items, products, events, transactions (Verified via task.test.js & item.test.js integration tests)
+- [x] Test purchase queue flow (BullMQ) (Verified via item purchase integration tests)
+- [x] Test delivery order creation (GHN integration) (Verified via item purchase integration tests with GHN/Nock mocks)
+- [x] Verify dynamic permission checks block unauthorized edits on Task, Item, Transaction, User, ReceiverInfo, and DeliveryAccount. (Verified via dynamic RBAC/ABAC tests)
 
 ## 11. Resolved Open Questions
 
 ### Q1: Test Framework — ✅ Deferred to Phase 7
+
 Testing will be a separate effort after the refactor stabilizes. However, before starting Phase 1, a minimal set of integration tests (Postman collection or Jest+Supertest for Login, Create Order, Purchase) will serve as a safety net.
 
 ### Q2: Cache Key Format — ✅ Standardize to `user:id:${id}`
+
 The canonical format is `user:id:${id}` (as used by `cache.js`). The `rateLimit.js` middleware will be fixed in **Phase -1** to use `cacheHelper.js` functions and the standard key format. This prevents the "Data Ghosting" bug where stale data persists under the old key.
 
 ### Q3: `findOrCreateUser` undefined `roledata` — ✅ Fix in Phase -1 (Hotfix)
+
 This is a fatal `ReferenceError`. Will fetch the default role using `Role.findByPk(DEFAULT_ROLE_ID)` or equivalent.
 
 ### Q4: `const description` reassignment — ✅ Fix in Phase -1 (Hotfix)
+
 Change `const description` to `let description` in `taskController.js` L65.
 
 ### Q5: Transaction Update Permissions Differentiating Roles (Phase 6.5) — ✅ Resolved
+
 Instead of generic transaction update permissions, we grant custom business actions depending on user roles:
+
 - Buyer Rules: `can(['cancel', 'complete'], 'Transaction', { buyer_id: user.id })`
 - Seller Rules: `can(['accept', 'reject', 'ship'], 'Transaction', { seller_id: user.id })`
 
 ### Q6: ReceiverInformation & DeliveryAccount Explicit Mapping (Phase 6.5) — ✅ Resolved
+
 Added explicit CASL rule mappings using `{ user_id: user.id }` for both `ReceiverInformation` and `DeliveryAccount` in `src/utils/ability.js` to support ABAC check in the controller.
 
 ### Additional Decisions (from user feedback)
+
 - **Repository `transaction` support:** All repository methods will accept `options = {}` to pass through `{ transaction: t }`. Services orchestrate transactions.
 - **`express-async-errors` over `asyncHandler`:** Use `require("express-async-errors")` in `server.js` instead of wrapping every controller.
 - **Zod type inference:** Export `@typedef {z.infer<typeof schema>}` via JSDoc for IDE autocompletion.
+
+## 12. Resolved Phase 7 Open Questions
+
+### Q7: Test Database Configuration — ✅ Option B (PostgreSQL)
+
+We will maintain 100% dialect parity with production by using a separate `techsolve25_test` database schema on PostgreSQL, configured via `.test.env`.
+
+### Q8: Authentication & Session Strategy — ✅ Full request pipeline integration (no mocking)
+
+Authentication will not be mocked. A test helper (`tests/helpers/authHelper.js`) will generate valid JWT tokens and append the correct Cookie header for Supertest.
+
+### Q9: Mocking Strategy for Integrations — ✅ ioredis-mock & nock
+
+- Redis & BullMQ will be mocked in-memory using `ioredis-mock`.
+- External HTTP APIs (GHN, Cloudinary) will be stubbed using `nock`.

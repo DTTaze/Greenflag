@@ -31,13 +31,6 @@ const worker = new Worker(
 
         if (!item) {
           item = await itemRepo.findById(item_id, {
-            include: [
-              {
-                model: db.User,
-                as: "creator",
-                attributes: ["id", "full_name", "username"],
-              },
-            ],
             transaction: t,
             lock: true,
             raw: true,
@@ -48,7 +41,7 @@ const worker = new Worker(
         }
 
         if (!item.creator) {
-          item.creator = await userRepo.findById(item.user_id, {
+          item.creator = await userRepo.findById(item.creator_id, {
             attributes: ["id", "full_name", "username"],
             transaction: t,
             raw: true,

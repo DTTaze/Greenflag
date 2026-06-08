@@ -57,7 +57,8 @@ const findAll = async (queryOptions = {}, options = {}) => {
  * @returns {Promise<Product>}
  */
 const create = async (data, options = {}) => {
-  return Product.create(data, options);
+  const instance = await Product.create(data, options);
+  return options.raw ? instance.get({ plain: true }) : instance;
 };
 
 /**

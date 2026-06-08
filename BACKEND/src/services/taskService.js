@@ -1,10 +1,7 @@
 const db = require("../models/index.js");
-const Task = db.Task;
-const TaskUser = db.TaskUser;
-const User = db.User;
-const TaskSubmit = db.TaskSubmit;
-const TaskType = db.TaskType;
-const Type = db.Type;
+const taskRepo = require("../repositories/taskRepository.js");
+const userRepo = require("../repositories/userRepository.js");
+const taskSubmitRepo = require("../repositories/taskSubmitRepository.js");
 const uploadImages = require("./imageService.js").uploadImages;
 const coinService = require("./coinService.js");
 const { nanoid } = require("nanoid");
@@ -32,39 +29,45 @@ const createTask = async (data, user_id) => {
   if (total < 0) {
     throw new BadRequestError("Total must be a positive number");
   }
-  const result = await Task.create({
-    public_id: nanoid(),
-    title,
-    content,
-    description,
-    coins,
-    difficulty,
-    total,
-    creator_id: user_id,
-    status: TASK_VISIBILITY.PUBLIC,
-  });
-  const taskData = result.toJSON();
-  await setCache(CACHE_KEYS.MISSION.TASK_BY_ID(taskData.id), taskData);
-  await setCache(CACHE_KEYS.MISSION.TASK_BY_PUBLIC_ID(taskData.public_id), taskData.id);
+  const result = await taskRepo.create(
+    {
+      public_id: nanoid(),
+      title,
+      content,
+      description,
+      coins,
+      difficulty,
+      total,
+      creator_id: user_id,
+      status: TASK_VISIBILITY.PUBLIC,
+    },
+    { raw: true, nest: true },
+  );
+
+  await setCache(CACHE_KEYS.MISSION.TASK_BY_ID(result.id), result);
+  await setCache(CACHE_KEYS.MISSION.TASK_BY_PUBLIC_ID(result.public_id), result.id);
   await deleteCache(CACHE_KEYS.MISSION.ALL_TASKS);
-  return taskData;
+  return result;
 };
 
 const getAllTasks = async () => {
   return cacheThrough(CACHE_KEYS.MISSION.ALL_TASKS, async () => {
-    const dbTasks = await Task.findAll({
-      include: [{ model: User, attributes: ["id", "username"] }],
-    });
-    return dbTasks.map((task) => task.toJSON());
+    const dbTasks = await taskRepo.findAll(
+      {
+        include: [{ model: db.User, attributes: ["id", "username"] }],
+      },
+      { raw: true, nest: true },
+    );
+    return dbTasks;
   });
 };
 
 const getTaskById = async (id) => {
   if (!id) throw new BadRequestError("Task ID is required");
   return cacheThrough(CACHE_KEYS.MISSION.TASK_BY_ID(id), async () => {
-    const dbTask = await Task.findByPk(id);
+    const dbTask = await taskRepo.findById(id, { raw: true, nest: true });
     if (!dbTask) throw new NotFoundError("Task not found");
-    return dbTask.toJSON();
+    return dbTask;
   });
 };
 
@@ -104,10 +107,10 @@ const updateTask = async (id, data) => {
     updateFields.status = status;
   }
 
-  const task = await Task.findByPk(id);
+  const task = await taskRepo.findById(id, { raw: true, nest: true });
   if (!task) throw new NotFoundError("Task not found");
-  await task.update(updateFields);
-  const taskData = task.toJSON();
+
+  const taskData = await taskRepo.updateById(id, updateFields);
   await setCache(CACHE_KEYS.MISSION.TASK_BY_ID(id), taskData);
   await deleteCache(CACHE_KEYS.MISSION.ALL_TASKS);
   return taskData;
@@ -115,10 +118,10 @@ const updateTask = async (id, data) => {
 
 const deleteTask = async (id) => {
   if (!id) throw new BadRequestError("Task ID is required");
-  const task = await Task.findByPk(id);
+  const task = await taskRepo.findById(id, { raw: true, nest: true });
   if (!task) throw new NotFoundError("Task not found");
   const public_id = task.public_id;
-  await task.destroy();
+  await taskRepo.destroy(id);
   await deleteCache(CACHE_KEYS.MISSION.TASK_BY_ID(id));
   await deleteCache(CACHE_KEYS.MISSION.TASK_BY_PUBLIC_ID(public_id));
   await deleteCache(CACHE_KEYS.MISSION.ALL_TASKS);
@@ -133,54 +136,54 @@ const acceptTask = async (task_id, user_id) => {
   if (!Number.isInteger(task_id) || !Number.isInteger(user_id)) {
     throw new BadRequestError("Task ID and User ID must be integers");
   }
-  const task = await Task.findByPk(task_id);
+  const task = await taskRepo.findById(task_id, { raw: true, nest: true });
   if (!task) throw new NotFoundError("Task not found");
-  const user = await User.findByPk(user_id);
+  const user = await userRepo.findById(user_id, { raw: true, nest: true });
   if (!user) throw new NotFoundError("User not found");
-  const result = await TaskUser.create({ user_id, task_id });
 
-  await setCache(CACHE_KEYS.MISSION.USER_TASK(result.id), result);
+  const result = await taskRepo.createTaskUser({ user_id, task_id });
+  const resultData = result.get ? result.get({ plain: true }) : result;
+
+  await setCache(CACHE_KEYS.MISSION.USER_TASK(resultData.id), resultData);
 
   let all_user_task_ids = await getCache(CACHE_KEYS.MISSION.TASKS_BY_USER_ID(user_id));
   if (!Array.isArray(all_user_task_ids)) {
     all_user_task_ids = [];
   }
-  all_user_task_ids.push(result.id);
+  all_user_task_ids.push(resultData.id);
   await setCache(CACHE_KEYS.MISSION.TASKS_BY_USER_ID(user_id), all_user_task_ids);
 
-  return result;
+  return resultData;
 };
 
 const submitTask = async (task_id, user_id, description, files) => {
-  try {
-    const taskId = Number(task_id);
-    const userId = Number(user_id);
-    const taskUser = await acceptTask(taskId, userId);
-    if (!files || files.length === 0) throw new BadRequestError("No files provided.");
-    const newTaskSubmit = await TaskSubmit.create({
-      task_user_id: taskUser.id,
-      description: description || "",
-      status: TASK_SUBMIT_STATUS.PENDING,
-      submitted_at: new Date(),
-    });
-    const uploadedImages = await uploadImages(files, newTaskSubmit.id, "taskSubmit");
-    const taskSubmitData = newTaskSubmit.toJSON();
-    await setCache(CACHE_KEYS.MISSION.SUBMISSION(taskSubmitData.id), taskSubmitData);
-    return { taskSubmit: taskSubmitData, images: uploadedImages };
-  } catch (error) {
-    console.error("Error submitting task:", error.message);
-    throw error;
-  }
+  const taskId = Number(task_id);
+  const userId = Number(user_id);
+  const taskUser = await acceptTask(taskId, userId);
+  if (!files || files.length === 0) throw new BadRequestError("No files provided.");
+
+  const newTaskSubmit = await taskSubmitRepo.create({
+    task_user_id: taskUser.id,
+    description: description || "",
+    status: TASK_SUBMIT_STATUS.PENDING,
+    submitted_at: new Date(),
+  });
+
+  const taskSubmitData = newTaskSubmit.get ? newTaskSubmit.get({ plain: true }) : newTaskSubmit;
+  const uploadedImages = await uploadImages(files, taskSubmitData.id, "taskSubmit");
+  await setCache(CACHE_KEYS.MISSION.SUBMISSION(taskSubmitData.id), taskSubmitData);
+  return { taskSubmit: taskSubmitData, images: uploadedImages };
 };
 
 const completeTask = async (taskUser, user) => {
   if (!taskUser || !taskUser.user_id) {
     throw new BadRequestError("TaskUser and User ID are required");
   }
-  taskUser.status = "done";
-  taskUser.completed_at = new Date();
-  await taskUser.save();
-  const taskUserData = taskUser.toJSON();
+
+  const taskUserData = await taskRepo.updateTaskUserById(taskUser.id, {
+    completed_at: new Date(),
+  });
+  taskUserData.status = "done";
   await setCache(CACHE_KEYS.MISSION.USER_TASK(taskUserData.id), taskUserData);
 
   let newStreak = user.streak || 0;
@@ -198,67 +201,77 @@ const completeTask = async (taskUser, user) => {
   } else {
     newStreak = 1;
   }
-  await user.update({
+
+  await userRepo.updateById(user.id, {
     streak: newStreak,
     last_completed_task: new Date(),
   });
 };
 
 const increaseProgressCount = async (task_user_id) => {
-  try {
-    if (!task_user_id) throw new BadRequestError("Missing task_user_id.");
-    const taskUser = await TaskUser.findByPk(task_user_id, {
-      include: [{ model: Task, as: "tasks" }],
-    });
-    if (!taskUser) throw new NotFoundError("Task user not found.");
-    if (!taskUser.tasks) throw new NotFoundError("Task not found.");
-    if (taskUser.progress_count >= taskUser.tasks.total) {
-      throw new BadRequestError("Task is already completed.");
-    }
-    await taskUser.update({ progress_count: taskUser.progress_count + 1 });
-    if (taskUser.progress_count >= taskUser.tasks.total) {
-      const user = await User.findByPk(taskUser.user_id, {
-        include: [{ model: db.Coin, as: "coins" }],
-      });
-      if (!user) throw new NotFoundError("User not found.");
-      await completeTask(taskUser, user);
-      const user_coins_id = user.coins_id;
-      const coins = taskUser.tasks.coins;
-      await coinService.updateIncreaseCoin(user_coins_id, coins);
-    }
-    const taskUserData = taskUser.toJSON();
-    await setCache(CACHE_KEYS.MISSION.USER_TASK(taskUserData.id), taskUserData);
-    return taskUserData;
-  } catch (error) {
-    console.error("Error increasing progress count:", error.message);
-    throw error;
+  if (!task_user_id) throw new BadRequestError("Missing task_user_id.");
+
+  const list = await taskRepo.findAllTaskUsers(
+    {
+      where: { id: task_user_id },
+      include: [{ model: db.Task, as: "tasks" }],
+    },
+    { raw: true, nest: true },
+  );
+  const taskUser = list[0] || null;
+
+  if (!taskUser) throw new NotFoundError("Task user not found.");
+  if (!taskUser.tasks) throw new NotFoundError("Task not found.");
+  if (taskUser.progress_count >= taskUser.tasks.total) {
+    throw new BadRequestError("Task is already completed.");
   }
+
+  const updatedTaskUser = await taskRepo.updateTaskUserById(task_user_id, {
+    progress_count: taskUser.progress_count + 1,
+  });
+
+  if (updatedTaskUser.progress_count >= taskUser.tasks.total) {
+    const user = await userRepo.findOne(
+      {
+        where: { id: taskUser.user_id },
+        include: [{ model: db.Coin, as: "coins" }],
+      },
+      { raw: true, nest: true },
+    );
+    if (!user) throw new NotFoundError("User not found.");
+    await completeTask(updatedTaskUser, user);
+    const user_coins_id = user.coins_id;
+    const coins = taskUser.tasks.coins;
+    await coinService.updateIncreaseCoin(user_coins_id, coins);
+  }
+
+  await setCache(CACHE_KEYS.MISSION.USER_TASK(updatedTaskUser.id), updatedTaskUser);
+  return updatedTaskUser;
 };
 
 const updateDecisionTaskSubmit = async (task_submit_id, decision) => {
-  try {
-    if (!task_submit_id) throw new BadRequestError("Missing task_submit_id.");
-    if (!decision) throw new BadRequestError("Missing decision.");
-    const validDecisions = [TASK_SUBMIT_STATUS.APPROVED, TASK_SUBMIT_STATUS.REJECTED];
-    if (!validDecisions.includes(decision)) {
-      throw new BadRequestError("Decision must be either 'approved' or 'rejected'.");
-    }
-    const taskSubmit = await TaskSubmit.findByPk(task_submit_id, {
-      include: [{ model: TaskUser, as: "task_user" }],
-    });
-    if (!taskSubmit) throw new NotFoundError("Task submit not found.");
-    taskSubmit.status = decision;
-    await taskSubmit.save();
-    const taskSubmitData = taskSubmit.toJSON();
-    await setCache(CACHE_KEYS.MISSION.SUBMISSION(taskSubmitData.id), taskSubmitData);
-    if (decision === TASK_SUBMIT_STATUS.APPROVED) {
-      await increaseProgressCount(taskSubmit.task_user_id);
-    }
-    return taskSubmitData;
-  } catch (error) {
-    console.error("Error updating task submit:", error.message);
-    throw error;
+  if (!task_submit_id) throw new BadRequestError("Missing task_submit_id.");
+  if (!decision) throw new BadRequestError("Missing decision.");
+  const validDecisions = [TASK_SUBMIT_STATUS.APPROVED, TASK_SUBMIT_STATUS.REJECTED];
+  if (!validDecisions.includes(decision)) {
+    throw new BadRequestError("Decision must be either 'approved' or 'rejected'.");
   }
+
+  const taskSubmit = await taskSubmitRepo.findOne(
+    {
+      where: { id: task_submit_id },
+      include: [{ model: db.TaskUser, as: "task_user" }],
+    },
+    { raw: true, nest: true },
+  );
+  if (!taskSubmit) throw new NotFoundError("Task submit not found.");
+
+  const taskSubmitData = await taskSubmitRepo.updateById(task_submit_id, { status: decision });
+  await setCache(CACHE_KEYS.MISSION.SUBMISSION(taskSubmitData.id), taskSubmitData);
+  if (decision === TASK_SUBMIT_STATUS.APPROVED) {
+    await increaseProgressCount(taskSubmit.task_user_id);
+  }
+  return taskSubmitData;
 };
 
 const getAllTasksByTypeName = async (type_name) => {
@@ -266,13 +279,7 @@ const getAllTasksByTypeName = async (type_name) => {
   return cacheThrough(
     CACHE_KEYS.MISSION.TASKS_BY_TYPE(type_name),
     async () => {
-      const type = await Type.findOne({ where: { name: type_name } });
-      if (!type) throw new NotFoundError("Type not found");
-      const taskTypes = await TaskType.findAll({
-        where: { type_id: type.id },
-        include: [{ model: Task }],
-      });
-      return taskTypes.map((tt) => tt.Task.toJSON());
+      return await taskRepo.findTasksByTypeName(type_name);
     },
     CACHE_TTL.FIVE_MINUTES,
   );
@@ -287,10 +294,13 @@ const getAllTasksByDifficultyName = async (difficulty_name) => {
   return cacheThrough(
     CACHE_KEYS.MISSION.TASKS_BY_DIFFICULTY(difficulty_name),
     async () => {
-      const dbTasks = await Task.findAll({
-        where: { difficulty: difficulty_name },
-      });
-      return dbTasks.map((task) => task.toJSON());
+      const dbTasks = await taskRepo.findAll(
+        {
+          where: { difficulty: difficulty_name },
+        },
+        { raw: true, nest: true },
+      );
+      return dbTasks;
     },
     CACHE_TTL.FIVE_MINUTES,
   );
@@ -299,7 +309,7 @@ const getAllTasksByDifficultyName = async (difficulty_name) => {
 const getTaskByPublicId = async (public_id) => {
   if (!public_id) throw new BadRequestError("Task Public ID is required");
   const taskId = await cacheThrough(CACHE_KEYS.MISSION.TASK_BY_PUBLIC_ID(public_id), async () => {
-    const dbTask = await Task.findOne({ where: { public_id } });
+    const dbTask = await taskRepo.findOne({ where: { public_id } }, { raw: true, nest: true });
     if (!dbTask) throw new NotFoundError("Task not found");
     return dbTask.id;
   });
@@ -308,14 +318,14 @@ const getTaskByPublicId = async (public_id) => {
 
 const updateTaskByPublicId = async (public_id, data) => {
   if (!public_id) throw new BadRequestError("Task Public ID is required");
-  const task = await Task.findOne({ where: { public_id } });
+  const task = await taskRepo.findOne({ where: { public_id } }, { raw: true, nest: true });
   if (!task) throw new NotFoundError("Task not found");
   return await updateTask(task.id, data);
 };
 
 const deleteTaskByPublicId = async (public_id) => {
   if (!public_id) throw new BadRequestError("Task Public ID is required");
-  const task = await Task.findOne({ where: { public_id } });
+  const task = await taskRepo.findOne({ where: { public_id } }, { raw: true, nest: true });
   if (!task) throw new NotFoundError("Task not found");
   return await deleteTask(task.id);
 };
@@ -329,8 +339,8 @@ const getAllTasksStatus = async (status) => {
   return cacheThrough(
     CACHE_KEYS.MISSION.TASKS_BY_STATUS(status),
     async () => {
-      const dbTasks = await Task.findAll({ where: { status } });
-      return dbTasks.map((task) => task.toJSON());
+      const dbTasks = await taskRepo.findAll({ where: { status } }, { raw: true, nest: true });
+      return dbTasks;
     },
     CACHE_TTL.FIVE_MINUTES,
   );
@@ -349,10 +359,13 @@ const getAllTasksOfCustomer = async (customer_id) => {
   return cacheThrough(
     CACHE_KEYS.MISSION.TASKS_BY_CUSTOMER(customer_id),
     async () => {
-      const dbTasks = await Task.findAll({
-        where: { creator_id: customer_id },
-      });
-      return dbTasks.map((task) => task.toJSON());
+      const dbTasks = await taskRepo.findAll(
+        {
+          where: { creator_id: customer_id },
+        },
+        { raw: true, nest: true },
+      );
+      return dbTasks;
     },
     CACHE_TTL.FIVE_MINUTES,
   );
@@ -365,11 +378,10 @@ const changeTaskStatus = async (task_id, status) => {
   if (!validStatuses.includes(status)) {
     throw new BadRequestError("Status must be public/private");
   }
-  const task = await Task.findByPk(task_id);
+  const task = await taskRepo.findById(task_id, { raw: true, nest: true });
   if (!task) throw new NotFoundError("Task not found");
-  task.status = status;
-  await task.save();
-  const taskData = task.toJSON();
+
+  const taskData = await taskRepo.updateById(task_id, { status });
   await setCache(CACHE_KEYS.MISSION.TASK_BY_ID(task_id), taskData);
   await deleteCache(CACHE_KEYS.MISSION.ALL_TASKS);
   return taskData;
@@ -386,14 +398,17 @@ const getAllTasksByUserId = async (user_id) => {
     for (const id of taskUserIds) {
       let taskUser = await getCache(CACHE_KEYS.MISSION.USER_TASK(id));
       if (!taskUser) {
-        taskUser = await TaskUser.findOne({
-          where: { id },
-          include: [{ model: Task, as: "tasks", required: true }],
-        });
+        const list = await taskRepo.findAllTaskUsers(
+          {
+            where: { id },
+            include: [{ model: db.Task, as: "tasks", required: true }],
+          },
+          { raw: true, nest: true },
+        );
+        taskUser = list[0] || null;
         if (taskUser) {
-          const taskUserData = taskUser.toJSON();
-          await setCache(CACHE_KEYS.MISSION.USER_TASK(id), taskUserData);
-          result.push(taskUserData);
+          await setCache(CACHE_KEYS.MISSION.USER_TASK(id), taskUser);
+          result.push(taskUser);
         }
       } else {
         result.push(taskUser);
@@ -403,19 +418,21 @@ const getAllTasksByUserId = async (user_id) => {
     return result;
   }
 
-  const taskUsers = await TaskUser.findAll({
-    where: { user_id },
-    include: [{ model: Task, as: "tasks", required: true }],
-  });
+  const taskUsers = await taskRepo.findAllTaskUsers(
+    {
+      where: { user_id },
+      include: [{ model: db.Task, as: "tasks", required: true }],
+    },
+    { raw: true, nest: true },
+  );
 
-  const taskUsersData = taskUsers.map((t) => t.toJSON());
-  const ids = taskUsersData.map((t) => t.id);
+  const ids = taskUsers.map((t) => t.id);
   await setCache(cacheKey, ids);
-  for (const t of taskUsersData) {
+  for (const t of taskUsers) {
     await setCache(CACHE_KEYS.MISSION.USER_TASK(t.id), t);
   }
 
-  return taskUsersData;
+  return taskUsers;
 };
 
 const getCompletedTasksByUserId = async (user_id) => {
@@ -433,10 +450,9 @@ const getCompletedTasksByUserId = async (user_id) => {
     let task = await getCache(CACHE_KEYS.MISSION.TASK_BY_ID(taskUser.task_id));
 
     if (!task) {
-      task = await Task.findOne({ where: { id: taskUser.task_id } });
+      task = await taskRepo.findOne({ where: { id: taskUser.task_id } }, { raw: true, nest: true });
 
       if (task) {
-        task = task.toJSON();
         await setCache(CACHE_KEYS.MISSION.TASK_BY_ID(taskUser.task_id), task);
       } else {
         console.log(`Task not found for task_id: ${taskUser.task_id}`);

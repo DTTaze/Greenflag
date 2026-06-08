@@ -1,38 +1,37 @@
-const db = require("../models/index.js");
-const Permission = db.Permission;
+const permissionRepo = require("../repositories/permissionRepository");
 const NotFoundError = require("../errors/NotFoundError.js");
 const BadRequestError = require("../errors/BadRequestError.js");
 
 const createPermission = async (action, subject) => {
-  return await Permission.create({ action, subject });
+  return await permissionRepo.create({ action, subject }, { raw: true, nest: true });
 };
 
 const getPermissionById = async (id) => {
   if (!id) throw new BadRequestError("Permission ID is required");
 
-  const result = await Permission.findByPk(id);
+  const result = await permissionRepo.findById(id, { raw: true, nest: true });
   if (!result) throw new NotFoundError("Permission not found");
 
   return result;
 };
 
 const getAllPermissions = async () => {
-  return await Permission.findAll();
+  return await permissionRepo.findAll({ raw: true, nest: true });
 };
 
 const updatePermission = async (id, data) => {
-  const permission = await Permission.findByPk(id);
+  const permission = await permissionRepo.findById(id, { raw: true, nest: true });
   if (!permission) throw new NotFoundError("Permission not found");
 
-  await permission.update(data);
-  return permission;
+  const updatedPermission = await permissionRepo.updateById(id, data);
+  return updatedPermission;
 };
 
 const deletePermission = async (id) => {
-  const permission = await Permission.findByPk(id);
+  const permission = await permissionRepo.findById(id, { raw: true, nest: true });
   if (!permission) throw new NotFoundError("Permission not found");
 
-  await permission.destroy();
+  await permissionRepo.destroy(id);
   return { message: "Permission deleted successfully" };
 };
 

@@ -2,12 +2,13 @@ require("dotenv").config();
 const bcrypt = require("bcryptjs");
 const { Op } = require("sequelize");
 const db = require("../models/index.js");
-const User = db.User;
-const Role = db.Role;
-const Coin = db.Coin;
-const Rank = db.Rank;
+const userRepo = require("../repositories/userRepository.js");
+const roleRepo = require("../repositories/roleRepository.js");
+const coinRepo = require("../repositories/coinRepository.js");
+const rankRepo = require("../repositories/rankRepository.js");
 const salt = bcrypt.genSaltSync(10);
 const jwt = require("jsonwebtoken");
+
 const { nanoid } = require("nanoid");
 const rateLimitService = require("./rateLimitService.js");
 const { getCache, setCache, deleteCache } = require("../utils/cache.js");
@@ -48,42 +49,51 @@ const setUserCache = async (user) => {
 };
 
 const createUser = async (data) => {
-  try {
-    let { username, full_name, role_id, email, password } = data;
+  let { username, full_name, role_id, email, password } = data;
 
-    role_id = Number(role_id);
+  role_id = Number(role_id);
 
-    if (isNaN(role_id)) throw new BadRequestError("Invalid Role ID");
+  if (isNaN(role_id)) throw new BadRequestError("Invalid Role ID");
 
-    let roledata = await getCache(CACHE_KEYS.IDENTITY.ROLE_BY_ID(role_id));
-    if (!roledata) {
-      roledata = await Role.findByPk(role_id);
-      if (!roledata) throw new NotFoundError("Role does not exist");
-      await setCache(CACHE_KEYS.IDENTITY.ROLE_BY_ID(role_id), roledata);
-    }
-    if (!ASSIGNABLE_ROLES.includes(roledata.name.toLowerCase())) {
-      throw new ForbiddenError("Cannot assign this role");
-    }
+  let roledata = await getCache(CACHE_KEYS.IDENTITY.ROLE_BY_ID(role_id));
+  if (!roledata) {
+    roledata = await roleRepo.findById(role_id, { raw: true, nest: true });
+    if (!roledata) throw new NotFoundError("Role does not exist");
+    await setCache(CACHE_KEYS.IDENTITY.ROLE_BY_ID(role_id), roledata);
+  }
+  if (!ASSIGNABLE_ROLES.includes(roledata.name.toLowerCase())) {
+    throw new ForbiddenError("Cannot assign this role");
+  }
 
-    const existingUser = await User.findOne({
+  const existingUser = await userRepo.findOne(
+    {
       where: { [Op.or]: [{ email }, { username }] },
-    });
-    if (existingUser) {
-      if (existingUser.email === email) throw new ConflictError("Email already exists");
-      if (existingUser.username === username) throw new ConflictError("Username already exists");
-    }
+    },
+    { raw: true, nest: true },
+  );
+  if (existingUser) {
+    if (existingUser.email === email) throw new ConflictError("Email already exists");
+    if (existingUser.username === username) throw new ConflictError("Username already exists");
+  }
 
-    const hashPassword = bcrypt.hashSync(password, salt);
+  const hashPassword = bcrypt.hashSync(password, salt);
 
-    const maxOrderRank = await Rank.findOne({ order: [["order", "DESC"]] });
-    const newOrder = maxOrderRank ? maxOrderRank.order + 1 : 1;
-    const newRank = await Rank.create({
+  const maxOrderRank = await rankRepo.findOne(
+    { order: [["order", "DESC"]] },
+    { raw: true, nest: true },
+  );
+  const newOrder = maxOrderRank ? maxOrderRank.order + 1 : 1;
+  const newRank = await rankRepo.create(
+    {
       amount: 0,
       order: newOrder,
       user_id: null,
-    });
+    },
+    { raw: true, nest: true },
+  );
 
-    const newUser = await User.create({
+  const newUser = await userRepo.create(
+    {
       public_id: nanoid(),
       role_id,
       rank_id: newRank.id,
@@ -91,30 +101,31 @@ const createUser = async (data) => {
       password: hashPassword,
       username,
       full_name,
-    });
+    },
+    { raw: true, nest: true },
+  );
 
-    await newRank.update({ user_id: newUser.id });
+  await rankRepo.updateById(newRank.id, { user_id: newUser.id });
 
-    const newCoin = await Coin.create({
+  const newCoin = await coinRepo.create(
+    {
       amount: 0,
       user_id: newUser.id,
-    });
+    },
+    { raw: true, nest: true },
+  );
 
-    const userWithIncludes = {
-      ...newUser.toJSON(),
-      roles: roledata,
-      coins: newCoin,
-      ranks: newRank,
-    };
-    await setUserCache(userWithIncludes);
+  const userWithIncludes = {
+    ...newUser,
+    roles: roledata,
+    coins: newCoin,
+    ranks: newRank,
+  };
+  await setUserCache(userWithIncludes);
 
-    //delete password
-    delete newUser.password;
-    return newUser;
-  } catch (error) {
-    console.error("Error in createUser:", error);
-    throw error;
-  }
+  const responseUser = { ...newUser };
+  delete responseUser.password;
+  return responseUser;
 };
 
 const loginUser = async (user, email, password, clientIP, userAgent) => {
@@ -160,22 +171,25 @@ const refreshAccessToken = (refreshToken) => {
 };
 
 const getAllUsers = async () => {
-  const users = await User.findAll({
-    attributes: { exclude: ["password"] },
-    include: [
-      { model: Role, as: "roles", attributes: ["id", "name"] },
-      { model: Coin, as: "coins", attributes: ["id", "amount"] },
-    ],
-  });
+  const users = await userRepo.findAll(
+    {
+      attributes: { exclude: ["password"] },
+      include: [
+        { model: db.Role, as: "roles", attributes: ["id", "name"] },
+        { model: db.Coin, as: "coins", attributes: ["id", "amount"] },
+      ],
+    },
+    { raw: true, nest: true },
+  );
   return users;
 };
 
 const _deleteUserInternal = async (user) => {
   const t = await db.sequelize.transaction();
   try {
-    await Rank.destroy({ where: { id: user.rank_id }, transaction: t });
-    await Coin.destroy({ where: { id: user.coins_id }, transaction: t });
-    await User.destroy({ where: { id: user.id }, transaction: t });
+    await rankRepo.destroy(user.rank_id, { transaction: t });
+    await coinRepo.destroy(user.coins_id, { transaction: t });
+    await userRepo.destroy(user.id, { transaction: t });
 
     await t.commit();
 
@@ -190,13 +204,13 @@ const _deleteUserInternal = async (user) => {
 };
 
 const deleteUser = async (id) => {
-  const user = await User.findOne({ where: { id } });
+  const user = await userRepo.findOne({ where: { id } }, { raw: true, nest: true });
   if (!user) throw new NotFoundError("User not found");
   return _deleteUserInternal(user);
 };
 
 const deleteUserByPublicID = async (public_id) => {
-  const user = await User.findOne({ where: { public_id } });
+  const user = await userRepo.findOne({ where: { public_id } }, { raw: true, nest: true });
   if (!user) throw new NotFoundError("User not found");
   return _deleteUserInternal(user);
 };
@@ -211,8 +225,10 @@ const getUserBycacheId = async (id) => {
   // Role
   let dataRole = await getCache(CACHE_KEYS.IDENTITY.ROLE_BY_ID(data_user.role_id));
   if (!dataRole) {
-    dataRole = await Role.findByPk(data_user.role_id, {
+    dataRole = await roleRepo.findById(data_user.role_id, {
       attributes: ["id", "name"],
+      raw: true,
+      nest: true,
     });
     if (dataRole) await setCache(CACHE_KEYS.IDENTITY.ROLE_BY_ID(data_user.role_id), dataRole);
   }
@@ -221,8 +237,10 @@ const getUserBycacheId = async (id) => {
   // Coin
   let dataCoin = await getCache(CACHE_KEYS.COMMERCE.COIN_BY_ID(data_user.coin_id));
   if (!dataCoin) {
-    dataCoin = await Coin.findByPk(data_user.coin_id, {
+    dataCoin = await coinRepo.findById(data_user.coin_id, {
       attributes: ["id", "amount"],
+      raw: true,
+      nest: true,
     });
     if (dataCoin) await setCache(CACHE_KEYS.COMMERCE.COIN_BY_ID(data_user.coin_id), dataCoin);
   }
@@ -231,8 +249,10 @@ const getUserBycacheId = async (id) => {
   // Rank
   let dataRank = await getCache(CACHE_KEYS.IDENTITY.RANK_BY_ID(data_user.rank_id));
   if (!dataRank) {
-    dataRank = await Rank.findByPk(data_user.rank_id, {
+    dataRank = await rankRepo.findById(data_user.rank_id, {
       attributes: ["id", "amount", "order"],
+      raw: true,
+      nest: true,
     });
     if (dataRank) await setCache(CACHE_KEYS.IDENTITY.RANK_BY_ID(data_user.rank_id), dataRank);
   }
@@ -261,19 +281,22 @@ const getUserByID = async (id) => {
   const cacheUser = await getUserBycacheId(id);
   if (cacheUser) return cacheUser;
 
-  const user = await User.findOne({
-    where: { id },
-    attributes: { exclude: ["password"] },
-    include: [
-      { model: Role, as: "roles", attributes: ["id", "name"] },
-      { model: Coin, as: "coins", attributes: ["id", "amount"] },
-      { model: Rank, as: "ranks", attributes: ["id", "amount", "order"] },
-    ],
-  });
+  const user = await userRepo.findOne(
+    {
+      where: { id },
+      attributes: { exclude: ["password"] },
+      include: [
+        { model: db.Role, as: "roles", attributes: ["id", "name"] },
+        { model: db.Coin, as: "coins", attributes: ["id", "amount"] },
+        { model: db.Rank, as: "ranks", attributes: ["id", "amount", "order"] },
+      ],
+    },
+    { raw: true, nest: true },
+  );
   if (!user) throw new NotFoundError("User not found");
-  delete user.password;
+
   const userFormat = {
-    ...user.toJSON(),
+    ...user,
     role_id: user.roles?.id || null,
     coin_id: user.coins?.id || null,
     rank_id: user.ranks?.id || null,
@@ -292,15 +315,18 @@ const getUserByPublicID = async (public_id) => {
     if (cacheUser) return cacheUser;
   }
 
-  const user = await User.findOne({
-    where: { public_id },
-    attributes: { exclude: ["password"] },
-    include: [
-      { model: Role, as: "roles", attributes: ["id", "name"] },
-      { model: Coin, as: "coins", attributes: ["id", "amount"] },
-      { model: Rank, as: "ranks", attributes: ["id", "amount", "order"] },
-    ],
-  });
+  const user = await userRepo.findOne(
+    {
+      where: { public_id },
+      attributes: { exclude: ["password"] },
+      include: [
+        { model: db.Role, as: "roles", attributes: ["id", "name"] },
+        { model: db.Coin, as: "coins", attributes: ["id", "amount"] },
+        { model: db.Rank, as: "ranks", attributes: ["id", "amount", "order"] },
+      ],
+    },
+    { raw: true, nest: true },
+  );
   if (!user) throw new NotFoundError("User not found");
 
   await setUserCache(user);
@@ -309,49 +335,58 @@ const getUserByPublicID = async (public_id) => {
 
 const updateUser = async (user, data) => {
   let { full_name, username, phone_number, email } = data;
+  const updateData = {};
 
   if (username !== undefined) {
     username = removeSpecialChars(username);
-    user.username = username;
+    updateData.username = username;
   }
 
   if (email !== undefined) {
-    const existingUser = await User.findOne({
-      where: {
-        email,
-        id: { [Op.ne]: user.id },
+    const existingUser = await userRepo.findOne(
+      {
+        where: {
+          email,
+          id: { [Op.ne]: user.id },
+        },
       },
-    });
+      { raw: true, nest: true },
+    );
     if (existingUser) {
       throw new ConflictError("Email is already used by another user");
     }
-    user.email = email;
+    updateData.email = email;
   }
 
   if (full_name !== undefined) {
     full_name = removeSpecialChars(full_name);
-    user.full_name = full_name;
+    updateData.full_name = full_name;
   }
 
   if (phone_number !== undefined) {
-    user.phone_number = phone_number;
+    updateData.phone_number = phone_number;
   }
 
-  await user.save();
+  const updatedUserResult = await userRepo.updateById(user.id, updateData);
+  if (!updatedUserResult) throw new NotFoundError("User not found");
 
-  const user_id = user.id;
-
-  const coindata = await Coin.findOne({ where: { user_id } });
+  const coindata = await coinRepo.findOne(
+    { where: { user_id: user.id } },
+    { raw: true, nest: true },
+  );
   if (!coindata) throw new NotFoundError("Coin does not exist");
 
-  const roledata = await Role.findByPk(user.role_id);
+  const roledata = await roleRepo.findById(updatedUserResult.role_id, { raw: true, nest: true });
   if (!roledata) throw new NotFoundError("Role does not exist");
 
-  const rankdata = await Rank.findOne({ where: { user_id } });
+  const rankdata = await rankRepo.findOne(
+    { where: { user_id: user.id } },
+    { raw: true, nest: true },
+  );
   if (!rankdata) throw new NotFoundError("Rank does not exist");
 
   const updatedUser = {
-    ...user.toJSON(),
+    ...updatedUserResult,
     coins: coindata,
     roles: roledata,
     ranks: rankdata,
@@ -362,63 +397,78 @@ const updateUser = async (user, data) => {
 };
 
 const updateUserById = async (id, data) => {
-  let user = await User.findOne({ where: { id } });
+  let user = await userRepo.findOne({ where: { id } }, { raw: true, nest: true });
   if (!user) throw new NotFoundError("User not found");
   return await updateUser(user, data);
 };
 
 const updateUserByPublicID = async (public_id, data) => {
-  const user = await User.findOne({ where: { public_id } });
+  const user = await userRepo.findOne({ where: { public_id } }, { raw: true, nest: true });
   if (!user) throw new NotFoundError("User not found");
   return await updateUser(user, data);
 };
 
 const findOrCreateUser = async (profile) => {
-  const existingUser = await User.findOne({
-    where: { email: profile.emails[0].value },
-    include: [
-      { model: Role, as: "roles" },
-      { model: Coin, as: "coins" },
-      { model: Rank, as: "ranks" },
-    ],
-  });
+  const existingUser = await userRepo.findOne(
+    {
+      where: { email: profile.emails[0].value },
+      include: [
+        { model: db.Role, as: "roles" },
+        { model: db.Coin, as: "coins" },
+        { model: db.Rank, as: "ranks" },
+      ],
+    },
+    { raw: true, nest: true },
+  );
 
   if (existingUser) {
     await setUserCache(existingUser);
     return existingUser;
   }
 
-  const maxOrderRank = await Rank.findOne({ order: [["order", "DESC"]] });
+  const maxOrderRank = await rankRepo.findOne(
+    { order: [["order", "DESC"]] },
+    { raw: true, nest: true },
+  );
   const newOrder = maxOrderRank ? maxOrderRank.order + 1 : 1;
-  const newRank = await Rank.create({
-    amount: 0,
-    order: newOrder,
-    user_id: null,
-  });
+  const newRank = await rankRepo.create(
+    {
+      amount: 0,
+      order: newOrder,
+      user_id: null,
+    },
+    { raw: true, nest: true },
+  );
 
   const name = removeSpecialChars(profile.displayName);
-  const newUser = await User.create({
-    role_id: DEFAULT_ROLE_ID,
-    rank_id: newRank.id,
-    public_id: nanoid(),
-    google_id: profile.id,
-    email: profile.emails[0].value,
-    username: name,
-    full_name: name,
-    password: null,
-  });
+  const newUser = await userRepo.create(
+    {
+      role_id: DEFAULT_ROLE_ID,
+      rank_id: newRank.id,
+      public_id: nanoid(),
+      google_id: profile.id,
+      email: profile.emails[0].value,
+      username: name,
+      full_name: name,
+      password: null,
+    },
+    { raw: true, nest: true },
+  );
 
-  await newRank.update({ user_id: newUser.id });
+  await rankRepo.updateById(newRank.id, { user_id: newUser.id });
 
-  const newCoin = await Coin.create({
-    amount: 0,
-    user_id: newUser.id,
-  });
+  const newCoin = await coinRepo.create(
+    {
+      amount: 0,
+      user_id: newUser.id,
+    },
+    { raw: true, nest: true },
+  );
 
-  const roledata = await Role.findByPk(DEFAULT_ROLE_ID);
+  const roledata = await roleRepo.findById(DEFAULT_ROLE_ID, { raw: true, nest: true });
 
   const userWithIncludes = {
-    ...newUser.toJSON(),
+    ...newUser,
     role_id: DEFAULT_ROLE_ID,
     coin_id: newCoin.id,
     rank_id: newRank.id,
@@ -429,10 +479,11 @@ const findOrCreateUser = async (profile) => {
   await deleteCacheAll(newUser.id, newUser.public_id);
   await setUserCache(userWithIncludes);
 
-  //delete password
-  delete newUser.password;
-  return newUser;
+  const responseUser = { ...newUser };
+  delete responseUser.password;
+  return responseUser;
 };
+
 module.exports = {
   createUser,
   getAllUsers,

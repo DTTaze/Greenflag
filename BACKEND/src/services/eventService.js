@@ -1,8 +1,7 @@
 const db = require("../models/index");
-const Event = db.Event;
-const EventUser = db.EventUser;
-const User = db.User;
-const Image = db.Image;
+const eventRepo = require("../repositories/eventRepository");
+const userRepo = require("../repositories/userRepository");
+const imageRepo = require("../repositories/imageRepository");
 const { nanoid } = require("nanoid");
 const { uploadImages, deleteImages } = require("./imageService");
 const { getCache, setCache, deleteCache } = require("../utils/cache");
@@ -19,99 +18,39 @@ const cacheEventUserId = (id) => CACHE_KEYS.EVENT.CAMPAIGN_USER_BY_ID(id);
 const cacheEventUserAll = CACHE_KEYS.EVENT.ALL_CAMPAIGN_USERS;
 
 const getEventById = async (eventId) => {
-  try {
-    const cachedEvent = await getCache(cacheEventId(eventId));
-    if (cachedEvent) {
-      console.log("cachedEvent", cachedEvent);
-      console.log("imageIds:", cachedEvent.imagesId);
-      const event = cachedEvent;
-      let uploadedImages = [];
-      for (const imageId of event.imagesId) {
-        if (!imageId) {
-          continue;
-        }
-        // Check if imageId is valid
-        const image = await getImageById(imageId);
-        if (image) {
-          uploadedImages.push(image);
-        }
+  const cachedEvent = await getCache(cacheEventId(eventId));
+  if (cachedEvent) {
+    console.log("cachedEvent", cachedEvent);
+    console.log("imageIds:", cachedEvent.imagesId);
+    const event = cachedEvent;
+    let uploadedImages = [];
+    for (const imageId of event.imagesId) {
+      if (!imageId) {
+        continue;
       }
-      const creator = await getUserByID(event.creator_id);
-
-      const imagesFormat = uploadedImages.map((image) => image.url);
-
-      const eventFormat = {
-        ...event,
-        images: imagesFormat,
-        creator: {
-          username: creator.username,
-        },
-      };
-      delete eventFormat.imagesId;
-      return eventFormat;
+      const image = await getImageById(imageId);
+      if (image) {
+        uploadedImages.push(image);
+      }
     }
-
-    const event = await Event.findOne({
-      where: { id: eventId },
-      include: [
-        {
-          model: User,
-          as: "creator",
-          attributes: ["username"],
-        },
-      ],
-    });
-
-    if (!event) {
-      throw new NotFoundError("Event not found");
-    }
-
-    const uploadedImages = await Image.findAll({
-      where: {
-        reference_id: eventId,
-        reference_type: "event",
-      },
-      attributes: ["id", "url"],
-    });
-    console.log(`images of event ${eventId} : `, uploadedImages);
+    const creator = await getUserByID(event.creator_id);
 
     const imagesFormat = uploadedImages.map((image) => image.url);
 
-    //Cache event
-    const cachedEventFormat = {
-      ...event.toJSON(),
-      imagesId: uploadedImages.map((image) => image.id),
-    };
-    delete cachedEventFormat.images;
-    delete cachedEventFormat.creator;
-    await setCache(cacheEventId(eventId), cachedEventFormat);
-
-    return {
-      ...event.toJSON(),
+    const eventFormat = {
+      ...event,
       images: imagesFormat,
+      creator: {
+        username: creator.username,
+      },
     };
-  } catch (error) {
-    console.error("Error retrieving event:", error);
-    throw error;
+    delete eventFormat.imagesId;
+    return eventFormat;
   }
-};
 
-const getAllEvents = async () => {
-  try {
-    const cachedEventIds = await getCache(cacheEventAll);
-    if (cachedEventIds) {
-      console.log("cachedEventIds", cachedEventIds);
-      const events = [];
-      for (const eventId of cachedEventIds) {
-        const event = await getEventById(eventId);
-        if (event) {
-          events.push(event);
-        }
-      }
-      return events;
-    }
-
-    const events = await Event.findAll({
+  const event = await eventRepo.findOne(
+    {
+      where: { id: eventId },
       include: [
         {
           model: db.User,
@@ -119,179 +58,220 @@ const getAllEvents = async () => {
           attributes: ["username"],
         },
       ],
-    });
-    const eventsWithImages = [];
-    const eventIds = [];
-    for (const event of events) {
-      const uploadedImages = await Image.findAll({
+    },
+    { raw: true, nest: true },
+  );
+
+  if (!event) {
+    throw new NotFoundError("Event not found");
+  }
+
+  const uploadedImages = await imageRepo.findAll(
+    {
+      where: {
+        reference_id: eventId,
+        reference_type: "event",
+      },
+      attributes: ["id", "url"],
+    },
+    { raw: true, nest: true },
+  );
+  console.log(`images of event ${eventId} : `, uploadedImages);
+
+  const imagesFormat = uploadedImages.map((image) => image.url);
+
+  //Cache event
+  const cachedEventFormat = {
+    ...event,
+    imagesId: uploadedImages.map((image) => image.id),
+  };
+  delete cachedEventFormat.images;
+  delete cachedEventFormat.creator;
+  await setCache(cacheEventId(eventId), cachedEventFormat);
+
+  return {
+    ...event,
+    images: imagesFormat,
+  };
+};
+
+const getAllEvents = async () => {
+  const cachedEventIds = await getCache(cacheEventAll);
+  if (cachedEventIds) {
+    console.log("cachedEventIds", cachedEventIds);
+    const events = [];
+    for (const eventId of cachedEventIds) {
+      const event = await getEventById(eventId);
+      if (event) {
+        events.push(event);
+      }
+    }
+    return events;
+  }
+
+  const events = await eventRepo.findAll(
+    {
+      include: [
+        {
+          model: db.User,
+          as: "creator",
+          attributes: ["username"],
+        },
+      ],
+    },
+    { raw: true, nest: true },
+  );
+
+  const eventsWithImages = [];
+  const eventIds = [];
+  for (const event of events) {
+    const uploadedImages = await imageRepo.findAll(
+      {
         where: {
           reference_id: event.id,
           reference_type: "event",
         },
         attributes: ["url"],
-      });
-      const imagesFormat = uploadedImages.map((image) => image.url);
-      const eventFormat = {
-        ...event.toJSON(),
-        images: imagesFormat,
-      };
-      eventsWithImages.push(eventFormat);
+      },
+      { raw: true, nest: true },
+    );
+    const imagesFormat = uploadedImages.map((image) => image.url);
+    const eventFormat = {
+      ...event,
+      images: imagesFormat,
+    };
+    eventsWithImages.push(eventFormat);
 
-      eventIds.push(event.id);
-    }
-
-    // Cache all events
-    await setCache(cacheEventAll, eventIds);
-
-    return eventsWithImages;
-  } catch (error) {
-    console.error("Error retrieving events:", error);
-    throw error;
+    eventIds.push(event.id);
   }
+
+  // Cache all events
+  await setCache(cacheEventAll, eventIds);
+
+  return eventsWithImages;
 };
 
 const getEventUserById = async (id) => {
-  try {
-    if (!id) throw new BadRequestError(`eventuser id is required`);
-    const eventuserCache = await getCache(cacheEventUserId(id));
-    if (eventuserCache) {
-      console.log("eventuserCache", eventuserCache);
-      const User = await getUserByID(eventuserCache.user_id);
-      const Event = await getEventById(eventuserCache.event_id);
-      const eventuserformat = {
-        ...eventuserCache,
-        User,
-        Event,
-      };
-      return eventuserformat;
-    }
+  if (!id) throw new BadRequestError(`eventuser id is required`);
+  const eventuserCache = await getCache(cacheEventUserId(id));
+  if (eventuserCache) {
+    console.log("eventuserCache", eventuserCache);
+    const User = await getUserByID(eventuserCache.user_id);
+    const Event = await getEventById(eventuserCache.event_id);
+    const eventuserformat = {
+      ...eventuserCache,
+      User,
+      Event,
+    };
+    return eventuserformat;
+  }
 
-    const eventuser = await EventUser.findByPk(id, {
+  const eventuser = await eventRepo.findEventUserById(
+    id,
+    {
       include: [
         {
-          model: User,
+          model: db.User,
         },
         {
-          model: Event,
+          model: db.Event,
         },
       ],
-    });
+    },
+    { raw: true, nest: true },
+  );
 
-    if (!eventuser) {
-      throw new NotFoundError(`eventuser id ${id} doesn't exit`);
-    }
-
-    //Cache eventuser
-    const eventuserFormat = {
-      ...eventuser.toJSON(),
-    };
-    delete eventuserFormat.events;
-    delete eventuserFormat.users;
-    await setCache(cacheEventUserId(id), eventuserFormat);
-
-    return eventuser;
-  } catch (error) {
-    console.log(`error get event user id ${id} :`, error);
-    throw error;
+  if (!eventuser) {
+    throw new NotFoundError(`eventuser id ${id} doesn't exit`);
   }
+
+  const eventuserFormat = {
+    ...eventuser,
+  };
+  delete eventuserFormat.events;
+  delete eventuserFormat.users;
+  await setCache(cacheEventUserId(id), eventuserFormat);
+
+  return eventuser;
 };
 
 const getAllEventUser = async () => {
-  try {
-    const allEventUserIds = await getCache(cacheEventUserAll);
-    if (allEventUserIds) {
-      console.log("allEventUserIds", allEventUserIds);
-      let result = [];
-      for (const eventUserid of allEventUserIds) {
-        const eventuser = await getEventUserById(Number(eventUserid));
-        result.push(eventuser);
-      }
-      return result;
+  const allEventUserIds = await getCache(cacheEventUserAll);
+  if (allEventUserIds) {
+    console.log("allEventUserIds", allEventUserIds);
+    let result = [];
+    for (const eventUserid of allEventUserIds) {
+      const eventuser = await getEventUserById(Number(eventUserid));
+      result.push(eventuser);
     }
+    return result;
+  }
 
-    const allEventUsers = await EventUser.findAll({
+  const allEventUsers = await eventRepo.findAllEventUsers(
+    {
       include: [
         {
-          model: User,
+          model: db.User,
         },
         {
-          model: Event,
+          model: db.Event,
         },
       ],
-    });
+    },
+    { raw: true, nest: true },
+  );
 
-    //Cache eventuser
-    let eventUserIds = allEventUsers.map((eventUser) => eventUser.id);
-    await setCache(cacheEventUserAll, eventUserIds);
+  let eventUserIds = allEventUsers.map((eventUser) => eventUser.id);
+  await setCache(cacheEventUserAll, eventUserIds);
 
-    return allEventUsers;
-  } catch (error) {
-    console.log("error get all event user : ", error);
-    throw error;
-  }
+  return allEventUsers;
 };
 
 const getEventSigned = async (user_id) => {
-  try {
-    const allEventUsers = await getAllEventUser();
-    let result = [];
+  const allEventUsers = await getAllEventUser();
+  let result = [];
 
-    for (const eventuser of allEventUsers) {
-      if (Number(eventuser.user_id) === Number(user_id)) {
-        const eventuserFormat = {
-          ...(typeof eventuser.toJSON === "function" ? eventuser.toJSON() : eventuser),
-        };
+  for (const eventuser of allEventUsers) {
+    if (Number(eventuser.user_id) === Number(user_id)) {
+      const eventuserFormat = {
+        ...eventuser,
+      };
 
-        delete eventuserFormat.users;
-        result.push(eventuserFormat);
-      }
+      delete eventuserFormat.users;
+      result.push(eventuserFormat);
     }
-
-    return result;
-  } catch (error) {
-    console.error("Error retrieving signed events:", error);
-    throw error;
   }
+
+  return result;
 };
 
 const getEventsOfCreator = async (creator_id) => {
-  try {
-    const allevents = await getAllEvents();
-    const result = [];
-    for (const event of allevents) {
-      if (Number(event.creator_id) === Number(creator_id)) result.push(event);
-    }
-
-    return result;
-  } catch (error) {
-    console.error("Error get events of creator:", error);
-    throw error;
+  const allevents = await getAllEvents();
+  const result = [];
+  for (const event of allevents) {
+    if (Number(event.creator_id) === Number(creator_id)) result.push(event);
   }
+
+  return result;
 };
 
 const getEventUserByEventId = async (event_id) => {
-  try {
-    const allEventUser = await getAllEventUser();
-    console.log("allEventUser :", allEventUser);
-    const eventUsers = allEventUser.filter(
-      (eventUser) => Number(eventUser.event_id) === Number(event_id),
-    );
+  const allEventUser = await getAllEventUser();
+  console.log("allEventUser :", allEventUser);
+  const eventUsers = allEventUser.filter(
+    (eventUser) => Number(eventUser.event_id) === Number(event_id),
+  );
 
-    return eventUsers;
-  } catch (error) {
-    console.error("Error retrieving event users:", error);
-    throw error;
-  }
+  return eventUsers;
 };
 
 const createEvent = async (Data, user_id, images) => {
-  try {
-    const { title, description, location, capacity, end_sign, start_time, end_time, coins } = Data;
+  const { title, description, location, capacity, end_sign, start_time, end_time, coins } = Data;
 
-    // Check creator_id
-    const creator = await getUserByID(user_id);
+  const creator = await getUserByID(user_id);
 
-    const event = await Event.create({
+  const event = await eventRepo.create(
+    {
       public_id: nanoid(),
       creator_id: user_id,
       title,
@@ -302,297 +282,237 @@ const createEvent = async (Data, user_id, images) => {
       start_time,
       end_time,
       coins,
-    });
+    },
+    { raw: true, nest: true },
+  );
 
-    let uploadedImages = [];
-    if (images && images.length > 0) {
-      uploadedImages = await uploadImages(images, event.id, "event");
-    }
-
-    const imagesFormat = uploadedImages.reduce((acc, image) => {
-      if (!acc[image.reference_id]) {
-        acc[image.reference_id] = [];
-      }
-      acc[image.reference_id].push(image.url);
-      return acc;
-    }, {});
-
-    // Cache the event
-    const eventCacheFormat = {
-      ...event.toJSON(),
-      imagesId: uploadedImages.map((image) => image.id),
-    };
-
-    //delete cache
-    await setCache(cacheEventId(event.id), eventCacheFormat);
-    await deleteCache(cacheEventAll);
-    return {
-      ...event.toJSON(),
-      creator: {
-        id: creator.id,
-        username: creator.username,
-      },
-      images: imagesFormat,
-    };
-  } catch (error) {
-    console.error("Error creating event:", error);
-    throw error;
+  let uploadedImages = [];
+  if (images && images.length > 0) {
+    uploadedImages = await uploadImages(images, event.id, "event");
   }
+
+  const imagesFormat = uploadedImages.reduce((acc, image) => {
+    if (!acc[image.reference_id]) {
+      acc[image.reference_id] = [];
+    }
+    acc[image.reference_id].push(image.url);
+    return acc;
+  }, {});
+
+  const eventCacheFormat = {
+    ...event,
+    imagesId: uploadedImages.map((image) => image.id),
+  };
+
+  await setCache(cacheEventId(event.id), eventCacheFormat);
+  await deleteCache(cacheEventAll);
+  return {
+    ...event,
+    creator: {
+      id: creator.id,
+      username: creator.username,
+    },
+    images: imagesFormat,
+  };
 };
 
 const createEventUser = async (eventId, userId) => {
-  try {
-    const eventUser = await EventUser.create({
-      event_id: eventId,
-      user_id: userId,
-    });
+  const { eventUser } = await eventRepo.addUserToEvent(eventId, userId);
 
-    //Cache eventuser
-    await setCache(cacheEventUserId(eventUser.id));
-    await deleteCache(cacheEventUserAll);
+  await setCache(cacheEventUserId(eventUser.id), eventUser);
+  await deleteCache(cacheEventUserAll);
 
-    return eventUser;
-  } catch (error) {
-    console.error("Error create eventuser:", error);
-    throw error;
-  }
+  return eventUser;
 };
 
 const acceptEvent = async (eventId, userId) => {
-  try {
-    const event = await Event.findByPk(eventId);
+  const event = await eventRepo.findById(eventId, { raw: true, nest: true });
 
-    if (!event) {
-      throw new NotFoundError("Event not found");
-    }
-
-    const user = await User.findByPk(userId);
-
-    if (!user) {
-      throw new NotFoundError("User not found");
-    }
-
-    const eventUser = await createEventUser(eventId, userId);
-
-    return eventUser;
-  } catch (error) {
-    console.error("Error accepting event:", error);
-    throw error;
+  if (!event) {
+    throw new NotFoundError("Event not found");
   }
+
+  const user = await userRepo.findById(userId, { raw: true, nest: true });
+
+  if (!user) {
+    throw new NotFoundError("User not found");
+  }
+
+  const eventUser = await createEventUser(eventId, userId);
+
+  return eventUser;
 };
 
 const updateEvent = async (event_id, Data, images) => {
-  try {
-    const { title, description, location, capacity, start_time, end_time, status, coins } = Data;
-    let updateFields = {};
+  const { title, description, location, capacity, start_time, end_time, status, coins } = Data;
+  let updateFields = {};
 
-    if (title) {
-      updateFields.title = title;
-    }
-    if (description) {
-      updateFields.description = description;
-    }
-    if (location) {
-      updateFields.location = location;
-    }
-    if (capacity !== undefined) {
-      updateFields.capacity = capacity;
-    }
-    if (start_time !== undefined) {
-      updateFields.start_time = start_time;
-    }
-    if (end_time !== undefined) {
-      updateFields.end_time = end_time;
-    }
-    if (status !== undefined) {
-      updateFields.status = status;
-    }
-    if (coins !== undefined) {
-      updateFields.coins = coins;
-    }
+  if (title !== undefined) updateFields.title = title;
+  if (description !== undefined) updateFields.description = description;
+  if (location !== undefined) updateFields.location = location;
+  if (capacity !== undefined) updateFields.capacity = capacity;
+  if (start_time !== undefined) updateFields.start_time = start_time;
+  if (end_time !== undefined) updateFields.end_time = end_time;
+  if (status !== undefined) updateFields.status = status;
+  if (coins !== undefined) updateFields.coins = coins;
 
-    const event = await Event.findByPk(event_id);
+  const event = await eventRepo.findById(event_id, { raw: true, nest: true });
 
-    if (!event) {
-      throw new NotFoundError("Event not found");
-    }
+  if (!event) {
+    throw new NotFoundError("Event not found");
+  }
 
-    await event.update(updateFields);
+  const updatedEvent = await eventRepo.updateById(event_id, updateFields);
 
-    //delete cache
-    await deleteCache(cacheEventId(event_id));
-    await deleteCache(cacheEventAll);
-    const eventuserByEventId = await EventUser.findAll({
+  await deleteCache(cacheEventId(event_id));
+  await deleteCache(cacheEventAll);
+  const eventuserByEventId = await eventRepo.findAllEventUsers(
+    {
       where: {
         event_id,
       },
       attributes: ["id"],
-    });
+    },
+    { raw: true, nest: true },
+  );
 
-    for (const eventUser of eventuserByEventId) {
-      await deleteCache(cacheEventUserId(eventUser.id));
+  for (const eventUser of eventuserByEventId) {
+    await deleteCache(cacheEventUserId(eventUser.id));
+  }
+
+  let uploadedImages;
+
+  if (images && images.length > 0) {
+    await deleteImages(event_id, "event");
+    uploadedImages = await uploadImages(images, event_id, "event");
+
+    if (!uploadedImages || uploadedImages.length === 0) {
+      throw new AppError("Failed to upload images", 500);
     }
-
-    let uploadedImages = [];
-
-    if (images && images.length > 0) {
-      // Delete old images and cache
-      await deleteImages(event.id, "event");
-      // Upload new images and cache
-      uploadedImages = await uploadImages(images, event.id, "event");
-
-      if (!uploadedImages || uploadedImages.length === 0) {
-        throw new AppError("Failed to upload images", 500);
-      }
-    } else {
-      uploadedImages = await Image.findAll({
+  } else {
+    uploadedImages = await imageRepo.findAll(
+      {
         where: {
-          reference_id: event.id,
+          reference_id: event_id,
           reference_type: "event",
         },
         attributes: ["url"],
-      });
-    }
-
-    return {
-      ...event.toJSON(),
-      images: uploadedImages.map((image) => image.url),
-    };
-  } catch (error) {
-    console.error("Error updating event:", error);
-    throw error;
+      },
+      { raw: true, nest: true },
+    );
   }
+
+  return {
+    ...updatedEvent,
+    images: uploadedImages.map((image) => image.url),
+  };
 };
 
 const deleteEvent = async (event_id) => {
-  try {
-    const event = await Event.findByPk(event_id);
-    if (!event) {
-      throw new NotFoundError("Event not found");
-    }
+  const event = await eventRepo.findById(event_id, { raw: true, nest: true });
+  if (!event) {
+    throw new NotFoundError("Event not found");
+  }
 
-    let listImagesBeforeDelete = await deleteImages(event_id, "event");
+  let listImagesBeforeDelete = await deleteImages(event_id, "event");
 
-    listImagesBeforeDelete = listImagesBeforeDelete.map((image) => image.url);
+  const imageUrls = listImagesBeforeDelete.map((image) => image.url);
 
-    //delete cache
-    await deleteCache(cacheEventId(event_id));
-    await deleteCache(cacheEventAll);
-    await deleteCache(cacheEventUserAll);
-    const eventuserByEventId = await EventUser.findAll({
+  await deleteCache(cacheEventId(event_id));
+  await deleteCache(cacheEventAll);
+  await deleteCache(cacheEventUserAll);
+  const eventuserByEventId = await eventRepo.findAllEventUsers(
+    {
       where: {
         event_id,
       },
       attributes: ["id"],
-    });
+    },
+    { raw: true, nest: true },
+  );
 
-    for (const eventUser of eventuserByEventId) {
-      await deleteCache(cacheEventUserId(eventUser.id));
-    }
-
-    await event.destroy();
-
-    return {
-      ...event.toJSON(),
-      images: listImagesBeforeDelete,
-    };
-  } catch (error) {
-    console.error("Error deleting event:", error);
-    throw error;
+  for (const eventUser of eventuserByEventId) {
+    await deleteCache(cacheEventUserId(eventUser.id));
   }
+
+  await eventRepo.destroy(event_id);
+
+  return {
+    ...event,
+    images: imageUrls,
+  };
 };
 
 const checkInUserByUserId = async (event_id, user_id) => {
-  try {
-    if (!event_id || !user_id) {
-      throw new BadRequestError("Event ID and User ID are required");
-    }
-    const user = await User.findByPk(user_id);
-    if (!user) {
-      throw new NotFoundError("User not found");
-    }
-    const event = await Event.findByPk(event_id);
-    if (!event) {
-      throw new NotFoundError("Event not found");
-    }
-
-    const eventUser = await EventUser.findOne({
-      where: { event_id, user_id },
-    });
-
-    if (!eventUser) {
-      throw new NotFoundError("User not found in this event");
-    }
-
-    await eventUser.update({ joined_at: new Date() });
-
-    //del cache eventuser id
-    await deleteCache(cacheEventUserId(eventUser.id));
-
-    return eventUser;
-  } catch (error) {
-    console.error("Error checking in user:", error);
-    throw error;
+  if (!event_id || !user_id) {
+    throw new BadRequestError("Event ID and User ID are required");
   }
+  const user = await userRepo.findById(user_id, { raw: true, nest: true });
+  if (!user) {
+    throw new NotFoundError("User not found");
+  }
+  const event = await eventRepo.findById(event_id, { raw: true, nest: true });
+  if (!event) {
+    throw new NotFoundError("Event not found");
+  }
+
+  const eventUser = await eventRepo.findEventUser(user_id, event_id, { raw: true, nest: true });
+
+  if (!eventUser) {
+    throw new NotFoundError("User not found in this event");
+  }
+
+  const updatedEventUser = await eventRepo.updateEventUserById(eventUser.id, {
+    joined_at: new Date(),
+  });
+
+  await deleteCache(cacheEventUserId(eventUser.id));
+
+  return updatedEventUser;
 };
 
 const checkOutUserByUserId = async (event_id, user_id) => {
-  try {
-    if (!event_id || !user_id) {
-      throw new BadRequestError("Event ID and User ID are required");
-    }
-    user_id = Number(user_id);
-    event_id = Number(event_id);
-
-    const user = await getUserByID(user_id);
-    if (!user) {
-      throw new NotFoundError("User not found");
-    }
-
-    const event = await getEventById(event_id);
-    if (!event) {
-      throw new NotFoundError("Event not found");
-    }
-
-    const eventUser = await EventUser.findOne({
-      where: { event_id, user_id },
-    });
-
-    if (!eventUser) {
-      throw new NotFoundError("User not found in this event");
-    }
-
-    await eventUser.update({ completed_at: new Date() });
-
-    //del cache eventuser id
-    await deleteCache(cacheEventUserId(eventUser.id));
-
-    return eventUser;
-  } catch (error) {
-    console.error("Error checking in user:", error);
-    throw error;
+  if (!event_id || !user_id) {
+    throw new BadRequestError("Event ID and User ID are required");
   }
+  user_id = Number(user_id);
+  event_id = Number(event_id);
+
+  const user = await getUserByID(user_id);
+  if (!user) {
+    throw new NotFoundError("User not found");
+  }
+
+  const event = await getEventById(event_id);
+  if (!event) {
+    throw new NotFoundError("Event not found");
+  }
+
+  const eventUser = await eventRepo.findEventUser(user_id, event_id, { raw: true, nest: true });
+
+  if (!eventUser) {
+    throw new NotFoundError("User not found in this event");
+  }
+
+  const updatedEventUser = await eventRepo.updateEventUserById(eventUser.id, {
+    completed_at: new Date(),
+  });
+
+  await deleteCache(cacheEventUserId(eventUser.id));
+
+  return updatedEventUser;
 };
 
 const deleteEventUserById = async (eventUserId) => {
-  try {
-    const result = await EventUser.destroy({
-      where: {
-        id: eventUserId,
-      },
-    });
+  const result = await eventRepo.destroyEventUser(eventUserId);
 
-    if (result === 0) {
-      throw new NotFoundError(`No event user found with the given event UserId : ${eventUserId}`);
-    }
-
-    await deleteCache(cacheEventUserId(eventUserId));
-    await deleteCache(cacheEventUserAll);
-    return result;
-  } catch (error) {
-    console.error("Error deleting event user:", error);
-    throw error;
+  if (result === 0) {
+    throw new NotFoundError(`No event user found with the given event UserId : ${eventUserId}`);
   }
+
+  await deleteCache(cacheEventUserId(eventUserId));
+  await deleteCache(cacheEventUserAll);
+  return result;
 };
 
 module.exports = {

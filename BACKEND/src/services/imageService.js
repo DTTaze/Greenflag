@@ -1,5 +1,4 @@
-const db = require("../models/index");
-const Image = db.Image;
+const imageRepo = require("../repositories/imageRepository");
 const cloudinary = require("../config/cloudinary");
 const { getCache, setCache, deleteCache } = require("../utils/cache");
 const { CACHE_KEYS } = require("../constants/cacheKeys");
@@ -19,7 +18,7 @@ const uploadImages = async (files, reference_id, reference_type) => {
       folder: "images",
     });
 
-    const image = await Image.create({
+    const image = await imageRepo.create({
       url: result.secure_url,
       reference_id,
       reference_type,
@@ -36,7 +35,7 @@ const getImageById = async (id) => {
   const cached = await getCache(cacheImageId(id));
   if (cached) return cached;
 
-  const image = await Image.findByPk(id);
+  const image = await imageRepo.findById(id);
   if (!image) throw new NotFoundError("Image not found");
 
   await setCache(cacheImageId(id), image);
@@ -47,13 +46,13 @@ const getAllImages = async () => {
   const cached = await getCache(cacheImageAll);
   if (cached) return cached;
 
-  const images = await Image.findAll();
+  const images = await imageRepo.findAll();
   await setCache(cacheImageAll, images);
   return images;
 };
 
 const updateImage = async (id, file) => {
-  const image = await Image.findByPk(id);
+  const image = await imageRepo.findById(id);
   if (!image) throw new NotFoundError("Image not found");
 
   if (image.url) {
@@ -74,7 +73,7 @@ const updateImage = async (id, file) => {
 };
 
 const deleteImage = async (id) => {
-  const image = await Image.findByPk(id);
+  const image = await imageRepo.findById(id);
   if (!image) throw new NotFoundError("Image not found");
 
   if (image.url) {
@@ -91,7 +90,7 @@ const deleteImage = async (id) => {
 };
 
 const deleteImages = async (reference_id, reference_type) => {
-  const images = await Image.findAll({
+  const images = await imageRepo.findAll({
     where: { reference_id, reference_type },
   });
 

@@ -1,10 +1,8 @@
 const axios = require("axios");
 const ghnBaseUrl = process.env.GHN_URL_DEVELOPMENT;
 const db = require("../models/index");
-const DeliveryOrder = db.DeliveryOrder;
-const Transaction = db.Transaction;
-const ReceiverInformation = db.ReceiverInformation;
-const User = db.User;
+const deliveryOrderRepo = require("../repositories/deliveryOrderRepository");
+const transactionRepo = require("../repositories/transactionRepository");
 const { getCache, setCache, deleteCache } = require("../utils/cache");
 const { CACHE_KEYS, CACHE_TTL } = require("../constants/cacheKeys");
 const { DELIVERY_ORDER_STATUS } = require("../constants/deliveryStatus");
@@ -111,20 +109,24 @@ const createDeliveryOrder = async (shipmentData, token, shop_id, seller_id) => {
     const total_amount = total_fee + cod_amount;
     const orderInfo = await getDeliveryOrderInfo(data.order_code, token, shop_id);
 
-    await DeliveryOrder.create({
-      seller_id: seller_id,
-      order_code: data.order_code,
-      status: orderInfo.data.status,
-      to_name: shipmentData.to_name,
-      to_phone: shipmentData.to_phone,
-      to_address: shipmentData.to_address,
-      is_printed: false,
-      created_date: orderInfo.data.created_date,
-      cod_amount: cod_amount,
-      weight: shipmentData.weight,
-      payment_type_id: shipmentData.payment_type_id,
-      total_amount: total_amount,
-    });
+    await deliveryOrderRepo.create(
+      {
+        seller_id: seller_id,
+        order_code: data.order_code,
+        status: orderInfo.data.status,
+        to_name: shipmentData.to_name,
+        to_phone: shipmentData.to_phone,
+        to_address: shipmentData.to_address,
+        is_printed: false,
+        created_date: orderInfo.data.created_date,
+        cod_amount: cod_amount,
+        weight: shipmentData.weight,
+        payment_type_id: shipmentData.payment_type_id,
+        total_amount: total_amount,
+      },
+      { raw: true, nest: true },
+    );
+
     await deleteCache(CACHE_KEYS.COMMERCE.DELIVERY_ORDERS_BY_SELLER_ID(seller_id));
     return response.data;
   } catch (error) {
@@ -151,13 +153,15 @@ const createDeliveryOrderFromTransaction = async (
     if (weight <= 0) {
       throw new BadRequestError("Weight must be positive");
     }
-    const transaction = await Transaction.findByPk(transaction_id, {
+    const transaction = await transactionRepo.findById(transaction_id, {
       include: [
         {
-          model: ReceiverInformation,
+          model: db.ReceiverInformation,
           as: "receiver_information",
         },
       ],
+      raw: true,
+      nest: true,
     });
     if (!transaction) {
       throw new NotFoundError("Transaction not found");
@@ -195,22 +199,26 @@ const createDeliveryOrderFromTransaction = async (
     const total_amount = total_fee + cod_amount;
     const orderInfo = await getDeliveryOrderInfo(data.order_code, token, shop_id);
 
-    await DeliveryOrder.create({
-      seller_id: transaction.seller_id,
-      buyer_id: transaction.buyer_id,
-      order_code: data.order_code,
-      status: orderInfo.data.status,
-      to_name: shipmentData.to_name,
-      to_phone: shipmentData.to_phone,
-      to_address: shipmentData.to_address,
-      is_printed: false,
-      created_date: orderInfo.data.created_date,
-      cod_amount: cod_amount,
-      weight: shipmentData.weight,
-      payment_type_id: shipmentData.payment_type_id,
-      total_amount: total_amount,
-      item_snapshot: transaction.item_snapshot,
-    });
+    await deliveryOrderRepo.create(
+      {
+        seller_id: transaction.seller_id,
+        buyer_id: transaction.buyer_id,
+        order_code: data.order_code,
+        status: orderInfo.data.status,
+        to_name: shipmentData.to_name,
+        to_phone: shipmentData.to_phone,
+        to_address: shipmentData.to_address,
+        is_printed: false,
+        created_date: orderInfo.data.created_date,
+        cod_amount: cod_amount,
+        weight: shipmentData.weight,
+        payment_type_id: shipmentData.payment_type_id,
+        total_amount: total_amount,
+        item_snapshot: transaction.item_snapshot,
+      },
+      { raw: true, nest: true },
+    );
+
     await deleteCache(CACHE_KEYS.COMMERCE.DELIVERY_ORDERS_BY_SELLER_ID(seller_id));
     return response.data;
   } catch (error) {
@@ -235,7 +243,8 @@ const updateDeliveryOrder = async (updateData, token, shop_id, seller_id) => {
     const cod_amount = Number(orderInfo.data.cod_amount) || 0;
     const total_amount = total_fee + cod_amount;
 
-    await DeliveryOrder.update(
+    await deliveryOrderRepo.updateByConditions(
+      { order_code: updateData.order_code },
       {
         status: orderInfo.data.status,
         total_amount,
@@ -246,7 +255,6 @@ const updateDeliveryOrder = async (updateData, token, shop_id, seller_id) => {
         weight: updateData.weight,
         payment_type_id: updateData.payment_type_id,
       },
-      { where: { order_code: updateData.order_code } },
     );
 
     if (seller_id) {
@@ -272,7 +280,10 @@ const cancelDeliveryOrder = async (order_code, token, shop_id, seller_id) => {
       { headers: buildHeaders(token, shop_id) },
     );
 
-    await DeliveryOrder.update({ status: DELIVERY_ORDER_STATUS.CANCEL }, { where: { order_code } });
+    await deliveryOrderRepo.updateByConditions(
+      { order_code },
+      { status: DELIVERY_ORDER_STATUS.CANCEL },
+    );
 
     if (seller_id) {
       await deleteCache(CACHE_KEYS.COMMERCE.DELIVERY_ORDERS_BY_SELLER_ID(seller_id));
@@ -290,14 +301,17 @@ const cancelDeliveryOrder = async (order_code, token, shop_id, seller_id) => {
 
 const getAllDeliveryOrders = async () => {
   try {
-    return await DeliveryOrder.findAll({
-      include: [
-        {
-          model: User,
-          attributes: ["id", "username", "email"],
-        },
-      ],
-    });
+    return await deliveryOrderRepo.findAll(
+      {
+        include: [
+          {
+            model: db.User,
+            attributes: ["id", "username", "email"],
+          },
+        ],
+      },
+      { raw: true, nest: true },
+    );
   } catch (err) {
     console.error("DB Error (getAllOrders):", err);
     throw err;
@@ -310,7 +324,10 @@ const getAllDeliveryOrdersByStatus = async (status) => {
   }
 
   try {
-    const orders = await DeliveryOrder.findAll({ where: { status } });
+    const orders = await deliveryOrderRepo.findAll(
+      { where: { status } },
+      { raw: true, nest: true },
+    );
     return orders;
   } catch (error) {
     console.error(`Error fetching delivery orders with status ${status}:`, error);
@@ -328,9 +345,12 @@ const getDeliveryOrdersBySeller = async (seller_id) => {
       return cached;
     }
 
-    const orders = await DeliveryOrder.findAll({
-      where: { seller_id: seller_id },
-    });
+    const orders = await deliveryOrderRepo.findAll(
+      {
+        where: { seller_id: seller_id },
+      },
+      { raw: true, nest: true },
+    );
 
     await setCache(cacheKey, orders, CACHE_TTL.ONE_HOUR);
     return orders;
@@ -350,9 +370,12 @@ const getDeliveryOrdersByBuyer = async (buyer_id) => {
       return cached;
     }
 
-    const orders = await DeliveryOrder.findAll({
-      where: { buyer_id: buyer_id },
-    });
+    const orders = await deliveryOrderRepo.findAll(
+      {
+        where: { buyer_id: buyer_id },
+      },
+      { raw: true, nest: true },
+    );
 
     await setCache(cacheKey, orders, CACHE_TTL.ONE_HOUR);
     return orders;

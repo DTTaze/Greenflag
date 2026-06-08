@@ -1,5 +1,4 @@
-const db = require("../models/index");
-const ReceiverInformation = db.ReceiverInformation;
+const receiverInformationRepo = require("../repositories/receiverInformationRepository");
 const { getCache, setCache, deleteCache } = require("../utils/cache");
 const { CACHE_KEYS } = require("../constants/cacheKeys");
 const { cacheThrough } = require("../helpers/cacheHelper");
@@ -20,29 +19,31 @@ const createReceiverInfo = async (data) => {
     is_default = false,
   } = data;
 
-  const newReceiverInfo = await ReceiverInformation.create({
-    user_id,
-    to_name,
-    to_phone,
-    to_address,
-    to_ward_name,
-    to_district_name,
-    to_province_name,
-    account_type,
-    is_default,
-  });
+  const newReceiverInfo = await receiverInformationRepo.create(
+    {
+      user_id,
+      to_name,
+      to_phone,
+      to_address,
+      to_ward_name,
+      to_district_name,
+      to_province_name,
+      account_type,
+      is_default,
+    },
+    { raw: true, nest: true },
+  );
 
-  const receiverInfoData = newReceiverInfo.toJSON();
-  await setCache(CACHE_KEYS.COMMERCE.RECEIVER_INFO_BY_ID(receiverInfoData.id), receiverInfoData);
+  await setCache(CACHE_KEYS.COMMERCE.RECEIVER_INFO_BY_ID(newReceiverInfo.id), newReceiverInfo);
   await deleteCache(CACHE_KEYS.COMMERCE.ALL_RECEIVER_INFO);
 
-  return receiverInfoData;
+  return newReceiverInfo;
 };
 
 // READ
 const getReceiverInfoById = async (id) => {
   return cacheThrough(CACHE_KEYS.COMMERCE.RECEIVER_INFO_BY_ID(id), async () => {
-    const receiverInfo = await ReceiverInformation.findByPk(id, { raw: true, nest: true });
+    const receiverInfo = await receiverInformationRepo.findById(id, { raw: true, nest: true });
     if (!receiverInfo) {
       throw new NotFoundError(`ReceiverInformation ${id} not found`);
     }
@@ -63,12 +64,11 @@ const getAllReceiverInfo = async () => {
     return receivers;
   }
 
-  const receiverRecords = await ReceiverInformation.findAll();
+  const receiverRecords = await receiverInformationRepo.findAll({}, { raw: true, nest: true });
   const receiverIds = [];
   const receiversData = [];
 
-  for (const receiver of receiverRecords) {
-    const receiverData = receiver.toJSON();
+  for (const receiverData of receiverRecords) {
     receiverIds.push(receiverData.id);
 
     const cacheKey = CACHE_KEYS.COMMERCE.RECEIVER_INFO_BY_ID(receiverData.id);
@@ -88,7 +88,7 @@ const getReceiverInfoByUserId = async (user_id) => {
 
 // UPDATE
 const updateReceiverInfoById = async (id, data) => {
-  const receiverInfo = await ReceiverInformation.findByPk(id);
+  const receiverInfo = await receiverInformationRepo.findById(id, { raw: true, nest: true });
   if (!receiverInfo) {
     throw new NotFoundError(`Receiver Info not found by id: ${id}`);
   }
@@ -115,8 +115,7 @@ const updateReceiverInfoById = async (id, data) => {
     throw new BadRequestError("No valid fields provided for update");
   }
 
-  await receiverInfo.update(updateData);
-  const updated = await ReceiverInformation.findByPk(id);
+  const updated = await receiverInformationRepo.updateById(id, updateData);
 
   await deleteCache(CACHE_KEYS.COMMERCE.RECEIVER_INFO_BY_ID(id));
   await deleteCache(CACHE_KEYS.COMMERCE.ALL_RECEIVER_INFO);
@@ -124,21 +123,27 @@ const updateReceiverInfoById = async (id, data) => {
 };
 
 const setDefaultReceiverInfoById = async (id) => {
-  const info = await ReceiverInformation.findOne({
-    where: { id },
-  });
+  const info = await receiverInformationRepo.findOne(
+    {
+      where: { id },
+    },
+    { raw: true, nest: true },
+  );
   if (!info) throw new NotFoundError("Receiver information not found");
 
   const user_id = info.user_id;
 
-  const allAccounts = await ReceiverInformation.findAll({
-    where: { user_id },
-    attributes: ["id"],
-  });
+  const allAccounts = await receiverInformationRepo.findAll(
+    {
+      where: { user_id },
+      attributes: ["id"],
+    },
+    { raw: true, nest: true },
+  );
 
-  await ReceiverInformation.update({ is_default: false }, { where: { user_id } });
+  await receiverInformationRepo.updateByConditions({ user_id }, { is_default: false });
 
-  await info.update({ is_default: true });
+  const updatedInfo = await receiverInformationRepo.updateById(id, { is_default: true });
 
   await Promise.all(
     allAccounts.map((acc) => deleteCache(CACHE_KEYS.COMMERCE.RECEIVER_INFO_BY_ID(acc.id))),
@@ -146,14 +151,12 @@ const setDefaultReceiverInfoById = async (id) => {
 
   await deleteCache(CACHE_KEYS.COMMERCE.ALL_RECEIVER_INFO);
 
-  return info;
+  return updatedInfo;
 };
 
 // DELETE
 const deleteReceiverInfoById = async (id) => {
-  const deletedCount = await ReceiverInformation.destroy({
-    where: { id },
-  });
+  const deletedCount = await receiverInformationRepo.destroy(id);
 
   if (deletedCount > 0) {
     await deleteCache(CACHE_KEYS.COMMERCE.RECEIVER_INFO_BY_ID(id));

@@ -960,11 +960,11 @@ module.exports = worker;
 - [x] Remove inline validation from services (move DTOs)
 
 ### Phase 5 — Repository Layer
-- [ ] Create `src/repositories/` for each entity
-- [ ] **All repository methods MUST accept `options = {}` param** to support `{ transaction: t }` passthrough
-- [ ] Move all Sequelize `findAll`, `findByPk`, `create`, `update`, `destroy` calls from services to repositories
-- [ ] Services only call repositories (no direct `Model.findXxx`)
-- [ ] Verify all existing `sequelize.transaction()` flows still work correctly
+- [x] Create `src/repositories/` for each entity
+- [x] **All repository methods MUST accept `options = {}` param** to support `{ transaction: t }` passthrough
+- [x] Move all Sequelize `findAll`, `findByPk`, `create`, `update`, `destroy` calls from services to repositories
+- [x] Services only call repositories (no direct `Model.findXxx`)
+- [x] Verify all existing `sequelize.transaction()` flows still work correctly
 
 ### Phase 6 — Background Jobs Consolidation
 - [ ] Move queues, workers, cron under `src/jobs/`

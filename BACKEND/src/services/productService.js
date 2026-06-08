@@ -1,10 +1,9 @@
 const { nanoid } = require("nanoid");
 const db = require("../models/index");
-const Product = db.Product;
-const User = db.User;
-const Image = db.Image;
+const productRepo = require("../repositories/productRepository");
+const userRepo = require("../repositories/userRepository");
+const imageRepo = require("../repositories/imageRepository");
 const { uploadImages } = require("./imageService");
-const { sequelize } = require("../models");
 const { getCache, setCache, deleteCache } = require("../utils/cache");
 const { CACHE_KEYS, CACHE_TTL } = require("../constants/cacheKeys");
 const { PRODUCT_POST_STATUS } = require("../constants/productStatus");
@@ -14,197 +13,166 @@ const NotFoundError = require("../errors/NotFoundError");
 const AppError = require("../errors/AppError");
 
 const createProduct = async (productData, user_id, images) => {
-  try {
-    const result = await sequelize.transaction(async (t) => {
-      let productFormat;
-      const newProduct = await Product.create(
-        {
-          public_id: nanoid(),
-          name: productData.name,
-          price: productData.price,
-          stock: productData.stock,
-          description: productData.description,
-          seller_id: user_id,
-          category: productData.category,
-          product_status: productData.product_status,
-        },
-        { transaction: t },
-      );
+  const result = await db.sequelize.transaction(async (t) => {
+    let productFormat;
+    const newProduct = await productRepo.create(
+      {
+        public_id: nanoid(),
+        name: productData.name,
+        price: productData.price,
+        stock: productData.stock,
+        description: productData.description,
+        seller_id: user_id,
+        category: productData.category,
+        product_status: productData.product_status,
+      },
+      { transaction: t },
+    );
+    const newProductData = newProduct.get ? newProduct.get({ plain: true }) : newProduct;
 
-      if (images && images.length > 0) {
-        const uploadedImages = await uploadImages(
-          images,
-          newProduct.id,
-          "product",
-        );
-        if (uploadedImages.length === 0) {
-          throw new AppError("Failed to upload images", 500);
-        }
-        productFormat = {
-          ...newProduct.toJSON(),
-          imagesId: uploadedImages.map((img) => img.id),
-        };
-      } else {
-        productFormat = {
-          ...newProduct.toJSON(),
-          imagesId: [],
-        };
+    if (images && images.length > 0) {
+      const uploadedImages = await uploadImages(images, newProductData.id, "product");
+      if (uploadedImages.length === 0) {
+        throw new AppError("Failed to upload images", 500);
       }
+      productFormat = {
+        ...newProductData,
+        imagesId: uploadedImages.map((img) => img.id),
+      };
+    } else {
+      productFormat = {
+        ...newProductData,
+        imagesId: [],
+      };
+    }
 
-      await setCache(
-        CACHE_KEYS.COMMERCE.PRODUCT_BY_ID(newProduct.id),
-        productFormat,
-        CACHE_TTL.ONE_HOUR,
-      );
-      await setCache(
-        CACHE_KEYS.COMMERCE.PRODUCT_BY_PUBLIC_ID(newProduct.public_id),
-        newProduct.id,
-        CACHE_TTL.ONE_HOUR,
-      );
-      const cachedProductIds = await getCache(CACHE_KEYS.COMMERCE.ALL_PRODUCTS);
-      if (cachedProductIds) {
-        const productIds = cachedProductIds || [];
-        productIds.push(newProduct.id);
-        await setCache(
-          CACHE_KEYS.COMMERCE.ALL_PRODUCTS,
-          productIds,
-          CACHE_TTL.ONE_HOUR,
-        );
-      }
+    await setCache(
+      CACHE_KEYS.COMMERCE.PRODUCT_BY_ID(newProductData.id),
+      productFormat,
+      CACHE_TTL.ONE_HOUR,
+    );
+    await setCache(
+      CACHE_KEYS.COMMERCE.PRODUCT_BY_PUBLIC_ID(newProductData.public_id),
+      newProductData.id,
+      CACHE_TTL.ONE_HOUR,
+    );
+    const cachedProductIds = await getCache(CACHE_KEYS.COMMERCE.ALL_PRODUCTS);
+    if (cachedProductIds) {
+      const productIds = cachedProductIds || [];
+      productIds.push(newProductData.id);
+      await setCache(CACHE_KEYS.COMMERCE.ALL_PRODUCTS, productIds, CACHE_TTL.ONE_HOUR);
+    }
 
-      return newProduct;
-    });
+    return newProductData;
+  });
 
-    return result;
-  } catch (error) {
-    console.error("Error creating product:", error);
-    throw error;
-  }
+  return result;
 };
 
 const getImagesFromListOfIds = async (imagesId) => {
-  try {
-    let images = [];
-    for (const imageId of imagesId) {
-      const cacheImage = await getCache(CACHE_KEYS.SYSTEM.IMAGE_BY_ID(imageId));
-      if (cacheImage) {
-        images.push(cacheImage);
-        continue;
-      }
-      const image = await Image.findByPk(imageId);
-      if (image) {
-        images.push(image);
-        await setCache(
-          CACHE_KEYS.SYSTEM.IMAGE_BY_ID(imageId),
-          image,
-          CACHE_TTL.ONE_HOUR,
-        );
-      }
+  let images = [];
+  for (const imageId of imagesId) {
+    const cacheImage = await getCache(CACHE_KEYS.SYSTEM.IMAGE_BY_ID(imageId));
+    if (cacheImage) {
+      images.push(cacheImage);
+      continue;
     }
-    const imagesByProductId = images.reduce((acc, image) => {
+    const image = await imageRepo.findById(imageId, { raw: true, nest: true });
+    if (image) {
+      images.push(image);
+      await setCache(CACHE_KEYS.SYSTEM.IMAGE_BY_ID(imageId), image, CACHE_TTL.ONE_HOUR);
+    }
+  }
+  const imagesByProductId = images.reduce((acc, image) => {
+    if (!acc[image.reference_id]) acc[image.reference_id] = [];
+    acc[image.reference_id].push(image.url);
+    return acc;
+  }, {});
+
+  return imagesByProductId;
+};
+
+const getSellerFromProduct = async (seller_id) => {
+  const cacheUser = await getCache(CACHE_KEYS.IDENTITY.USER_BY_ID(seller_id));
+  if (cacheUser) {
+    return {
+      id: seller_id,
+      username: cacheUser.username,
+    };
+  }
+
+  const user = await userRepo.findById(seller_id, {
+    attributes: ["id", "username"],
+    raw: true,
+    nest: true,
+  });
+  return user;
+};
+
+const getProductFromListOfIds = async (productIds) => {
+  let products = [];
+  for (const productId of productIds) {
+    const cacheProduct = await getCache(CACHE_KEYS.COMMERCE.PRODUCT_BY_ID(productId));
+    if (cacheProduct) {
+      const product = cacheProduct;
+      let imagesOfProduct;
+      if (product.imagesId && product.imagesId.length > 0) {
+        imagesOfProduct = await getImagesFromListOfIds(product.imagesId);
+      }
+
+      const user = await getSellerFromProduct(product.seller_id);
+      let productFormat = {
+        ...product,
+        seller: user,
+        images: (imagesOfProduct && imagesOfProduct[productId]) || [],
+      };
+      delete productFormat.imagesId;
+      products.push(productFormat);
+      continue;
+    }
+
+    const product = await productRepo.findById(productId, { raw: true, nest: true });
+    if (!product) {
+      throw new NotFoundError("Product not found");
+    }
+
+    const seller = await getSellerFromProduct(product.seller_id);
+
+    const imagesOfProduct = await imageRepo.findAll(
+      {
+        where: {
+          reference_id: productId,
+          reference_type: "product",
+        },
+      },
+      { raw: true, nest: true },
+    );
+
+    const imagesByProductId = imagesOfProduct.reduce((acc, image) => {
       if (!acc[image.reference_id]) acc[image.reference_id] = [];
       acc[image.reference_id].push(image.url);
       return acc;
     }, {});
 
-    return imagesByProductId;
-  } catch (error) {
-    console.error("Error getting images from list of IDs:", error);
-    throw error;
+    let productFormat = {
+      ...product,
+      seller: seller,
+      images: imagesByProductId[productId] || [],
+    };
+    products.push(productFormat);
+
+    let productFormatCache = {
+      ...product,
+      imagesId: imagesOfProduct.map((img) => img.id),
+    };
+    await setCache(
+      CACHE_KEYS.COMMERCE.PRODUCT_BY_ID(productId),
+      productFormatCache,
+      CACHE_TTL.ONE_HOUR,
+    );
   }
-};
 
-const getSellerFromProduct = async (seller_id) => {
-  try {
-    const cacheUser = await getCache(CACHE_KEYS.IDENTITY.USER_BY_ID(seller_id));
-    if (cacheUser) {
-      const user = cacheUser;
-      const userFormat = {
-        id: seller_id,
-        username: user.username,
-      };
-      return userFormat;
-    }
-
-    const user = await User.findByPk(seller_id, {
-      attributes: ["id", "username"],
-    });
-    return user;
-  } catch (error) {
-    console.error("Error getting seller from product:", error);
-    throw error;
-  }
-};
-
-const getProductFromListOfIds = async (productIds) => {
-  try {
-    let products = [];
-    for (const productId of productIds) {
-      const cacheProduct = await getCache(
-        CACHE_KEYS.COMMERCE.PRODUCT_BY_ID(productId),
-      );
-      if (cacheProduct) {
-        const product = cacheProduct;
-        let imagesOfProduct;
-        if (product.imagesId && product.imagesId.length > 0) {
-          imagesOfProduct = await getImagesFromListOfIds(product.imagesId);
-        }
-
-        const user = await getSellerFromProduct(product.seller_id);
-        let productFormat = {
-          ...product,
-          seller: user,
-          images: (imagesOfProduct && imagesOfProduct[productId]) || [],
-        };
-        delete productFormat.imagesId;
-        products.push(productFormat);
-        continue;
-      }
-
-      const product = await Product.findByPk(productId);
-      if (!product) {
-        throw new NotFoundError("Product not found");
-      }
-
-      const seller = await getSellerFromProduct(product.seller_id);
-
-      const imagesOfProduct = await Image.findAll({
-        where: {
-          reference_id: productId,
-          reference_type: "product",
-        },
-      });
-
-      const imagesByProductId = imagesOfProduct.reduce((acc, image) => {
-        if (!acc[image.reference_id]) acc[image.reference_id] = [];
-        acc[image.reference_id].push(image.url);
-        return acc;
-      }, {});
-
-      let productFormat = {
-        ...product.toJSON(),
-        seller: seller,
-        images: imagesByProductId[productId] || [],
-      };
-      products.push(productFormat);
-
-      // Cache the product for future use
-      let productFormatCache = {
-        ...product.toJSON(),
-        imagesId: imagesOfProduct.map((img) => img.id),
-      };
-      await setCache(
-        CACHE_KEYS.COMMERCE.PRODUCT_BY_ID(productId),
-        productFormatCache,
-        CACHE_TTL.ONE_HOUR,
-      );
-    }
-
-    return products.filter((product) => product !== null);
-  } catch (error) {
-    console.error("Error getting products from list of IDs:", error);
-    throw error;
-  }
+  return products.filter((product) => product !== null);
 };
 
 const getAllProducts = async () => {
@@ -212,35 +180,38 @@ const getAllProducts = async () => {
   if (cachedProductIds) {
     const productIds = cachedProductIds;
 
-    const totalProductsCount = await Product.count();
+    const totalProductsCount = await productRepo
+      .findAll({}, { raw: true, nest: true })
+      .then((list) => list.length);
     if (productIds.length === totalProductsCount) {
       const products = await getProductFromListOfIds(productIds);
       return products.filter((product) => product !== null);
-    } else {
-      throw new AppError(
-        "Product IDs in cache do not match database count",
-        500,
-      );
     }
   }
 
-  const products = await Product.findAll({
-    include: [
-      {
-        as: "seller",
-        model: User,
-        attributes: ["id", "username"],
-      },
-    ],
-  });
+  const products = await productRepo.findAll(
+    {
+      include: [
+        {
+          as: "seller",
+          model: db.User,
+          attributes: ["id", "username"],
+        },
+      ],
+    },
+    { raw: true, nest: true },
+  );
   const productIds = products.map((p) => p.id);
 
-  const images = await Image.findAll({
-    where: {
-      reference_id: productIds,
-      reference_type: "product",
+  const images = await imageRepo.findAll(
+    {
+      where: {
+        reference_id: productIds,
+        reference_type: "product",
+      },
     },
-  });
+    { raw: true, nest: true },
+  );
 
   const imagesByProductId = images.reduce((acc, image) => {
     if (!acc[image.reference_id]) acc[image.reference_id] = [];
@@ -249,27 +220,19 @@ const getAllProducts = async () => {
   }, {});
 
   const result = products.map((p) => ({
-    ...p.toJSON(),
+    ...p,
     images: imagesByProductId[p.id] || [],
   }));
 
   const productFormat = products.map((p) => ({
-    ...p.toJSON(),
-    imagesId: images.map((img) => img.id),
+    ...p,
+    imagesId: images.filter((img) => img.reference_id === p.id).map((img) => img.id),
   }));
 
-  await setCache(
-    CACHE_KEYS.COMMERCE.ALL_PRODUCTS,
-    productIds,
-    CACHE_TTL.ONE_HOUR,
-  );
+  await setCache(CACHE_KEYS.COMMERCE.ALL_PRODUCTS, productIds, CACHE_TTL.ONE_HOUR);
   await Promise.all(
     productFormat.map((product) =>
-      setCache(
-        CACHE_KEYS.COMMERCE.PRODUCT_BY_ID(product.id),
-        product,
-        CACHE_TTL.ONE_HOUR,
-      ),
+      setCache(CACHE_KEYS.COMMERCE.PRODUCT_BY_ID(product.id), product, CACHE_TTL.ONE_HOUR),
     ),
   );
 
@@ -279,7 +242,7 @@ const getAllProducts = async () => {
 const getAllAvailableProducts = async () => {
   const products = await getAllProducts();
   const availableProducts = products.filter(
-    (product) => product.post_status === PRODUCT_POST_STATUS.PUBLIC,
+    (product) => product.product_status === PRODUCT_POST_STATUS.PUBLIC,
   );
   return availableProducts;
 };
@@ -289,7 +252,7 @@ const getProductByIdUser = async (user_id) => {
 
   const products = await getAllProducts();
   const userProducts = products.filter(
-    (product) => product.seller.id === user_id,
+    (product) => product.seller && product.seller.id === user_id,
   );
   if (userProducts.length === 0) {
     throw new NotFoundError("No products found for this seller");
@@ -298,17 +261,17 @@ const getProductByIdUser = async (user_id) => {
 };
 
 const updateProduct = async (product, data, images) => {
-  let { name, price, description, post_status, category, product_status } =
-    data;
+  let { name, price, description, post_status, category, product_status } = data;
 
   if (!product) throw new NotFoundError("Product not found");
 
-  if (name) product.name = name;
-  if (price !== undefined) product.price = price;
-  if (description !== undefined) product.description = description;
-  if (post_status) product.post_status = post_status;
-  if (category) product.category = category;
-  if (product_status) product.product_status = product_status;
+  const updateFields = {};
+  if (name !== undefined) updateFields.name = name;
+  if (price !== undefined) updateFields.price = price;
+  if (description !== undefined) updateFields.description = description;
+  if (post_status !== undefined) updateFields.post_status = post_status;
+  if (category !== undefined) updateFields.category = category;
+  if (product_status !== undefined) updateFields.product_status = product_status;
 
   let uploadedImages = [];
   const id = product.id;
@@ -328,17 +291,13 @@ const updateProduct = async (product, data, images) => {
     }
   }
 
-  await product.save();
+  const updatedProduct = await productRepo.updateById(id, updateFields);
 
   const productFormat = {
-    ...product.toJSON(),
+    ...updatedProduct,
     imagesId: uploadedImages.map((img) => img.id),
   };
-  await setCache(
-    CACHE_KEYS.COMMERCE.PRODUCT_BY_ID(id),
-    productFormat,
-    CACHE_TTL.ONE_HOUR,
-  );
+  await setCache(CACHE_KEYS.COMMERCE.PRODUCT_BY_ID(id), productFormat, CACHE_TTL.ONE_HOUR);
   await setCache(
     CACHE_KEYS.COMMERCE.PRODUCT_BY_PUBLIC_ID(product.public_id),
     id,
@@ -351,22 +310,18 @@ const updateProduct = async (product, data, images) => {
     const index = productIds.indexOf(id);
     if (index !== -1) {
       productIds[index] = id;
-      await setCache(
-        CACHE_KEYS.COMMERCE.ALL_PRODUCTS,
-        productIds,
-        CACHE_TTL.ONE_HOUR,
-      );
+      await setCache(CACHE_KEYS.COMMERCE.ALL_PRODUCTS, productIds, CACHE_TTL.ONE_HOUR);
     }
   }
 
   return {
-    ...product.toJSON(),
+    ...updatedProduct,
     images: uploadedImages.map((img) => img.url),
   };
 };
 
 const updateProductById = async (id, data, images) => {
-  const product = await Product.findByPk(id);
+  const product = await productRepo.findById(id, { raw: true, nest: true });
   const result = await updateProduct(product, data, images);
   return result;
 };
@@ -374,20 +329,18 @@ const updateProductById = async (id, data, images) => {
 const deleteProduct = async (product_id) => {
   if (!product_id) throw new BadRequestError("Product ID is required");
 
-  const product = await Product.findByPk(product_id);
+  const product = await productRepo.findById(product_id, { raw: true, nest: true });
   if (!product) throw new NotFoundError("Product not found");
 
   const images = await destroyImagesByReference(product_id, "product");
 
   await deleteCache(CACHE_KEYS.COMMERCE.PRODUCT_BY_ID(product_id));
-  await deleteCache(
-    CACHE_KEYS.COMMERCE.PRODUCT_BY_PUBLIC_ID(product.public_id),
-  );
+  await deleteCache(CACHE_KEYS.COMMERCE.PRODUCT_BY_PUBLIC_ID(product.public_id));
   for (const image of images) {
     await deleteCache(CACHE_KEYS.SYSTEM.IMAGE_BY_ID(image.id));
   }
 
-  await product.destroy();
+  await productRepo.destroy(product_id);
 
   const cachedProductIds = await getCache(CACHE_KEYS.COMMERCE.ALL_PRODUCTS);
   if (cachedProductIds) {
@@ -395,11 +348,7 @@ const deleteProduct = async (product_id) => {
     const index = productIds.indexOf(product_id);
     if (index !== -1) {
       productIds.splice(index, 1);
-      await setCache(
-        CACHE_KEYS.COMMERCE.ALL_PRODUCTS,
-        productIds,
-        CACHE_TTL.ONE_HOUR,
-      );
+      await setCache(CACHE_KEYS.COMMERCE.ALL_PRODUCTS, productIds, CACHE_TTL.ONE_HOUR);
     }
   }
 
@@ -407,7 +356,7 @@ const deleteProduct = async (product_id) => {
 };
 
 const updateProductByPublicId = async (public_id, data, images) => {
-  const product = await Product.findOne({ where: { public_id } });
+  const product = await productRepo.findOne({ where: { public_id } }, { raw: true, nest: true });
   if (!product) throw new NotFoundError("Product not found");
   const result = await updateProduct(product, data, images);
   return result;

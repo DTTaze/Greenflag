@@ -1,5 +1,10 @@
 "use strict";
 const { Model } = require("sequelize");
+const {
+  PRODUCT_CATEGORY,
+  PRODUCT_CONDITION,
+  PRODUCT_POST_STATUS,
+} = require("../constants/productStatus");
 
 module.exports = (sequelize, DataTypes) => {
   class Product extends Model {
@@ -48,31 +53,25 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       category: {
-        type: DataTypes.ENUM(
-          "recycled",
-          "handicraft",
-          "organic",
-          "plants",
-          "other"
-        ),
+        type: DataTypes.ENUM(...Object.values(PRODUCT_CATEGORY)),
         allowNull: false,
       },
       product_status: {
-        type: DataTypes.ENUM("new", "used"),
+        type: DataTypes.ENUM(...Object.values(PRODUCT_CONDITION)),
         allowNull: false,
-        defaultValue: "new",
+        defaultValue: PRODUCT_CONDITION.NEW,
       },
       post_status: {
-        type: DataTypes.ENUM("public", "private", "pending", "rejected"),
+        type: DataTypes.ENUM(...Object.values(PRODUCT_POST_STATUS)),
         allowNull: false,
-        defaultValue: "pending",
+        defaultValue: PRODUCT_POST_STATUS.PENDING,
       },
     },
     {
       sequelize,
       modelName: "Product",
       tableName: "products",
-    }
+    },
   );
 
   return Product;

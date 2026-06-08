@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const { ITEM_STATUS } = require("../constants/itemStatus");
 
 module.exports = (sequelize, DataTypes) => {
   class Item extends Model {
@@ -60,9 +61,9 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       status: {
-        type: DataTypes.ENUM("available", "sold_out", "pending"),
+        type: DataTypes.ENUM(...Object.values(ITEM_STATUS)),
         allowNull: true,
-        defaultValue: "pending",
+        defaultValue: ITEM_STATUS.PENDING,
       },
       weight: {
         type: DataTypes.INTEGER,
@@ -93,7 +94,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "Item",
       tableName: "items",
-    }
+    },
   );
 
   return Item;

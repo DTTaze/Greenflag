@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
       progress_count: {
         type: DataTypes.INTEGER,
         allowNull: true,
-        defaultValue: 0, 
+        defaultValue: 0,
       },
       assigned_at: {
         type: DataTypes.DATE,
@@ -58,7 +58,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "TaskUser",
       tableName: "task_users",
-    }
+    },
   );
 
   return TaskUser;

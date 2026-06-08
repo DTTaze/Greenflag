@@ -1,33 +1,34 @@
 const db = require("../models/index.js");
-const TaskSubmit = db.TaskSubmit;
-const TaskUser = db.TaskUser;
-const Image = db.Image;
-const Task = db.Task;
+const taskSubmitRepo = require("../repositories/taskSubmitRepository.js");
+
 const getTaskSubmitByUserId = async (user_id) => {
-  const taskSubmits = await TaskSubmit.findAll({
-    include: [
-      {
-        model: TaskUser,
-        as: "task_user",
-        where: {
-          user_id: user_id,
-        },
-        include: [
-          {
-            model: Task,
-            as: "tasks",
+  const taskSubmits = await taskSubmitRepo.findAll(
+    {
+      include: [
+        {
+          model: db.TaskUser,
+          as: "task_user",
+          where: {
+            user_id: user_id,
           },
-        ],
-      },
-      {
-        model: Image,
-        as: "images",
-        where: {
-          reference_type: "taskSubmit",
+          include: [
+            {
+              model: db.Task,
+              as: "tasks",
+            },
+          ],
         },
-      },
-    ],
-  });
+        {
+          model: db.Image,
+          as: "images",
+          where: {
+            reference_type: "taskSubmit",
+          },
+        },
+      ],
+    },
+    { raw: true, nest: true },
+  );
 
   const formattedSubmits = taskSubmits.map((submit) => ({
     id: submit.id,
@@ -45,36 +46,44 @@ const getTaskSubmitByUserId = async (user_id) => {
         id: submit.task_user.user_id,
       },
     },
-    images: submit.images.map((image) => image.url),
+    images: Array.isArray(submit.images)
+      ? submit.images.map((image) => image.url)
+      : submit.images?.url
+        ? [submit.images.url]
+        : [],
   }));
   return formattedSubmits;
 };
 
 const getTaskSubmitByCustomerId = async (customer_id) => {
-  const taskSubmits = await TaskSubmit.findAll({
-    include: [
-      {
-        model: TaskUser,
-        as: "task_user",
-        include: [
-          {
-            model: Task,
-            as: "tasks",
-            where: {
-              creator_id: customer_id,
+  const taskSubmits = await taskSubmitRepo.findAll(
+    {
+      include: [
+        {
+          model: db.TaskUser,
+          as: "task_user",
+          include: [
+            {
+              model: db.Task,
+              as: "tasks",
+              where: {
+                creator_id: customer_id,
+              },
             },
-          },
-        ],
-      },
-      {
-        model: Image,
-        as: "images",
-        where: {
-          reference_type: "taskSubmit",
+          ],
         },
-      },
-    ],
-  });
+        {
+          model: db.Image,
+          as: "images",
+          where: {
+            reference_type: "taskSubmit",
+          },
+        },
+      ],
+    },
+    { raw: true, nest: true },
+  );
+
   const formattedSubmits = taskSubmits.map((submit) => ({
     id: submit.id,
     task_user: {
@@ -91,7 +100,11 @@ const getTaskSubmitByCustomerId = async (customer_id) => {
         id: submit.task_user.user_id,
       },
     },
-    images: submit.images.map((image) => image.url),
+    images: Array.isArray(submit.images)
+      ? submit.images.map((image) => image.url)
+      : submit.images?.url
+        ? [submit.images.url]
+        : [],
   }));
   return formattedSubmits;
 };

@@ -1,5 +1,5 @@
 "use strict";
-console.log("\x1b[33m%s\x1b[0m","models/index.js");
+console.log("\x1b[33m%s\x1b[0m", "models/index.js");
 const fs = require("fs");
 const path = require("path");
 const Sequelize = require("sequelize");
@@ -21,12 +21,7 @@ if (config.use_env_variable) {
 } else {
   console.log("config.database = ", config.database);
   console.log("config.username = ", config.username);
-  sequelize = new Sequelize(
-    config.database,
-    config.username,
-    config.password,
-    config
-  );
+  sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
 fs.readdirSync(__dirname)
@@ -39,10 +34,7 @@ fs.readdirSync(__dirname)
     );
   })
   .forEach((file) => {
-    const model = require(path.join(__dirname, file))(
-      sequelize,
-      Sequelize.DataTypes
-    );
+    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
     db[model.name] = model;
   });
 

@@ -1,54 +1,49 @@
 const express = require("express");
 const roleController = require("../controllers/roleController");
 const rolePermissionController = require("../controllers/rolePermissionController");
-const checkPermission = require("../middlewares/checkPermission");
+const validate = require("../middlewares/validate");
+const requirePermission = require("../middlewares/requirePermission");
+const { createRoleDto, updateRoleDto } = require("../dtos/roleDto");
 
 const router = express.Router();
 
 router.post(
   "/create",
-  // checkPermission("create", "role"),
-  roleController.handleCreateRole
+  requirePermission("create", "Role"),
+  validate(createRoleDto),
+  roleController.handleCreateRole,
 );
-router.get(
-  "/all-rolepermission",
-  rolePermissionController.handleGetAllRolePermissions
-);
+router.get("/all-rolepermission", rolePermissionController.handleGetAllRolePermissions);
 router.get("/", roleController.handleGetAllRoles);
 router.get("/:id", roleController.handleGetRole);
 router.put(
   "/:id",
-  // checkPermission("put", "role_id"),
-  roleController.handleUpdateRole
+  requirePermission("update", "Role"),
+  validate(updateRoleDto),
+  roleController.handleUpdateRole,
 );
-router.delete(
-  "/:id",
-  // checkPermission("delete", "role_id"),
-  roleController.handleDeleteRole
-);
-// ===================================
+router.delete("/:id", requirePermission("delete", "Role"), roleController.handleDeleteRole);
+
+// RolePermission assignment routes
 router.post(
   "/:role_id/permissions/assign",
-  // checkPermission("post", "role_permission"),
-  rolePermissionController.handleAssignPermissionToRole
+  requirePermission("assign", "RolePermission"),
+  rolePermissionController.handleAssignPermissionToRole,
 );
-router.get(
-  "/:role_id/permissions",
-  rolePermissionController.handleGetAllPermissionsByRole
-);
+router.get("/:role_id/permissions", rolePermissionController.handleGetAllPermissionsByRole);
 router.get(
   "/:role_id/permissions/:perm_id",
-  rolePermissionController.handleGetPermissionByIdByRole
+  rolePermissionController.handleGetPermissionByIdByRole,
 );
 router.put(
   "/:role_id/permissions/:perm_id",
-  // checkPermission("put", "role_permission"),
-  rolePermissionController.handleUpdatePermissionByRole
+  requirePermission("update", "RolePermission"),
+  rolePermissionController.handleUpdatePermissionByRole,
 );
 router.delete(
   "/:role_id/permissions/:perm_id",
-  // checkPermission("delete", "role_permission"),
-  rolePermissionController.handleRemovePermissionFromRole
+  requirePermission("delete", "RolePermission"),
+  rolePermissionController.handleRemovePermissionFromRole,
 );
 
 module.exports = router;

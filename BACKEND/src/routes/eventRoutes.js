@@ -1,68 +1,64 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const middlewareImage = require('../middlewares/middlewareImage');
+const middlewareImage = require("../middlewares/middlewareImage");
+const validate = require("../middlewares/validate");
+const requirePermission = require("../middlewares/requirePermission");
+const { createEventDto, updateEventDto, checkInEventDto } = require("../dtos/eventDto");
 
-const eventController = require('../controllers/eventController');
-const checkPermission = require('../middlewares/checkPermission');
+const eventController = require("../controllers/eventController");
 
-router.get('/information/:event_id',
-    // checkPermission('read', 'event'),
-    eventController.handleGetEventbyId
+router.get("/information/:event_id", eventController.handleGetEventbyId);
+router.get("/informations", eventController.handleGetAllEvents);
+router.get("/signed/:user_id?", eventController.handleGetEventSigned);
+router.get("/creator", eventController.handGetEventsOfCreator);
+router.get("/user/:event_id", eventController.handlegetEventUserByEventId);
+
+router.post(
+  "/create",
+  requirePermission("create", "Event"),
+  middlewareImage.array("images", 5),
+  validate(createEventDto),
+  eventController.handleCreateEvent,
 );
 
-router.get('/informations',
-    // checkPermission('read', 'event'),
-    eventController.handleGetAllEvents
+router.post(
+  "/accept/:event_id",
+  requirePermission("accept", "Event"),
+  eventController.handleAcceptEvent,
 );
 
-router.get('/signed/:user_id?',
-    // checkPermission('read', 'event'),
-    eventController.handleGetEventSigned
+router.put(
+  "/update/:event_id",
+  requirePermission("update", "Event"),
+  middlewareImage.array("images", 5),
+  validate(updateEventDto),
+  eventController.handleUpdateEvent,
 );
 
-
-router.get('/creator',
-    // checkPermission('read', 'event'),
-    eventController.handGetEventsOfCreator
-);
-router.delete('/user/delete/:eventUser_id',
-    // checkPermission('read', 'event'),
-    eventController.handleDeleteEventUserById
+router.put(
+  "/check_in",
+  requirePermission("check_in", "Event"),
+  validate(checkInEventDto),
+  eventController.handleCheckInUserByUserId,
 );
 
-router.get('/user/:event_id',
-    // checkPermission('read', 'event'),
-    eventController.handlegetEventUserByEventId
+router.put(
+  "/check_out",
+  requirePermission("check_out", "Event"),
+  validate(checkInEventDto),
+  eventController.handleCheckOutUserByUserId,
 );
 
-router.post('/create',
-//   checkPermission('create', 'event'),
-    middlewareImage.array('images',5),
-    eventController.handleCreateEvent
+router.delete(
+  "/delete/:event_id",
+  requirePermission("delete", "Event"),
+  eventController.handleDeleteEvent,
 );
 
-router.post('/accept/:event_id',
-    // checkPermission('update', 'event'),
-    eventController.handleAcceptEvent
-);
-
-router.put('/update/:event_id',
-    // checkPermission('update', 'event'),
-    middlewareImage.array('images',5),
-    eventController.handleUpdateEvent
-);
-
-router.put('/check_in', 
-    eventController.handleCheckInUserByUserId
-);
-
-router.put('/check_out',
-    eventController.handleCheckOutUserByUserId
-)
-
-router.delete('/delete/:event_id',
-    // checkPermission('delete', 'event'),
-    eventController.handleDeleteEvent
+router.delete(
+  "/user/delete/:eventUser_id",
+  requirePermission("delete", "EventUser"),
+  eventController.handleDeleteEventUserById,
 );
 
 module.exports = router;

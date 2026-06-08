@@ -4,6 +4,10 @@ const ffmpeg = require("fluent-ffmpeg");
 const axios = require("axios");
 const db = require("../models/index.js");
 const cloudinary = require("../config/cloudinary.js");
+const BadRequestError = require("../errors/BadRequestError");
+const NotFoundError = require("../errors/NotFoundError");
+const AppError = require("../errors/AppError");
+
 const Video = db.Video;
 
 const createVideo = async ({ title, url, filename, user_id }) => {
@@ -11,10 +15,10 @@ const createVideo = async ({ title, url, filename, user_id }) => {
     user_id = Number(user_id);
 
     if (!title || !url || !filename || user_id === undefined) {
-      throw new Error("Title, URL, filename, and user_id are required");
+      throw new BadRequestError("Title, URL, filename, and user_id are required");
     }
     if (typeof user_id !== "number" || user_id <= 0) {
-      throw new Error("Invalid user_id");
+      throw new BadRequestError("Invalid user_id");
     }
 
     console.log("Saving video to the database...");
@@ -23,8 +27,9 @@ const createVideo = async ({ title, url, filename, user_id }) => {
 
     return video;
   } catch (e) {
+    if (e.statusCode) throw e;
     console.error("Error saving video:", e);
-    throw new Error("Failed to create video");
+    throw new AppError("Failed to create video", 500);
   }
 };
 
@@ -34,7 +39,7 @@ const uploadAndCompressVideo = async (file, title, user_id) => {
   const uploadsDir = path.join(__dirname, "../uploads");
   const compressedDir = path.join(uploadsDir, "compressed_videos");
   const localDir = path.join(uploadsDir, "temp_videos");
-  const ext = path.extname(file.filename) || ".mp4"; 
+  const ext = path.extname(file.filename) || ".mp4";
   const cleanFilename = path.basename(file.filename, ext);
   // Tạo thư mục nếu chưa tồn tại
   if (!fs.existsSync(uploadsDir)) {
@@ -112,39 +117,39 @@ const uploadAndCompressVideo = async (file, title, user_id) => {
 
     // Step 5: Delete the local files after processing
     const allowedExtensions = ["mp4", "avi", "mkv", "mov"];
-    const subDirs = ["compressed_videos", "temp_videos"];// Chỉ xóa file trong 2 thư mục này
+    const subDirs = ["compressed_videos", "temp_videos"]; // Chỉ xóa file trong 2 thư mục này
 
     subDirs.forEach((dir) => {
-    const folderPath = path.join(uploadsDir, dir);
-    
-    fs.readdir(folderPath, (err, files) => {
-      if (err) {
-        console.error(`Error reading directory ${folderPath}:`, err);
-        return;
-      }
+      const folderPath = path.join(uploadsDir, dir);
 
-      files.forEach((file) => {
-        const filePath = path.join(folderPath, file);
-        const ext = path.extname(file).slice(1); 
-
-        if (allowedExtensions.includes(ext)) {
-          fs.unlink(filePath, (err) => {
-            if (err) {
-              console.error("Error deleting file:", filePath, err);
-            } else {
-              console.log("Deleted file:", filePath);
-            }
-          });
+      fs.readdir(folderPath, (err, files) => {
+        if (err) {
+          console.error(`Error reading directory ${folderPath}:`, err);
+          return;
         }
+
+        files.forEach((file) => {
+          const filePath = path.join(folderPath, file);
+          const ext = path.extname(file).slice(1);
+
+          if (allowedExtensions.includes(ext)) {
+            fs.unlink(filePath, (err) => {
+              if (err) {
+                console.error("Error deleting file:", filePath, err);
+              } else {
+                console.log("Deleted file:", filePath);
+              }
+            });
+          }
+        });
       });
     });
-    });
-
 
     return videoData;
   } catch (error) {
+    if (error.statusCode) throw error;
     console.error("Error:", error);
-    throw new Error("Video upload failed");
+    throw new AppError("Video upload failed", 500);
   }
 };
 
@@ -152,19 +157,20 @@ const getAllVideos = async () => {
   try {
     return await Video.findAll();
   } catch (e) {
-    throw new Error("Failed to fetch videos");
+    if (e.statusCode) throw e;
+    throw new AppError("Failed to fetch videos", 500);
   }
 };
 
 const getVideoById = async (idUser, idVideo) => {
   try {
-    if (!idUser) throw new Error("User ID is required");
+    if (!idUser) throw new BadRequestError("User ID is required");
 
     idUser = Number(idUser);
     idVideo = Number(idVideo);
 
     if (!Number.isInteger(idUser) || idUser <= 0) {
-      throw new Error("Invalid User ID");
+      throw new BadRequestError("Invalid User ID");
     }
 
     if (!Number.isInteger(idVideo) || idVideo <= 0) {
@@ -175,25 +181,26 @@ const getVideoById = async (idUser, idVideo) => {
 
     const videos = await Video.findAll({ where: condition });
 
-    if (!videos.length) throw new Error("No videos found");
+    if (!videos.length) throw new NotFoundError("No videos found");
 
     return videos;
   } catch (e) {
+    if (e.statusCode) throw e;
     console.error("Error fetching video:", e.message);
-    throw new Error("Failed to fetch video");
+    throw new AppError("Failed to fetch video", 500);
   }
 };
 
 const updateVideo = async (id, data) => {
   try {
     let { title, url, filename } = data;
-    if (!id) throw new Error("Video ID is required");
+    if (!id) throw new BadRequestError("Video ID is required");
 
     const video = await Video.findByPk(id);
-    if (!video) throw new Error("Video not found");
+    if (!video) throw new NotFoundError("Video not found");
 
     if (url && video.url) {
-      const publicId = video.url.split("/").pop().split(".")[0]; 
+      const publicId = video.url.split("/").pop().split(".")[0];
       await cloudinary.uploader.destroy(`videos/${publicId}`, { resource_type: "video" });
     }
 
@@ -206,18 +213,19 @@ const updateVideo = async (id, data) => {
 
     return video;
   } catch (error) {
-    throw new Error(error.message || "Failed to update video");
+    if (error.statusCode) throw error;
+    throw new AppError(error.message || "Failed to update video", 500);
   }
 };
 
 const deleteVideo = async (idUser, idVideo) => {
   try {
-    if (!idUser) throw new Error("User ID is required");
+    if (!idUser) throw new BadRequestError("User ID is required");
     idUser = Number(idUser);
     idVideo = Number(idVideo);
 
     if (!Number.isInteger(idUser) || idUser <= 0) {
-      throw new Error("Invalid User ID");
+      throw new BadRequestError("Invalid User ID");
     }
 
     const isValidIdVideo = Number.isInteger(idVideo) && idVideo > 0;
@@ -228,12 +236,12 @@ const deleteVideo = async (idUser, idVideo) => {
       : await Video.findAll({ where: condition });
 
     if (!videos || videos.length === 0 || videos[0] === null) {
-      throw new Error("No videos found");
+      throw new NotFoundError("No videos found");
     }
 
     for (const video of videos) {
       if (video.videoUrl) {
-        const publicId = video.videoUrl.split("/").pop().split(".")[0]; 
+        const publicId = video.videoUrl.split("/").pop().split(".")[0];
         await cloudinary.uploader.destroy(`videos/${publicId}`, { resource_type: "video" });
       }
     }
@@ -242,13 +250,11 @@ const deleteVideo = async (idUser, idVideo) => {
 
     return { message: `Deleted ${videos.length} video(s) successfully` };
   } catch (e) {
+    if (e.statusCode) throw e;
     console.error("Error deleting video:", e.message);
-    throw new Error("Failed to delete video(s)");
+    throw new AppError("Failed to delete video(s)", 500);
   }
 };
-
-
-
 
 module.exports = {
   uploadAndCompressVideo,

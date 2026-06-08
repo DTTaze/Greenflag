@@ -1,90 +1,74 @@
+const { subject } = require("@casl/ability");
 const ReceiverInformationService = require("../services/receiverInformationService");
+const ForbiddenError = require("../errors/ForbiddenError");
 
 const handleCreateReceiverInfo = async (req, res) => {
-  try {
-    const result = await ReceiverInformationService.createReceiverInfo(req.body);
-    return res.success("Receiver information created successfully", result);
-  } catch (error) {
-    console.error("Error create Receiver information:", error);
-    return res.error(500, "Error create Receiver information", error.message || error);
-  }
+  const result = await ReceiverInformationService.createReceiverInfo(req.body);
+  return res.success("Receiver information created successfully", result);
 };
 
 const handleGetReceiverInfoById = async (req, res) => {
-  try {
-    const id = req.params.id || req.body.id;
-    if (!id) return res.error(400, "Missing receiver ID");
+  const id = req.params.id || req.body.id;
+  if (!id) return res.error(400, "Missing receiver ID");
 
-    const result = await ReceiverInformationService.getReceiverInfoById(Number(id));
-    if (!result) return res.error(404, "Receiver information not found");
-
-    return res.success("Receiver information fetched successfully", result);
-  } catch (error) {
-    console.error("Error get Receiver information:", error);
-    return res.error(500, "Error get Receiver information", error.message || error);
+  const result = await ReceiverInformationService.getReceiverInfoById(Number(id));
+  if (!req.ability.can("read", subject("ReceiverInformation", result))) {
+    throw new ForbiddenError("Bạn không có quyền xem thông tin người nhận này");
   }
+  return res.success("Receiver information fetched successfully", result);
 };
 
 const handleGetReceiverInfoByUserId = async (req, res) => {
-  try {
-    const id = req.params.user_id;
-    if (!id) return res.error(400, "Missing receiver ID");
+  const id = req.params.user_id;
+  if (!id) return res.error(400, "Missing receiver ID");
 
-    const result = await ReceiverInformationService.getReceiverInfoByUserId(Number(id));
-
-    return res.success("Receiver informations fetched successfully", result);
-  } catch (error) {
-    console.error("Error get Receiver information:", error);
-    return res.error(500, "Error get Receiver information", error.message || error);
+  if (!req.ability.can("read", subject("ReceiverInformation", { user_id: Number(id) }))) {
+    throw new ForbiddenError("Bạn không có quyền xem thông tin người nhận của người dùng này");
   }
-}
+
+  const result = await ReceiverInformationService.getReceiverInfoByUserId(Number(id));
+  return res.success("Receiver informations fetched successfully", result);
+};
 
 const handleUpdateReceiverInfoById = async (req, res) => {
-  try {
-    const id = req.params.id || req.body.id;
-    const updateData = req.body;
+  const id = req.params.id || req.body.id;
+  const updateData = req.body;
 
-    if (!id) return res.error(400, "Missing receiver ID");
+  if (!id) return res.error(400, "Missing receiver ID");
 
-    const result = await ReceiverInformationService.updateReceiverInfoById(Number(id), updateData);
-    if (!result) return res.error(404, "Receiver information not found");
-
-    return res.success("Receiver information updated successfully", result);
-  } catch (error) {
-    console.error("Error update Receiver information:", error);
-    return res.error(500, "Error update Receiver information", error.message || error);
+  const receiverInfo = await ReceiverInformationService.getReceiverInfoById(Number(id));
+  if (!req.ability.can("update", subject("ReceiverInformation", receiverInfo))) {
+    throw new ForbiddenError("Bạn không có quyền chỉnh sửa thông tin người nhận này");
   }
+
+  const result = await ReceiverInformationService.updateReceiverInfoById(Number(id), updateData);
+  return res.success("Receiver information updated successfully", result);
 };
 
 const handleDeleteReceiverInfoById = async (req, res) => {
-  try {
-    const id = req.params.id || req.body.id;
-    if (!id) return res.error(400, "Missing receiver ID");
+  const id = req.params.id || req.body.id;
+  if (!id) return res.error(400, "Missing receiver ID");
 
-    const result = await ReceiverInformationService.deleteReceiverInfoById(Number(id));
-    if (!result) return res.error(404, "Receiver information not found or already deleted");
-
-    return res.success("Receiver information deleted successfully");
-  } catch (error) {
-    console.error("Error delete Receiver information:", error);
-    return res.error(500, "Error delete Receiver information", error.message || error);
+  const receiverInfo = await ReceiverInformationService.getReceiverInfoById(Number(id));
+  if (!req.ability.can("delete", subject("ReceiverInformation", receiverInfo))) {
+    throw new ForbiddenError("Bạn không có quyền xóa thông tin người nhận này");
   }
+
+  await ReceiverInformationService.deleteReceiverInfoById(Number(id));
+  return res.success("Receiver information deleted successfully");
 };
 
 const handleSetDefaultReceiverInfoById = async (req, res) => {
-  try {
-    const id = req.params.id || req.body.id;
+  const id = req.params.id || req.body.id;
+  if (!id) return res.error(400, "Missing receiver ID");
 
-    if (!id) return res.error(400, "Missing receiver ID");
-
-    const result = await ReceiverInformationService.setDefaultReceiverInfoById(Number(id));
-    if (!result) return res.error(404, "Receiver information not found");
-
-    return res.success("Receiver information set default successfully", result);
-  } catch (error) {
-    console.error("Error update Receiver information:", error);
-    return res.error(500, "Error update Receiver information", error.message || error);
+  const receiverInfo = await ReceiverInformationService.getReceiverInfoById(Number(id));
+  if (!req.ability.can("update", subject("ReceiverInformation", receiverInfo))) {
+    throw new ForbiddenError("Bạn không có quyền chỉnh sửa thông tin người nhận này");
   }
+
+  const result = await ReceiverInformationService.setDefaultReceiverInfoById(Number(id));
+  return res.success("Receiver information set default successfully", result);
 };
 
 module.exports = {
@@ -93,5 +77,5 @@ module.exports = {
   handleGetReceiverInfoByUserId,
   handleUpdateReceiverInfoById,
   handleDeleteReceiverInfoById,
-  handleSetDefaultReceiverInfoById
+  handleSetDefaultReceiverInfoById,
 };

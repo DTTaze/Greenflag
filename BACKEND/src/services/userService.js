@@ -2,92 +2,98 @@ require("dotenv").config();
 const bcrypt = require("bcryptjs");
 const { Op } = require("sequelize");
 const db = require("../models/index.js");
-const User = db.User;
-const Task = db.Task;
-const Role = db.Role;
-const TaskUser = db.TaskUser;
-const Item = db.Item;
-const Transaction = db.Transaction;
-const Coin = db.Coin;
-const Rank = db.Rank;
+const userRepo = require("../repositories/userRepository.js");
+const roleRepo = require("../repositories/roleRepository.js");
+const coinRepo = require("../repositories/coinRepository.js");
+const rankRepo = require("../repositories/rankRepository.js");
 const salt = bcrypt.genSaltSync(10);
 const jwt = require("jsonwebtoken");
+
 const { nanoid } = require("nanoid");
-const rateLimitService = require("./rateLimitService");
-const { getCache, setCache, deleteCache } = require("../utils/cache");
+const rateLimitService = require("./rateLimitService.js");
+const { getCache, setCache, deleteCache } = require("../utils/cache.js");
+const { CACHE_KEYS } = require("../constants/cacheKeys.js");
+const { ASSIGNABLE_ROLES, DEFAULT_ROLE_ID } = require("../constants/roles.js");
+const { removeSpecialChars } = require("../utils/stringUtils.js");
 
-const deleteCacheAll = async(id = null,public_id = null)=> {
-  if (public_id){
-    await deleteCache(`user:public_id:${public_id}`);
-  }
-  if (id){
-    await deleteCache(`user:id:${id}`);
-  }
-}
+const NotFoundError = require("../errors/NotFoundError.js");
+const BadRequestError = require("../errors/BadRequestError.js");
+const UnauthorizedError = require("../errors/UnauthorizedError.js");
+const ConflictError = require("../errors/ConflictError.js");
+const ForbiddenError = require("../errors/ForbiddenError.js");
 
-const removeSpecialChars = (str) => {
-  return str
-    .replace(/[^a-zA-Z0-9\u00C0-\u1EF9\s]/g, " ")
-    .trim()
-    .replace(/\s+/g, " ");
+const deleteCacheAll = async (id = null, public_id = null) => {
+  if (public_id) {
+    await deleteCache(CACHE_KEYS.IDENTITY.USER_BY_PUBLIC_ID(public_id));
+  }
+  if (id) {
+    await deleteCache(CACHE_KEYS.IDENTITY.USER_BY_ID(id));
+  }
 };
 
 const setUserCache = async (user) => {
-  const userData =
-    typeof user.toJSON === "function" ? user.toJSON() : { ...user };
+  const userData = typeof user.toJSON === "function" ? user.toJSON() : { ...user };
   delete userData.password;
-  await setCache(`user:id:${userData.id}`, userData);
-  await setCache(`user:public_id:${userData.public_id}`, String(userData.id));
+  await setCache(CACHE_KEYS.IDENTITY.USER_BY_ID(userData.id), userData);
+  await setCache(CACHE_KEYS.IDENTITY.USER_BY_PUBLIC_ID(userData.public_id), String(userData.id));
 
   if (userData.roles) {
-    await setCache(`role:id:${userData.role_id}`, userData.roles);
+    await setCache(CACHE_KEYS.IDENTITY.ROLE_BY_ID(userData.role_id), userData.roles);
   }
   if (userData.coins) {
-    await setCache(`coin:id:${userData.coins_id}`, userData.coins);
+    await setCache(CACHE_KEYS.COMMERCE.COIN_BY_ID(userData.coins_id), userData.coins);
   }
   if (userData.ranks) {
-    await setCache(`rank:id:${userData.rank_id}`, userData.ranks);
+    await setCache(CACHE_KEYS.IDENTITY.RANK_BY_ID(userData.rank_id), userData.ranks);
   }
 };
 
 const createUser = async (data) => {
-  try {
-    let { username, full_name, role_id, email, password } = data;
+  let { username, full_name, role_id, email, password } = data;
 
-    role_id = Number(role_id);
+  role_id = Number(role_id);
 
-    if (isNaN(role_id)) throw new Error("Invalid Role ID");
+  if (isNaN(role_id)) throw new BadRequestError("Invalid Role ID");
 
-    let roledata = await getCache(`role:id:${role_id}`);
-    if (!roledata) {
-      roledata = await Role.findByPk(role_id);
-      if (!roledata) throw new Error("Role does not exist");
-      await setCache(`role:id:${role_id}`, roledata);
-    }
-    if (!["user", "customer"].includes(roledata.name.toLowerCase())) {
-      throw new Error("Cannot assign this role");
-    }
+  let roledata = await getCache(CACHE_KEYS.IDENTITY.ROLE_BY_ID(role_id));
+  if (!roledata) {
+    roledata = await roleRepo.findById(role_id, { raw: true, nest: true });
+    if (!roledata) throw new NotFoundError("Role does not exist");
+    await setCache(CACHE_KEYS.IDENTITY.ROLE_BY_ID(role_id), roledata);
+  }
+  if (!ASSIGNABLE_ROLES.includes(roledata.name.toLowerCase())) {
+    throw new ForbiddenError("Cannot assign this role");
+  }
 
-    const existingUser = await User.findOne({
+  const existingUser = await userRepo.findOne(
+    {
       where: { [Op.or]: [{ email }, { username }] },
-    });
-    if (existingUser) {
-      if (existingUser.email === email) throw new Error("Email already exists");
-      if (existingUser.username === username)
-        throw new Error("Username already exists");
-    }
+    },
+    { raw: true, nest: true },
+  );
+  if (existingUser) {
+    if (existingUser.email === email) throw new ConflictError("Email already exists");
+    if (existingUser.username === username) throw new ConflictError("Username already exists");
+  }
 
-    const hashPassword = bcrypt.hashSync(password, salt);
+  const hashPassword = bcrypt.hashSync(password, salt);
 
-    const maxOrderRank = await Rank.findOne({ order: [["order", "DESC"]] });
-    const newOrder = maxOrderRank ? maxOrderRank.order + 1 : 1;
-    const newRank = await Rank.create({
+  const maxOrderRank = await rankRepo.findOne(
+    { order: [["order", "DESC"]] },
+    { raw: true, nest: true },
+  );
+  const newOrder = maxOrderRank ? maxOrderRank.order + 1 : 1;
+  const newRank = await rankRepo.create(
+    {
       amount: 0,
       order: newOrder,
       user_id: null,
-    });
+    },
+    { raw: true, nest: true },
+  );
 
-    const newUser = await User.create({
+  const newUser = await userRepo.create(
+    {
       public_id: nanoid(),
       role_id,
       rank_id: newRank.id,
@@ -95,72 +101,69 @@ const createUser = async (data) => {
       password: hashPassword,
       username,
       full_name,
-    });
+    },
+    { raw: true, nest: true },
+  );
 
-    await newRank.update({user_id: newUser.id,});
+  await rankRepo.updateById(newRank.id, { user_id: newUser.id });
 
-    const newCoin = await Coin.create({
+  const newCoin = await coinRepo.create(
+    {
       amount: 0,
       user_id: newUser.id,
-    });
+    },
+    { raw: true, nest: true },
+  );
 
-    const userWithIncludes = {
-      ...newUser.toJSON(),
-      roles: roledata,
-      coins: newCoin,
-      ranks: newRank,
-    };
-    await setUserCache(userWithIncludes);
+  const userWithIncludes = {
+    ...newUser,
+    roles: roledata,
+    coins: newCoin,
+    ranks: newRank,
+  };
+  await setUserCache(userWithIncludes);
 
-    //delete password
-    delete newUser.password;
-    return newUser;
-  } catch (error) {
-    console.error("Error in createUser:", error);
-    throw error;
-  }
+  const responseUser = { ...newUser };
+  delete responseUser.password;
+  return responseUser;
 };
 
 const loginUser = async (user, email, password, clientIP, userAgent) => {
-  try {
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      await rateLimitService.recordFailedLogin(email, clientIP, userAgent);
-      throw new Error("Invalid password");
-    }
-
-    const payload = {
-      id: user.id,
-      role_id: user.role_id,
-      role_name: user.roles?.name,
-      username: user.username,
-      email: user.email,
-      full_name: user.full_name,
-      phone_number: user.phone_number,
-      address: user.address,
-      coins_id: user.coins_id,
-      last_completed_task: user.last_completed_task,
-      streak: user.streak,
-      avatar_url: user.avatar_url,
-    };
-
-    const access_token = jwt.sign(payload, process.env.JWT_AT_SECRET, {
-      expiresIn: process.env.JWT_AT_EXPIRE,
-    });
-    const refresh_token = jwt.sign(payload, process.env.JWT_RF_SECRET, {
-      expiresIn: process.env.JWT_RF_EXPIRE,
-    });
-
-    await rateLimitService.resetLoginAttempts(email, clientIP, userAgent);
-
-    return { access_token, refresh_token, user: payload };
-  } catch (e) {
-    throw e;
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    await rateLimitService.recordFailedLogin(email, clientIP, userAgent);
+    throw new UnauthorizedError("Invalid password");
   }
+
+  const payload = {
+    id: user.id,
+    role_id: user.role_id,
+    role_name: user.roles?.name,
+    username: user.username,
+    email: user.email,
+    full_name: user.full_name,
+    phone_number: user.phone_number,
+    address: user.address,
+    coins_id: user.coins_id,
+    last_completed_task: user.last_completed_task,
+    streak: user.streak,
+    avatar_url: user.avatar_url,
+  };
+
+  const access_token = jwt.sign(payload, process.env.JWT_AT_SECRET, {
+    expiresIn: process.env.JWT_AT_EXPIRE,
+  });
+  const refresh_token = jwt.sign(payload, process.env.JWT_RF_SECRET, {
+    expiresIn: process.env.JWT_RF_EXPIRE,
+  });
+
+  await rateLimitService.resetLoginAttempts(email, clientIP, userAgent);
+
+  return { access_token, refresh_token, user: payload };
 };
 
 const refreshAccessToken = (refreshToken) => {
-  if (!refreshToken) throw new Error("No refresh token provided");
+  if (!refreshToken) throw new UnauthorizedError("No refresh token provided");
   const decoded = jwt.verify(refreshToken, process.env.JWT_RF_SECRET);
   return jwt.sign({ id: decoded.id }, process.env.JWT_AT_SECRET, {
     expiresIn: process.env.JWT_AT_EXPIRE,
@@ -168,472 +171,317 @@ const refreshAccessToken = (refreshToken) => {
 };
 
 const getAllUsers = async () => {
-  try {
-    const users = await User.findAll({
+  const users = await userRepo.findAll(
+    {
       attributes: { exclude: ["password"] },
       include: [
-        { model: Role, as: "roles", attributes: ["id", "name"] },
-        { model: Coin, as: "coins", attributes: ["id", "amount"] },
+        { model: db.Role, as: "roles", attributes: ["id", "name"] },
+        { model: db.Coin, as: "coins", attributes: ["id", "amount"] },
       ],
-    });
-    return users;
-  } catch (e) {
-    throw e;
+    },
+    { raw: true, nest: true },
+  );
+  return users;
+};
+
+const _deleteUserInternal = async (user) => {
+  const t = await db.sequelize.transaction();
+  try {
+    await rankRepo.destroy(user.rank_id, { transaction: t });
+    await coinRepo.destroy(user.coins_id, { transaction: t });
+    await userRepo.destroy(user.id, { transaction: t });
+
+    await t.commit();
+
+    await deleteCache(CACHE_KEYS.IDENTITY.USER_BY_ID(user.id));
+    await deleteCache(CACHE_KEYS.IDENTITY.USER_BY_PUBLIC_ID(user.public_id));
+
+    return { message: "User deleted successfully" };
+  } catch (error) {
+    await t.rollback();
+    throw error;
   }
 };
 
 const deleteUser = async (id) => {
-  try {
-    const user = await User.findOne({ where: { id } });
-    if (!user) throw new Error("User not found");
-
-    await deleteCache(`user:id:${id}`);
-    await deleteCache(`user:public_id:${user.public_id}`);
-
-    const rankDestroyed = await Rank.destroy({ where: { id: user.rank_id } });
-    if (rankDestroyed === 0) throw new Error("Rank not found");
-
-    const coinDestroyed = await Coin.destroy({ where: { id: user.coins_id } });
-    if (coinDestroyed === 0) throw new Error("Coin not found");
-
-    const userDestroyed = await User.destroy({ where: { id: user.id } });
-    if (userDestroyed === 0) throw new Error("User not found");
-
-    return { message: "User deleted successfully" };
-  } catch (e) {
-    throw e;
-  }
+  const user = await userRepo.findOne({ where: { id } }, { raw: true, nest: true });
+  if (!user) throw new NotFoundError("User not found");
+  return _deleteUserInternal(user);
 };
 
 const deleteUserByPublicID = async (public_id) => {
-  try {
-    const user_id = await getCache(`user:public_id:${public_id}`);
-    if (user_id) await deleteCache(`user:id:${Number(user_id)}`);
-    await deleteCache(`user:public_id:${public_id}`);
-
-    const user = await User.findOne({ where: { public_id } });
-    if (!user) throw new Error("User not found");
-
-    const rankDestroyed = await Rank.destroy({ where: { id: user.rank_id } });
-    if (rankDestroyed === 0) throw new Error("Rank not found");
-
-    const coinDestroyed = await Coin.destroy({ where: { id: user.coins_id } });
-    if (coinDestroyed === 0) throw new Error("Coin not found");
-
-    const result = await User.destroy({ where: { id: user.id } });
-    if (result === 0) throw new Error("User not found");
-
-    return { message: "User deleted successfully" };
-  } catch (e) {
-    throw e;
-  }
+  const user = await userRepo.findOne({ where: { public_id } }, { raw: true, nest: true });
+  if (!user) throw new NotFoundError("User not found");
+  return _deleteUserInternal(user);
 };
 
 const getUserBycacheId = async (id) => {
-  try {
-    const cacheUser = await getCache(`user:id:${id}`);
-    if (!cacheUser) return null;
+  const cacheUser = await getCache(CACHE_KEYS.IDENTITY.USER_BY_ID(id));
+  if (!cacheUser) return null;
 
-    const data_user = cacheUser;
-    console.log("cacheUser:", cacheUser);
+  const data_user = cacheUser;
+  console.log("cacheUser:", cacheUser);
 
-    // Role
-    let dataRole = await getCache(`role:id:${data_user.role_id}`);
-    if (!dataRole) {
-      dataRole = await Role.findByPk(data_user.role_id, {
-        attributes: ["id", "name"],
-      });
-      if (dataRole) await setCache(`role:id:${data_user.role_id}`, dataRole);
-    }
-    if (!dataRole)
-      throw new Error(`Role not found for role_id ${data_user.role_id}`);
-
-    // Coin
-    let dataCoin = await getCache(`coin:id:${data_user.coin_id}`);
-    if (!dataCoin) {
-      dataCoin = await Coin.findByPk(data_user.coin_id, {
-        attributes: ["id", "amount"],
-      });
-      if (dataCoin) await setCache(`coin:id:${data_user.coin_id}`, dataCoin);
-    }
-    if (!dataCoin)
-      throw new Error(`Coin not found for coin_id ${data_user.coin_id}`);
-
-    // Rank
-    let dataRank = await getCache(`rank:id:${data_user.rank_id}`);
-    if (!dataRank) {
-      dataRank = await Rank.findByPk(data_user.rank_id, {
-        attributes: ["id", "amount", "order"],
-      });
-      if (dataRank) await setCache(`rank:id:${data_user.rank_id}`, dataRank);
-    }
-    if (!dataRank)
-      throw new Error(`Rank not found for rank_id ${data_user.rank_id}`);
-
-    const user = {
-      id: data_user.id,
-      public_id: data_user.public_id,
-      avatar_url: data_user.avatar_url,
-      google_id: data_user.google_id,
-      email: data_user.email,
-      username: data_user.username,
-      full_name: data_user.full_name,
-      phone_number: data_user.phone_number,
-      address: data_user.address,
-      streak: data_user.streak,
-      last_completed_task: data_user.last_completed_task,
-      roles: dataRole,
-      coins: dataCoin,
-      ranks: dataRank,
-    };
-    return user;
-  } catch (e) {
-    console.error("Error in getUserBycacheId:", e);
-    throw e;
+  // Role
+  let dataRole = await getCache(CACHE_KEYS.IDENTITY.ROLE_BY_ID(data_user.role_id));
+  if (!dataRole) {
+    dataRole = await roleRepo.findById(data_user.role_id, {
+      attributes: ["id", "name"],
+      raw: true,
+      nest: true,
+    });
+    if (dataRole) await setCache(CACHE_KEYS.IDENTITY.ROLE_BY_ID(data_user.role_id), dataRole);
   }
+  if (!dataRole) throw new NotFoundError(`Role not found for role_id ${data_user.role_id}`);
+
+  // Coin
+  let dataCoin = await getCache(CACHE_KEYS.COMMERCE.COIN_BY_ID(data_user.coin_id));
+  if (!dataCoin) {
+    dataCoin = await coinRepo.findById(data_user.coin_id, {
+      attributes: ["id", "amount"],
+      raw: true,
+      nest: true,
+    });
+    if (dataCoin) await setCache(CACHE_KEYS.COMMERCE.COIN_BY_ID(data_user.coin_id), dataCoin);
+  }
+  if (!dataCoin) throw new NotFoundError(`Coin not found for coin_id ${data_user.coin_id}`);
+
+  // Rank
+  let dataRank = await getCache(CACHE_KEYS.IDENTITY.RANK_BY_ID(data_user.rank_id));
+  if (!dataRank) {
+    dataRank = await rankRepo.findById(data_user.rank_id, {
+      attributes: ["id", "amount", "order"],
+      raw: true,
+      nest: true,
+    });
+    if (dataRank) await setCache(CACHE_KEYS.IDENTITY.RANK_BY_ID(data_user.rank_id), dataRank);
+  }
+  if (!dataRank) throw new NotFoundError(`Rank not found for rank_id ${data_user.rank_id}`);
+
+  const user = {
+    id: data_user.id,
+    public_id: data_user.public_id,
+    avatar_url: data_user.avatar_url,
+    google_id: data_user.google_id,
+    email: data_user.email,
+    username: data_user.username,
+    full_name: data_user.full_name,
+    phone_number: data_user.phone_number,
+    address: data_user.address,
+    streak: data_user.streak,
+    last_completed_task: data_user.last_completed_task,
+    roles: dataRole,
+    coins: dataCoin,
+    ranks: dataRank,
+  };
+  return user;
 };
 
 const getUserByID = async (id) => {
-  try {
-    const cacheUser = await getUserBycacheId(id);
-    if (cacheUser) return cacheUser;
+  const cacheUser = await getUserBycacheId(id);
+  if (cacheUser) return cacheUser;
 
-    const user = await User.findOne({
+  const user = await userRepo.findOne(
+    {
       where: { id },
       attributes: { exclude: ["password"] },
       include: [
-        { model: Role, as: "roles", attributes: ["id", "name"] },
-        { model: Coin, as: "coins", attributes: ["id", "amount"] },
-        { model: Rank, as: "ranks", attributes: ["id", "amount", "order"] },
+        { model: db.Role, as: "roles", attributes: ["id", "name"] },
+        { model: db.Coin, as: "coins", attributes: ["id", "amount"] },
+        { model: db.Rank, as: "ranks", attributes: ["id", "amount", "order"] },
       ],
-    });
-    if (!user) throw new Error("User not found");
-    delete user.password;
-    const userFormat = {
-      ...user.toJSON(),
-      role_id: user.roles?.id || null,
-      coin_id: user.coins?.id || null,
-      rank_id: user.ranks?.id || null,
-    };
-    delete userFormat.roles;
-    delete userFormat.coins;
-    delete userFormat.ranks;
-    await setUserCache(userFormat);
-    return user;
-  } catch (e) {
-    console.error("Error in getUserByID:", e);
-    throw e;
-  }
+    },
+    { raw: true, nest: true },
+  );
+  if (!user) throw new NotFoundError("User not found");
+
+  const userFormat = {
+    ...user,
+    role_id: user.roles?.id || null,
+    coin_id: user.coins?.id || null,
+    rank_id: user.ranks?.id || null,
+  };
+  delete userFormat.roles;
+  delete userFormat.coins;
+  delete userFormat.ranks;
+  await setUserCache(userFormat);
+  return user;
 };
 
 const getUserByPublicID = async (public_id) => {
-  try {
-    const cacheUserPublic = await getCache(`user:public_id:${public_id}`);
-    if (cacheUserPublic) {
-      const cacheUser = await getUserBycacheId(Number(cacheUserPublic));
-      if (cacheUser) return cacheUser;
-    }
+  const cacheUserPublic = await getCache(CACHE_KEYS.IDENTITY.USER_BY_PUBLIC_ID(public_id));
+  if (cacheUserPublic) {
+    const cacheUser = await getUserBycacheId(Number(cacheUserPublic));
+    if (cacheUser) return cacheUser;
+  }
 
-    const user = await User.findOne({
+  const user = await userRepo.findOne(
+    {
       where: { public_id },
       attributes: { exclude: ["password"] },
       include: [
-        { model: Role, as: "roles", attributes: ["id", "name"] },
-        { model: Coin, as: "coins", attributes: ["id", "amount"] },
-        { model: Rank, as: "ranks", attributes: ["id", "amount", "order"] },
+        { model: db.Role, as: "roles", attributes: ["id", "name"] },
+        { model: db.Coin, as: "coins", attributes: ["id", "amount"] },
+        { model: db.Rank, as: "ranks", attributes: ["id", "amount", "order"] },
       ],
-    });
-    if (!user) throw new Error("User not found");
+    },
+    { raw: true, nest: true },
+  );
+  if (!user) throw new NotFoundError("User not found");
 
-    await setUserCache(user);
-    return user;
-  } catch (e) {
-    throw e;
-  }
+  await setUserCache(user);
+  return user;
 };
-
 
 const updateUser = async (user, data) => {
-  try {
-    let { full_name, username, phone_number, email } = data;
+  let { full_name, username, phone_number, email } = data;
+  const updateData = {};
 
-    if (username !== undefined) {
-      username = removeSpecialChars(username);
-      user.username = username;
-    }
+  if (username !== undefined) {
+    username = removeSpecialChars(username);
+    updateData.username = username;
+  }
 
-    if (email !== undefined) {
-      const existingUser = await User.findOne({
+  if (email !== undefined) {
+    const existingUser = await userRepo.findOne(
+      {
         where: {
           email,
-          id: { [Op.ne]: user.id }, 
+          id: { [Op.ne]: user.id },
         },
-      });
-      if (existingUser) {
-        throw new Error("Email is already used by another user");
-      }
-      user.email = email;
+      },
+      { raw: true, nest: true },
+    );
+    if (existingUser) {
+      throw new ConflictError("Email is already used by another user");
     }
-
-    if (full_name !== undefined) {
-      full_name = removeSpecialChars(full_name);
-      user.full_name = full_name;
-    }
-
-    if (phone_number !== undefined) {
-      user.phone_number = phone_number;
-    }
-
-    await user.save();
-
-    const user_id = user.id;
-
-    const coindata = await Coin.findOne({ where: { user_id } });
-    if (!coindata) throw new Error("Coin does not exist");
-
-    const roledata = await Role.findByPk(user.role_id);
-    if (!roledata) throw new Error("Role does not exist");
-
-    const rankdata = await Rank.findOne({ where: { user_id } });
-    if (!rankdata) throw new Error("Rank does not exist");
-
-    const updatedUser = {
-      ...user.toJSON(),
-      coins: coindata,
-      roles: roledata,
-      ranks: rankdata,
-    };
-
-    await deleteCacheAll(user.id, user.public_id);
-    return updatedUser;
-  } catch (e) {
-    throw e;
+    updateData.email = email;
   }
+
+  if (full_name !== undefined) {
+    full_name = removeSpecialChars(full_name);
+    updateData.full_name = full_name;
+  }
+
+  if (phone_number !== undefined) {
+    updateData.phone_number = phone_number;
+  }
+
+  const updatedUserResult = await userRepo.updateById(user.id, updateData);
+  if (!updatedUserResult) throw new NotFoundError("User not found");
+
+  const coindata = await coinRepo.findOne(
+    { where: { user_id: user.id } },
+    { raw: true, nest: true },
+  );
+  if (!coindata) throw new NotFoundError("Coin does not exist");
+
+  const roledata = await roleRepo.findById(updatedUserResult.role_id, { raw: true, nest: true });
+  if (!roledata) throw new NotFoundError("Role does not exist");
+
+  const rankdata = await rankRepo.findOne(
+    { where: { user_id: user.id } },
+    { raw: true, nest: true },
+  );
+  if (!rankdata) throw new NotFoundError("Rank does not exist");
+
+  const updatedUser = {
+    ...updatedUserResult,
+    coins: coindata,
+    roles: roledata,
+    ranks: rankdata,
+  };
+
+  await deleteCacheAll(user.id, user.public_id);
+  return updatedUser;
 };
 
-
 const updateUserById = async (id, data) => {
-  try {
-    let user = await User.findOne({ where: { id } });
-    if (!user) throw new Error("User not found");
-    return await updateUser(user, data);
-  } catch (e) {
-    throw e;
-  }
+  let user = await userRepo.findOne({ where: { id } }, { raw: true, nest: true });
+  if (!user) throw new NotFoundError("User not found");
+  return await updateUser(user, data);
 };
 
 const updateUserByPublicID = async (public_id, data) => {
-  try {
-    const user = await User.findOne({ where: { public_id } });
-    if (!user) throw new Error("User not found");
-    return await updateUser(user, data);
-  } catch (e) {
-    throw e;
-  }
+  const user = await userRepo.findOne({ where: { public_id } }, { raw: true, nest: true });
+  if (!user) throw new NotFoundError("User not found");
+  return await updateUser(user, data);
 };
 
 const findOrCreateUser = async (profile) => {
-  try {
-    const existingUser = await User.findOne({
+  const existingUser = await userRepo.findOne(
+    {
       where: { email: profile.emails[0].value },
       include: [
-        { model: Role, as: "roles" },
-        { model: Coin, as: "coins" },
-        { model: Rank, as: "ranks" },
+        { model: db.Role, as: "roles" },
+        { model: db.Coin, as: "coins" },
+        { model: db.Rank, as: "ranks" },
       ],
-    });
+    },
+    { raw: true, nest: true },
+  );
 
-    if (existingUser) {
-      await setUserCache(existingUser);
-      return existingUser;
-    }
+  if (existingUser) {
+    await setUserCache(existingUser);
+    return existingUser;
+  }
 
-    const maxOrderRank = await Rank.findOne({ order: [["order", "DESC"]] });
-    const newOrder = maxOrderRank ? maxOrderRank.order + 1 : 1;
-    const newRank = await Rank.create({
+  const maxOrderRank = await rankRepo.findOne(
+    { order: [["order", "DESC"]] },
+    { raw: true, nest: true },
+  );
+  const newOrder = maxOrderRank ? maxOrderRank.order + 1 : 1;
+  const newRank = await rankRepo.create(
+    {
       amount: 0,
       order: newOrder,
       user_id: null,
-    });
+    },
+    { raw: true, nest: true },
+  );
 
-    const name = removeSpecialChars(profile.displayName);
-    const newUser = await User.create({
-      role_id: 2,
-      rank_id:newRank.id,
+  const name = removeSpecialChars(profile.displayName);
+  const newUser = await userRepo.create(
+    {
+      role_id: DEFAULT_ROLE_ID,
+      rank_id: newRank.id,
       public_id: nanoid(),
       google_id: profile.id,
       email: profile.emails[0].value,
       username: name,
       full_name: name,
       password: null,
-    });
+    },
+    { raw: true, nest: true },
+  );
 
-    await newRank.update({user_id: newUser.id});
+  await rankRepo.updateById(newRank.id, { user_id: newUser.id });
 
-    const newCoin = await Coin.create({
+  const newCoin = await coinRepo.create(
+    {
       amount: 0,
       user_id: newUser.id,
-    });
+    },
+    { raw: true, nest: true },
+  );
 
-    const userWithIncludes = {
-      ...newUser.toJSON(),
-      roles: roledata,
-      coins: newCoin,
-      ranks: newRank,
-    };
-    await deleteCacheAll(newUser.id, newUser.public_id);
+  const roledata = await roleRepo.findById(DEFAULT_ROLE_ID, { raw: true, nest: true });
 
-    //delete password
-    delete newUser.password;
-    return newUser;
-  } catch (e) {
-    throw e;
-  }
-};
+  const userWithIncludes = {
+    ...newUser,
+    role_id: DEFAULT_ROLE_ID,
+    coin_id: newCoin.id,
+    rank_id: newRank.id,
+    roles: roledata,
+    coins: newCoin,
+    ranks: newRank,
+  };
+  await deleteCacheAll(newUser.id, newUser.public_id);
+  await setUserCache(userWithIncludes);
 
-const getAllTasksById = async (user_id) => {
-  try {
-    if (!user_id) throw new Error("User ID is required");
-
-    const cacheKey = `all:User:taskId:${user_id}`;
-    const taskUserIds = await getCache(cacheKey);
-    const result = [];
-
-    if (Array.isArray(taskUserIds) && taskUserIds.length > 0) {
-      for (const id of taskUserIds) {
-        let taskUser = await getCache(`taskUser:id:${id}`);
-        if (!taskUser) {
-          taskUser = await TaskUser.findOne({
-            where: { id },
-            include: [{ model: Task, as: "tasks", required: true }],
-          });
-          if (taskUser) await setCache(`taskUser:id:${id}`, taskUser);
-        }
-        if (taskUser) result.push(taskUser);
-      }
-
-      return result;
-    }
-
-    const taskUsers = await TaskUser.findAll({
-      where: { user_id },
-      include: [{ model: Task, as: "tasks", required: true }],
-    });
-
-    const ids = taskUsers.map((t) => t.id);
-    await setCache(cacheKey, ids);
-    for (const t of taskUsers) {
-      await setCache(`taskUser:id:${t.id}`, t);
-    }
-
-    return taskUsers;
-  } catch (err) {
-    throw err;
-  }
-};
-
-const getTaskCompleted = async (user_id) => {
-  try {
-    const allTasksUser = await getAllTasksById(user_id);
-    console.log(
-      `check all tasks user: ${JSON.stringify(allTasksUser, null, 2)}`
-    );
-
-    if (!Array.isArray(allTasksUser) || allTasksUser.length === 0) {
-      console.log(`No tasks found for user_id: ${user_id}`);
-      return [];
-    }
-
-    let completedTasks = [];
-
-    for (const taskUser of allTasksUser) {
-      let task = await getCache(`task:id:${taskUser.task_id}`);
-
-      if (!task) {
-        // Nếu không có trong cache thì lấy từ DB và cache lại
-        task = await Task.findOne({ where: { id: taskUser.task_id } });
-
-        if (task) {
-          task = task.toJSON(); // Sequelize instance => plain object
-          await setCache(`task:id:${taskUser.task_id}`, task); // Đã stringify trong setCache
-        } else {
-          console.log(`Task not found for task_id: ${taskUser.task_id}`);
-          continue;
-        }
-      }
-
-      // task đã được parse sẵn từ getCache nên không cần JSON.parse
-      console.log(`Task details: ${JSON.stringify(task, null, 2)}`);
-
-      const progress = Number(taskUser.progress_count) || 0;
-      const total = Number(task.total) || 0; // Đảm bảo field đúng
-
-      console.log(`Progress: ${progress}, Total: ${total}`);
-
-      if (progress >= total && total > 0) {
-        completedTasks.push(task);
-      }
-    }
-
-    console.log(`Completed tasks: ${JSON.stringify(completedTasks, null, 2)}`);
-    return completedTasks;
-  } catch (e) {
-    console.error(`Error in getTaskCompleted: ${e.message}`);
-    throw e;
-  }
-};
-
-const getItemByIdUser = async (user_id) => {
-  try {
-    const cachedTransactionIds = await getCache(
-      `all:transaction:user:id${user_id}`
-    );
-    if (cachedTransactionIds) {
-      const transactions = [];
-      for (const transactionId of cachedTransactionIds) {
-        let transaction = await getCache(`transaction:id:${transactionId}`);
-        if (!transaction) {
-          transaction = await Transaction.findOne({
-            where: { id: transactionId },
-            attributes: ["id", "total_price", "quantity", "status"],
-            include: [
-              {
-                model: Item,
-                attributes: ["id", "name", "description", "price"],
-              },
-            ],
-          });
-          if (transaction)
-            await setCache(`transaction:id:${transactionId}`, transaction);
-        }
-        if (transaction) transactions.push(transaction);
-      }
-      return transactions;
-    }
-
-    const items = await Transaction.findAll({
-      where: { buyer_id: user_id, status: ["pending", "completed"] },
-      attributes: ["id", "total_price", "quantity", "status"],
-      include: [
-        {
-          model: Item,
-          as: "item",
-          attributes: ["id", "name", "description", "price"],
-        },
-      ],
-    });
-    if (!items || items.length === 0) throw new Error("User not found");
-
-    const transactionIds = items.map((item) => item.id);
-    await setCache(`all:transaction:user:id${user_id}`, transactionIds);
-    for (const item of items) {
-      await setCache(`transaction:id:${item.id}`, item);
-    }
-
-    return items;
-  } catch (e) {
-    throw e;
-  }
+  const responseUser = { ...newUser };
+  delete responseUser.password;
+  return responseUser;
 };
 
 module.exports = {
@@ -647,8 +495,5 @@ module.exports = {
   updateUserById,
   findOrCreateUser,
   loginUser,
-  getTaskCompleted,
-  getAllTasksById,
-  getItemByIdUser,
   refreshAccessToken,
 };

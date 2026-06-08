@@ -1,42 +1,26 @@
-const db = require("../models/index");
-const ReceiverInformation = db.ReceiverInformation;
+const receiverInformationRepo = require("../repositories/receiverInformationRepository");
 const { getCache, setCache, deleteCache } = require("../utils/cache");
-
-const KEY_PREFIX = "receiverInformation:id:";
+const { CACHE_KEYS } = require("../constants/cacheKeys");
+const { cacheThrough } = require("../helpers/cacheHelper");
+const NotFoundError = require("../errors/NotFoundError");
+const BadRequestError = require("../errors/BadRequestError");
 
 // CREATE
 const createReceiverInfo = async (data) => {
-  try {
-    const {
-      user_id,
-      to_name,
-      to_phone,
-      to_address,
-      to_ward_name,
-      to_district_name,
-      to_province_name,
-      account_type = "home",
-      is_default = false,
-    } = data;
+  const {
+    user_id,
+    to_name,
+    to_phone,
+    to_address,
+    to_ward_name,
+    to_district_name,
+    to_province_name,
+    account_type = "home",
+    is_default = false,
+  } = data;
 
-    if (
-      !user_id ||
-      !to_name ||
-      !to_phone ||
-      !to_address ||
-      !to_ward_name ||
-      !to_district_name ||
-      !to_province_name
-    ) {
-      throw new Error("Missing required fields");
-    }
-
-    const validAccountTypes = ["home", "office"];
-    if (!validAccountTypes.includes(account_type)) {
-      throw new Error("Invalid account_type. Must be 'home' or 'office'");
-    }
-
-    const newReceiverInfo = await ReceiverInformation.create({
+  const newReceiverInfo = await receiverInformationRepo.create(
+    {
       user_id,
       to_name,
       to_phone,
@@ -46,192 +30,141 @@ const createReceiverInfo = async (data) => {
       to_province_name,
       account_type,
       is_default,
-    });
+    },
+    { raw: true, nest: true },
+  );
 
-    await setCache(`${KEY_PREFIX}${newReceiverInfo.id}`, newReceiverInfo);
-    await deleteCache("receiverInfo:all");
+  await setCache(CACHE_KEYS.COMMERCE.RECEIVER_INFO_BY_ID(newReceiverInfo.id), newReceiverInfo);
+  await deleteCache(CACHE_KEYS.COMMERCE.ALL_RECEIVER_INFO);
 
-    return newReceiverInfo;
-  } catch (error) {
-    console.error("Error create Receiver Info:", error.message);
-    throw error;
-  }
+  return newReceiverInfo;
 };
 
 // READ
 const getReceiverInfoById = async (id) => {
-  try {
-    const cacheKey = `${KEY_PREFIX}${id}`;
-    let receiverInfo = await getCache(cacheKey);
-
-    if (receiverInfo) {
-      return receiverInfo;
+  return cacheThrough(CACHE_KEYS.COMMERCE.RECEIVER_INFO_BY_ID(id), async () => {
+    const receiverInfo = await receiverInformationRepo.findById(id, { raw: true, nest: true });
+    if (!receiverInfo) {
+      throw new NotFoundError(`ReceiverInformation ${id} not found`);
     }
-
-    receiverInfo = await ReceiverInformation.findByPk(id);
-    if (receiverInfo) {
-      setCache(cacheKey, receiverInfo);
-    }else throw new error(`ReceiverInformation ${id} not found`);
-
     return receiverInfo;
-  } catch (error) {
-    console.error("Error get Receiver Info:", error.message);
-    throw error;
-  }
+  });
 };
 
 const getAllReceiverInfo = async () => {
-  try {
-    const cachedReceiverIds = await getCache(`receiverInfo:all`);
-    if (cachedReceiverIds) {
-      console.log("cachedReceiverIds", cachedReceiverIds);
-      const receivers = [];
-      for (const receiverId of cachedReceiverIds) {
-        const receiver = await getReceiverInfoById(receiverId);
-        if (receiver) {
-          receivers.push(receiver);
-        }
+  const cachedReceiverIds = await getCache(CACHE_KEYS.COMMERCE.ALL_RECEIVER_INFO);
+  if (cachedReceiverIds) {
+    const receivers = [];
+    for (const receiverId of cachedReceiverIds) {
+      const receiver = await getReceiverInfoById(receiverId);
+      if (receiver) {
+        receivers.push(receiver);
       }
-      return receivers;
     }
-
-    const receiverRecords = await ReceiverInformation.findAll();
-    const receiverList = [];
-    const receiverIds = [];
-
-    for (const receiver of receiverRecords) {
-      const receiverData = receiver.toJSON();
-      receiverIds.push(receiverData.id);
-
-      // Optionally, cache each individual receiver
-      const cacheKey = `${KEY_PREFIX}${receiverData.id}`;
-      await setCache(cacheKey, receiverData);
-    }
-
-    // Cache the list of all receiver IDs
-    await setCache(`receiverInfo:all`, receiverIds);
-
-    return receiverRecords;
-  } catch (error) {
-    console.error("Error retrieving receiver info:", error);
-    throw error;
+    return receivers;
   }
+
+  const receiverRecords = await receiverInformationRepo.findAll({}, { raw: true, nest: true });
+  const receiverIds = [];
+  const receiversData = [];
+
+  for (const receiverData of receiverRecords) {
+    receiverIds.push(receiverData.id);
+
+    const cacheKey = CACHE_KEYS.COMMERCE.RECEIVER_INFO_BY_ID(receiverData.id);
+    await setCache(cacheKey, receiverData);
+    receiversData.push(receiverData);
+  }
+
+  await setCache(CACHE_KEYS.COMMERCE.ALL_RECEIVER_INFO, receiverIds);
+
+  return receiversData;
 };
 
 const getReceiverInfoByUserId = async (user_id) => {
-  try {
-    const allInfo = await getAllReceiverInfo();
-
-    // Filter the list by user_id
-    const userReceivers = allInfo.filter(item => item.user_id === user_id);
-
-    return userReceivers;
-  } catch (error) {
-    console.error("Error getting Receiver Info by user_id:", error.message);
-    throw error;
-  }
+  const allInfo = await getAllReceiverInfo();
+  return allInfo.filter((item) => item.user_id === user_id);
 };
-
 
 // UPDATE
 const updateReceiverInfoById = async (id, data) => {
-  try {
-    const receiverInfo = await ReceiverInformation.findByPk(id);
-    if (!receiverInfo) {
-      throw new Error(`Receiver Info not found by id: ${id}`);
-    }
-
-    // Danh sách các trường hợp lệ có thể cập nhật
-    const updatableFields = [
-      "to_name",
-      "to_phone",
-      "to_address",
-      "to_ward_name",
-      "to_district_name",
-      "to_province_name",
-      "account_type",
-      "is_default",
-    ];
-
-    // Lọc ra các trường được truyền và hợp lệ
-    const updateData = {};
-    for (const key of updatableFields) {
-      if (data.hasOwnProperty(key)) {
-        updateData[key] = data[key];
-      }
-    }
-
-    // Nếu không có trường hợp lệ nào thì không làm gì
-    if (Object.keys(updateData).length === 0) {
-      throw new Error("No valid fields provided for update");
-    }
-
-    await receiverInfo.update(updateData);
-    const updated = await ReceiverInformation.findByPk(id);
-
-    // delete cache
-    await deleteCache(`${KEY_PREFIX}${id}`);
-    await deleteCache("receiverInfo:all")
-    return updated;
-  } catch (error) {
-    console.error("Error update Receiver Info:", error.message);
-    throw error;
+  const receiverInfo = await receiverInformationRepo.findById(id, { raw: true, nest: true });
+  if (!receiverInfo) {
+    throw new NotFoundError(`Receiver Info not found by id: ${id}`);
   }
+
+  const updatableFields = [
+    "to_name",
+    "to_phone",
+    "to_address",
+    "to_ward_name",
+    "to_district_name",
+    "to_province_name",
+    "account_type",
+    "is_default",
+  ];
+
+  const updateData = {};
+  for (const key of updatableFields) {
+    if (Object.prototype.hasOwnProperty.call(data, key)) {
+      updateData[key] = data[key];
+    }
+  }
+
+  if (Object.keys(updateData).length === 0) {
+    throw new BadRequestError("No valid fields provided for update");
+  }
+
+  const updated = await receiverInformationRepo.updateById(id, updateData);
+
+  await deleteCache(CACHE_KEYS.COMMERCE.RECEIVER_INFO_BY_ID(id));
+  await deleteCache(CACHE_KEYS.COMMERCE.ALL_RECEIVER_INFO);
+  return updated;
 };
 
 const setDefaultReceiverInfoById = async (id) => {
-  try {
-    const info = await ReceiverInformation.findOne({
+  const info = await receiverInformationRepo.findOne(
+    {
       where: { id },
-    });
-    if (!info)
-      throw new Error("Receiver information not found");
+    },
+    { raw: true, nest: true },
+  );
+  if (!info) throw new NotFoundError("Receiver information not found");
 
-    const user_id = info.user_id;
+  const user_id = info.user_id;
 
-    const allAccounts = await ReceiverInformation.findAll({
+  const allAccounts = await receiverInformationRepo.findAll(
+    {
       where: { user_id },
-      attributes: ['id'],
-    });
+      attributes: ["id"],
+    },
+    { raw: true, nest: true },
+  );
 
-    await ReceiverInformation.update(
-      { is_default: false },
-      { where: { user_id } }
-    );
+  await receiverInformationRepo.updateByConditions({ user_id }, { is_default: false });
 
-    await info.update({ is_default: true });
+  const updatedInfo = await receiverInformationRepo.updateById(id, { is_default: true });
 
-    await Promise.all(
-      allAccounts.map(acc => deleteCache(`${KEY_PREFIX}${acc.id}`))
-    );
+  await Promise.all(
+    allAccounts.map((acc) => deleteCache(CACHE_KEYS.COMMERCE.RECEIVER_INFO_BY_ID(acc.id))),
+  );
 
-    await deleteCache(`receiverInfo:all`);
+  await deleteCache(CACHE_KEYS.COMMERCE.ALL_RECEIVER_INFO);
 
-    return info;
-  } catch (err) {
-    throw err;
-  }
+  return updatedInfo;
 };
-
 
 // DELETE
 const deleteReceiverInfoById = async (id) => {
-  try {
-    const deletedCount = await ReceiverInformation.destroy({
-      where: { id },
-    });
+  const deletedCount = await receiverInformationRepo.destroy(id);
 
-    if (deletedCount > 0) {
-      await deleteCache(`${KEY_PREFIX}${id}`);
-      await deleteCache("receiverInfo:all")
-      return true;
-    }
-
-    return false;
-  } catch (error) {
-    console.error("Error delete Receiver Info:", error.message);
-    throw error;
+  if (deletedCount > 0) {
+    await deleteCache(CACHE_KEYS.COMMERCE.RECEIVER_INFO_BY_ID(id));
+    await deleteCache(CACHE_KEYS.COMMERCE.ALL_RECEIVER_INFO);
+    return true;
   }
+
+  throw new NotFoundError(`Receiver information not found or already deleted`);
 };
 
 module.exports = {

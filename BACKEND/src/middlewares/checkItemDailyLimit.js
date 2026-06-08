@@ -26,10 +26,7 @@ const checkItemDailyLimit = async (req, res, next) => {
   });
 
   if (purchasedToday >= item.purchase_limit_per_day) {
-    return res.error(
-      403,
-      "You have reached the daily purchase limit for this item."
-    );
+    return res.error(403, "You have reached the daily purchase limit for this item.");
   }
 
   next();

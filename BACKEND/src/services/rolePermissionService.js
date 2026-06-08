@@ -1,113 +1,103 @@
-const db = require("../models/index.js");
-const RolePermission = db.RolePermission;
-const Role = db.Role;
-const Permission = db.Permission;
+const db = require("../models");
+const roleRepo = require("../repositories/roleRepository");
+const permRepo = require("../repositories/permissionRepository");
+const { deleteCache } = require("../utils/cache.js");
+const { CACHE_KEYS } = require("../constants/cacheKeys.js");
+const NotFoundError = require("../errors/NotFoundError.js");
+const BadRequestError = require("../errors/BadRequestError.js");
 
 const assignPermissionToRole = async (role_id, permission_id) => {
-  try {
-    const role = await Role.findByPk(role_id);
-    const permission = await Permission.findByPk(permission_id);
-    if (!role || !permission) throw new Error("Role or Permission not found");
+  const role = await roleRepo.findById(role_id, { raw: true, nest: true });
+  const permission = await permRepo.findById(permission_id, { raw: true, nest: true });
+  if (!role || !permission) throw new NotFoundError("Role or Permission not found");
 
-    await RolePermission.create({
-      role_id,
-      permission_id,
-      created_at: new Date(),
-      updated_at: new Date(),
-    });
+  await roleRepo.assignPermission(role_id, permission_id, {
+    created_at: new Date(),
+    updated_at: new Date(),
+  });
 
-    return { message: "Permission assigned to role successfully" };
-  } catch (e) {
-    throw e;
-  }
+  await deleteCache(CACHE_KEYS.IDENTITY.ROLE_PERMISSIONS(role_id));
+
+  return { message: "Permission assigned to role successfully" };
 };
+
 const getAllRolePermissions = async () => {
-  try {
-    return await RolePermission.findAll({
+  return await roleRepo.findAllRolePermissions(
+    {
       include: [
         {
-          model: Role,
+          model: db.Role,
           as: "role",
           attributes: ["id", "name"],
         },
         {
-          model: Permission,
+          model: db.Permission,
           as: "permission",
           attributes: ["id", "action", "subject"],
         },
       ],
-    });
-  } catch (e) {
-    throw e;
-  }
+    },
+    { raw: true, nest: true },
+  );
 };
+
 const getPermissionByIdByRole = async (role_id, perm_id) => {
-  try {
-    const rolePermission = await RolePermission.findOne({
-      where: { role_id: role_id, permission_id: perm_id },
-      include: [{ model: Permission, as: "permissions" }],
-    });
+  const rolePermission = await roleRepo.findRolePermission(role_id, perm_id, {
+    include: [{ model: db.Permission, as: "permissions" }],
+    raw: true,
+    nest: true,
+  });
 
-    if (!rolePermission) {
-      throw new Error("Permission not found in this role");
-    }
-
-    return rolePermission;
-  } catch (e) {
-    throw e;
+  if (!rolePermission) {
+    throw new NotFoundError("Permission not found in this role");
   }
+
+  return rolePermission;
 };
 
 const getPermissionsByRole = async (role_id) => {
-  try {
-    const role = await Role.findByPk(role_id, {
-      include: [{ model: Permission, as: "permissions" }],
-    });
-    if (!role) throw new Error("Role not found");
+  const role = await roleRepo.findById(role_id, {
+    include: [{ model: db.Permission, as: "permissions" }],
+    raw: true,
+    nest: true,
+  });
+  if (!role) throw new NotFoundError("Role not found");
 
-    return { permissions: role.permissions };
-  } catch (e) {
-    throw e;
-  }
+  return { permissions: role.permissions || [] };
 };
 
 const updatePermissionByRole = async (role_id, perm_id, new_permission_id) => {
-  try {
-    const rolePermission = await RolePermission.findOne({
-      where: { role_id: role_id, permission_id: perm_id },
-    });
+  const rolePermission = await roleRepo.findRolePermission(role_id, perm_id, {
+    raw: true,
+    nest: true,
+  });
 
-    if (!rolePermission) {
-      throw new Error("Permission not found in this role");
-    }
-
-    const [updatedCount] = await RolePermission.update(
-      { permission_id: new_permission_id },
-      { where: { role_id: role_id, permission_id: perm_id } }
-    );
-
-    if (updatedCount === 0) {
-      throw new Error("Update failed. No rows affected.");
-    }
-
-    return { message: "Permission updated successfully" };
-  } catch (e) {
-    throw e;
+  if (!rolePermission) {
+    throw new NotFoundError("Permission not found in this role");
   }
+
+  const [updatedCount] = await roleRepo.updateRolePermission(role_id, perm_id, new_permission_id);
+
+  if (updatedCount === 0) {
+    throw new BadRequestError("Update failed. No rows affected.");
+  }
+
+  await deleteCache(CACHE_KEYS.IDENTITY.ROLE_PERMISSIONS(role_id));
+
+  return { message: "Permission updated successfully" };
 };
 
 const removePermissionFromRole = async (role_id, permission_id) => {
-  try {
-    const rolePermission = await RolePermission.findOne({
-      where: { role_id, permission_id },
-    });
-    if (!rolePermission) throw new Error("Permission not found in this role");
+  const rolePermission = await roleRepo.findRolePermission(role_id, permission_id, {
+    raw: true,
+    nest: true,
+  });
+  if (!rolePermission) throw new NotFoundError("Permission not found in this role");
 
-    await rolePermission.destroy();
-    return { message: "Permission removed from role successfully" };
-  } catch (e) {
-    throw e;
-  }
+  await roleRepo.removeRolePermission(role_id, permission_id);
+  await deleteCache(CACHE_KEYS.IDENTITY.ROLE_PERMISSIONS(role_id));
+
+  return { message: "Permission removed from role successfully" };
 };
 
 module.exports = {

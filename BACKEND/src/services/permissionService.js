@@ -1,59 +1,40 @@
-const db = require("../models/index.js");
-const Permission = db.Permission;
+const permissionRepo = require("../repositories/permissionRepository");
+const NotFoundError = require("../errors/NotFoundError.js");
+const BadRequestError = require("../errors/BadRequestError.js");
 
 const createPermission = async (action, subject) => {
-  try {
-    if (!action) throw new Error("Permission action is required");
-    return await Permission.create({ action, subject });
-  } catch (e) {
-    throw e;
-  }
+  return await permissionRepo.create({ action, subject }, { raw: true, nest: true });
 };
 
 const getPermissionById = async (id) => {
-  try {
-    if (!id) throw new Error("Permission ID is required");
+  if (!id) throw new BadRequestError("Permission ID is required");
 
-    const result = await Permission.findByPk(id);
-    if (!result) throw new Error("Permission not found");
+  const result = await permissionRepo.findById(id, { raw: true, nest: true });
+  if (!result) throw new NotFoundError("Permission not found");
 
-    return result;
-  } catch (e) {
-    throw e;
-  }
+  return result;
 };
 
 const getAllPermissions = async () => {
-  try {
-    return await Permission.findAll();
-  } catch (e) {
-    throw new Error("Failed to fetch permissions");
-  }
+  return await permissionRepo.findAll({ raw: true, nest: true });
 };
 
 const updatePermission = async (id, data) => {
-  try {
-    const permission = await Permission.findByPk(id);
-    if (!permission) throw new Error("Permission not found");
+  const permission = await permissionRepo.findById(id, { raw: true, nest: true });
+  if (!permission) throw new NotFoundError("Permission not found");
 
-    await permission.update(data);
-    return permission;
-  } catch (e) {
-    throw e;
-  }
+  const updatedPermission = await permissionRepo.updateById(id, data);
+  return updatedPermission;
 };
 
 const deletePermission = async (id) => {
-  try {
-    const permission = await Permission.findByPk(id);
-    if (!permission) throw new Error("Permission not found");
+  const permission = await permissionRepo.findById(id, { raw: true, nest: true });
+  if (!permission) throw new NotFoundError("Permission not found");
 
-    await permission.destroy();
-    return { message: "Permission deleted successfully" };
-  } catch (e) {
-    throw e;
-  }
+  await permissionRepo.destroy(id);
+  return { message: "Permission deleted successfully" };
 };
+
 module.exports = {
   createPermission,
   getPermissionById,

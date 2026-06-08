@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const { TASK_DIFFICULTY, TASK_VISIBILITY } = require("../constants/taskStatus");
 
 module.exports = (sequelize, DataTypes) => {
   class Task extends Model {
@@ -48,7 +49,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       difficulty: {
-        type: DataTypes.ENUM("easy", "medium", "hard"),
+        type: DataTypes.ENUM(...Object.values(TASK_DIFFICULTY)),
         allowNull: false,
       },
       total: {
@@ -57,16 +58,16 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: 1,
       },
       status: {
-        type: DataTypes.ENUM("public", "private"),
+        type: DataTypes.ENUM(...Object.values(TASK_VISIBILITY)),
         allowNull: false,
-        defaultValue: "public",
+        defaultValue: TASK_VISIBILITY.PUBLIC,
       },
     },
     {
       sequelize,
       modelName: "Task",
       tableName: "tasks",
-    }
+    },
   );
 
   return Task;

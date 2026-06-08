@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const { CARRIER_TYPES } = require("../constants/carriers");
 
 module.exports = (sequelize, DataTypes) => {
   class DeliveryAccount extends Model {
@@ -8,11 +9,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "user_id",
         onDelete: "CASCADE",
       });
-     DeliveryAccount.hasMany(models.DeliveryOrder, {
-       foreignKey: "delivery_account_id",
-       onDelete: "CASCADE",
-     });
-
+      DeliveryAccount.hasMany(models.DeliveryOrder, {
+        foreignKey: "delivery_account_id",
+        onDelete: "CASCADE",
+      });
     }
   }
 
@@ -36,9 +36,9 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       carrier: {
-        type: DataTypes.ENUM("ghn", "ghtk", "grab"),
+        type: DataTypes.ENUM(...Object.values(CARRIER_TYPES)),
         allowNull: false,
-        defaultValue: "ghn",
+        defaultValue: CARRIER_TYPES.GHN,
       },
       token: {
         type: DataTypes.TEXT,
@@ -58,7 +58,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "DeliveryAccount",
       tableName: "delivery_accounts",
-    }
+    },
   );
 
   return DeliveryAccount;

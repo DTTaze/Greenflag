@@ -1,115 +1,96 @@
-const db = require("../models");
-const DeliveryAccount = db.DeliveryAccount;
+const deliveryAccountRepo = require("../repositories/deliveryAccountRepository");
 const { getCache, setCache, deleteCache } = require("../utils/cache");
+const { CACHE_KEYS, CACHE_TTL } = require("../constants/cacheKeys");
+const NotFoundError = require("../errors/NotFoundError");
 
 const getAllDeliveryAccounts = async (userId) => {
-  try {
-    const cacheKey = `delivery:user:${userId}`;
-    const cached = await getCache(cacheKey);
-    if (cached) {
-      console.log("Cache hit for delivery accounts of user", userId);
-      return cached;
-    }
-
-    const accounts = await DeliveryAccount.findAll({
-      where: { user_id: userId },
-    });
-    await setCache(cacheKey, accounts, 60 * 60);
-    return accounts;
-  } catch (err) {
-    throw err;
+  const cacheKey = CACHE_KEYS.COMMERCE.DELIVERY_BY_USER_ID(userId);
+  const cached = await getCache(cacheKey);
+  if (cached) {
+    console.log("Cache hit for delivery accounts of user", userId);
+    return cached;
   }
+
+  const accounts = await deliveryAccountRepo.findAll(
+    {
+      where: { user_id: userId },
+    },
+    { raw: true, nest: true },
+  );
+  await setCache(cacheKey, accounts, CACHE_TTL.ONE_HOUR);
+  return accounts;
 };
 
 const getDeliveryAccountById = async (id) => {
-  try {
-    const cacheKey = `delivery:id:${id}`;
-    const cached = await getCache(cacheKey);
-    if (cached) {
-      console.log("Cache hit for delivery account", id);
-      return cached;
-    }
-
-    const account = await DeliveryAccount.findByPk(id);
-    if (!account) throw new Error("Delivery account not found");
-
-    await setCache(cacheKey, account, 60 * 60);
-    return account;
-  } catch (err) {
-    throw err;
+  const cacheKey = CACHE_KEYS.COMMERCE.DELIVERY_BY_ID(id);
+  const cached = await getCache(cacheKey);
+  if (cached) {
+    console.log("Cache hit for delivery account", id);
+    return cached;
   }
+
+  const account = await deliveryAccountRepo.findById(id, { raw: true, nest: true });
+  if (!account) throw new NotFoundError("Delivery account not found");
+
+  await setCache(cacheKey, account, CACHE_TTL.ONE_HOUR);
+  return account;
 };
 
 const createDeliveryAccount = async (data) => {
-  try {
-    const account = await DeliveryAccount.create(data);
-    await deleteCache(`delivery:user:${data.user_id}`);
-    return account;
-  } catch (err) {
-    throw err;
-  }
+  const account = await deliveryAccountRepo.create(data, { raw: true, nest: true });
+  await deleteCache(CACHE_KEYS.COMMERCE.DELIVERY_BY_USER_ID(data.user_id));
+  return account;
 };
 
 const updateDeliveryAccount = async (id, data) => {
-  try {
-    const account = await DeliveryAccount.findByPk(id);
-    if (!account) throw new Error("Delivery account not found");
+  const account = await deliveryAccountRepo.findById(id, { raw: true, nest: true });
+  if (!account) throw new NotFoundError("Delivery account not found");
 
-    await account.update(data);
-    await deleteCache(`delivery:id:${id}`);
-    await deleteCache(`delivery:user:${account.user_id}`);
-    return account;
-  } catch (err) {
-    throw err;
-  }
+  const updatedAccount = await deliveryAccountRepo.updateById(id, data);
+  await deleteCache(CACHE_KEYS.COMMERCE.DELIVERY_BY_ID(id));
+  await deleteCache(CACHE_KEYS.COMMERCE.DELIVERY_BY_USER_ID(account.user_id));
+  return updatedAccount;
 };
 
 const deleteDeliveryAccount = async (id) => {
-  try {
-    const account = await DeliveryAccount.findByPk(id);
-    if (!account) throw new Error("Delivery account not found");
+  const account = await deliveryAccountRepo.findById(id, { raw: true, nest: true });
+  if (!account) throw new NotFoundError("Delivery account not found");
 
-    await account.destroy();
-    await deleteCache(`delivery:id:${id}`);
-    await deleteCache(`delivery:user:${account.user_id}`);
-    return { message: "Deleted successfully" };
-  } catch (err) {
-    throw err;
-  }
+  await deliveryAccountRepo.destroy(id);
+  await deleteCache(CACHE_KEYS.COMMERCE.DELIVERY_BY_ID(id));
+  await deleteCache(CACHE_KEYS.COMMERCE.DELIVERY_BY_USER_ID(account.user_id));
+  return { message: "Deleted successfully" };
 };
 
 const setDefaultDeliveryAccount = async (id) => {
-  try {
-    const account = await DeliveryAccount.findOne({
+  const account = await deliveryAccountRepo.findOne(
+    {
       where: { id },
-    });
-    if (!account)
-      throw new Error("Delivery account not found or not owned by user");
+    },
+    { raw: true, nest: true },
+  );
+  if (!account) throw new NotFoundError("Delivery account not found or not owned by user");
 
-    await DeliveryAccount.update(
-      { is_default: false },
-      { where: { user_id: account.user_id } }
-    );
+  await deliveryAccountRepo.updateByConditions({ user_id: account.user_id }, { is_default: false });
 
-    const allAccounts = await DeliveryAccount.findAll({
+  const allAccounts = await deliveryAccountRepo.findAll(
+    {
       where: { user_id: account.user_id },
-      attributes: ['id'], 
-    });
+      attributes: ["id"],
+    },
+    { raw: true, nest: true },
+  );
 
-    await account.update({ is_default: true });
+  const updatedAccount = await deliveryAccountRepo.updateById(id, { is_default: true });
 
-    for (const acc of allAccounts) {
-      await deleteCache(`delivery:id:${acc.id}`);
-    }
-
-    await deleteCache(`delivery:user:${account.user_id}`);
-
-    return account;
-  } catch (err) {
-    throw err;
+  for (const acc of allAccounts) {
+    await deleteCache(CACHE_KEYS.COMMERCE.DELIVERY_BY_ID(acc.id));
   }
-};
 
+  await deleteCache(CACHE_KEYS.COMMERCE.DELIVERY_BY_USER_ID(account.user_id));
+
+  return updatedAccount;
+};
 
 module.exports = {
   getAllDeliveryAccounts,

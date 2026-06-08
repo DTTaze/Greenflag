@@ -6,15 +6,11 @@ const router = express.Router();
 router.post(
   "/upload/:user_id",
   middlewareAvatar.single("avatar"),
-  avatarController.handleUploadAvatar
+  avatarController.handleUploadAvatar,
 );
 router.get("/", avatarController.handleGetAllAvatars);
 router.get("/:user_id", avatarController.handleGetAvatarByUserId);
-router.put(
-  "/:user_id",
-  middlewareAvatar.single("avatar"),
-  avatarController.handleUpdateAvatar
-);
+router.put("/:user_id", middlewareAvatar.single("avatar"), avatarController.handleUpdateAvatar);
 router.delete("/:user_id", avatarController.handleDeleteAvatar);
 
 module.exports = router;

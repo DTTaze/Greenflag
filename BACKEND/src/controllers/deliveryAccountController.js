@@ -1,70 +1,57 @@
+const { subject } = require("@casl/ability");
 const deliveryAccountService = require("../services/deliveryAccountService");
+const ForbiddenError = require("../errors/ForbiddenError");
 
 const handleGetAllDeliveryAccounts = async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const accounts =
-      await deliveryAccountService.getAllDeliveryAccounts(userId);
-    return res.success("Get all delivery accounts success", accounts);
-  } catch (error) {
-    return res.error(500, "Get all delivery accounts failed", error.message);
-  }
+  const userId = req.user.id;
+  const accounts = await deliveryAccountService.getAllDeliveryAccounts(userId);
+  return res.success("Get all delivery accounts success", accounts);
 };
 
 const handleGetDeliveryAccountById = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const account = await deliveryAccountService.getDeliveryAccountById(id);
-    return res.success("Get delivery account success", account);
-  } catch (error) {
-    return res.error(500, "Get delivery account failed", error.message);
+  const id = req.params.id;
+  const account = await deliveryAccountService.getDeliveryAccountById(id);
+  if (!req.ability.can("read", subject("DeliveryAccount", account))) {
+    throw new ForbiddenError("Bạn không có quyền xem tài khoản vận chuyển này");
   }
+  return res.success("Get delivery account success", account);
 };
 
 const handleCreateDeliveryAccount = async (req, res) => {
-  try {
-    const data = req.body;
-    const account = await deliveryAccountService.createDeliveryAccount(data);
-    return res.success("Create delivery account success", account);
-  } catch (error) {
-    return res.error(500, "Create delivery account failed", error.message);
-  }
+  const data = req.body;
+  const account = await deliveryAccountService.createDeliveryAccount(data);
+  return res.success("Create delivery account success", account);
 };
 
 const handleUpdateDeliveryAccount = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const data = req.body;
-    const account = await deliveryAccountService.updateDeliveryAccount(
-      id,
-      data
-    );
-    return res.success("Update delivery account success", account);
-  } catch (error) {
-    return res.error(500, "Update delivery account failed", error.message);
+  const id = req.params.id;
+  const data = req.body;
+  const account = await deliveryAccountService.getDeliveryAccountById(id);
+  if (!req.ability.can("update", subject("DeliveryAccount", account))) {
+    throw new ForbiddenError("Bạn không có quyền chỉnh sửa tài khoản vận chuyển này");
   }
+  const updatedAccount = await deliveryAccountService.updateDeliveryAccount(id, data);
+  return res.success("Update delivery account success", updatedAccount);
 };
 
 const handleDeleteDeliveryAccount = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const result = await deliveryAccountService.deleteDeliveryAccount(id);
-    return res.success("Delete delivery account success", result);
-  } catch (error) {
-    return res.error(500, "Delete delivery account failed", error.message);
+  const id = req.params.id;
+  const account = await deliveryAccountService.getDeliveryAccountById(id);
+  if (!req.ability.can("delete", subject("DeliveryAccount", account))) {
+    throw new ForbiddenError("Bạn không có quyền xóa tài khoản vận chuyển này");
   }
+  const result = await deliveryAccountService.deleteDeliveryAccount(id);
+  return res.success("Delete delivery account success", result);
 };
 
 const handleSetDefaultDeliveryAccount = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const account = await deliveryAccountService.setDefaultDeliveryAccount(
-      id
-    );
-    return res.success("Set default delivery account success", account);
-  } catch (error) {
-    return res.error(500, "Set default delivery account failed", error.message);
+  const id = req.params.id;
+  const account = await deliveryAccountService.getDeliveryAccountById(id);
+  if (!req.ability.can("update", subject("DeliveryAccount", account))) {
+    throw new ForbiddenError("Bạn không có quyền chỉnh sửa tài khoản vận chuyển này");
   }
+  const updatedAccount = await deliveryAccountService.setDefaultDeliveryAccount(id);
+  return res.success("Set default delivery account success", updatedAccount);
 };
 
 module.exports = {
@@ -72,6 +59,7 @@ module.exports = {
   handleGetDeliveryAccountById,
   handleCreateDeliveryAccount,
   handleUpdateDeliveryAccount,
+  handleDeleteItem: handleDeleteDeliveryAccount, // Make sure name is consistent or exports are preserved
   handleDeleteDeliveryAccount,
   handleSetDefaultDeliveryAccount,
 };

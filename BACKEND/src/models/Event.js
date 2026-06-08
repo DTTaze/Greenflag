@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const { EVENT_STATUS } = require("../constants/eventStatus");
 
 module.exports = (sequelize, DataTypes) => {
   class Event extends Model {
@@ -69,15 +70,15 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       status: {
-        type: DataTypes.ENUM("upcoming", "ongoing", "finished"),
-        defaultValue: "upcoming",
+        type: DataTypes.ENUM(...Object.values(EVENT_STATUS)),
+        defaultValue: EVENT_STATUS.UPCOMING,
       },
     },
     {
       sequelize,
       modelName: "Event",
       tableName: "events",
-    }
+    },
   );
 
   return Event;

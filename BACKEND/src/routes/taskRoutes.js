@@ -1,7 +1,14 @@
 const express = require("express");
 const taskController = require("../controllers/taskController");
 const middlewareImage = require("../middlewares/middlewareImage");
-const checkPermission = require("../middlewares/checkPermission");
+const validate = require("../middlewares/validate");
+const {
+  createTaskDto,
+  updateTaskDto,
+  submitTaskDto,
+  decisionTaskSubmitDto,
+  changeTaskStatusDto,
+} = require("../dtos/taskDto");
 
 const router = express.Router();
 
@@ -15,39 +22,32 @@ router.get("/submit/customer/:customer_id", taskController.handleGetTaskSubmitBy
 router.get("/public/:public_id", taskController.handleGetTaskByPublicId);
 router.get("/status/public", taskController.handleGetAllTasksStatusPublic);
 
-router.post(
-  "/upload",
-  // checkPermission("post", "task"),
-  taskController.handleCreateTask,
-);
-router.post(
-  "/accept/:id",
-  // checkPermission("accept", "task_id"),
-  taskController.handleAcceptTask,
-);
-router.post(
-  "/progress/increase/:task_user_id",
-  // checkPermission("progress_count", "task_user_id"),
-  taskController.handleIncreaseProgressCount,
-);
+router.post("/upload", validate(createTaskDto), taskController.handleCreateTask);
+router.post("/accept/:id", taskController.handleAcceptTask);
+router.post("/progress/increase/:task_user_id", taskController.handleIncreaseProgressCount);
 router.post(
   "/submit/:task_id",
   middlewareImage.array("images", 5),
+  validate(submitTaskDto),
   taskController.handleSubmitTask,
 );
-router.post("/status/change/:task_id", taskController.handleChangeTaskStatus);
+router.post(
+  "/status/change/:task_id",
+  validate(changeTaskStatusDto),
+  taskController.handleChangeTaskStatus,
+);
 
 router.put(
   "/submit/decision/:id",
-  // checkPermission("delete", "task_id"),
+  validate(decisionTaskSubmitDto),
   taskController.handleDecisionTaskSubmit,
 );
+router.put("/:id", validate(updateTaskDto), taskController.handleUpdateTask);
 router.put(
-  "/:id",
-  // checkPermission("put", "task_id"),
-  taskController.handleUpdateTask,
+  "/public/:public_id",
+  validate(updateTaskDto),
+  taskController.handleUpdateTaskByPublicId,
 );
-router.put("/public/:public_id", taskController.handleUpdateTaskByPublicId);
 
 router.delete("/public/:public_id", taskController.handleDeleteTaskByPublicId);
 module.exports = router;

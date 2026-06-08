@@ -10,7 +10,7 @@ const coinService = require("./coinService.js");
 const { nanoid } = require("nanoid");
 const { getCache, setCache, deleteCache } = require("../utils/cache.js");
 const { CACHE_KEYS, CACHE_TTL } = require("../constants/cacheKeys.js");
-const { cacheThrough } = require("../helpers/cacheHelper");
+const { cacheThrough } = require("../helpers/cacheHelper.js");
 const {
   TASK_DIFFICULTY,
   TASK_VISIBILITY,

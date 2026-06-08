@@ -1,14 +1,14 @@
-const { sendEmail } = require("../services/emailService");
+const { sendEmail } = require("./emailService.js");
 const jwt = require("jsonwebtoken");
 const db = require("../models/index.js");
 const User = db.User;
 const Role = db.Role;
 const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(10);
-const { redisClient } = require("../config/configRedis");
-const { CACHE_TTL } = require("../constants/cacheKeys");
-const NotFoundError = require("../errors/NotFoundError");
-const BadRequestError = require("../errors/BadRequestError");
+const { redisClient } = require("../config/configRedis.js");
+const { CACHE_TTL } = require("../constants/cacheKeys.js");
+const NotFoundError = require("../errors/NotFoundError.js");
+const BadRequestError = require("../errors/BadRequestError.js");
 
 const googleAuthCallback = async (user) => {
   let today = new Date();

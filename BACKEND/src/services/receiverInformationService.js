@@ -20,23 +20,6 @@ const createReceiverInfo = async (data) => {
     is_default = false,
   } = data;
 
-  if (
-    !user_id ||
-    !to_name ||
-    !to_phone ||
-    !to_address ||
-    !to_ward_name ||
-    !to_district_name ||
-    !to_province_name
-  ) {
-    throw new BadRequestError("Missing required fields");
-  }
-
-  const validAccountTypes = ["home", "office"];
-  if (!validAccountTypes.includes(account_type)) {
-    throw new BadRequestError("Invalid account_type. Must be 'home' or 'office'");
-  }
-
   const newReceiverInfo = await ReceiverInformation.create({
     user_id,
     to_name,

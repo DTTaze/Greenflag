@@ -1,18 +1,16 @@
 const db = require("../models/index.js");
 const Role = db.Role;
-const { deleteCache } = require("../utils/cache");
-const { CACHE_KEYS } = require("../constants/cacheKeys");
-const { cacheThrough } = require("../helpers/cacheHelper");
-const NotFoundError = require("../errors/NotFoundError");
-const BadRequestError = require("../errors/BadRequestError");
+const { deleteCache } = require("../utils/cache.js");
+const { CACHE_KEYS } = require("../constants/cacheKeys.js");
+const { cacheThrough } = require("../helpers/cacheHelper.js");
+const NotFoundError = require("../errors/NotFoundError.js");
+const BadRequestError = require("../errors/BadRequestError.js");
 
 // Global cache keys
 const cacheKeyId = (id) => CACHE_KEYS.IDENTITY.ROLE_BY_ID(id);
 const cacheKeyAll = CACHE_KEYS.IDENTITY.ALL_ROLES;
 
 const createRole = async (name, description) => {
-  if (!name) throw new BadRequestError("Role name is required");
-
   const newRole = await Role.create({ name, description });
 
   // Invalidate cache

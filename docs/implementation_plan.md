@@ -953,11 +953,11 @@ module.exports = worker;
 - [x] Move task/item functions out of `userService.js`
 
 ### Phase 4 — DTO & Validation Layer
-- [ ] Install Zod (`npm install zod`)
-- [ ] Create DTO schemas for all entities
-- [ ] Export Zod-inferred types via JSDoc `@typedef {z.infer<typeof schema>}` for IDE autocompletion
-- [ ] Add `validate()` middleware to all POST/PUT/PATCH routes
-- [ ] Remove inline validation from services (move to DTOs)
+- [x] Install Zod (`npm install zod`)
+- [x] Create DTO schemas for all entities
+- [x] Export Zod-inferred types via JSDoc `@typedef {z.infer<typeof schema>}` for IDE autocompletion
+- [x] Add `validate()` middleware to all POST/PUT/PATCH routes
+- [x] Remove inline validation from services (move DTOs)
 
 ### Phase 5 — Repository Layer
 - [ ] Create `src/repositories/` for each entity

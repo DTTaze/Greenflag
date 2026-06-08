@@ -7,7 +7,6 @@ const { nanoid } = require("nanoid");
 const { uploadImages, deleteImages } = require("./imageService");
 const { getCache, setCache, deleteCache } = require("../utils/cache");
 const { CACHE_KEYS } = require("../constants/cacheKeys");
-const { EVENT_STATUS } = require("../constants/eventStatus");
 const { getImageById } = require("./imageService");
 const { getUserByID } = require("./userService");
 const BadRequestError = require("../errors/BadRequestError");
@@ -289,21 +288,8 @@ const createEvent = async (Data, user_id, images) => {
   try {
     const { title, description, location, capacity, end_sign, start_time, end_time, coins } = Data;
 
-    // Validate required fields
-    if (!title || !description || !start_time || !end_time || !location || !capacity || !coins) {
-      throw new BadRequestError("All fields are required");
-    }
-
     // Check creator_id
     const creator = await getUserByID(user_id);
-
-    // Validate datetime format
-    const isValidDate = (date) => !isNaN(Date.parse(date));
-    if (!isValidDate(start_time) || !isValidDate(end_time)) {
-      console.log("start_time", start_time);
-      console.log("end_time", end_time);
-      throw new BadRequestError("Invalid date format for start_time or end_time");
-    }
 
     const event = await Event.create({
       public_id: nanoid(),
@@ -312,10 +298,10 @@ const createEvent = async (Data, user_id, images) => {
       description,
       location,
       capacity,
-      end_sign: new Date(end_sign),
-      start_time: new Date(start_time),
-      end_time: new Date(end_time),
-      coins: Number(coins),
+      end_sign,
+      start_time,
+      end_time,
+      coins,
     });
 
     let uploadedImages = [];
@@ -409,46 +395,20 @@ const updateEvent = async (event_id, Data, images) => {
     if (location) {
       updateFields.location = location;
     }
-
-    if (capacity) {
-      if (Number(capacity !== capacity)) {
-        throw new BadRequestError("Capacity must be a number");
-      }
-      if (Number(capacity) <= 0) {
-        throw new BadRequestError("Capacity must be greater than 0");
-      }
+    if (capacity !== undefined) {
       updateFields.capacity = capacity;
     }
-
-    const isValidDate = (date) => !isNaN(Date.parse(date));
-    if (start_time) {
-      if (!isValidDate(start_time)) {
-        console.log("start_time", start_time);
-        throw new BadRequestError("Invalid date format for start_time");
-      }
-      updateFields.start_time = new Date(start_time);
+    if (start_time !== undefined) {
+      updateFields.start_time = start_time;
     }
-
-    if (end_time) {
-      if (!isValidDate(end_time)) {
-        console.log("end_time", end_time);
-        throw new BadRequestError("Invalid date format for end_time");
-      }
-      updateFields.end_time = new Date(end_time);
+    if (end_time !== undefined) {
+      updateFields.end_time = end_time;
     }
-
-    if (status) {
-      const validStatuses = Object.values(EVENT_STATUS);
-      if (!validStatuses.includes(status)) {
-        throw new BadRequestError("Invalid status value");
-      }
+    if (status !== undefined) {
       updateFields.status = status;
     }
-
-    if (coins) {
-      if (typeof coins === "number" && !isNaN(coins)) {
-        updateFields.coins = coins;
-      }
+    if (coins !== undefined) {
+      updateFields.coins = coins;
     }
 
     const event = await Event.findByPk(event_id);

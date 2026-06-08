@@ -1,10 +1,9 @@
 const db = require("../models/index.js");
 const Permission = db.Permission;
-const NotFoundError = require("../errors/NotFoundError");
-const BadRequestError = require("../errors/BadRequestError");
+const NotFoundError = require("../errors/NotFoundError.js");
+const BadRequestError = require("../errors/BadRequestError.js");
 
 const createPermission = async (action, subject) => {
-  if (!action) throw new BadRequestError("Permission action is required");
   return await Permission.create({ action, subject });
 };
 

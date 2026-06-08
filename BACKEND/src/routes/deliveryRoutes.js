@@ -1,15 +1,33 @@
 const express = require("express");
 const deliveryAccountController = require("../controllers/deliveryAccountController");
 const deliveryOrderController = require("../controllers/deliveryOrderController");
+const validate = require("../middlewares/validate");
+const {
+  createDeliveryAccountDto,
+  updateDeliveryAccountDto,
+  createDeliveryOrderDto,
+  createDeliveryOrderFromTransactionDto,
+  updateDeliveryOrderDto,
+} = require("../dtos/deliveryDto");
+
 const router = express.Router();
 
-router.post("/carrier/ghn/create-order", deliveryOrderController.handleCreateDeliveryOrder);
+router.post(
+  "/carrier/ghn/create-order",
+  validate(createDeliveryOrderDto),
+  deliveryOrderController.handleCreateDeliveryOrder,
+);
 router.post(
   "/carrier/ghn/create-order-from-transaction/:transaction_id",
+  validate(createDeliveryOrderFromTransactionDto),
   deliveryOrderController.handleCreateDeliveryOrderFromTransaction,
 );
 router.get("/carrier/ghn/detail/:order_code", deliveryOrderController.handleGetDeliveryOrderInfo);
-router.post("/carrier/ghn/update", deliveryOrderController.handleUpdateDeliveryOrder);
+router.post(
+  "/carrier/ghn/update",
+  validate(updateDeliveryOrderDto),
+  deliveryOrderController.handleUpdateDeliveryOrder,
+);
 router.post("/carrier/ghn/cancel/:order_code", deliveryOrderController.handleCancelDeliveryOrder);
 router.post(
   "/carrier/ghn/order/preview",
@@ -35,8 +53,16 @@ router.get("/carrier/ghn/master-data/ward", deliveryOrderController.handleGetAll
 //manage shipping account
 router.get("/accounts/user", deliveryAccountController.handleGetAllDeliveryAccounts);
 router.get("/accounts/:id", deliveryAccountController.handleGetDeliveryAccountById);
-router.post("/accounts/create", deliveryAccountController.handleCreateDeliveryAccount);
-router.put("/accounts/:id", deliveryAccountController.handleUpdateDeliveryAccount);
+router.post(
+  "/accounts/create",
+  validate(createDeliveryAccountDto),
+  deliveryAccountController.handleCreateDeliveryAccount,
+);
+router.put(
+  "/accounts/:id",
+  validate(updateDeliveryAccountDto),
+  deliveryAccountController.handleUpdateDeliveryAccount,
+);
 router.delete("/accounts/:id", deliveryAccountController.handleDeleteDeliveryAccount);
 router.patch(
   "/accounts/user/set-default/:id",

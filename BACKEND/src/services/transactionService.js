@@ -1,18 +1,18 @@
 const db = require("../models/index.js");
-const { getCache, setCache, deleteCache } = require("../utils/cache");
-const { CACHE_KEYS } = require("../constants/cacheKeys");
-const { TRANSACTION_STATUS } = require("../constants/transactionStatus");
-const { ITEM_STATUS } = require("../constants/itemStatus");
+const { getCache, setCache, deleteCache } = require("../utils/cache.js");
+const { CACHE_KEYS } = require("../constants/cacheKeys.js");
+const { TRANSACTION_STATUS } = require("../constants/transactionStatus.js");
+const { ITEM_STATUS } = require("../constants/itemStatus.js");
 const Transaction = db.Transaction;
 const ReceiverInformation = db.ReceiverInformation;
 const Item = db.Item;
 const User = db.User;
 const { updateIncreaseCoin } = require("./coinService.js");
 const { getUserByID } = require("./userService.js");
-const { emitStockUpdate } = require("./socketService");
-const BadRequestError = require("../errors/BadRequestError");
-const NotFoundError = require("../errors/NotFoundError");
-const AppError = require("../errors/AppError");
+const { emitStockUpdate } = require("./socketService.js");
+const BadRequestError = require("../errors/BadRequestError.js");
+const NotFoundError = require("../errors/NotFoundError.js");
+const AppError = require("../errors/AppError.js");
 
 const cacheItemAll = CACHE_KEYS.COMMERCE.ALL_ITEMS;
 const cacheItemId = (id) => CACHE_KEYS.COMMERCE.ITEM_BY_ID(id);
@@ -22,25 +22,10 @@ const createTransaction = async (transactionData) => {
   try {
     const { name, quantity, buyer_id, item_id, status } = transactionData;
 
-    if (!name || !buyer_id || !item_id) {
-      throw new BadRequestError("Name, buyer_id, and item_id are required fields.");
-    }
+    const finalQuantity = quantity || 1;
+    const finalStatus = status || TRANSACTION_STATUS.PENDING;
 
-    const parsedQuantity = Number(quantity);
-    const parsedBuyerId = Number(buyer_id);
-    const parsedItemId = Number(item_id);
-
-    if (isNaN(parsedBuyerId) || isNaN(parsedItemId)) {
-      throw new BadRequestError("buyer_id, and item_id must be valid numbers.");
-    }
-
-    // Nếu `quantity` không hợp lệ, mặc định là 1
-    const finalQuantity = isNaN(parsedQuantity) || parsedQuantity <= 0 ? 1 : parsedQuantity;
-
-    // Nếu `status` không hợp lệ, mặc định là "pending"
-    const finalStatus = status?.trim() ? status : TRANSACTION_STATUS.PENDING;
-
-    const item = await Item.findOne({ where: { id: parsedItemId } });
+    const item = await Item.findOne({ where: { id: item_id } });
     if (!item) {
       throw new NotFoundError("Item not found.");
     }
@@ -53,8 +38,8 @@ const createTransaction = async (transactionData) => {
 
     const transaction = await Transaction.create({
       name,
-      buyer_id: parsedBuyerId,
-      item_id: parsedItemId,
+      buyer_id,
+      item_id,
       total_price,
       quantity: finalQuantity,
       status: finalStatus,
@@ -85,7 +70,9 @@ const getTransactionsByRole = async (userId, role) => {
         const txCacheKey = CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transactionId);
         let transaction = await getCache(txCacheKey);
         if (!transaction) {
-          const dbTx = await Transaction.findOne({ where: { id: transactionId } });
+          const dbTx = await Transaction.findOne({
+            where: { id: transactionId },
+          });
           if (dbTx) {
             transaction = dbTx.toJSON();
             await setCache(txCacheKey, transaction);
@@ -204,7 +191,10 @@ const cancelTransactionById = async (id) => {
     if (transaction.status === TRANSACTION_STATUS.ACCEPTED) {
       throw new BadRequestError("Cannot cancel accepted transaction");
     }
-    if (!transaction.item_snapshot || typeof transaction.item_snapshot.price !== "number") {
+    if (
+      !transaction.item_snapshot ||
+      typeof transaction.item_snapshot.price !== "number"
+    ) {
       throw new BadRequestError("Invalid transaction price");
     }
 
@@ -265,10 +255,14 @@ const deleteTransaction = async (transaction_id) => {
     await Transaction.destroy({
       where: { id: transaction_id },
     });
-    const buyerCacheKey = CACHE_KEYS.COMMERCE.TRANSACTION_BUYER(transaction.buyer_id);
+    const buyerCacheKey = CACHE_KEYS.COMMERCE.TRANSACTION_BUYER(
+      transaction.buyer_id,
+    );
     await deleteCache(buyerCacheKey);
 
-    const sellerCacheKey = CACHE_KEYS.COMMERCE.TRANSACTION_SELLER(transaction.seller_id);
+    const sellerCacheKey = CACHE_KEYS.COMMERCE.TRANSACTION_SELLER(
+      transaction.seller_id,
+    );
     await deleteCache(sellerCacheKey);
 
     await deleteCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transaction_id));
@@ -291,7 +285,9 @@ const getAllTransactionsByStatus = async (status) => {
     });
 
     if (!transactions || transactions.length === 0) {
-      throw new NotFoundError("Transaction not found with the specified status");
+      throw new NotFoundError(
+        "Transaction not found with the specified status",
+      );
     }
 
     return transactions;
@@ -302,7 +298,10 @@ const getAllTransactionsByStatus = async (status) => {
 };
 
 const makeDecision = async (transaction_id, decision) => {
-  if (typeof transaction_id !== "number" && typeof transaction_id !== "string") {
+  if (
+    typeof transaction_id !== "number" &&
+    typeof transaction_id !== "string"
+  ) {
     throw new BadRequestError("Invalid transaction_id type");
   }
   if (typeof decision !== "string") {
@@ -336,9 +335,14 @@ const makeDecision = async (transaction_id, decision) => {
       transaction.status === TRANSACTION_STATUS.ACCEPTED &&
       decision === TRANSACTION_STATUS.PENDING
     ) {
-      throw new BadRequestError("Cannot revert accepted transaction to pending");
+      throw new BadRequestError(
+        "Cannot revert accepted transaction to pending",
+      );
     }
-    if (!transaction.item_snapshot || typeof transaction.item_snapshot.price !== "number") {
+    if (
+      !transaction.item_snapshot ||
+      typeof transaction.item_snapshot.price !== "number"
+    ) {
       throw new BadRequestError("Invalid transaction price");
     }
 
@@ -361,7 +365,8 @@ const makeDecision = async (transaction_id, decision) => {
       const originalStock = item.stock;
       const originalStatus = item.status;
       item.stock += transaction.dataValues.quantity;
-      item.status = item.stock > 0 ? ITEM_STATUS.AVAILABLE : ITEM_STATUS.SOLD_OUT;
+      item.status =
+        item.stock > 0 ? ITEM_STATUS.AVAILABLE : ITEM_STATUS.SOLD_OUT;
       if (originalStock !== item.stock || originalStatus !== item.status) {
         emitStockUpdate(item.id, item.stock, {
           name: item.name,
@@ -385,11 +390,15 @@ const makeDecision = async (transaction_id, decision) => {
 };
 
 const getItemsByUserId = async (user_id) => {
-  const cachedTransactionIds = await getCache(CACHE_KEYS.COMMERCE.TRANSACTIONS_BY_USER_ID(user_id));
+  const cachedTransactionIds = await getCache(
+    CACHE_KEYS.COMMERCE.TRANSACTIONS_BY_USER_ID(user_id),
+  );
   if (cachedTransactionIds) {
     const transactions = [];
     for (const transactionId of cachedTransactionIds) {
-      let transaction = await getCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transactionId));
+      let transaction = await getCache(
+        CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transactionId),
+      );
       if (!transaction) {
         transaction = await Transaction.findOne({
           where: { id: transactionId },
@@ -403,7 +412,10 @@ const getItemsByUserId = async (user_id) => {
         });
         if (transaction) {
           const transactionData = transaction.toJSON();
-          await setCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transactionId), transactionData);
+          await setCache(
+            CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transactionId),
+            transactionData,
+          );
           transactions.push(transactionData);
         }
       } else {
@@ -428,7 +440,10 @@ const getItemsByUserId = async (user_id) => {
 
   const itemsData = items.map((item) => item.toJSON());
   const transactionIds = itemsData.map((item) => item.id);
-  await setCache(CACHE_KEYS.COMMERCE.TRANSACTIONS_BY_USER_ID(user_id), transactionIds);
+  await setCache(
+    CACHE_KEYS.COMMERCE.TRANSACTIONS_BY_USER_ID(user_id),
+    transactionIds,
+  );
   for (const item of itemsData) {
     await setCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(item.id), item);
   }

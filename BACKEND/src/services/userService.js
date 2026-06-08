@@ -9,17 +9,17 @@ const Rank = db.Rank;
 const salt = bcrypt.genSaltSync(10);
 const jwt = require("jsonwebtoken");
 const { nanoid } = require("nanoid");
-const rateLimitService = require("./rateLimitService");
-const { getCache, setCache, deleteCache } = require("../utils/cache");
-const { CACHE_KEYS } = require("../constants/cacheKeys");
-const { ASSIGNABLE_ROLES, DEFAULT_ROLE_ID } = require("../constants/roles");
-const { removeSpecialChars } = require("../utils/stringUtils");
+const rateLimitService = require("./rateLimitService.js");
+const { getCache, setCache, deleteCache } = require("../utils/cache.js");
+const { CACHE_KEYS } = require("../constants/cacheKeys.js");
+const { ASSIGNABLE_ROLES, DEFAULT_ROLE_ID } = require("../constants/roles.js");
+const { removeSpecialChars } = require("../utils/stringUtils.js");
 
-const NotFoundError = require("../errors/NotFoundError");
-const BadRequestError = require("../errors/BadRequestError");
-const UnauthorizedError = require("../errors/UnauthorizedError");
-const ConflictError = require("../errors/ConflictError");
-const ForbiddenError = require("../errors/ForbiddenError");
+const NotFoundError = require("../errors/NotFoundError.js");
+const BadRequestError = require("../errors/BadRequestError.js");
+const UnauthorizedError = require("../errors/UnauthorizedError.js");
+const ConflictError = require("../errors/ConflictError.js");
+const ForbiddenError = require("../errors/ForbiddenError.js");
 
 const deleteCacheAll = async (id = null, public_id = null) => {
   if (public_id) {

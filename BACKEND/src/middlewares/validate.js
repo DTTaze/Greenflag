@@ -7,7 +7,7 @@ const validate = (schema) => (req, res, next) => {
     }));
     return res.error(400, "Validation failed", errors);
   }
-  req.validated = result.data;
+  req.body = result.data;
   next();
 };
 

@@ -1,8 +1,8 @@
 const Redis = require("ioredis");
-const { redisClient } = require("../config/configRedis");
-const { setCache } = require("../utils/cache");
+const { redisClient } = require("../config/configRedis.js");
+const { setCache } = require("../utils/cache.js");
 const db = require("../models/index.js");
-const { CACHE_KEYS } = require("../constants/cacheKeys");
+const { CACHE_KEYS } = require("../constants/cacheKeys.js");
 const User = db.User;
 
 // Rate limiting constants

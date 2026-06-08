@@ -2,8 +2,8 @@ const db = require("../models/index.js");
 const RolePermission = db.RolePermission;
 const Role = db.Role;
 const Permission = db.Permission;
-const NotFoundError = require("../errors/NotFoundError");
-const BadRequestError = require("../errors/BadRequestError");
+const NotFoundError = require("../errors/NotFoundError.js");
+const BadRequestError = require("../errors/BadRequestError.js");
 
 const assignPermissionToRole = async (role_id, permission_id) => {
   const role = await Role.findByPk(role_id);

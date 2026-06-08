@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+import { CalendarDays, CheckCircle2, ListTodo } from "lucide-react";
 import React from "react";
 
 /**
@@ -5,87 +7,48 @@ import React from "react";
  * Allows switching between daily tasks and other tasks
  */
 const MissionTabs = ({ selectedTab, setSelectedTab }) => {
+  const tabs = [
+    { id: "daily", label: "Nhiệm Vụ Hàng Ngày", icon: CalendarDays },
+    { id: "other", label: "Nhiệm Vụ Khác", icon: ListTodo },
+    { id: "completed", label: "Nhiệm Vụ Đã Hoàn Thành", icon: CheckCircle2 },
+  ];
+
   return (
-    <div className="rounded-t-xl border border-gray-200 bg-white p-1 shadow-sm">
-      <div className="flex">
-        <button
-          className={`tab flex-1 rounded-lg py-3 text-center font-medium transition-all duration-200 ${
-            selectedTab === "daily"
-              ? "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 shadow-sm"
-              : "text-gray-600 hover:bg-gray-50"
-          }`}
-          onClick={() => setSelectedTab("daily")}
-        >
-          <div className="flex items-center justify-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="mr-1.5 h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+    <div className="mb-6 max-w-2xl rounded-xl border border-gray-200/40 bg-gray-100/80 p-1 shadow-2xs">
+      <div className="flex gap-1">
+        {tabs.map(({ id, label, icon: Icon }) => {
+          const isActive = selectedTab === id;
+          return (
+            <button
+              key={id}
+              className={`relative z-10 flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg py-2.5 text-center text-sm font-semibold transition-colors duration-200 ${
+                isActive
+                  ? "text-[#0B6E4F]"
+                  : "text-gray-600 hover:text-[#0B6E4F]"
+              }`}
+              onClick={() => setSelectedTab(id)}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              <Icon
+                className={`h-4.5 w-4.5 ${isActive ? "text-[#0B6E4F]" : "text-gray-400"}`}
               />
-            </svg>
-            Nhiệm Vụ Hàng Ngày
-          </div>
-        </button>
-        <button
-          className={`tab flex-1 rounded-lg py-3 text-center font-medium transition-all duration-200 ${
-            selectedTab === "other"
-              ? "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 shadow-sm"
-              : "text-gray-600 hover:bg-gray-50"
-          }`}
-          onClick={() => setSelectedTab("other")}
-        >
-          <div className="flex items-center justify-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="mr-1.5 h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-              />
-            </svg>
-            Nhiệm Vụ Khác
-          </div>
-        </button>
-        <button
-          className={`tab flex-1 rounded-lg py-3 text-center font-medium transition-all duration-200 ${
-            selectedTab === "completed"
-              ? "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 shadow-sm"
-              : "text-gray-600 hover:bg-gray-50"
-          }`}
-          onClick={() => setSelectedTab("completed")}
-        >
-          <div className="flex items-center justify-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="mr-1.5 h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"
-              />
-            </svg>
-            Nhiệm Vụ Đã Hoàn Thành
-          </div>
-        </button>
+              <span className="hidden sm:inline">{label}</span>
+              <span className="inline sm:hidden">
+                {id === "daily"
+                  ? "Hàng ngày"
+                  : id === "other"
+                    ? "Khác"
+                    : "Đã xong"}
+              </span>
+              {isActive && (
+                <motion.span
+                  layoutId="activeMissionTab"
+                  className="absolute inset-0 -z-10 rounded-lg bg-white shadow-xs"
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+              )}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

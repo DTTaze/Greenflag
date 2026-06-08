@@ -19,11 +19,11 @@ function MissionFilters({
   setOtherCurrentPage,
 }) {
   return (
-    <div className="space-y-4 border-x border-gray-200 bg-white p-5 shadow-sm">
+    <div className="space-y-5 border-x border-gray-100 bg-white p-6 shadow-2xs">
       {/* Search bar and Coin sort */}
-      <div className="flex flex-col gap-3 sm:flex-row">
+      <div className="flex flex-col gap-4 sm:flex-row">
         <div className="relative flex-1">
-          <Search className="absolute top-2.5 left-3 h-4 w-4 text-gray-400" />
+          <Search className="absolute top-3 left-3.5 h-4.5 w-4.5 text-gray-400" />
           <input
             type="text"
             value={searchQuery}
@@ -33,11 +33,11 @@ function MissionFilters({
               setOtherCurrentPage(1);
             }}
             placeholder="Tìm kiếm nhiệm vụ..."
-            className="w-full rounded-lg border border-gray-200 bg-gray-50/50 py-2 pr-4 pl-9 text-sm transition-all focus:ring-2 focus:ring-[#0B6E4F] focus:outline-none"
+            className="w-full rounded-xl border border-gray-200 bg-gray-50/30 py-2.5 pr-4 pl-10 text-sm transition-all focus:border-[#0B6E4F] focus:bg-white focus:ring-4 focus:ring-[#0B6E4F]/10 focus:outline-none"
           />
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-medium whitespace-nowrap text-gray-500">
+        <div className="flex items-center gap-2.5">
+          <span className="text-xs font-semibold whitespace-nowrap text-gray-500">
             Sắp xếp:
           </span>
           <select
@@ -47,7 +47,7 @@ function MissionFilters({
               setDailyCurrentPage(1);
               setOtherCurrentPage(1);
             }}
-            className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-all focus:ring-2 focus:ring-[#0B6E4F] focus:outline-none"
+            className="cursor-pointer rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-700 transition-all focus:border-[#0B6E4F] focus:ring-4 focus:ring-[#0B6E4F]/10 focus:outline-none"
           >
             <option value="none">Mặc định</option>
             <option value="desc">Xu cao nhất</option>
@@ -57,11 +57,11 @@ function MissionFilters({
       </div>
 
       {/* Category selector & Difficulty filter */}
-      <div className="flex flex-col justify-between gap-4 border-t border-gray-100 pt-2 md:flex-row">
+      <div className="flex flex-col justify-between gap-5 border-t border-gray-100 pt-4 lg:flex-row">
         {/* Category select buttons */}
-        <div className="space-y-1">
-          <span className="block text-xs font-semibold tracking-wider text-gray-500 uppercase">
-            Loại hoạt động:
+        <div className="flex-1 space-y-2.5">
+          <span className="block text-[11px] font-bold tracking-wider text-gray-400 uppercase">
+            Loại hoạt động
           </span>
           <div className="flex flex-wrap gap-2">
             {[
@@ -78,10 +78,10 @@ function MissionFilters({
                   setDailyCurrentPage(1);
                   setOtherCurrentPage(1);
                 }}
-                className={`cursor-pointer rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                className={`cursor-pointer rounded-lg px-3.5 py-2 text-xs font-bold transition-all duration-200 active:scale-95 ${
                   categoryFilter === cat.value
-                    ? "bg-[#0B6E4F] text-white shadow-sm"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    ? "bg-[#0B6E4F] text-white shadow-sm shadow-[#0B6E4F]/10"
+                    : "border border-gray-200/50 bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                 }`}
               >
                 {cat.label}
@@ -91,9 +91,9 @@ function MissionFilters({
         </div>
 
         {/* Difficulty buttons */}
-        <div className="space-y-1">
-          <span className="block text-xs font-semibold tracking-wider text-gray-500 uppercase">
-            Độ khó:
+        <div className="space-y-2.5">
+          <span className="block text-[11px] font-bold tracking-wider text-gray-400 uppercase">
+            Độ khó
           </span>
           <div className="flex gap-2">
             {[
@@ -120,10 +120,10 @@ function MissionFilters({
                     setFilter(diff.value);
                     setPage(1);
                   }}
-                  className={`cursor-pointer rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                  className={`cursor-pointer rounded-lg px-3.5 py-2 text-xs font-bold transition-all duration-200 active:scale-95 ${
                     activeFilter === diff.value
-                      ? "border border-green-200 bg-green-100 text-[#0B6E4F]"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      ? "border border-emerald-200 bg-emerald-50 text-[#0B6E4F]"
+                      : "border border-gray-200/50 bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                   }`}
                 >
                   {diff.label}

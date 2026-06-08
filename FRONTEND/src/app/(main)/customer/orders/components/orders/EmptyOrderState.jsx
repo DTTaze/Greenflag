@@ -18,7 +18,7 @@ const EmptyOrderState = ({
         }}
       >
         <Typography variant="h6" sx={{ mb: 2, color: "var(--text-light)" }}>
-          You don't have any orders yet
+          {"You don't have any orders yet"}
         </Typography>
         <Box
           sx={{

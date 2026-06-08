@@ -23,7 +23,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { alpha } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
-import * as React from "react";
+import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 export default function TemporaryDrawer({ userInfo }) {

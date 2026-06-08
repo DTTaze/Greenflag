@@ -1,5 +1,5 @@
 import { LineChart } from "@mui/x-charts/LineChart";
-import * as React from "react";
+import React from "react";
 
 const uData = [
   4000, 3000, 2000, 2780, 1890, 2390, 3490, 2500, 3800, 5000, 6000, 5500,

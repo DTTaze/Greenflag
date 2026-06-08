@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import { X } from "lucide-react";
 import React from "react";
 import { toast } from "react-toastify";

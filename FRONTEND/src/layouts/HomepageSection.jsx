@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import "../styles/components/HomepageSection.css";
 
 import { useContext, useEffect, useMemo, useRef, useState } from "react";

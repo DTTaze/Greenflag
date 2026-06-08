@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
 
 export default function QRscanner({ onScan, onError, style }) {

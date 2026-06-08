@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import { Box, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
@@ -37,7 +38,11 @@ function RolesManagement() {
       setLoading(true);
       try {
         const res = await getAllRolesApi();
-        res.success ? setRoles(res.data) : console.log(res.error);
+        if (res.success) {
+          setRoles(res.data);
+        } else {
+          console.log(res.error);
+        }
       } catch (e) {
         console.log(e);
       } finally {
@@ -130,7 +135,11 @@ function PermissionsManagement() {
       setLoading(true);
       try {
         const res = await getAllPermissionsApi();
-        res.success ? setPermissions(res.data) : console.log(res.error);
+        if (res.success) {
+          setPermissions(res.data);
+        } else {
+          console.log(res.error);
+        }
       } catch (e) {
         console.log(e);
       } finally {
@@ -219,7 +228,11 @@ function RolesPermissionsManagement() {
       setLoading(true);
       try {
         const res = await getAllRolesPermissionsApi();
-        res.success ? setRolesPermissions(res.data) : console.log(res.error);
+        if (res.success) {
+          setRolesPermissions(res.data);
+        } else {
+          console.log(res.error);
+        }
       } catch (e) {
         console.log(e);
       } finally {

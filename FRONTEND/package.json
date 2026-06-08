@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "prettier --check ./src/**/*.{ts,tsx,css} && eslint ./src/**/*.{ts,tsx}",
+    "lint": "prettier --check ./src/**/*.{js,jsx,ts,tsx,css} && eslint ./src/**/*.{js,jsx,ts,tsx}",
     "format": "prettier --write ./**/*.{js,ts,tsx,css} --write ./**/**/*.{js,ts,tsx,css}",
     "lint-fix": "eslint --fix",
     "prepare": "husky"
@@ -20,6 +20,7 @@
     "@mui/x-charts": "^7.28.0",
     "@mui/x-data-grid": "^7.28.1",
     "@zxing/browser": "^0.1.5",
+    "@zxing/library": "^0.23.0",
     "axios": "^1.8.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

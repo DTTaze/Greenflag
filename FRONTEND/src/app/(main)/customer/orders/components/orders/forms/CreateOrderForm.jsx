@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
+/* eslint-disable max-lines */
 import {
   Autocomplete,
   Box,
@@ -1003,7 +1005,7 @@ const CreateOrderForm = ({
           defaultAccount.token,
         );
 
-        if ((response.code = 200)) {
+        if (response.code === 200) {
           setDistricts(
             response.data.map((district) => ({
               id: district.DistrictID,

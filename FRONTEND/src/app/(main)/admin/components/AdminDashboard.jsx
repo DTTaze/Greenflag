@@ -55,7 +55,8 @@ export default function AdminDashboard() {
           Dashboard
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Welcome to your admin dashboard. Here's what's happening today.
+          Welcome to your admin dashboard. Here&apos;s what&apos;s happening
+          today.
         </Typography>
       </Box>
 

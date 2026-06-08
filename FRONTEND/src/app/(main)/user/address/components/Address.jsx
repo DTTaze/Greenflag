@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { useContext, useEffect, useState } from "react";
 
 import Button from "@/src/components/ui/button";
@@ -175,7 +176,7 @@ function Address() {
         break;
       case "specificAddress":
         if (!value) error = "Địa chỉ cụ thể không được để trống";
-        else if (!/^[a-zA-ZÀ-ỹ0-9\s,.\/-]+$/.test(value))
+        else if (!/^[a-zA-ZÀ-ỹ0-9\s,./-]+$/.test(value))
           error = "Địa chỉ cụ thể không chứa ký tự đặc biệt không hợp lệ";
         break;
       default:

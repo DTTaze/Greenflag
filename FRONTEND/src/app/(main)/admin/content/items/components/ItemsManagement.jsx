@@ -55,7 +55,7 @@ export default function ItemsManagement() {
     if (confirm("Bạn có chắc chắn muốn xóa không?")) {
       if (res.success) {
         alert("Xóa vật phẩm thành công!");
-        setUsers((prev) => prev.filter((u) => u.id !== item.id));
+        setItems((prev) => prev.filter((i) => i.id !== item.id));
       }
     }
   };

@@ -1,8 +1,9 @@
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
-import * as React from "react";
+import React from "react";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;

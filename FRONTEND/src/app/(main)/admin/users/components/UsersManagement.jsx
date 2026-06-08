@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import { Box, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 

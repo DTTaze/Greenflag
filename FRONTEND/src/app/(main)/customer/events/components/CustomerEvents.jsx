@@ -32,14 +32,6 @@ const CustomerEvents = () => {
     minPrice: "",
   });
 
-  useEffect(() => {
-    fetchEvents();
-  }, []);
-
-  useEffect(() => {
-    filterEvents();
-  }, [events, filters]);
-
   const fetchEvents = async () => {
     try {
       setLoading(true);
@@ -81,6 +73,14 @@ const CustomerEvents = () => {
 
     setFilteredEvents(filtered);
   };
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  useEffect(() => {
+    filterEvents();
+  }, [events, filters]);
 
   const handleFilterChange = (name, value) => {
     setFilters((prev) => ({

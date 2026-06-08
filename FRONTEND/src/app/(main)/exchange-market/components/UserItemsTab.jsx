@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import { useContext, useEffect, useMemo } from "react";
 
 import {

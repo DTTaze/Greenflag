@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -101,12 +102,11 @@ export default function CustomerAppBar({
     <AppBar
       position="fixed"
       sx={{
-        width: { sm: `calc(100% - ${drawerWidth}px)` },
+        width: { xs: "100%", sm: `calc(100% - ${drawerWidth}px)` },
         ml: { sm: `${drawerWidth}px` },
         backgroundColor: "white",
         boxShadow: "0 2px 10px rgba(0, 0, 0, 0.05)",
         borderBottom: "1px solid var(--light-green)",
-        width: "100%",
         zIndex: 1300,
       }}
     >

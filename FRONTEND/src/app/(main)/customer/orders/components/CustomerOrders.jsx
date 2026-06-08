@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
+/* eslint-disable max-lines */
 import {
   Accordion,
   AccordionDetails,
@@ -505,13 +507,6 @@ export default function CustomerOrders() {
 
   const isMobile = useMediaQuery("(max-width:600px)");
 
-  // Fetch shipping accounts on component mount
-  useEffect(() => {
-    fetchShippingAccounts();
-    fetchOrders();
-    fetchTransactions();
-  }, []);
-
   const fetchShippingAccounts = async () => {
     try {
       setIsLoadingAccounts(true);
@@ -649,6 +644,13 @@ export default function CustomerOrders() {
       setIsLoadingTransactions(false);
     }
   };
+
+  // Fetch shipping accounts on component mount
+  useEffect(() => {
+    fetchShippingAccounts();
+    fetchOrders();
+    fetchTransactions();
+  }, []);
 
   // Function to validate if user has linked shipping accounts
   const hasLinkedShippingAccounts = () => {

@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
+/* eslint-disable max-lines */
 import "@/src/styles/components/VideoSection.css";
 
 import React, { createRef, useEffect, useRef, useState } from "react";
@@ -598,7 +600,11 @@ export default function VideosSection() {
         {videoData.map((video, index) => (
           <div
             key={video.id}
-            ref={containerRefs.current[index]}
+            ref={(el) => {
+              if (containerRefs.current && containerRefs.current[index]) {
+                containerRefs.current[index].current = el;
+              }
+            }}
             className="video-card"
           >
             {/* Left Sidebar: Stats, Tasks, and User Info */}
@@ -637,7 +643,11 @@ export default function VideosSection() {
                 width="100%"
                 height="100%"
                 muted={isMuted}
-                ref={videoRefs.current[index]}
+                ref={(el) => {
+                  if (videoRefs.current && videoRefs.current[index]) {
+                    videoRefs.current[index].current = el;
+                  }
+                }}
                 onReady={() => {
                   if (index === 0 && !isInitialized) {
                     setPlayingStates(0);

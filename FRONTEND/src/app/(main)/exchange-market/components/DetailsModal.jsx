@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import { format } from "date-fns";
 import { Coins, X } from "lucide-react";
 

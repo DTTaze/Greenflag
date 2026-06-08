@@ -55,7 +55,7 @@ export default function TasksManagement() {
     if (confirm("Bạn có chắc chắn muốn xóa không?")) {
       if (res.success) {
         alert("Xóa nhiệm vụ thành công!");
-        setUsers((prev) => prev.filter((u) => u.id !== task.id));
+        setTasks((prev) => prev.filter((t) => t.id !== task.id));
       }
     }
   };

@@ -73,9 +73,11 @@ export const getCurrentLocation = (order) => {
   return order.address || "Location unavailable";
 };
 
-export default {
+const orderUtils = {
   getStatusColor,
   calculateOrderPoints,
   formatOrderDate,
   getCurrentLocation,
 };
+
+export default orderUtils;

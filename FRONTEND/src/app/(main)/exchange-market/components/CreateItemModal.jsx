@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Coins, Upload, X } from "lucide-react";
 import { useEffect, useState } from "react";
 

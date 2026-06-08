@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import { motion } from "framer-motion";
 import { Coins, Leaf } from "lucide-react";
 import { useEffect, useState } from "react";

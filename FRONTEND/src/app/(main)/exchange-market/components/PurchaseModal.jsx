@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
+/* eslint-disable max-lines */
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckCircle, Coins, ShoppingBag, X } from "lucide-react";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -31,48 +33,6 @@ export default function PurchaseModal({
   const shop_id = 196506;
   const [currentStock, setCurrentStock] = useState(item.stock);
   const [currentStatus, setCurrentStatus] = useState(item.status);
-
-  useEffect(() => {
-    async function fetchDefaultShipping() {
-      if (isOpen && auth.user?.id) {
-        try {
-          setIsLoadingShipping(true);
-          const response = await getReceiverInfoByUserIDAPI(auth.user.id);
-          if (response?.data?.length > 0) {
-            const defaultShipping =
-              response.data.find((info) => info.is_default) || response.data[0];
-            setShippingInfo(defaultShipping);
-            await fetchShippingFee(defaultShipping);
-          }
-        } catch (error) {
-          console.error("Error fetching shipping info:", error);
-        } finally {
-          setIsLoadingShipping(false);
-        }
-      }
-    }
-    fetchDefaultShipping();
-  }, [isOpen, auth.user?.id]);
-
-  useEffect(() => {
-    // Join the item's room when component mounts
-    socket.emit("join-item-room", item.id);
-
-    // Listen for stock updates
-    socket.on("stock-update", (data) => {
-      if (data.itemId === item.id) {
-        console.log("Stock update received:", data);
-        setCurrentStock(data.stock);
-        setCurrentStatus(data.status);
-      }
-    });
-
-    // Cleanup on unmount
-    return () => {
-      socket.emit("leave-item-room", item.id);
-      socket.off("stock-update");
-    };
-  }, [item.id]);
 
   const fetchShippingFee = async (selectedShipping) => {
     try {
@@ -138,6 +98,48 @@ export default function PurchaseModal({
       setShippingFee(0);
     }
   };
+
+  useEffect(() => {
+    async function fetchDefaultShipping() {
+      if (isOpen && auth.user?.id) {
+        try {
+          setIsLoadingShipping(true);
+          const response = await getReceiverInfoByUserIDAPI(auth.user.id);
+          if (response?.data?.length > 0) {
+            const defaultShipping =
+              response.data.find((info) => info.is_default) || response.data[0];
+            setShippingInfo(defaultShipping);
+            await fetchShippingFee(defaultShipping);
+          }
+        } catch (error) {
+          console.error("Error fetching shipping info:", error);
+        } finally {
+          setIsLoadingShipping(false);
+        }
+      }
+    }
+    fetchDefaultShipping();
+  }, [isOpen, auth.user?.id]);
+
+  useEffect(() => {
+    // Join the item's room when component mounts
+    socket.emit("join-item-room", item.id);
+
+    // Listen for stock updates
+    socket.on("stock-update", (data) => {
+      if (data.itemId === item.id) {
+        console.log("Stock update received:", data);
+        setCurrentStock(data.stock);
+        setCurrentStatus(data.status);
+      }
+    });
+
+    // Cleanup on unmount
+    return () => {
+      socket.emit("leave-item-room", item.id);
+      socket.off("stock-update");
+    };
+  }, [item.id]);
 
   useEffect(() => {
     function handleClickOutside(event) {

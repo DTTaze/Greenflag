@@ -226,8 +226,10 @@ export const wasteTypesMap = {
   household_appliances: 20,
 };
 
-export default {
+const ordersMockData = {
   mockOrders,
   wasteCategories,
   wasteTypesMap,
 };
+
+export default ordersMockData;

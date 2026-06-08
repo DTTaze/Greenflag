@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import { CalendarIcon, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";

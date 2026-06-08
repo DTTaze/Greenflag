@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import CloseIcon from "@mui/icons-material/Close";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -35,6 +36,23 @@ const EventDialog = ({ open, onClose, onSave, event }) => {
   const [previewImages, setPreviewImages] = useState([]);
   const [errors, setErrors] = useState({});
 
+  const resetForm = () => {
+    setFormData({
+      title: "",
+      description: "",
+      location: "",
+      capacity: "",
+      start_time: "",
+      end_time: "",
+      end_sign: "",
+      coins: "",
+      status: "upcoming",
+    });
+    setImages([]);
+    setPreviewImages([]);
+    setErrors({});
+  };
+
   useEffect(() => {
     if (event) {
       setFormData({
@@ -62,23 +80,6 @@ const EventDialog = ({ open, onClose, onSave, event }) => {
       resetForm();
     }
   }, [event]);
-
-  const resetForm = () => {
-    setFormData({
-      title: "",
-      description: "",
-      location: "",
-      capacity: "",
-      start_time: "",
-      end_time: "",
-      end_sign: "",
-      coins: "",
-      status: "upcoming",
-    });
-    setImages([]);
-    setPreviewImages([]);
-    setErrors({});
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;

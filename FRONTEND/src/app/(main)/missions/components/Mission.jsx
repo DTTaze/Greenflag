@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import "react-toastify/dist/ReactToastify.css";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";

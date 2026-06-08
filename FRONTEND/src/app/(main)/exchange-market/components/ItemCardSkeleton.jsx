@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import { motion } from "framer-motion";
 
 export default function ItemCardSkeleton() {

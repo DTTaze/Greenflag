@@ -13,7 +13,7 @@ import { alpha } from "@mui/material/styles";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import * as React from "react";
+import React from "react";
 
 // Custom NoRowsOverlay component
 function CustomNoRowsOverlay() {

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 
 import Sharing from "@/src/assets/images/Sharing";

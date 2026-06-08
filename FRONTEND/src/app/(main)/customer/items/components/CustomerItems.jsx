@@ -35,20 +35,6 @@ const CustomerItems = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    fetchUserInfo();
-  }, []);
-
-  useEffect(() => {
-    if (userInfo?.id) {
-      fetchItems();
-    }
-  }, [userInfo]);
-
-  useEffect(() => {
-    filterItems();
-  }, [items, filters]);
-
   const fetchUserInfo = async () => {
     try {
       const response = await getUserApi();
@@ -101,6 +87,20 @@ const CustomerItems = () => {
 
     setFilteredItems(result);
   };
+
+  useEffect(() => {
+    fetchUserInfo();
+  }, []);
+
+  useEffect(() => {
+    if (userInfo?.id) {
+      fetchItems();
+    }
+  }, [userInfo]);
+
+  useEffect(() => {
+    filterItems();
+  }, [items, filters]);
 
   const handleFilterChange = (field, value) => {
     setFilters((prev) => ({

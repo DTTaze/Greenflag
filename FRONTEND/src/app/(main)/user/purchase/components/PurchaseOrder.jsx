@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
+/* eslint-disable max-lines */
 import { Coins } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 

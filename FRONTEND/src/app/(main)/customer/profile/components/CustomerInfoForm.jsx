@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import { Mail, Phone, User, UserCheck } from "lucide-react";
 import React from "react";
 

@@ -1,32 +1,19 @@
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import HomeIcon from "@mui/icons-material/Home";
-import LogoutIcon from "@mui/icons-material/Logout";
-import MenuIcon from "@mui/icons-material/Menu";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import PersonIcon from "@mui/icons-material/Person";
-import {
-  AppBar,
-  Avatar,
-  Badge,
-  Box,
-  Breadcrumbs,
-  CircularProgress,
-  IconButton,
-  Link,
-  Menu,
-  MenuItem,
-  Toolbar,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+"use client";
+
 import { usePathname, useRouter } from "next/navigation";
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
+import {
+  Menu,
+  Home,
+  Bell,
+  HelpCircle,
+  User,
+  LogOut,
+} from "lucide-react";
 
 import { useNotification } from "@/src/components/ui/NotificationProvider";
 import { useAuthStore } from "@/src/store/auth/authStore";
-import { logoutUserApi } from "@/src/utils/api";
+import { logoutUser } from "@/src/utils/api";
 
 export default function CustomerAppBar({
   open: _open,
@@ -36,41 +23,41 @@ export default function CustomerAppBar({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [notificationAnchor, setNotificationAnchor] = React.useState(null);
-  const [loggingOut, setLoggingOut] = React.useState(false);
+  
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+  
   const { notify } = useNotification();
   const { dispatch } = useAuthStore();
 
-  const handleProfileClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  const profileRef = useRef(null);
+  const notificationsRef = useRef(null);
 
-  const handleNotificationsClick = (event) => {
-    setNotificationAnchor(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleNotificationClose = () => {
-    setNotificationAnchor(null);
-  };
+  // Close dropdowns on click outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setProfileOpen(false);
+      }
+      if (notificationsRef.current && !notificationsRef.current.contains(event.target)) {
+        setNotificationsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleLogout = async () => {
     try {
       setLoggingOut(true);
-      // Clear user data from localStorage first to prevent fetch errors during navigation
+      // Clear user data from localStorage
       localStorage.removeItem("user");
       localStorage.removeItem("token");
 
-      // Then call the logout API
-      await logoutUserApi();
+      // Call the logout API
+      await logoutUser();
 
-      // Notify success but don't wait for the animation
       notify("success", "Đăng xuất thành công");
       dispatch({ type: "LOGOUT" });
 
@@ -97,169 +84,152 @@ export default function CustomerAppBar({
   };
 
   return (
-    <AppBar
-      position="fixed"
-      sx={{
-        width: { xs: "100%", sm: `calc(100% - ${drawerWidth}px)` },
-        ml: { sm: `${drawerWidth}px` },
-        backgroundColor: "white",
-        boxShadow: "0 2px 10px rgba(0, 0, 0, 0.05)",
-        borderBottom: "1px solid var(--light-green)",
-        zIndex: 1300,
-      }}
-    >
-      <Toolbar sx={{ justifyContent: "space-between" }}>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, color: "var(--primary-green)" }}
+    <header className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-100 shadow-sm h-16 flex items-center px-4 justify-between">
+      {/* Left side actions */}
+      <div className="flex items-center gap-3">
+        {/* Toggle drawer button */}
+        <button
+          onClick={handleDrawerToggle}
+          className="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50 focus:outline-none transition-colors"
+          aria-label="Toggle drawer"
+        >
+          <Menu size={22} />
+        </button>
+
+        {/* Home button */}
+        <button
+          onClick={() => router.push("/")}
+          className="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50 focus:outline-none transition-colors"
+          title="Go to Homepage"
+        >
+          <Home size={20} />
+        </button>
+
+        {/* Breadcrumb / Title */}
+        <div className="hidden sm:flex items-center gap-2 text-sm text-gray-500">
+          <button
+            onClick={() => router.push("/customer")}
+            className="hover:text-emerald-600 font-medium"
           >
-            <MenuIcon />
-          </IconButton>
+            Home
+          </button>
+          <span>/</span>
+          <span className="font-semibold text-emerald-700">{getPageTitle()}</span>
+        </div>
 
-          <Tooltip title="Go to Homepage">
-            <IconButton
-              color="inherit"
-              onClick={() => router.push("/")}
-              sx={{ mr: 2, color: "var(--primary-green)" }}
-            >
-              <HomeIcon />
-            </IconButton>
-          </Tooltip>
+        <span className="sm:hidden text-sm font-semibold text-emerald-700">
+          {getPageTitle()}
+        </span>
+      </div>
 
-          {!isMobile && (
-            <Breadcrumbs aria-label="breadcrumb">
-              <Link
-                color="inherit"
-                href="/customer"
-                sx={{
-                  textDecoration: "none",
-                  color: "var(--primary-green)",
-                }}
-              >
-                Home
-              </Link>
-              <Typography color="var(--primary-green)" fontWeight="600">
-                {getPageTitle()}
-              </Typography>
-            </Breadcrumbs>
-          )}
-
-          {isMobile && (
-            <Typography color="var(--primary-green)" fontWeight="600">
-              {getPageTitle()}
-            </Typography>
-          )}
-        </Box>
-
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <Tooltip title="Notifications">
-            <IconButton
-              color="inherit"
-              size="medium"
-              onClick={handleNotificationsClick}
-              sx={{ color: "var(--text-dark)" }}
-            >
-              <Badge badgeContent={3} color="success">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-          </Tooltip>
-
-          <Menu
-            anchorEl={notificationAnchor}
-            open={Boolean(notificationAnchor)}
-            onClose={handleNotificationClose}
-            PaperProps={{
-              sx: { width: 320, maxHeight: 400 },
-            }}
+      {/* Right side actions */}
+      <div className="flex items-center gap-3">
+        {/* Notifications Dropdown */}
+        <div className="relative" ref={notificationsRef}>
+          <button
+            onClick={() => setNotificationsOpen(!notificationsOpen)}
+            className="relative p-1.5 text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none"
+            aria-label="Notifications"
           >
-            <MenuItem onClick={handleNotificationClose}>
-              <Box>
-                <Typography variant="subtitle2">New Event Created</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Tech Conference added to your events
-                </Typography>
-              </Box>
-            </MenuItem>
-            <MenuItem onClick={handleNotificationClose}>
-              <Box>
-                <Typography variant="subtitle2">
-                  User Evaluation Pending
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  5 users need rating for Eco Clean-up event
-                </Typography>
-              </Box>
-            </MenuItem>
-            <MenuItem onClick={handleNotificationClose}>
-              <Box>
-                <Typography variant="subtitle2">Item Stock Alert</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Eco Tote Bags running low (5 remaining)
-                </Typography>
-              </Box>
-            </MenuItem>
-          </Menu>
+            <Bell size={20} />
+            <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-emerald-600 text-[10px] text-white flex items-center justify-center font-bold">
+              3
+            </span>
+          </button>
 
-          <Tooltip title="Help">
-            <IconButton
-              color="inherit"
-              size="medium"
-              sx={{ color: "var(--text-dark)" }}
-            >
-              <HelpOutlineIcon />
-            </IconButton>
-          </Tooltip>
+          {notificationsOpen && (
+            <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-100 rounded-xl shadow-lg py-2 z-50">
+              <div className="px-4 py-2 border-b border-gray-50 font-bold text-xs text-gray-400 uppercase tracking-wider">
+                Thông báo mới
+              </div>
+              <div className="divide-y divide-gray-50 max-h-[300px] overflow-y-auto">
+                <button
+                  onClick={() => setNotificationsOpen(false)}
+                  className="w-full text-left px-4 py-3 hover:bg-gray-50 block transition-colors"
+                >
+                  <div className="font-semibold text-sm text-gray-800">New Event Created</div>
+                  <div className="text-xs text-gray-500 mt-0.5">
+                    Tech Conference added to your events
+                  </div>
+                </button>
+                <button
+                  onClick={() => setNotificationsOpen(false)}
+                  className="w-full text-left px-4 py-3 hover:bg-gray-50 block transition-colors"
+                >
+                  <div className="font-semibold text-sm text-gray-800">User Evaluation Pending</div>
+                  <div className="text-xs text-gray-500 mt-0.5">
+                    5 users need rating for Eco Clean-up event
+                  </div>
+                </button>
+                <button
+                  onClick={() => setNotificationsOpen(false)}
+                  className="w-full text-left px-4 py-3 hover:bg-gray-50 block transition-colors"
+                >
+                  <div className="font-semibold text-sm text-gray-800">Item Stock Alert</div>
+                  <div className="text-xs text-gray-500 mt-0.5">
+                    Eco Tote Bags running low (5 remaining)
+                  </div>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
 
-          <Tooltip title="Profile">
-            <IconButton onClick={handleProfileClick}>
-              <Avatar
-                src={userInfo?.avatar_url}
-                alt={userInfo?.full_name}
-                sx={{
-                  width: 32,
-                  height: 32,
-                  border: "2px solid var(--light-green)",
-                }}
+        {/* Help button */}
+        <button
+          className="p-1.5 text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none"
+          title="Help"
+        >
+          <HelpCircle size={20} />
+        </button>
+
+        {/* User Profile Menu */}
+        <div className="relative" ref={profileRef}>
+          <button
+            onClick={() => setProfileOpen(!profileOpen)}
+            className="flex items-center focus:outline-none"
+            aria-label="User profile menu"
+          >
+            {userInfo?.avatar_url ? (
+              <img
+                src={userInfo.avatar_url}
+                alt={userInfo.full_name || "Profile avatar"}
+                className="w-8 h-8 rounded-full border-2 border-emerald-100 object-cover"
               />
-            </IconButton>
-          </Tooltip>
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm border-2 border-emerald-100">
+                {userInfo?.username ? userInfo.username.charAt(0).toUpperCase() : "U"}
+              </div>
+            )}
+          </button>
 
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
-            <MenuItem
-              onClick={() => {
-                router.push("/customer/profile");
-                handleClose();
-              }}
-            >
-              <PersonIcon sx={{ mr: 1, fontSize: 20 }} />
-              Profile
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                handleLogout();
-                handleClose();
-              }}
-              disabled={loggingOut}
-            >
-              {loggingOut ? (
-                <CircularProgress size={20} sx={{ mr: 1 }} color="success" />
-              ) : (
-                <LogoutIcon sx={{ mr: 1, fontSize: 20 }} />
-              )}
-              {loggingOut ? "Logging out..." : "Logout"}
-            </MenuItem>
-          </Menu>
-        </Box>
-      </Toolbar>
-    </AppBar>
+          {profileOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-lg py-1.5 z-50">
+              <button
+                onClick={() => {
+                  router.push("/customer/profile");
+                  setProfileOpen(false);
+                }}
+                className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <User size={16} className="text-gray-400" />
+                <span>Profile</span>
+              </button>
+              <button
+                onClick={() => {
+                  handleLogout();
+                  setProfileOpen(false);
+                }}
+                disabled={loggingOut}
+                className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+              >
+                <LogOut size={16} />
+                <span>{loggingOut ? "Logging out..." : "Logout"}</span>
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </header>
   );
 }

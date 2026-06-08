@@ -1,4 +1,5 @@
-import { Box, Button, CircularProgress, Typography } from "@mui/material";
+"use client";
+
 import { BrowserMultiFormatReader } from "@zxing/browser";
 import { QrCode } from "lucide-react";
 import React, { useEffect, useRef } from "react";
@@ -84,7 +85,7 @@ export default function QRScanner({
 
   useEffect(() => {
     return () => {
-      if (codeReader.current) {
+      if (codeReader.current && scanControlsRef.current) {
         scanControlsRef.current.stop();
       }
       stopVideoStream();
@@ -97,109 +98,68 @@ export default function QRScanner({
   };
 
   return (
-    <Box className="customer-qr-scanner-container">
-      <Box className="customer-qr-preview" style={{ position: "relative" }}>
+    <div className="flex flex-col items-center w-full max-w-md mx-auto">
+      <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black border border-gray-100 shadow-inner flex items-center justify-center">
         <video
           ref={videoRef}
-          style={{
-            width: "100%",
-            height: "auto",
-            borderRadius: 8,
-            background: "#000",
-            display: scanning ? "block" : "none",
-          }}
+          className={`w-full h-full object-cover ${scanning ? "block" : "hidden"}`}
           autoPlay
           muted
           playsInline
         />
+        
         {scanning && (
-          <div className="qr-corner-overlay" style={{ pointerEvents: "none" }}>
-            <div className="qr-corner qr-corner-tl" />
-            <div className="qr-corner qr-corner-tr" />
-            <div className="qr-corner qr-corner-bl" />
-            <div className="qr-corner qr-corner-br" />
+          <div className="absolute inset-0 pointer-events-none z-10 p-6">
+            <div className="w-full h-full border-2 border-emerald-500/50 rounded-lg relative">
+              <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-emerald-500 -mt-1 -ml-1 rounded-tl" />
+              <div className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-emerald-500 -mt-1 -mr-1 rounded-tr" />
+              <div className="absolute bottom-0 left-0 w-6 h-6 border-b-4 border-l-4 border-emerald-500 -mb-1 -ml-1 rounded-bl" />
+              <div className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-emerald-500 -mb-1 -mr-1 rounded-br" />
+            </div>
           </div>
         )}
-        {!scanning && !loading && (
-          <Box
-            sx={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexDirection: "column",
-              bgcolor: "rgba(255,255,255,0.7)",
-            }}
-          >
-            <QrCode
-              style={{
-                width: 60,
-                height: 60,
-                marginBottom: 8,
-                color: "var(--primary-green)",
-              }}
-            />
-            <Typography variant="body2" color="text.secondary">
-              {'Click "Start Scanning" to open your camera'}
-            </Typography>
-          </Box>
-        )}
-        {loading && !scanning && (
-          <Box
-            sx={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              bgcolor: "rgba(255,255,255,0.7)",
-            }}
-          >
-            <CircularProgress color="success" />
-          </Box>
-        )}
-      </Box>
 
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          gap: 2,
-          mt: 2,
-        }}
-      >
+        {!scanning && !loading && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 text-gray-500">
+            <QrCode className="w-16 h-16 mb-2 text-emerald-600 animate-pulse" />
+            <span className="text-xs text-gray-400">
+              Click &quot;Start Scanning&quot; to open camera
+            </span>
+          </div>
+        )}
+
+        {loading && !scanning && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
+            <div className="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+          </div>
+        )}
+      </div>
+
+      <div className="flex justify-center gap-3 mt-4 w-full">
         {!scanning ? (
-          <Button
-            className="customer-button"
-            startIcon={<QrCode size={20} />}
+          <button
             onClick={handleStartScan}
             disabled={disabled}
+            className="flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-sm transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Start Scanning
-          </Button>
+            <QrCode size={18} />
+            <span>Start Scanning</span>
+          </button>
         ) : (
-          <Button
-            variant="outlined"
-            color="error"
+          <button
             onClick={() => {
               stopVideoStream();
               onStopScan();
-              if (codeReader.current) {
+              if (codeReader.current && scanControlsRef.current) {
                 scanControlsRef.current.stop();
               }
             }}
+            className="flex items-center justify-center gap-2 px-6 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-lg text-sm transition-colors shadow-sm"
           >
-            Stop Scanning
-          </Button>
+            <span>Stop Scanning</span>
+          </button>
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }

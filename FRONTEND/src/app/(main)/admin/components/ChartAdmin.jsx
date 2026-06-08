@@ -1,50 +1,89 @@
-import { LineChart } from "@mui/x-charts/LineChart";
-import React from "react";
+"use client";
 
-const uData = [
-  4000, 3000, 2000, 2780, 1890, 2390, 3490, 2500, 3800, 5000, 6000, 5500,
-];
-const pData = [
-  2400, 1398, 9800, 3908, 4800, 3800, 4300, 3000, 2000, 2780, 1890, 2390,
-];
-const xLabels = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "June",
-  "July",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
+import React, { useEffect, useState } from "react";
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from "recharts";
+
+const chartData = [
+  { name: "Jan", User: 4000, Revenue: 2400 },
+  { name: "Feb", User: 3000, Revenue: 1398 },
+  { name: "Mar", User: 2000, Revenue: 9800 },
+  { name: "Apr", User: 2780, Revenue: 3908 },
+  { name: "May", User: 1890, Revenue: 4800 },
+  { name: "June", User: 2390, Revenue: 3800 },
+  { name: "July", User: 3490, Revenue: 4300 },
+  { name: "Aug", User: 2500, Revenue: 3000 },
+  { name: "Sep", User: 3800, Revenue: 2000 },
+  { name: "Oct", User: 5000, Revenue: 2780 },
+  { name: "Nov", User: 6000, Revenue: 1890 },
+  { name: "Dec", User: 5500, Revenue: 2390 },
 ];
 
 export default function SimpleLineChart() {
-  const [chartWidth, setChartWidth] = React.useState(window.innerWidth * 0.7);
+  const [mounted, setMounted] = useState(false);
 
-  React.useEffect(() => {
-    const handleResize = () => {
-      setChartWidth(window.innerWidth * 0.9);
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+  useEffect(() => {
+    setMounted(true);
   }, []);
 
+  if (!mounted) {
+    return <div className="h-[300px] w-full bg-gray-50/50 rounded-lg animate-pulse" />;
+  }
+
   return (
-    <div style={{ width: "100%", overflowX: "auto" }}>
-      <LineChart
-        width={chartWidth}
-        height={300}
-        series={[
-          { data: pData, showMark: false, color: "rgb(26 158 62)" },
-          { data: uData, showMark: false, color: "rgb(49 152 254)" },
-        ]}
-        xAxis={[{ scaleType: "band", data: xLabels }]}
-      />
+    <div className="h-[300px] w-full text-xs">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart
+          data={chartData}
+          margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+          <XAxis
+            dataKey="name"
+            stroke="#9ca3af"
+            fontSize={11}
+            tickLine={false}
+            axisLine={false}
+          />
+          <YAxis
+            stroke="#9ca3af"
+            fontSize={11}
+            tickLine={false}
+            axisLine={false}
+          />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "#ffffff",
+              border: "1px solid #e5e7eb",
+              borderRadius: "8px",
+              boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+            }}
+          />
+          <Line
+            type="monotone"
+            dataKey="Revenue"
+            stroke="#10b981"
+            strokeWidth={2}
+            dot={false}
+            activeDot={{ r: 4 }}
+          />
+          <Line
+            type="monotone"
+            dataKey="User"
+            stroke="#3b82f6"
+            strokeWidth={2}
+            dot={false}
+            activeDot={{ r: 4 }}
+          />
+        </LineChart>
+      </ResponsiveContainer>
     </div>
   );
 }

@@ -1,10 +1,10 @@
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { Box, Button, Grid, IconButton, Typography } from "@mui/material";
+"use client";
+
 import React from "react";
+import { Upload, Trash } from "lucide-react";
 
 export default function MultiImageUpload({
-  previewImages,
+  previewImages = [],
   onImageChange,
   onRemoveImage,
   maxImages = 5,
@@ -19,62 +19,48 @@ export default function MultiImageUpload({
   };
 
   return (
-    <Box sx={{ mb: 2 }}>
-      <Typography variant="subtitle1" gutterBottom>
+    <div className="mb-4 space-y-3">
+      <div className="text-sm font-semibold text-gray-700">
         Images (up to {maxImages})
-      </Typography>
-      <Button
-        component="label"
-        variant="outlined"
-        startIcon={<CloudUploadIcon />}
-        sx={{ mb: 2 }}
-      >
-        Upload Images
-        <input
-          type="file"
-          hidden
-          multiple
-          accept="image/*"
-          onChange={handleFileChange}
-        />
-      </Button>
-      <Grid container spacing={2}>
-        {previewImages.map((url, index) => (
-          <Grid item key={index}>
-            <Box
-              sx={{
-                position: "relative",
-                width: 100,
-                height: 100,
-              }}
+      </div>
+
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-wrap gap-3">
+          {previewImages.map((url, index) => (
+            <div
+              key={index}
+              className="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-200 shadow-sm"
             >
               <img
                 src={url}
                 alt={`Preview ${index + 1}`}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  borderRadius: 4,
-                }}
+                className="w-full h-full object-cover"
               />
-              <IconButton
-                size="small"
+              <button
+                type="button"
                 onClick={() => onRemoveImage(index)}
-                sx={{
-                  position: "absolute",
-                  top: -8,
-                  right: -8,
-                  bgcolor: "background.paper",
-                  "&:hover": { bgcolor: "background.paper" },
-                }}
+                className="absolute top-1 right-1 p-1 bg-white/95 rounded-full text-rose-600 hover:bg-white transition-colors shadow-sm"
               >
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-            </Box>
-          </Grid>
-        ))}
-      </Grid>
-    </Box>
+                <Trash size={12} />
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <div>
+          <label className="inline-flex items-center gap-2 px-4 py-2 border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium rounded-lg text-sm transition-colors cursor-pointer shadow-sm">
+            <Upload size={16} className="text-gray-500" />
+            <span>Upload Images</span>
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+          </label>
+        </div>
+      </div>
+    </div>
   );
 }

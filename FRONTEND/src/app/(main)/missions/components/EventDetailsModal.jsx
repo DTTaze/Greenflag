@@ -2,7 +2,7 @@ import React from "react";
 import { toast } from "react-toastify";
 
 import QRCodeDisplay from "@/src/components/common/QRCodeDisplay";
-import { acceptEventApi } from "@/src/utils/api";
+import { acceptEvent } from "@/src/utils/api";
 
 const EventDetailsModal = ({
   event,
@@ -15,7 +15,7 @@ const EventDetailsModal = ({
 
   const handleJoinEvent = async () => {
     try {
-      await acceptEventApi(event.id);
+      await acceptEvent(event.id);
       toast.success("Tham gia sự kiện thành công!", {
         position: "top-right",
         autoClose: 3000,

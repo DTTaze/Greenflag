@@ -1,32 +1,32 @@
 export {
-  registerUser as createUserApi,
-  forgotPassword as forgotPasswordApi,
-  getQR as getQRApi,
-  logoutUser as logoutUserApi,
-  resetPassword as resetPasswordApi,
+  forgotPassword,
+  getQR,
+  logoutUser,
+  registerUser,
+  resetPassword,
 } from "../services/auth.service";
 export {
-  createPermission as createPermissionApi,
-  createRole as createRoleApi,
-  deletePermission as deletePermissionApi,
-  deleteRole as deleteRoleApi,
-  deleteUser as deleteUserApi,
-  getAllPermissions as getAllPermissionsApi,
-  getAllRoles as getAllRolesApi,
-  getAllRolesPermissions as getAllRolesPermissionsApi,
-  getAllUsers as getAllUserApi,
-  getUser as getUserApi,
-  getUserById as getUserByIdApi,
-  getUserByIDPublic as getUserByIDPublicApi,
-  rearrangeRank as rearrangeRankApi,
-  updatePermission as updatePermissionApi,
-  updateRole as updateRoleApi,
-  updateUser as updateUserApi,
-  updateUserPublic as updateUserPublicApi,
+  createPermission,
+  createRole,
+  deletePermission,
+  deleteRole,
+  deleteUser,
+  getAllPermissions,
+  getAllRoles,
+  getAllRolesPermissions,
+  getAllUsers,
+  getUser,
+  getUserById,
+  getUserByIDPublic,
+  rearrangeRank,
+  updatePermission,
+  updateRole,
+  updateUser,
+  updateUserPublic,
 } from "../services/user.service";
-export * from "./api/avatarApi";
-export * from "./api/eventApi";
-export * from "./api/itemApi";
-export * from "./api/shippingApi";
-export * from "./api/taskApi";
-export * from "./api/transactionApi";
+export * from "./api/avatar";
+export * from "./api/event";
+export * from "./api/item";
+export * from "./api/shipping";
+export * from "./api/task";
+export * from "./api/transaction";

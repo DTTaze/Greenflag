@@ -1,124 +1,74 @@
-import {
-  Avatar,
-  Box,
-  Chip,
-  IconButton,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Typography,
-} from "@mui/material";
-import { Calendar, ShieldCheck, Trash2, UserPlus } from "lucide-react";
-import React from "react";
+"use client";
 
-export default function ScannedUsersList({ scannedUsers, onRemoveUser }) {
+import React from "react";
+import { Calendar, ShieldCheck, Trash2, UserPlus } from "lucide-react";
+
+export default function ScannedUsersList({ scannedUsers = [], onRemoveUser }) {
   return (
-    <Box>
-      <Typography
-        variant="h6"
-        gutterBottom
-        sx={{ display: "flex", alignItems: "center" }}
-      >
-        <ShieldCheck
-          style={{ marginRight: 8, color: "var(--primary-green)" }}
-          size={24}
-        />
-        Recently Scanned Users
-      </Typography>
+    <div className="flex flex-col h-full">
+      <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2 mb-4">
+        <ShieldCheck className="text-emerald-600" size={22} />
+        <span>Recently Scanned Users</span>
+      </h3>
 
       {scannedUsers.length > 0 ? (
-        <List
-          sx={{
-            bgcolor: "background.paper",
-            overflow: "auto",
-            flex: 1,
-            maxHeight: 400,
-          }}
-        >
+        <div className="bg-white border border-gray-100 rounded-xl divide-y divide-gray-100 max-h-[400px] overflow-y-auto shadow-sm">
           {scannedUsers.map((user) => (
-            <ListItem
+            <div
               key={user.id}
-              secondaryAction={
-                <IconButton
-                  edge="end"
-                  aria-label="delete"
-                  onClick={() => onRemoveUser(user.id)}
-                >
-                  <Trash2 size={20} />
-                </IconButton>
-              }
-              sx={{
-                mb: 1,
-                backgroundColor: "var(--grey-100)",
-                borderRadius: 1,
-              }}
+              className="flex items-center justify-between p-4 hover:bg-gray-50/50 transition-colors"
             >
-              <ListItemAvatar>
-                <Avatar src={user.avatar} alt={user.name} />
-              </ListItemAvatar>
-              <ListItemText
-                primary={user.name}
-                secondary={
-                  <React.Fragment>
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      color="text.primary"
-                    >
-                      {user.email}
-                    </Typography>
-                    <Box
-                      sx={{
-                        mt: 0.5,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1,
-                      }}
-                    >
-                      <Chip
-                        size="small"
-                        icon={<Calendar style={{ width: 14, height: 14 }} />}
-                        label={user.eventTitle}
-                        sx={{ height: 24, fontSize: "0.75rem" }}
-                      />
-                      <Typography variant="caption" color="text.secondary">
-                        {new Date(user.scannedAt).toLocaleTimeString()}
-                      </Typography>
-                    </Box>
-                  </React.Fragment>
-                }
-              />
-            </ListItem>
+              <div className="flex items-center gap-3">
+                {user.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt={user.name}
+                    className="w-10 h-10 rounded-full object-cover border border-gray-100"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm">
+                    {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+                  </div>
+                )}
+                
+                <div className="flex flex-col">
+                  <span className="font-semibold text-sm text-gray-900">
+                    {user.name}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {user.email}
+                  </span>
+                  <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-100">
+                      <Calendar size={10} />
+                      <span>{user.eventTitle}</span>
+                    </span>
+                    <span className="text-[10px] text-gray-400">
+                      {new Date(user.scannedAt).toLocaleTimeString()}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => onRemoveUser(user.id)}
+                className="p-1.5 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                title="Xóa người dùng khỏi danh sách quét"
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
           ))}
-        </List>
+        </div>
       ) : (
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            py: 5,
-            flex: 1,
-          }}
-        >
-          <UserPlus
-            style={{
-              width: 40,
-              height: 40,
-              color: "var(--text-light)",
-              marginBottom: 8,
-            }}
-          />
-          <Typography variant="body1" color="text.secondary">
-            No users scanned yet
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
+        <div className="flex flex-col items-center justify-center py-16 bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
+          <UserPlus className="w-12 h-12 text-gray-400 mb-2" />
+          <p className="text-sm font-semibold text-gray-700">No users scanned yet</p>
+          <p className="text-xs text-gray-400 mt-0.5">
             Start scanning or add users manually
-          </Typography>
-        </Box>
+          </p>
+        </div>
       )}
-    </Box>
+    </div>
   );
 }

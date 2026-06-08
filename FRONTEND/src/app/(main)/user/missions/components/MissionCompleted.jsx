@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { getAllTaskCompletedById, getUserApi } from "@/src/utils/api";
+import { getMyCompletedTasks, getUser } from "@/src/utils/api";
 
 function MissionCompleted() {
   const [userCompletedTasks, setUserCompletedTasks] = useState([]);
@@ -10,8 +10,8 @@ function MissionCompleted() {
 
   const fetchUserCompletedTasks = useCallback(async () => {
     try {
-      await getUserApi();
-      const { data: tasks } = await getAllTaskCompletedById();
+      await getUser();
+      const { data: tasks } = await getMyCompletedTasks();
       setUserCompletedTasks(
         tasks.map(({ id, title, coins, created_at }) => ({
           id,

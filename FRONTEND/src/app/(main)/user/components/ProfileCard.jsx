@@ -18,9 +18,9 @@ function NavLink({ to, className, children }) {
 
 import { useAuthStore } from "@/src/store/auth/authStore";
 import {
-  getUserAvatarByIdApi,
-  updateUserAvatarApi,
-  uploadUserAvatarApi,
+  getUserAvatarById,
+  updateUserAvatar,
+  uploadUserAvatar,
 } from "@/src/utils/api";
 
 function MenuItem({ text, path, hasSubmenu, isOpen, onClick, children }) {
@@ -91,7 +91,7 @@ function ProfileCard() {
       setIsFetched(true);
       (async () => {
         try {
-          const response = await getUserAvatarByIdApi(user.id);
+          const response = await getUserAvatarById(user.id);
           if (response?.data?.avatar_url) {
             const avatarUrl = `${response.data.avatar_url}?t=${Date.now()}`;
             setAvatar(avatarUrl);
@@ -121,8 +121,8 @@ function ProfileCard() {
     setLoading(true);
     try {
       const response = user.avatar_url
-        ? await updateUserAvatarApi(user.id, file)
-        : await uploadUserAvatarApi(user.id, file);
+        ? await updateUserAvatar(user.id, file)
+        : await uploadUserAvatar(user.id, file);
       if (response?.data?.avatar_url) {
         const updatedUrl = `${response.data.avatar_url}?t=${Date.now()}`;
         setAvatar(updatedUrl);

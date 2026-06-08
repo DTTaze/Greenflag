@@ -49,7 +49,7 @@ const LoginPage = () => {
 
         <div className="text-right">
           <Link
-            href="/forgot_password"
+            href="/forgot-password"
             className="text-blue-600 hover:underline"
           >
             Quên mật khẩu?

@@ -1,7 +1,8 @@
-import { Box, Typography } from "@mui/material";
+"use client";
+
 import React, { useEffect, useState } from "react";
 
-import { deleteTransactionsApi, getAllTransactionsApi } from "@/src/utils/api";
+import { deleteTransaction, getAllTransactions } from "@/src/utils/api";
 
 import DataTable from "../../components/DataTable";
 import { transactionsColumns } from "../../components/HeaderColumn";
@@ -14,7 +15,7 @@ export default function TransactionsManagement() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await getAllTransactionsApi();
+        const res = await getAllTransactions();
         if (res.success) {
           setTransactions(res.data);
         } else {
@@ -30,21 +31,26 @@ export default function TransactionsManagement() {
   }, []);
 
   const handleDeleteTransaction = async (transaction) => {
-    const res = await deleteTransactionsApi(transaction.id);
-    console.log(transaction, transaction.id);
-    if (confirm("Bạn có chắc chắn muốn xóa không?")) {
-      if (res.success) {
-        alert("Xóa giao dịch thành công!");
-        setTransactions((prev) => prev.filter((u) => u.id !== transaction.id));
+    if (window.confirm("Bạn có chắc chắn muốn xóa không?")) {
+      try {
+        const res = await deleteTransaction(transaction.id);
+        if (res.success) {
+          alert("Xóa giao dịch thành công!");
+          setTransactions((prev) => prev.filter((u) => u.id !== transaction.id));
+        } else {
+          alert("Xóa giao dịch thất bại!");
+        }
+      } catch (e) {
+        console.log(e);
       }
     }
   };
 
   return (
-    <Box sx={{ p: 2 }}>
-      <Typography variant="h5" component="h1" sx={{ mb: 3 }}>
+    <div className="p-4 space-y-4">
+      <h1 className="text-2xl font-bold text-gray-950">
         Transactions Management
-      </Typography>
+      </h1>
       <DataTable
         title="Transactions"
         columns={transactionsColumns}
@@ -54,6 +60,6 @@ export default function TransactionsManagement() {
         onDelete={handleDeleteTransaction}
         loading={loading}
       />
-    </Box>
+    </div>
   );
 }

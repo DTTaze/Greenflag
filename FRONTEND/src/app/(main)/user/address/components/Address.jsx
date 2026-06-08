@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import Button from "@/src/components/ui/button";
 import { useAuthStore } from "@/src/store/auth/authStore";
 import {
-  deleteReceiverInfoByIdAPI,
-  getReceiverInfoByUserIDAPI,
-  SetDefaultReceiverInfoByIdAPI,
+  deleteReceiverInfoById,
+  getReceiverInfoByUserId,
+  setDefaultReceiverInfoById,
 } from "@/src/utils/api";
 
 import AddressFormDialog from "./AddressFormDialog";
@@ -25,7 +25,7 @@ function Address() {
       setIsLoading(true);
       setErrorMessage("");
       try {
-        const response = await getReceiverInfoByUserIDAPI(user.id);
+        const response = await getReceiverInfoByUserId(user.id);
         if (response.status === 200 && response.data) {
           setAddresses(response.data);
           const defaultAddress = response.data.find((addr) => addr.is_default);
@@ -53,7 +53,7 @@ function Address() {
   const handleDeleteAddress = async (id) => {
     setIsLoading(true);
     try {
-      await deleteReceiverInfoByIdAPI(id);
+      await deleteReceiverInfoById(id);
       setAddresses(addresses.filter((addr) => addr.id !== id));
       if (defaultAddressId === id) {
         setDefaultAddressId(null);
@@ -69,7 +69,7 @@ function Address() {
   const handleSetDefault = async (id) => {
     setIsLoading(true);
     try {
-      const response = await SetDefaultReceiverInfoByIdAPI(id);
+      const response = await setDefaultReceiverInfoById(id);
       if (response.data) {
         setAddresses(
           addresses.map((addr) => ({

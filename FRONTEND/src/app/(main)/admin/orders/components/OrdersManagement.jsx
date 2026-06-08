@@ -1,9 +1,10 @@
-import { Box, Typography } from "@mui/material";
+"use client";
+
 import React, { useEffect, useState } from "react";
 
 import {
-  getAllShippingOrdersApi,
-  updateShippingOrderApi,
+  getAllShippingOrders,
+  updateShippingOrder,
 } from "@/src/utils/api";
 
 import DataTable from "../../components/DataTable";
@@ -17,65 +18,41 @@ export default function OrdersManagement() {
   const editData = null;
   const formMode = "edit";
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const res = await getAllShippingOrdersApi();
-        if (res.success) {
-          setOrders(res.data);
-        } else {
-          console.error("Error fetching orders:", res.error);
-        }
-      } catch (error) {
-        console.error("Failed to fetch orders:", error);
-      } finally {
-        setLoading(false);
+  const fetchOrders = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllShippingOrders();
+      if (res.success) {
+        setOrders(res.data);
+      } else {
+        console.error("Error fetching orders:", res.error);
       }
-    };
-    fetchData();
+    } catch (error) {
+      console.error("Failed to fetch orders:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrders();
   }, []);
 
   const handleEditOrder = (order) => {
     alert(`Vui lòng liên hệ người tạo đơn hàng: ${order.User.email}`);
-    // setFormMode("edit");
-    // setEditData(order);
-    // setFormOpen(true);
   };
 
   const handleCancelOrder = async (order) => {
     alert(`Vui lòng liên hệ người tạo đơn hàng: ${order.User.email}`);
-    // if (confirm("Bạn có chắc chắn muốn hủy đơn hàng này không?")) {
-    //   try {
-    //     const res = await cancelShippingOrderApi(order.order_code);
-    //     if (res.success) {
-    //       alert("Hủy đơn hàng thành công!");
-    //       // Refresh orders list
-    //       const ordersRes = await getAllShippingOrdersApi();
-    //       if (ordersRes.success) {
-    //         setOrders(ordersRes.data);
-    //       }
-    //     } else {
-    //       alert("Hủy đơn hàng thất bại!");
-    //     }
-    //   } catch (error) {
-    //     console.error("Error canceling order:", error);
-    //     alert("Có lỗi xảy ra khi hủy đơn hàng!");
-    //   }
-    // }
   };
 
   const handleSubmitOrder = async (data, mode) => {
     try {
       if (mode === "edit") {
-        const result = await updateShippingOrderApi(data);
+        const result = await updateShippingOrder(data);
         if (result.success) {
           alert("Cập nhật đơn hàng thành công!");
-          // Refresh orders list
-          const res = await getAllShippingOrdersApi();
-          if (res.success) {
-            setOrders(res.data);
-          }
+          fetchOrders();
         } else {
           alert("Cập nhật đơn hàng thất bại!");
         }
@@ -88,10 +65,10 @@ export default function OrdersManagement() {
   };
 
   return (
-    <Box sx={{ p: 2 }}>
-      <Typography variant="h5" component="h1" sx={{ mb: 3 }}>
+    <div className="p-4 space-y-4">
+      <h1 className="text-2xl font-bold text-gray-950">
         Orders Management
-      </Typography>
+      </h1>
       <DataTable
         title="Orders"
         columns={ordersColumns}
@@ -108,6 +85,6 @@ export default function OrdersManagement() {
         initialData={editData}
         mode={formMode}
       />
-    </Box>
+    </div>
   );
 }

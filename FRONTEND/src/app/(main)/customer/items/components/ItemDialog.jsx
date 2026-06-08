@@ -1,21 +1,8 @@
-import CloseIcon from "@mui/icons-material/Close";
-import {
-  Button,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  Grid,
-  IconButton,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from "@mui/material";
 import React, { useEffect, useState } from "react";
-
+import { X } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/src/components/ui/dialog";
+import { Button } from "@/src/components/ui/button";
+import { Input } from "@/src/components/ui/input";
 import MultiImageUpload from "@/src/components/common/MultiImageUpload";
 
 const INITIAL_FORM_STATE = {
@@ -70,7 +57,6 @@ const ItemDialog = ({ open, onClose, onSave, item, isSubmitting }) => {
       ...prev,
       [name]: value,
     }));
-    // Clear error when field is edited
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -134,178 +120,207 @@ const ItemDialog = ({ open, onClose, onSave, item, isSubmitting }) => {
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>
-        {item ? "Edit Item" : "Add New Item"}
-        <IconButton
-          aria-label="close"
-          onClick={handleClose}
-          sx={{
-            position: "absolute",
-            right: 8,
-            top: 8,
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
-      <DialogContent>
-        <Grid container spacing={2} sx={{ mt: 1 }}>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Name"
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
+      <DialogContent className="sm:max-w-3xl w-full p-6 max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="flex flex-row items-center justify-between border-b pb-4">
+          <DialogTitle className="text-xl font-bold text-gray-800">
+            {item ? "Edit Item" : "Add New Item"}
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
+          <div className="md:col-span-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Name <span className="text-red-500">*</span>
+            </label>
+            <Input
               name="name"
               value={formData.name}
               onChange={handleChange}
-              error={!!errors.name}
-              helperText={errors.name}
-              required
+              className={errors.name ? "border-red-500" : ""}
+              placeholder="Item Name"
             />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Price"
-              name="price"
-              type="number"
-              value={formData.price}
-              onChange={handleChange}
-              error={!!errors.price}
-              helperText={errors.price}
-              required
-              InputProps={{
-                startAdornment: "$",
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Stock"
+            {errors.name && (
+              <span className="text-xs text-red-500 mt-1 block">{errors.name}</span>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Price <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 select-none">$</span>
+              <Input
+                name="price"
+                type="number"
+                value={formData.price}
+                onChange={handleChange}
+                className={`pl-8 ${errors.price ? "border-red-500" : ""}`}
+                placeholder="0.00"
+              />
+            </div>
+            {errors.price && (
+              <span className="text-xs text-red-500 mt-1 block">{errors.price}</span>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Stock <span className="text-red-500">*</span>
+            </label>
+            <Input
               name="stock"
               type="number"
               value={formData.stock}
               onChange={handleChange}
-              error={!!errors.stock}
-              helperText={errors.stock}
-              required
+              className={errors.stock ? "border-red-500" : ""}
+              placeholder="Available inventory"
             />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Weight (g)"
+            {errors.stock && (
+              <span className="text-xs text-red-500 mt-1 block">{errors.stock}</span>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Weight (g) <span className="text-red-500">*</span>
+            </label>
+            <Input
               name="weight"
               type="number"
               value={formData.weight}
               onChange={handleChange}
-              error={!!errors.weight}
-              helperText={errors.weight}
-              required
+              className={errors.weight ? "border-red-500" : ""}
+              placeholder="Weight in grams"
             />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Length (cm)"
+            {errors.weight && (
+              <span className="text-xs text-red-500 mt-1 block">{errors.weight}</span>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Length (cm) <span className="text-red-500">*</span>
+            </label>
+            <Input
               name="length"
               type="number"
               value={formData.length}
               onChange={handleChange}
-              error={!!errors.length}
-              helperText={errors.length}
-              required
+              className={errors.length ? "border-red-500" : ""}
+              placeholder="Length in cm"
             />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Width (cm)"
+            {errors.length && (
+              <span className="text-xs text-red-500 mt-1 block">{errors.length}</span>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Width (cm) <span className="text-red-500">*</span>
+            </label>
+            <Input
               name="width"
               type="number"
               value={formData.width}
               onChange={handleChange}
-              error={!!errors.width}
-              helperText={errors.width}
-              required
+              className={errors.width ? "border-red-500" : ""}
+              placeholder="Width in cm"
             />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Height (cm)"
+            {errors.width && (
+              <span className="text-xs text-red-500 mt-1 block">{errors.width}</span>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Height (cm) <span className="text-red-500">*</span>
+            </label>
+            <Input
               name="height"
               type="number"
               value={formData.height}
               onChange={handleChange}
-              error={!!errors.height}
-              helperText={errors.height}
-              required
+              className={errors.height ? "border-red-500" : ""}
+              placeholder="Height in cm"
             />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Daily Purchase Limit"
+            {errors.height && (
+              <span className="text-xs text-red-500 mt-1 block">{errors.height}</span>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Daily Purchase Limit <span className="text-red-500">*</span>
+            </label>
+            <Input
               name="purchase_limit_per_day"
               type="number"
               value={formData.purchase_limit_per_day}
               onChange={handleChange}
-              error={!!errors.purchase_limit_per_day}
-              helperText={errors.purchase_limit_per_day}
-              required
+              className={errors.purchase_limit_per_day ? "border-red-500" : ""}
             />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FormControl fullWidth>
-              <InputLabel>Status</InputLabel>
-              <Select
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-                label="Status"
-              >
-                <MenuItem value="available">Available</MenuItem>
-                <MenuItem value="sold_out">Sold Out</MenuItem>
-                <MenuItem value="pending">Pending</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Description"
+            {errors.purchase_limit_per_day && (
+              <span className="text-xs text-red-500 mt-1 block">{errors.purchase_limit_per_day}</span>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Status
+            </label>
+            <select
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <option value="available">Available</option>
+              <option value="sold_out">Sold Out</option>
+              <option value="pending">Pending</option>
+            </select>
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Description
+            </label>
+            <textarea
               name="description"
-              multiline
-              rows={4}
               value={formData.description}
               onChange={handleChange}
+              rows={4}
+              className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              placeholder="Describe the item..."
             />
-          </Grid>
-          <Grid item xs={12}>
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Item Images
+            </label>
             <MultiImageUpload
               previewImages={previewImages}
               onImageChange={handleImagesSelected}
               onRemoveImage={handleRemoveImage}
             />
-          </Grid>
-        </Grid>
+          </div>
+        </div>
+
+        <DialogFooter className="border-t pt-4 gap-2 sm:gap-0">
+          <Button variant="outline" onClick={handleClose} disabled={isSubmitting}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Saving..." : item ? "Update" : "Create"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose} disabled={isSubmitting}>
-          Cancel
-        </Button>
-        <Button
-          onClick={handleSubmit}
-          variant="contained"
-          className="customer-button"
-          disabled={isSubmitting}
-          startIcon={isSubmitting ? <CircularProgress size={20} /> : null}
-        >
-          {isSubmitting ? "Saving..." : item ? "Update" : "Create"}
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 };

@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { useAuthStore } from "@/src/store/auth/authStore";
 
 import Loader from "../components/ui/Loader";
-import { getUserApi } from "../utils/api";
+import { getUser } from "../utils/api";
 
 const AuthCallback = () => {
   const router = useRouter();
@@ -16,7 +16,7 @@ const AuthCallback = () => {
     if (window.location.pathname === "/auth/success") {
       const fetchUser = async () => {
         try {
-          const res = await getUserApi();
+          const res = await getUser();
           if (res && res.status === 200) {
             dispatch({
               type: "LOGIN_SUCCESS",

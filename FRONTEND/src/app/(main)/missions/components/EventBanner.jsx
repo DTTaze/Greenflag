@@ -2,7 +2,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-import { getAllEventsApi, getEventSignedByUserIdApi } from "@/src/utils/api";
+import { getAllEvents, getEventSignedByUserId } from "@/src/utils/api";
 
 import EventDetailsModal from "./EventDetailsModal";
 
@@ -18,13 +18,13 @@ const EventBanner = ({ userInfo }) => {
     const fetchEvents = async () => {
       try {
         // Fetch all events
-        const eventsResponse = await getAllEventsApi();
+        const eventsResponse = await getAllEvents();
         if (!eventsResponse?.data) {
           throw new Error("Không thể tải danh sách sự kiện");
         }
 
         // Fetch signed events
-        const signedEventsResponse = await getEventSignedByUserIdApi(
+        const signedEventsResponse = await getEventSignedByUserId(
           userInfo.id,
         );
         const signedEventIds =

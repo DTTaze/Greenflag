@@ -2,11 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 
 import {
-  AllTaskByIdApi,
-  getAllTasksApi,
-  getUserApi,
-  increaseProgressCountApi,
-  receiveCoinApi,
+  getAllTasksByUserId,
+  getAllTasks,
+  getUser,
+  increaseProgressCount,
+  receiveCoins,
 } from "@/src/utils/api";
 
 import { fetchTasksHelper, filterTasksByDifficulty } from "./missionHelpers.js";
@@ -34,8 +34,8 @@ export default function useMission() {
       try {
         setLoading(true);
         const [taskResponse, userResponse] = await Promise.all([
-          getAllTasksApi(),
-          getUserApi(),
+          getAllTasks(),
+          getUser(),
         ]);
 
         let tasksData = [];
@@ -91,7 +91,7 @@ export default function useMission() {
 
           setTasks(processedTasks);
 
-          const userTasksData = await AllTaskByIdApi(userResponse.data.id);
+          const userTasksData = await getAllTasksByUserId(userResponse.data.id);
           const processedUserTasksData = userTasksData.data.map((task) => ({
             id: task.id,
             task_id: task.task_id,
@@ -136,7 +136,7 @@ export default function useMission() {
 
         let updatedTaskUser = null;
         for (let i = 0; i < numOfProgress; i++) {
-          updatedTaskUser = await increaseProgressCountApi(userTask.id);
+          updatedTaskUser = await increaseProgressCount(userTask.id);
         }
 
         if (updatedTaskUser.data) {
@@ -155,8 +155,8 @@ export default function useMission() {
 
         if (updatedTaskUser.data.completed_at) {
           try {
-            await receiveCoinApi(task.coins);
-            const responseUser = await getUserApi();
+            await receiveCoins(task.coins);
+            const responseUser = await getUser();
             setUserInfo((prev) => ({
               ...prev,
               coins: responseUser?.data?.coins.amount || 0,

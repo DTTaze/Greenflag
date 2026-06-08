@@ -1,10 +1,9 @@
-import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
-import TaskAltIcon from "@mui/icons-material/TaskAlt";
-import { Box, Button, Paper, Typography } from "@mui/material";
-import React, { useEffect, useState } from "react";
+"use client";
 
-import { getAllUserApi } from "@/src/utils/api";
+import React, { useEffect, useState } from "react";
+import { Users, ShoppingBag, CheckSquare } from "lucide-react";
+
+import { getAllUsers } from "@/src/utils/api";
 
 import SimpleLineChart from "./ChartAdmin";
 import RecentActivityList from "./RecentActivityList";
@@ -18,7 +17,7 @@ export default function AdminDashboard() {
     const fetchUsers = async () => {
       setLoading(true);
       try {
-        const response = await getAllUserApi();
+        const response = await getAllUsers();
         if (response?.data) {
           // Transform user data into recent activities format and sort by last_logined
           const activities = response.data
@@ -43,93 +42,73 @@ export default function AdminDashboard() {
   }, []);
 
   return (
-    <Box sx={{ flexGrow: 1, p: 0 }}>
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h5" component="h1" sx={{ mb: 1 }}>
+    <div className="flex-1 p-0 space-y-6">
+      {/* Welcome header */}
+      <div className="space-y-1">
+        <h1 className="text-2xl font-bold tracking-tight text-gray-950">
           Dashboard
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Welcome to your admin dashboard. Here&apos;s what&apos;s happening
-          today.
-        </Typography>
-      </Box>
+        </h1>
+        <p className="text-sm text-gray-500">
+          Welcome to your admin dashboard. Here&apos;s what&apos;s happening today.
+        </p>
+      </div>
 
       {/* Admin Grid Container */}
-      <Box
-        className="admin-grid-container"
-        sx={{
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "1fr",
-            sm: "repeat(2, 1fr)",
-            md: "repeat(4, 1fr)",
-          },
-          gap: 3,
-        }}
-      >
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
         <StatCard
           title="Total Users"
           value="1,285"
-          bgColor="#e3f2fd"
+          bgColor="#f0fdf4"
           trendText="+12.5%"
           trendSubtext="Since last month"
-          icon={PeopleAltIcon}
+          icon={Users}
         />
 
         <StatCard
           title="Tasks Completed"
           value="824"
-          bgColor="#c8e6c9"
+          bgColor="#ecfdf5"
           trendText="+8.2%"
           trendSubtext="Since last week"
-          icon={TaskAltIcon}
+          icon={CheckSquare}
         />
 
         <StatCard
           title="Total Items"
           value="452"
-          bgColor="#fff9c4"
+          bgColor="#fffbeb"
           trendText="+5.3%"
           trendSubtext="Since last month"
-          icon={ShoppingBagIcon}
+          icon={ShoppingBag}
         />
 
         <StatCard
           title="Total Revenue"
           value="$28,450"
-          bgColor="#ffe0b2"
+          bgColor="#fff7ed"
           trendText="+16.8%"
           trendSubtext="Since last month"
         />
-      </Box>
+      </div>
 
       {/* Charts and Recent Activities Grid */}
-      <Box
-        className="admin-grid-container"
-        sx={{
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "1fr",
-            md: "2fr 1fr",
-          },
-          gap: 3,
-          mt: 3,
-        }}
-      >
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Charts */}
-        <Paper className="admin-chart-container" sx={{ p: 3 }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-            <Typography variant="h6">Activity Overview</Typography>
-            <Button size="small" variant="outlined">
+        <div className="md:col-span-2 bg-white border border-gray-100 rounded-xl shadow-sm p-6 space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold text-gray-950">Activity Overview</h3>
+            <button className="px-3 py-1.5 border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium rounded-lg text-sm transition-colors duration-150">
               View Details
-            </Button>
-          </Box>
+            </button>
+          </div>
           <SimpleLineChart />
-        </Paper>
+        </div>
 
         {/* Recent Activities */}
-        <RecentActivityList recentActivities={recentActivities} loading={loading} />
-      </Box>
-    </Box>
+        <div className="md:col-span-1">
+          <RecentActivityList recentActivities={recentActivities} loading={loading} />
+        </div>
+      </div>
+    </div>
   );
 }

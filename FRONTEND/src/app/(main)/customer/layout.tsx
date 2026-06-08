@@ -1,8 +1,6 @@
 "use client";
 
 import "@/src/styles/pages/customer.css";
-
-import { Box } from "@mui/material";
 import React, { useState } from "react";
 
 import ProtectedRoute from "@/src/components/common/ProtectedRoute";
@@ -28,13 +26,7 @@ export default function CustomerLayout({
 
   return (
     <ProtectedRoute requiredRole={["Customer", "Admin"]}>
-      <Box
-        sx={{
-          display: "flex",
-          minHeight: "100vh",
-          position: "relative",
-        }}
-      >
+      <div className="flex min-h-screen relative bg-gray-50">
         <CustomerAppBar
           open={open}
           drawerWidth={drawerWidth}
@@ -47,21 +39,10 @@ export default function CustomerLayout({
           handleDrawerToggle={handleDrawerToggle}
           userInfo={userInfo}
         />
-        <Box
-          component="main"
-          sx={{
-            flexGrow: 1,
-            p: { xs: 2, sm: 3 },
-            width: "100%",
-            mt: "64px",
-            backgroundColor: "var(--background-light)",
-            position: "relative",
-            zIndex: 1,
-          }}
-        >
+        <main className="flex-1 w-full p-4 sm:p-6 mt-16 relative z-10 overflow-x-hidden">
           {children}
-        </Box>
-      </Box>
+        </main>
+      </div>
     </ProtectedRoute>
   );
 }

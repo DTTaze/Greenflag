@@ -3,10 +3,10 @@
 import React, { useCallback, useState } from "react";
 
 import {
-  createProductApi,
-  deleteProductApi,
-  purchaseItemApi,
-  updateProductApi,
+  createProduct,
+  deleteProduct,
+  purchaseItem,
+  updateProduct,
 } from "@/src/utils/api";
 
 export interface MarketplaceItem {
@@ -107,7 +107,7 @@ export function useMarketplaceCrud({
           receiver_information_id: shippingInfo.receiver_information_id,
         };
 
-        const response = await purchaseItemApi(
+        const response = await purchaseItem(
           auth.user.id,
           selectedItem.id,
           purchaseData,
@@ -167,7 +167,7 @@ export function useMarketplaceCrud({
       return;
     }
     try {
-      const response = await deleteProductApi(itemId);
+      const response = await deleteProduct(itemId);
       if (response?.data) {
         setMyItems((prev) => prev.filter((item) => item.id !== itemId));
         setSelectedItem(null);
@@ -223,7 +223,7 @@ export function useMarketplaceCrud({
           return;
         }
 
-        const response = await updateProductApi(itemToEdit.id, formDataToSend);
+        const response = await updateProduct(itemToEdit.id, formDataToSend);
         if (response?.data) {
           const updatedProduct = {
             ...itemToEdit,
@@ -251,7 +251,7 @@ export function useMarketplaceCrud({
           alert("Cập nhật sản phẩm thất bại!");
         }
       } else {
-        const response = await createProductApi(formDataToSend);
+        const response = await createProduct(formDataToSend);
         if (response?.data) {
           const newItem = {
             ...productData,

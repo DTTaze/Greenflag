@@ -4,11 +4,11 @@ import { useNotification } from "@/src/components/ui/NotificationProvider";
 import { useAuthStore } from "@/src/store/auth/authStore";
 import {
   getBuyerTransactionHistory,
-  getQRApi,
-  getUserApi,
-  logoutUserApi,
-  updateUserApi,
-  uploadUserAvatarApi,
+  getQR,
+  getUser,
+  logoutUser,
+  updateUser,
+  uploadUserAvatar,
 } from "@/src/utils/api";
 
 export default function useCustomerProfile() {
@@ -38,7 +38,7 @@ export default function useCustomerProfile() {
     const fetchUserData = async () => {
       setLoadingUserData(true);
       try {
-        const response = await getUserApi();
+        const response = await getUser();
         if (response?.data) {
           setUserData(response.data);
           setFormData({
@@ -83,7 +83,7 @@ export default function useCustomerProfile() {
 
   const generateQRCode = async () => {
     try {
-      const response = await getQRApi(userInfo?.public_id || "");
+      const response = await getQR(userInfo?.public_id || "");
       if (response?.data) {
         setQrCode(response.data);
         setShowQrDialog(true);
@@ -106,7 +106,7 @@ export default function useCustomerProfile() {
     if (e) e.preventDefault();
     setLoading(true);
     try {
-      const response = await updateUserApi(userInfo?.id, formData);
+      const response = await updateUser(userInfo?.id, formData);
       if (response?.data) {
         notify("success", "Profile updated successfully!");
         setEditMode(false);
@@ -137,7 +137,7 @@ export default function useCustomerProfile() {
 
     setAvatarUploading(true);
     try {
-      const response = await uploadUserAvatarApi(userInfo?.id, file);
+      const response = await uploadUserAvatar(userInfo?.id, file);
       if (response?.data) {
         notify("success", "Profile picture updated successfully!");
         window.location.reload();
@@ -160,7 +160,7 @@ export default function useCustomerProfile() {
 
   const handleLogout = async () => {
     try {
-      const response = await logoutUserApi();
+      const response = await logoutUser();
       if (response?.success) {
         notify("success", "Đăng xuất thành công");
         window.location.href = "/";

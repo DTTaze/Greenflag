@@ -1,4 +1,4 @@
-import { getAllTasksByTypeNameApi, getTaskByIdApi } from "@/src/utils/api";
+import { getAllTasksByTypeName, getTaskById } from "@/src/utils/api";
 
 // Helper function to fetch tasks and map with user tasks progress
 export const fetchTasksHelper = async (
@@ -6,10 +6,10 @@ export const fetchTasksHelper = async (
   userTasks,
   excludeCompleted = false,
 ) => {
-  const TasksByTypeName = await getAllTasksByTypeNameApi(typeName);
+  const TasksByTypeName = await getAllTasksByTypeName(typeName);
   const tasksData = await Promise.all(
     TasksByTypeName.data.map(
-      async (task) => (await getTaskByIdApi(task.id)).data,
+      async (task) => (await getTaskById(task.id)).data,
     ),
   );
 
@@ -26,7 +26,7 @@ export const fetchTasksHelper = async (
         TasksByTypeName.data.some((task) => task.id === userTask.task_id),
       )
       .map(async (userTask) => {
-        const taskData = await getTaskByIdApi(userTask.task_id);
+        const taskData = await getTaskById(userTask.task_id);
         const task = taskData.data;
         return task
           ? {

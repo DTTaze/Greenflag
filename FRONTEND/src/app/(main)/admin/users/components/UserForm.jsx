@@ -1,12 +1,16 @@
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-} from "@mui/material";
+"use client";
+
 import React, { useEffect, useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/src/components/ui/dialog";
+import { Input } from "@/src/components/ui/input";
+import { Label } from "@/src/components/ui/label";
+import { Button } from "@/src/components/ui/button";
 
 export default function UserForm({
   open,
@@ -23,6 +27,7 @@ export default function UserForm({
     email: "",
     phone_number: "",
     coins: "",
+    password: "",
   });
 
   useEffect(() => {
@@ -30,12 +35,13 @@ export default function UserForm({
       setFormData({
         id: initialData?.id || null,
         role_id: initialData?.role_id || null,
-        role_name: initialData?.roles?.name || null,
+        role_name: initialData?.roles?.name || "",
         full_name: initialData?.full_name || "",
         username: initialData?.username || "",
         email: initialData?.email || "",
         phone_number: initialData?.phone_number || "",
         coins: initialData?.coins?.amount || "",
+        password: "",
       });
     } else {
       setFormData({
@@ -47,6 +53,7 @@ export default function UserForm({
         email: "",
         phone_number: "",
         coins: "",
+        password: "",
       });
     }
   }, [initialData, mode]);
@@ -65,89 +72,124 @@ export default function UserForm({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-      <DialogTitle>{mode === "add" ? "Add New User" : "Edit User"}</DialogTitle>
-      <form onSubmit={onSubmit}>
-        <DialogContent dividers>
-          <TextField
-            margin="dense"
-            label="Họ tên"
-            name="full_name"
-            value={formData.full_name}
-            onChange={handleChange}
-            fullWidth
-            required
-          />
-          <TextField
-            margin="dense"
-            label="Tên người dùng"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            fullWidth
-            required
-          />
-          <TextField
-            margin="dense"
-            label="Email"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-            fullWidth
-            required
-          />
-          {mode === "add" && (
-            <TextField
-              margin="dense"
-              label="Mật khẩu"
-              name="password"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-              fullWidth
-              required
-            />
-          )}
-          <TextField
-            margin="dense"
-            label="Số điện thoại"
-            name="phone_number"
-            value={formData.phone_number}
-            onChange={handleChange}
-            fullWidth
-          />
-          {mode === "edit" && (
-            <>
-              <TextField
-                margin="dense"
-                label="Số xu"
-                name="coins"
-                value={formData.coins}
-                fullWidth
-                disabled
-              />
-              <TextField
-                margin="dense"
-                label="Vai trò"
-                name="role_name"
-                value={formData.role_name}
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
+      <DialogContent className="sm:max-w-[500px] bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+        <DialogHeader className="mb-4">
+          <DialogTitle className="text-lg font-bold text-gray-900">
+            {mode === "add" ? "Add New User" : "Edit User"}
+          </DialogTitle>
+        </DialogHeader>
+
+        <form onSubmit={onSubmit} className="space-y-4">
+          <div className="space-y-3">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="full_name">Họ tên</Label>
+              <Input
+                id="full_name"
+                name="full_name"
+                value={formData.full_name}
                 onChange={handleChange}
-                fullWidth
-                disabled
+                required
+                placeholder="Nguyễn Văn A"
               />
-            </>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="secondary">
-            Cancel
-          </Button>
-          <Button type="submit" variant="contained" color="primary">
-            {mode === "add" ? "Create" : "Save Changes"}
-          </Button>
-        </DialogActions>
-      </form>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="username">Tên người dùng</Label>
+              <Input
+                id="username"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                required
+                placeholder="nguyenvana"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                placeholder="example@gmail.com"
+              />
+            </div>
+
+            {mode === "add" && (
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="password">Mật khẩu</Label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  placeholder="••••••••"
+                />
+              </div>
+            )}
+
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="phone_number">Số điện thoại</Label>
+              <Input
+                id="phone_number"
+                name="phone_number"
+                value={formData.phone_number}
+                onChange={handleChange}
+                placeholder="0987654321"
+              />
+            </div>
+
+            {mode === "edit" && (
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="coins">Số xu</Label>
+                  <Input
+                    id="coins"
+                    name="coins"
+                    value={formData.coins}
+                    disabled
+                    className="bg-gray-50 border-gray-200"
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="role_name">Vai trò</Label>
+                  <Input
+                    id="role_name"
+                    name="role_name"
+                    value={formData.role_name}
+                    disabled
+                    className="bg-gray-50 border-gray-200"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="mt-6">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleClose}
+              className="mr-2"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="default"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
+              {mode === "add" ? "Create" : "Save Changes"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
     </Dialog>
   );
 }

@@ -1,33 +1,18 @@
-import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import {
-  Box,
-  Button,
-  Chip,
-  IconButton,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-} from "@mui/material";
 import React from "react";
+import { Plus, Trash2, Edit } from "lucide-react";
+import { Button } from "@/src/components/ui/button";
 
 const ItemTable = ({ items, onEdit, onDelete, onAdd }) => {
-  const getStatusColor = (status) => {
+  const getBadgeClass = (status) => {
     switch (status) {
       case "available":
-        return "success";
+        return "bg-emerald-50 text-emerald-700 border-emerald-250";
       case "sold_out":
-        return "error";
+        return "bg-red-50 text-red-700 border-red-250";
       case "pending":
-        return "warning";
+        return "bg-amber-50 text-amber-700 border-amber-250";
       default:
-        return "default";
+        return "bg-gray-50 text-gray-700 border-gray-200";
     }
   };
 
@@ -45,90 +30,92 @@ const ItemTable = ({ items, onEdit, onDelete, onAdd }) => {
   };
 
   return (
-    <TableContainer component={Paper} className="customer-table">
-      <Table sx={{ minWidth: 650 }} aria-label="items table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Image</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell align="right">Price</TableCell>
-            <TableCell align="right">Stock</TableCell>
-            <TableCell align="right">Daily Limit</TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell align="right">Actions</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {items.length > 0 ? (
-            items.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell>
-                  <Box
-                    component="img"
-                    src={item.images?.[0] || "/placeholder-image.jpg"}
-                    alt={item.name}
-                    sx={{
-                      width: 50,
-                      height: 50,
-                      objectFit: "cover",
-                      borderRadius: 1,
-                    }}
-                  />
-                </TableCell>
-                <TableCell sx={{ fontWeight: 500 }}>{item.name}</TableCell>
-                <TableCell align="right">${item.price.toFixed(2)}</TableCell>
-                <TableCell align="right">{item.stock}</TableCell>
-                <TableCell align="right">
-                  {item.purchase_limit_per_day}
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    label={getStatusLabel(item.status)}
-                    size="small"
-                    color={getStatusColor(item.status)}
-                  />
-                </TableCell>
-
-                <TableCell align="right">
-                  {item.status === "available" && (
-                    <IconButton
-                      size="small"
-                      onClick={() => onEdit(item)}
-                      sx={{ color: "var(--primary-green)" }}
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                  )}
-                  <IconButton
-                    size="small"
-                    onClick={() => onDelete(item.id)}
-                    sx={{ color: "var(--error)" }}
+    <div className="w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+      <div className="w-full overflow-x-auto">
+        <table className="w-full border-collapse text-left text-sm text-gray-500">
+          <thead className="bg-gray-50 text-xs font-semibold uppercase text-gray-700 border-b border-gray-200">
+            <tr>
+              <th scope="col" className="px-6 py-4">Image</th>
+              <th scope="col" className="px-6 py-4">Name</th>
+              <th scope="col" className="px-6 py-4 text-right">Price</th>
+              <th scope="col" className="px-6 py-4 text-right">Stock</th>
+              <th scope="col" className="px-6 py-4 text-right">Daily Limit</th>
+              <th scope="col" className="px-6 py-4">Status</th>
+              <th scope="col" className="px-6 py-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200 border-t border-gray-200">
+            {items.length > 0 ? (
+              items.map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-4">
+                    <img
+                      src={item.images?.[0] || "/placeholder-image.jpg"}
+                      alt={item.name}
+                      className="w-12 h-12 object-cover rounded-md border border-gray-100"
+                    />
+                  </td>
+                  <td className="px-6 py-4 font-semibold text-gray-800">
+                    {item.name}
+                  </td>
+                  <td className="px-6 py-4 text-right text-gray-750 font-medium">
+                    ${item.price.toFixed(2)}
+                  </td>
+                  <td className="px-6 py-4 text-right text-gray-650">
+                    {item.stock}
+                  </td>
+                  <td className="px-6 py-4 text-right text-gray-650">
+                    {item.purchase_limit_per_day}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${getBadgeClass(item.status)}`}>
+                      {getStatusLabel(item.status)}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex justify-end gap-2">
+                      {item.status === "available" && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                          onClick={() => onEdit(item)}
+                        >
+                          <Edit size={16} />
+                        </Button>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => onDelete(item.id)}
+                      >
+                        <Trash2 size={16} />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={7} className="px-6 py-12 text-center">
+                  <p className="text-gray-500 text-sm">
+                    No items found. Try adjusting your filters or add a new item.
+                  </p>
+                  <Button
+                    onClick={onAdd}
+                    className="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
                   >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={7} align="center" sx={{ py: 3 }}>
-                <Typography variant="body2" color="text.secondary">
-                  No items found. Try adjusting your filters or add a new item.
-                </Typography>
-                <Button
-                  className="customer-button"
-                  startIcon={<AddIcon />}
-                  onClick={onAdd}
-                  sx={{ mt: 2 }}
-                >
-                  Add Item
-                </Button>
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
+                    <Plus size={16} />
+                    Add Item
+                  </Button>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 };
 

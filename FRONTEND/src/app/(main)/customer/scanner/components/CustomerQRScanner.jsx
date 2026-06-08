@@ -1,24 +1,16 @@
-import {
-  Alert,
-  Box,
-  Button,
-  Grid,
-  Paper,
-  Snackbar,
-  Tab,
-  Tabs,
-  Typography,
-} from "@mui/material";
-import { UserPlus } from "lucide-react";
+"use client";
+
 import React, { useEffect, useState } from "react";
+import { UserPlus, Info, AlertTriangle } from "lucide-react";
 
 import {
-  CheckInUserByUserIdApi,
-  CheckOutUserByUserIdApi,
-  getEventUserByEventIdApi,
-  getUserByIDPublicApi,
+  checkInUser,
+  checkOutUser,
+  getEventUsersByEventId,
+  getUserByIDPublic,
 } from "@/src/utils/api";
 
+import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 import EventSelector, { getEventNameById } from "./EventSelector";
 import HowItWorks from "./HowItWorks";
 import ManualAddDialog from "./ManualAddDialog";
@@ -38,44 +30,50 @@ export default function CustomerQRScanner() {
   const [successMessage, setSuccessMessage] = useState("");
   const [manualAddOpen, setManualAddOpen] = useState(false);
   const [events, setEvents] = useState([]);
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState("0");
 
   useEffect(() => {
     injectQRScannerStyles();
   }, []);
 
   // Fetch scanned users when event changes
-  useEffect(() => {
-    const fetchScannedUsers = async () => {
-      if (selectedEvent) {
-        try {
-          const response = await getEventUserByEventIdApi(selectedEvent);
-          console.log("Fetched scanned users: ", response);
-          const users = response.data.map((user) => ({
-            id: user.user_id,
-            name: user.User.full_name,
-            email: user.User.email,
-            avatar:
-              user.User.avatar_url ||
-              `https://mui.com/static/images/avatar/${
-                Math.floor(Math.random() * 8) + 1
-              }.jpg`,
-            scannedAt: user.joined_at || new Date().toISOString(),
-            eventId: selectedEvent,
-            eventTitle: user.Event.title,
-          }));
-          setScannedUsers(users);
-        } catch (error) {
-          console.error("Error fetching scanned users:", error);
-          setError("Failed to fetch scanned users");
-        }
-      } else {
-        setScannedUsers([]);
+  const fetchScannedUsers = async () => {
+    if (selectedEvent) {
+      try {
+        const response = await getEventUsersByEventId(selectedEvent);
+        console.log("Fetched scanned users: ", response);
+        const users = response.data.map((user) => ({
+          id: user.user_id,
+          name: user.User.full_name,
+          email: user.User.email,
+          avatar: user.User.avatar_url || null,
+          scannedAt: user.joined_at || new Date().toISOString(),
+          eventId: selectedEvent,
+          eventTitle: user.Event.title,
+        }));
+        setScannedUsers(users);
+      } catch (error) {
+        console.error("Error fetching scanned users:", error);
+        setError("Failed to fetch scanned users");
       }
-    };
+    } else {
+      setScannedUsers([]);
+    }
+  };
 
+  useEffect(() => {
     fetchScannedUsers();
   }, [selectedEvent]);
+
+  // Success message auto-hide timer
+  useEffect(() => {
+    if (showSuccess) {
+      const timer = setTimeout(() => {
+        setShowSuccess(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccess]);
 
   const handleEventChange = (event) => {
     setSelectedEvent(event.target.value);
@@ -101,7 +99,7 @@ export default function CustomerQRScanner() {
         public_id,
       );
 
-      const userResponse = await getUserByIDPublicApi(public_id);
+      const userResponse = await getUserByIDPublic(public_id);
       const userData = userResponse.data;
       console.log(
         "userdata.id after response in CustomerQRScanner: ",
@@ -109,29 +107,16 @@ export default function CustomerQRScanner() {
       );
 
       if (isCheckout) {
-        await CheckOutUserByUserIdApi(userData.id, selectedEvent);
+        await checkOutUser(userData.id, selectedEvent);
       } else {
-        await CheckInUserByUserIdApi(userData.id, selectedEvent);
+        await checkInUser(userData.id, selectedEvent);
       }
 
       setScan(false);
       setLoad(false);
 
-      const updatedResponse = await getEventUserByEventIdApi(selectedEvent);
-      const updatedUsers = updatedResponse.data.map((user) => ({
-        id: user.user_id,
-        name: user.User.full_name,
-        email: user.User.email,
-        avatar:
-          user.User.avatar_url ||
-          `https://mui.com/static/images/avatar/${
-            Math.floor(Math.random() * 8) + 1
-          }.jpg`,
-        scannedAt: user.joined_at || new Date().toISOString(),
-        eventId: selectedEvent,
-        eventTitle: user.Event.title,
-      }));
-      setScannedUsers(updatedUsers);
+      // Refresh list
+      await fetchScannedUsers();
 
       const eventName = getEventNameById(selectedEvent, events);
       setSuccessMessage(
@@ -140,6 +125,7 @@ export default function CustomerQRScanner() {
           : `Đã thêm ${userData.full_name} vào sự kiện: ${eventName}`,
       );
       setShowSuccess(true);
+      setError("");
     } catch (error) {
       console.error(
         `Error during ${isCheckout ? "checkout " : ""}scan process:`,
@@ -159,8 +145,6 @@ export default function CustomerQRScanner() {
 
   const handleRemoveUser = async (userId) => {
     try {
-      // Here you would need to implement the remove user API call
-      // For now, we'll just update the local state
       setScannedUsers(scannedUsers.filter((user) => user.id !== userId));
     } catch (error) {
       console.error("Error removing user:", error);
@@ -181,121 +165,117 @@ export default function CustomerQRScanner() {
   const handleCheckoutScanResult = (public_id) =>
     handleGenericScan(public_id, true);
 
-  const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
-  };
-
   return (
-    <Box className="customer-content-container">
-      <Box className="customer-section">
-        <Typography className="customer-section-title">
-          QR Code Scanner
-        </Typography>
-        <Typography paragraph>
-          <br />
+    <div className="space-y-6">
+      <div className="space-y-1">
+        <h1 className="text-2xl font-bold text-gray-950">QR Code Scanner</h1>
+        <p className="text-sm text-gray-500 max-w-2xl">
           Scan QR codes to check in or check out users from events. Select an
           event and start scanning, or add users manually.
-        </Typography>
+        </p>
+      </div>
 
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={7}>
-            <Paper
-              elevation={0}
-              sx={{
-                p: 2,
-                mb: 3,
-                border: "1px solid var(--light-green)",
-                borderRadius: "8px",
-              }}
-            >
-              <Typography variant="h6" gutterBottom>
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+        {/* Left Side: Scanner controls */}
+        <div className="md:col-span-7 bg-white border border-gray-100 rounded-xl shadow-sm p-6 flex flex-col justify-between">
+          <div className="space-y-6">
+            {/* Event Selector */}
+            <div className="space-y-2">
+              <h4 className="font-semibold text-sm text-gray-900">
                 1. Select an Event
-              </Typography>
+              </h4>
               <EventSelector
                 selectedEvent={selectedEvent}
                 onEventChange={handleEventChange}
                 onEventsLoaded={setEvents}
               />
+            </div>
 
-              <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+            {/* Choose Action Tabs */}
+            <div className="space-y-3">
+              <h4 className="font-semibold text-sm text-gray-900">
                 2. Choose Action
-              </Typography>
-              <Tabs value={activeTab} onChange={handleTabChange} sx={{ mb: 2 }}>
-                <Tab label="Check In" />
-                <Tab label="Check Out" />
+              </h4>
+              <Tabs
+                value={activeTab}
+                onValueChange={setActiveTab}
+                className="w-full"
+              >
+                <TabsList className="bg-gray-100 p-1 rounded-lg flex gap-1">
+                  <TabsTrigger
+                    value="0"
+                    className="flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-gray-500 data-[state=active]:bg-white data-[state=active]:text-emerald-700 data-[state=active]:shadow-sm focus:outline-none"
+                  >
+                    Check In
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="1"
+                    className="flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-gray-500 data-[state=active]:bg-white data-[state=active]:text-emerald-700 data-[state=active]:shadow-sm focus:outline-none"
+                  >
+                    Check Out
+                  </TabsTrigger>
+                </TabsList>
               </Tabs>
+            </div>
 
-              <Typography variant="h6" gutterBottom>
-                {activeTab === 0 ? "Check In User" : "Check Out User"}
-              </Typography>
+            {/* QR Scanner viewport */}
+            <div className="space-y-3 pt-2">
+              <h4 className="font-semibold text-sm text-gray-800 text-center">
+                {activeTab === "0" ? "Check In User" : "Check Out User"}
+              </h4>
               <QRScanner
-                scanning={activeTab === 0 ? scanning : checkoutScanning}
-                loading={activeTab === 0 ? loading : checkoutLoading}
+                scanning={activeTab === "0" ? scanning : checkoutScanning}
+                loading={activeTab === "0" ? loading : checkoutLoading}
                 onStartScan={
-                  activeTab === 0 ? handleStartScan : handleCheckoutStartScan
+                  activeTab === "0" ? handleStartScan : handleCheckoutStartScan
                 }
                 onStopScan={
-                  activeTab === 0 ? handleStopScan : handleCheckoutStopScan
+                  activeTab === "0" ? handleStopScan : handleCheckoutStopScan
                 }
                 onScanResult={
-                  activeTab === 0 ? handleScanResult : handleCheckoutScanResult
+                  activeTab === "0" ? handleScanResult : handleCheckoutScanResult
                 }
                 disabled={!selectedEvent}
               />
+            </div>
 
-              {!selectedEvent && (
-                <Alert severity="info" sx={{ mt: 2 }}>
-                  Please select an event before scanning
-                </Alert>
-              )}
+            {/* Alert banners */}
+            {!selectedEvent && (
+              <div className="flex gap-2.5 items-start bg-amber-50 border border-amber-100 text-amber-800 p-3 rounded-lg text-xs">
+                <Info size={16} className="text-amber-600 shrink-0 mt-0.5" />
+                <span>Please select an event before scanning</span>
+              </div>
+            )}
 
-              {error && (
-                <Alert severity="error" sx={{ mt: 2 }}>
-                  {error}
-                </Alert>
-              )}
+            {error && (
+              <div className="flex gap-2.5 items-start bg-rose-50 border border-rose-100 text-rose-800 p-3 rounded-lg text-xs">
+                <AlertTriangle size={16} className="text-rose-600 shrink-0 mt-0.5" />
+                <span>{error}</span>
+              </div>
+            )}
+          </div>
 
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  gap: 2,
-                  mt: 2,
-                }}
-              >
-                <Button
-                  className="customer-button-secondary"
-                  startIcon={<UserPlus size={20} />}
-                  onClick={() => setManualAddOpen(true)}
-                >
-                  Add Manually
-                </Button>
-              </Box>
-            </Paper>
-          </Grid>
-
-          <Grid item xs={12} md={5}>
-            <Paper
-              elevation={0}
-              sx={{
-                p: 2,
-                height: "100%",
-                border: "1px solid var(--light-green)",
-                borderRadius: "8px",
-                display: "flex",
-                flexDirection: "column",
-              }}
+          <div className="flex justify-center mt-6">
+            <button
+              onClick={() => setManualAddOpen(true)}
+              className="flex items-center justify-center gap-2 px-4 py-2 border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium rounded-lg text-sm transition-colors shadow-sm"
             >
-              <ScannedUsersList
-                scannedUsers={scannedUsers}
-                onRemoveUser={handleRemoveUser}
-              />
-            </Paper>
-          </Grid>
-        </Grid>
+              <UserPlus size={16} />
+              <span>Add Manually</span>
+            </button>
+          </div>
+        </div>
 
-        <HowItWorks />
-      </Box>
+        {/* Right Side: Scanned list */}
+        <div className="md:col-span-5 bg-white border border-gray-100 rounded-xl shadow-sm p-6 flex flex-col justify-between">
+          <ScannedUsersList
+            scannedUsers={scannedUsers}
+            onRemoveUser={handleRemoveUser}
+          />
+        </div>
+      </div>
+
+      <HowItWorks />
 
       <ManualAddDialog
         open={manualAddOpen}
@@ -309,19 +289,18 @@ export default function CustomerQRScanner() {
         onError={setError}
       />
 
-      <Snackbar
-        open={showSuccess}
-        autoHideDuration={6000}
-        onClose={() => setShowSuccess(false)}
-      >
-        <Alert
-          onClose={() => setShowSuccess(false)}
-          severity="success"
-          sx={{ width: "100%" }}
-        >
-          {successMessage}
-        </Alert>
-      </Snackbar>
-    </Box>
+      {/* Floating success banner toast */}
+      {showSuccess && (
+        <div className="fixed bottom-4 left-4 z-50 bg-emerald-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 text-sm transition-all duration-300">
+          <span>{successMessage}</span>
+          <button
+            onClick={() => setShowSuccess(false)}
+            className="hover:text-emerald-100 font-bold ml-2 text-base"
+          >
+            &times;
+          </button>
+        </div>
+      )}
+    </div>
   );
 }

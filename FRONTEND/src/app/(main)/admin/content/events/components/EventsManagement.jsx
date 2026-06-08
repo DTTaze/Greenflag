@@ -1,11 +1,12 @@
-import { Box } from "@mui/material";
+"use client";
+
 import React, { useEffect, useState } from "react";
 
 import {
-  createEventApi,
-  deleteEventApi,
-  getAllEventsApi,
-  updateEventApi,
+  createEvent,
+  deleteEvent,
+  getAllEvents,
+  updateEvent,
 } from "@/src/utils/api";
 
 import DataTable from "../../../components/DataTable";
@@ -19,24 +20,24 @@ export default function EventsManagement() {
   const [editData, setEditData] = useState(null);
   const [formMode, setFormMode] = useState("add");
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const res = await getAllEventsApi();
-        if (res.success) {
-          setEvents(res.data);
-        } else {
-          console.log(res.error);
-        }
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setLoading(false);
+  const fetchEvents = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllEvents();
+      if (res.success) {
+        setEvents(res.data);
+      } else {
+        console.log(res.error);
       }
-    };
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchData();
+  useEffect(() => {
+    fetchEvents();
   }, []);
 
   const handleAddEvent = () => {
@@ -52,9 +53,9 @@ export default function EventsManagement() {
   };
 
   const handleDeleteEvent = async (event) => {
-    if (confirm("Bạn có chắc chắn muốn xóa sự kiện này không?")) {
+    if (window.confirm("Bạn có chắc chắn muốn xóa sự kiện này không?")) {
       try {
-        const res = await deleteEventApi(event.id);
+        const res = await deleteEvent(event.id);
         if (res.success) {
           alert("Xóa sự kiện thành công!");
           setEvents((prev) => prev.filter((e) => e.id !== event.id));
@@ -71,26 +72,18 @@ export default function EventsManagement() {
   const handleSubmitEvent = async (data, mode) => {
     try {
       if (mode === "add") {
-        const result = await createEventApi(data, data.images);
+        const result = await createEvent(data, data.images);
         if (result.success) {
           alert("Thêm sự kiện thành công!");
-          // Refresh events list
-          const res = await getAllEventsApi();
-          if (res.success) {
-            setEvents(res.data);
-          }
+          fetchEvents();
         } else {
           alert("Thêm sự kiện thất bại!");
         }
       } else if (mode === "edit") {
-        const result = await updateEventApi(data.id, data, data.images);
+        const result = await updateEvent(data.id, data, data.images);
         if (result.success) {
           alert("Cập nhật sự kiện thành công!");
-          // Refresh events list
-          const res = await getAllEventsApi();
-          if (res.success) {
-            setEvents(res.data);
-          }
+          fetchEvents();
         } else {
           alert("Cập nhật sự kiện thất bại!");
         }
@@ -103,7 +96,7 @@ export default function EventsManagement() {
   };
 
   return (
-    <Box>
+    <div>
       <DataTable
         title="Events"
         columns={eventsColumns}
@@ -120,6 +113,6 @@ export default function EventsManagement() {
         initialData={editData}
         mode={formMode}
       />
-    </Box>
+    </div>
   );
 }

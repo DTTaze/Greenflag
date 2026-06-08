@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { getShippingAccountsByUserApi } from "@/src/utils/api";
+import { getShippingAccountsByUser } from "@/src/utils/api";
 
 import useLocationSelector from "./useLocationSelector";
 
@@ -134,7 +134,7 @@ export default function useCreateOrderState({
 
   const handleUseTokenForShipping = async () => {
     try {
-      const accountsResponse = await getShippingAccountsByUserApi();
+      const accountsResponse = await getShippingAccountsByUser();
       if (
         !accountsResponse ||
         !accountsResponse.data ||

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 
 import {
-  createReceiverInfoAPI,
-  getAllDistrictsByProvinceApi,
-  getAllProvincesApi,
-  getAllWardsByDistrictApi,
-  SetDefaultReceiverInfoByIdAPI,
-  updateReceiverInfoByIdAPI,
+  createReceiverInfo,
+  getAllDistrictsByProvince,
+  getAllProvinces,
+  getAllWardsByDistrict,
+  setDefaultReceiverInfoById,
+  updateReceiverInfoById,
 } from "@/src/utils/api";
 
 export default function useAddressForm({
@@ -41,7 +41,7 @@ export default function useAddressForm({
       setIsLoading(true);
       setErrorMessage("");
       try {
-        const provResponse = await getAllProvincesApi(token);
+        const provResponse = await getAllProvinces(token);
         if (provResponse.code !== 200) {
           setErrorMessage("Failed to fetch provinces. Please try again.");
           setIsLoading(false);
@@ -58,7 +58,7 @@ export default function useAddressForm({
           let matchedDistrictId = "";
           let districtList = [];
           if (matchedProvince) {
-            const distResponse = await getAllDistrictsByProvinceApi(
+            const distResponse = await getAllDistrictsByProvince(
               matchedProvince.ProvinceID,
               token,
             );
@@ -77,7 +77,7 @@ export default function useAddressForm({
           let matchedWardCode = "";
           let wardList = [];
           if (matchedDistrictId) {
-            const wardResponse = await getAllWardsByDistrictApi(
+            const wardResponse = await getAllWardsByDistrict(
               matchedDistrictId,
               token,
             );
@@ -137,7 +137,7 @@ export default function useAddressForm({
         Number.isInteger(newAddress.province)
       ) {
         try {
-          const response = await getAllDistrictsByProvinceApi(
+          const response = await getAllDistrictsByProvince(
             newAddress.province,
             token,
           );
@@ -163,7 +163,7 @@ export default function useAddressForm({
         Number.isInteger(newAddress.district)
       ) {
         try {
-          const response = await getAllWardsByDistrictApi(
+          const response = await getAllWardsByDistrict(
             newAddress.district,
             token,
           );
@@ -276,7 +276,7 @@ export default function useAddressForm({
     try {
       let savedAddress;
       if (editingAddress) {
-        const response = await updateReceiverInfoByIdAPI(
+        const response = await updateReceiverInfoById(
           editingAddress.id,
           addressData,
         );
@@ -284,14 +284,14 @@ export default function useAddressForm({
           savedAddress = { ...response.data, id: editingAddress.id };
         }
       } else {
-        const response = await createReceiverInfoAPI(addressData);
+        const response = await createReceiverInfo(addressData);
         if (response.data) {
           savedAddress = response.data;
         }
       }
 
       if (savedAddress && newAddress.isDefault) {
-        const defaultResponse = await SetDefaultReceiverInfoByIdAPI(
+        const defaultResponse = await setDefaultReceiverInfoById(
           savedAddress.id,
         );
         if (defaultResponse.data) {

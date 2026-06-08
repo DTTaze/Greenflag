@@ -2,9 +2,9 @@ import { useState } from "react";
 
 import {
   getSellerTransactionHistory,
-  getTransactionByIdApi,
-  transactionMakeDicisionApi,
-  updateShippingOrderApi,
+  getTransactionById,
+  makeTransactionDecision,
+  updateShippingOrder,
 } from "@/src/utils/api";
 
 export default function useTransactions({
@@ -45,7 +45,7 @@ export default function useTransactions({
 
   const handleCancelOrder = async (transactionId) => {
     try {
-      const response = await transactionMakeDicisionApi(
+      const response = await makeTransactionDecision(
         transactionId,
         "rejected",
       );
@@ -61,7 +61,7 @@ export default function useTransactions({
 
   const handleConfirmOrder = async (transactionId) => {
     try {
-      const response = await transactionMakeDicisionApi(
+      const response = await makeTransactionDecision(
         transactionId,
         "accepted",
       );
@@ -77,7 +77,7 @@ export default function useTransactions({
 
   const handleViewDetails = async (transaction) => {
     try {
-      const response = await getTransactionByIdApi(transaction.id);
+      const response = await getTransactionById(transaction.id);
       if (response && response.data) {
         const transactionDetails = {
           ...response.data,
@@ -145,7 +145,7 @@ export default function useTransactions({
         note: buyerInfo.notes || selectedOrder.notes,
       };
 
-      await updateShippingOrderApi({
+      await updateShippingOrder({
         orderData: updateData,
         token: shippingAccount.token,
         shopId: shippingAccount.shop_id,
@@ -185,7 +185,7 @@ export default function useTransactions({
 
   const handleCreateOrderFromTransaction = async (transaction) => {
     try {
-      const response = await getTransactionByIdApi(transaction.id);
+      const response = await getTransactionById(transaction.id);
 
       if (response && response.data) {
         const transactionDetails = response.data;

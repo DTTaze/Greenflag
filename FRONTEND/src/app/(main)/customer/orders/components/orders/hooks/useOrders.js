@@ -1,11 +1,11 @@
 import { useState } from "react";
 
 import {
-  createDeliveryOrderFromTransactionApi,
-  createShippingOrderApi,
-  getAllShippingOrdersBySellerApi,
-  getShippingOrderDetailApi,
-  updateShippingOrderApi,
+  createDeliveryOrderFromTransaction,
+  createShippingOrder,
+  getAllShippingOrdersBySeller,
+  getShippingOrderDetail,
+  updateShippingOrder,
 } from "@/src/utils/api";
 
 import {
@@ -33,7 +33,7 @@ export default function useOrders({
   const fetchOrders = async () => {
     try {
       setIsLoadingOrders(true);
-      const response = await getAllShippingOrdersBySellerApi();
+      const response = await getAllShippingOrdersBySeller();
       if (response && response.data) {
         const formattedOrders = response.data.map((order) => {
           let status;
@@ -131,14 +131,14 @@ export default function useOrders({
       const selectedAccount = shippingAccounts[0];
       let response;
       if (isCreatingBasedOn && selectedOrder) {
-        response = await createDeliveryOrderFromTransactionApi(
+        response = await createDeliveryOrderFromTransaction(
           selectedOrder.id,
           newOrder,
           selectedAccount.token,
           selectedAccount.shop_id,
         );
       } else {
-        response = await createShippingOrderApi(
+        response = await createShippingOrder(
           newOrder,
           selectedAccount.token,
           selectedAccount.shop_id,
@@ -187,7 +187,7 @@ export default function useOrders({
         note: newOrder.note,
       };
 
-      await updateShippingOrderApi({
+      await updateShippingOrder({
         orderData: updateData,
         token: shippingAccount.token,
         shopId: shippingAccount.shop_id,
@@ -222,7 +222,7 @@ export default function useOrders({
         shippingAccounts.find((acc) => acc.is_default === true) ||
         shippingAccounts[0];
 
-      const response = await getShippingOrderDetailApi(
+      const response = await getShippingOrderDetail(
         transaction.orderCode,
         selectedAccount.token,
         selectedAccount.shop_id,

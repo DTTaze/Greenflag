@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
 import {
-  getAllDistrictsByProvinceApi,
-  getAllProvincesApi,
-  getAllWardsByDistrictApi,
-  getShippingAccountsByUserApi,
+  getAllDistrictsByProvince,
+  getAllProvinces,
+  getAllWardsByDistrict,
+  getShippingAccountsByUser,
 } from "@/src/utils/api";
 
 export default function useLocationSelector(
@@ -35,7 +35,7 @@ export default function useLocationSelector(
     const fetchProvinces = async () => {
       try {
         setLoadingProvinces(true);
-        const accountsResponse = await getShippingAccountsByUserApi();
+        const accountsResponse = await getShippingAccountsByUser();
         if (
           !accountsResponse ||
           !accountsResponse.data ||
@@ -51,7 +51,7 @@ export default function useLocationSelector(
         const defaultAccount =
           accountsResponse.data.find((acc) => acc.is_default) ||
           accountsResponse.data[0];
-        const response = await getAllProvincesApi(defaultAccount.token);
+        const response = await getAllProvinces(defaultAccount.token);
 
         if (response.code === 200) {
           setProvinces(
@@ -83,7 +83,7 @@ export default function useLocationSelector(
         setLoadingDistricts(true);
         setDistricts([]);
 
-        const accountsResponse = await getShippingAccountsByUserApi();
+        const accountsResponse = await getShippingAccountsByUser();
         if (
           !accountsResponse ||
           !accountsResponse.data ||
@@ -97,7 +97,7 @@ export default function useLocationSelector(
           accountsResponse.data.find((acc) => acc.is_default) ||
           accountsResponse.data[0];
 
-        const response = await getAllDistrictsByProvinceApi(
+        const response = await getAllDistrictsByProvince(
           provinceId,
           defaultAccount.token,
         );
@@ -129,7 +129,7 @@ export default function useLocationSelector(
         setLoadingWards(true);
         setWards([]);
 
-        const accountsResponse = await getShippingAccountsByUserApi();
+        const accountsResponse = await getShippingAccountsByUser();
         if (
           !accountsResponse ||
           !accountsResponse.data ||
@@ -143,7 +143,7 @@ export default function useLocationSelector(
           accountsResponse.data.find((acc) => acc.is_default) ||
           accountsResponse.data[0];
 
-        const response = await getAllWardsByDistrictApi(
+        const response = await getAllWardsByDistrict(
           districtId,
           defaultAccount.token,
         );

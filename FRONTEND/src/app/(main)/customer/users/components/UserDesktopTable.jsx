@@ -1,25 +1,7 @@
-import {
-  Avatar,
-  Box,
-  Chip,
-  IconButton,
-  LinearProgress,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import { Coins, UserMinus } from "lucide-react";
 import React from "react";
-
+import { Coins, UserMinus } from "lucide-react";
+import { Button } from "@/src/components/ui/button";
 import getAmount from "@/src/utils/getAmount";
-
 import { getStatusColor, getStatusLabel } from "./userListHelpers";
 
 export default function UserDesktopTable({
@@ -30,150 +12,194 @@ export default function UserDesktopTable({
   onPageChange,
   onRowsPerPageChange,
 }) {
+  const totalPages = Math.ceil(users.length / rowsPerPage);
+  
+  const getBadgeClass = (status) => {
+    const color = getStatusColor(status);
+    switch (color) {
+      case "success":
+        return "bg-emerald-50 text-emerald-700 border-emerald-200";
+      case "primary":
+        return "bg-blue-50 text-blue-700 border-blue-200";
+      case "error":
+        return "bg-red-50 text-red-700 border-red-200";
+      default:
+        return "bg-gray-50 text-gray-700 border-gray-200";
+    }
+  };
+
+  const paginatedUsers = users.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
   return (
-    <TableContainer component={Paper} className="customer-table">
-      <Table sx={{ minWidth: 650 }} aria-label="users table">
-        <TableHead>
-          <TableRow>
-            <TableCell>User</TableCell>
-            <TableCell>Event</TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell>Progress</TableCell>
-            <TableCell>Coins</TableCell>
-            <TableCell align="center">Actions</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {users
-            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            .map((user) => (
+    <div className="w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+      <div className="w-full overflow-x-auto">
+        <table className="w-full border-collapse text-left text-sm text-gray-500">
+          <thead className="bg-gray-50 text-xs font-semibold uppercase text-gray-700 border-b border-gray-200">
+            <tr>
+              <th scope="col" className="px-6 py-4">User</th>
+              <th scope="col" className="px-6 py-4">Event</th>
+              <th scope="col" className="px-6 py-4">Status</th>
+              <th scope="col" className="px-6 py-4">Progress</th>
+              <th scope="col" className="px-6 py-4">Coins</th>
+              <th scope="col" className="px-6 py-4 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200 border-t border-gray-200">
+            {paginatedUsers.map((user) => (
               <React.Fragment key={user.id}>
                 {user.events.map((event, index) => (
-                  <TableRow
+                  <tr
                     key={`${user.id}-${event.id}`}
-                    sx={{
-                      "&:hover": {
-                        backgroundColor: "rgba(0, 0, 0, 0.04)",
-                      },
-                    }}
+                    className="hover:bg-gray-50 transition-colors"
                   >
-                    {index === 0 ? (
-                      <TableCell rowSpan={user.events.length}>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 2,
-                          }}
-                        >
-                          <Avatar
+                    {index === 0 && (
+                      <td
+                        rowSpan={user.events.length}
+                        className="px-6 py-4 font-medium text-gray-900 align-top"
+                      >
+                        <div className="flex items-center gap-3">
+                          <img
                             src={user.avatar}
                             alt={user.full_name}
-                            sx={{ width: 40, height: 40 }}
+                            className="h-10 w-10 rounded-full object-cover border border-gray-100"
                           />
-                          <Box>
-                            <Typography variant="subtitle2">
+                          <div>
+                            <div className="font-semibold text-gray-800">
                               {user.full_name}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
+                            </div>
+                            <div className="text-xs text-gray-500">
                               {user.email}
-                            </Typography>
-                          </Box>
-                        </Box>
-                      </TableCell>
-                    ) : null}
-                    <TableCell>
-                      <Typography variant="body2">{event.title}</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={getStatusLabel(event.status)}
-                        color={getStatusColor(event.status)}
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell sx={{ width: "200px" }}>
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                      >
-                        <LinearProgress
-                          variant="determinate"
-                          value={event.completion_rate}
-                          sx={{
-                            flexGrow: 1,
-                            height: 8,
-                            borderRadius: 4,
-                            backgroundColor: "rgba(0, 0, 0, 0.1)",
-                            "& .MuiLinearProgress-bar": {
-                              borderRadius: 4,
-                            },
-                          }}
-                        />
-                        <Typography variant="body2" color="text.secondary">
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    )}
+                    <td className="px-6 py-4 text-gray-700">{event.title}</td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${getBadgeClass(event.status)}`}>
+                        {getStatusLabel(event.status)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2 max-w-[200px]">
+                        <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
+                          <div
+                            className="h-full bg-emerald-500 rounded-full transition-all duration-300"
+                            style={{ width: `${event.completion_rate}%` }}
+                          />
+                        </div>
+                        <span className="text-xs font-medium text-gray-600">
                           {event.completion_rate}%
-                        </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 0.5,
-                        }}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-gray-700">
+                      <div className="flex items-center gap-1">
+                        <Coins className="text-amber-500" size={18} />
+                        <span className="font-medium">{getAmount(user.coins)}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                        title="Remove from event"
+                        onClick={() =>
+                          onRemoveUser(user, event.id, event.eventUser)
+                        }
                       >
-                        <Coins style={{ color: "#ed6c02" }} size={20} />
-                        <Typography variant="body2">
-                          {getAmount(user.coins)}
-                        </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Tooltip title="Remove from event">
-                        <IconButton
-                          color="error"
-                          size="small"
-                          onClick={() =>
-                            onRemoveUser(user, event, event.eventUser)
-                          }
-                          sx={{
-                            "&:hover": {
-                              backgroundColor: "rgba(211, 47, 47, 0.08)",
-                            },
-                          }}
-                        >
-                          <UserMinus size={20} />
-                        </IconButton>
-                      </Tooltip>
-                    </TableCell>
-                  </TableRow>
+                        <UserMinus size={18} />
+                      </Button>
+                    </td>
+                  </tr>
                 ))}
               </React.Fragment>
             ))}
 
-          {users.length === 0 && (
-            <TableRow>
-              <TableCell colSpan={6} align="center" sx={{ py: 3 }}>
-                <Typography variant="subtitle1" color="text.secondary">
-                  No users found
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Try adjusting your search or filters
-                </Typography>
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={users.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={onPageChange}
-        onRowsPerPageChange={onRowsPerPageChange}
-      />
-    </TableContainer>
+            {users.length === 0 && (
+              <tr>
+                <td colSpan={6} className="px-6 py-12 text-center">
+                  <div className="text-base font-semibold text-gray-700">
+                    No users found
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    Try adjusting your search or filters
+                  </div>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination Footer */}
+      <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+        <div className="flex flex-1 justify-between sm:hidden">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(null, page - 1)}
+            disabled={page === 0}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(null, page + 1)}
+            disabled={page >= totalPages - 1}
+          >
+            Next
+          </Button>
+        </div>
+        <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-gray-600">
+              Rows per page:
+              <select
+                value={rowsPerPage}
+                onChange={onRowsPerPageChange}
+                className="ml-2 rounded border border-gray-200 p-1 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              >
+                {[5, 10, 25].map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </span>
+            <span className="text-sm text-gray-600">
+              Showing <span className="font-semibold">{users.length === 0 ? 0 : page * rowsPerPage + 1}</span> to{" "}
+              <span className="font-semibold">
+                {Math.min((page + 1) * rowsPerPage, users.length)}
+              </span>{" "}
+              of <span className="font-semibold">{users.length}</span> results
+            </span>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onPageChange(null, page - 1)}
+              disabled={page === 0}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onPageChange(null, page + 1)}
+              disabled={page >= totalPages - 1 || totalPages === 0}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

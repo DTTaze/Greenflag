@@ -1,16 +1,16 @@
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from "@mui/material";
+"use client";
+
 import React, { useEffect, useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/src/components/ui/dialog";
+import { Input } from "@/src/components/ui/input";
+import { Label } from "@/src/components/ui/label";
+import { Button } from "@/src/components/ui/button";
 
 export default function ProductForm({
   open,
@@ -69,107 +69,139 @@ export default function ProductForm({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-      <DialogTitle>
-        {mode === "add" ? "Add New Product" : "Edit Product"}
-      </DialogTitle>
-      <form onSubmit={onSubmit}>
-        <DialogContent dividers>
-          <TextField
-            margin="dense"
-            label="Tên sản phẩm"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            fullWidth
-            required
-          />
-          <TextField
-            margin="dense"
-            label="Mô tả"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            fullWidth
-          />
-          <TextField
-            margin="dense"
-            label="Giá trị (VNĐ)"
-            name="price"
-            value={formData.price}
-            onChange={handleChange}
-            fullWidth
-            required
-          />
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
+      <DialogContent className="sm:max-w-[500px] max-h-[85vh] overflow-y-auto bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+        <DialogHeader className="mb-4">
+          <DialogTitle className="text-lg font-bold text-gray-900">
+            {mode === "add" ? "Add New Product" : "Edit Product"}
+          </DialogTitle>
+        </DialogHeader>
 
-          <FormControl fullWidth margin="dense" required>
-            <InputLabel id="category-label">Danh mục</InputLabel>
-            <Select
-              labelId="category-label"
-              name="category"
-              value={formData.category}
+        <form onSubmit={onSubmit} className="space-y-4">
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="name">Tên sản phẩm</Label>
+            <Input
+              id="name"
+              name="name"
+              value={formData.name}
               onChange={handleChange}
-              label="Danh mục"
-            >
-              <MenuItem value="recycled">Tái chế</MenuItem>
-              <MenuItem value="handicraft">Thủ công</MenuItem>
-              <MenuItem value="organic">Hữu cơ</MenuItem>
-              <MenuItem value="plants">Cây trồng</MenuItem>
-              <MenuItem value="other">Khác</MenuItem>
-            </Select>
-          </FormControl>
+              required
+              placeholder="Tên sản phẩm..."
+            />
+          </div>
 
-          <FormControl fullWidth margin="dense" required>
-            <InputLabel id="product_status-label">
-              Tình trạng sản phẩm
-            </InputLabel>
-            <Select
-              labelId="product_status-label"
-              name="product_status"
-              value={formData.product_status}
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="description">Mô tả</Label>
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description}
               onChange={handleChange}
-              label="Tình trạng sản phẩm"
-            >
-              <MenuItem value="new">Mới</MenuItem>
-              <MenuItem value="used">Đã sử dụng</MenuItem>
-            </Select>
-          </FormControl>
+              rows={3}
+              placeholder="Mô tả sản phẩm..."
+              className="w-full border border-gray-200 rounded-lg p-2.5 text-sm bg-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
+            />
+          </div>
 
-          <FormControl fullWidth margin="dense" required>
-            <InputLabel id="post_status-label">Trạng thái bài đăng</InputLabel>
-            <Select
-              labelId="post_status-label"
-              name="post_status"
-              value={formData.post_status}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="price">Giá trị (VNĐ)</Label>
+              <Input
+                id="price"
+                name="price"
+                type="number"
+                value={formData.price}
+                onChange={handleChange}
+                required
+                placeholder="100000"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="category">Danh mục</Label>
+              <select
+                id="category"
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                required
+                className="w-full h-8 border border-gray-200 rounded-lg px-2.5 py-1 text-sm bg-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+              >
+                <option value="">Chọn danh mục</option>
+                <option value="recycled">Tái chế</option>
+                <option value="handicraft">Thủ công</option>
+                <option value="organic">Hữu cơ</option>
+                <option value="plants">Cây trồng</option>
+                <option value="other">Khác</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="product_status">Tình trạng sản phẩm</Label>
+              <select
+                id="product_status"
+                name="product_status"
+                value={formData.product_status}
+                onChange={handleChange}
+                required
+                className="w-full h-8 border border-gray-200 rounded-lg px-2.5 py-1 text-sm bg-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+              >
+                <option value="">Chọn tình trạng</option>
+                <option value="new">Mới</option>
+                <option value="used">Đã sử dụng</option>
+              </select>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="post_status">Trạng thái bài đăng</Label>
+              <select
+                id="post_status"
+                name="post_status"
+                value={formData.post_status}
+                onChange={handleChange}
+                required
+                className="w-full h-8 border border-gray-200 rounded-lg px-2.5 py-1 text-sm bg-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+              >
+                <option value="">Chọn trạng thái</option>
+                <option value="public">Công khai</option>
+                <option value="private">Riêng tư</option>
+                <option value="pending">Chờ duyệt</option>
+                <option value="rejected">Từ chối</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="seller_id">Chủ sở hữu</Label>
+            <Input
+              id="seller_id"
+              name="seller_id"
+              value={formData.seller_id}
               onChange={handleChange}
-              label="Trạng thái bài đăng"
-            >
-              <MenuItem value="public">Công khai</MenuItem>
-              <MenuItem value="private">Riêng tư</MenuItem>
-              <MenuItem value="pending">Chờ duyệt</MenuItem>
-              <MenuItem value="rejected">Từ chối</MenuItem>
-            </Select>
-          </FormControl>
+              required
+              placeholder="Seller ID..."
+            />
+          </div>
 
-          <TextField
-            margin="dense"
-            label="Chủ sở hữu"
-            name="seller_id"
-            value={formData.seller_id}
-            onChange={handleChange}
-            fullWidth
-            required
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="secondary">
-            Cancel
-          </Button>
-          <Button type="submit" variant="contained" color="primary">
-            {mode === "add" ? "Create" : "Save Changes"}
-          </Button>
-        </DialogActions>
-      </form>
+          <DialogFooter className="mt-6 border-t pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleClose}
+              className="mr-2"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="default"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
+              {mode === "add" ? "Create" : "Save Changes"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
     </Dialog>
   );
 }

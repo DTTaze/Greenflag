@@ -1,58 +1,35 @@
-import Box from "@mui/material/Box";
-import Tab from "@mui/material/Tab";
-import Tabs from "@mui/material/Tabs";
+"use client";
+
 import React from "react";
-
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`admin-tabpanel-${index}`}
-      aria-labelledby={`admin-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
-  );
-}
-
-function a11yProps(index) {
-  return {
-    id: `admin-tab-${index}`,
-    "aria-controls": `admin-tabpanel-${index}`,
-  };
-}
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 
 export default function AdminTabs({ tabs }) {
-  const [value, setValue] = React.useState(0);
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
+  if (!tabs || tabs.length === 0) return null;
 
   return (
-    <Box sx={{ width: "100%" }}>
-      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          aria-label="admin tabs"
-          variant="scrollable"
-          scrollButtons="auto"
-        >
+    <Tabs defaultValue="0" className="w-full">
+      <div className="border-b border-gray-200 mb-6">
+        <TabsList variant="line" className="flex gap-4 p-0 bg-transparent h-auto">
           {tabs.map((tab, index) => (
-            <Tab key={index} label={tab.label} {...a11yProps(index)} />
+            <TabsTrigger
+              key={index}
+              value={String(index)}
+              className="py-2.5 px-4 text-sm font-medium text-gray-500 border-b-2 border-transparent data-[state=active]:border-emerald-600 data-[state=active]:text-emerald-700 hover:text-gray-900 transition-all focus:outline-none bg-transparent rounded-none"
+            >
+              {tab.label}
+            </TabsTrigger>
           ))}
-        </Tabs>
-      </Box>
+        </TabsList>
+      </div>
       {tabs.map((tab, index) => (
-        <TabPanel key={index} value={value} index={index}>
+        <TabsContent
+          key={index}
+          value={String(index)}
+          className="focus:outline-none"
+        >
           {tab.content}
-        </TabPanel>
+        </TabsContent>
       ))}
-    </Box>
+    </Tabs>
   );
 }

@@ -1,18 +1,20 @@
-import Box from "@mui/material/Box";
-import CircularProgress from "@mui/material/CircularProgress";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import Typography from "@mui/material/Typography";
+"use client";
+
 import { Copy, QrCode } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import Button from "@/src/components/ui/button";
 import InputField from "@/src/components/ui/InputField.jsx";
 import { useAuthStore } from "@/src/store/auth/authStore";
-import { getQRApi, updateUserPublicApi } from "@/src/utils/api";
+import { getQR, updateUserPublic } from "@/src/utils/api";
 
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/src/components/ui/dialog";
 import PersonalInfomationSkeleton from "./PersonalInfomationSkeleton.jsx";
 
 function PersonalInformation() {
@@ -98,7 +100,7 @@ function PersonalInformation() {
         full_name: user.full_name,
         phone_number: user.phone_number,
       };
-      const res = await updateUserPublicApi(user.public_id, payload);
+      const res = await updateUserPublic(user.public_id, payload);
       dispatch({
         type: "UPDATE_USER",
         payload: res.data,
@@ -137,14 +139,16 @@ function PersonalInformation() {
 
   const generateQRCode = async () => {
     try {
-      const response = await getQRApi(user?.public_id || "");
+      setQrCode(null);
+      setShowQrDialog(true);
+      const response = await getQR(user?.public_id || "");
       if (response?.data) {
         setQrCode(response.data);
-        setShowQrDialog(true);
       }
     } catch (error) {
       console.error("Error generating QR code:", error);
       alert("Could not generate QR code. Please try again later.");
+      setShowQrDialog(false);
     }
   };
 
@@ -165,7 +169,7 @@ function PersonalInformation() {
   return (
     <div className="rounded-lg bg-white p-4 shadow-md">
       <div className="flex items-center justify-between">
-        <h4 className="text-lg font-semibold">Thông tin cá nhân</h4>
+        <h4 className="text-lg font-semibold text-gray-900">Thông tin cá nhân</h4>
         <div className="flex gap-2">
           <Button
             text="QR Code"
@@ -183,10 +187,10 @@ function PersonalInformation() {
           )}
         </div>
       </div>
-      <hr className="my-2 border-gray-300" />
+      <hr className="my-2 border-gray-200" />
 
       <form className="space-y-4" onSubmit={handleUpdate}>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {inputFields.map(({ id, label }) => (
             <div key={id}>
               <InputField
@@ -196,7 +200,7 @@ function PersonalInformation() {
                 onChange={handleChange}
                 error={errors[id]}
                 disabled={!isEditing}
-                className={isEditing ? "" : "cursor-not-allowed bg-gray-100"}
+                className={isEditing ? "" : "cursor-not-allowed bg-gray-50 text-gray-600"}
               />
             </div>
           ))}
@@ -222,93 +226,50 @@ function PersonalInformation() {
       </form>
 
       {/* QR Code Dialog */}
-      <Dialog
-        open={showQrDialog}
-        onClose={() => setShowQrDialog(false)}
-        aria-labelledby="qr-code-dialog-title"
-        PaperProps={{
-          sx: {
-            borderRadius: "16px",
-            overflow: "hidden",
-          },
-        }}
-      >
-        <DialogTitle
-          id="qr-code-dialog-title"
-          sx={{
-            bgcolor: "#f0fdf4",
-            color: "#166534",
-            fontWeight: "bold",
-          }}
-        >
-          Your Personal QR Code
-        </DialogTitle>
-        <DialogContent>
-          <Typography sx={{ mt: 2 }}>
-            Scan this QR code to quickly access your profile or register for
-            events.
-          </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              my: 2,
-              p: 3,
-              border: "2px dashed #bbf7d0",
-              borderRadius: "12px",
-              bgcolor: "rgba(22, 101, 52, 0.02)",
-            }}
-          >
-            {qrCode ? (
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                <img
-                  src={qrCode}
-                  alt="QR Code"
-                  style={{ maxWidth: "100%", height: "auto" }}
-                />
-                <Box
-                  sx={{
-                    mt: 2,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 1,
-                    cursor: "pointer",
-                    color: "#166534",
-                    bgcolor: "#f0fdf4",
-                    p: 1,
-                    borderRadius: "8px",
-                    "&:hover": {
-                      bgcolor: "#bbf7d0",
-                    },
-                  }}
-                  onClick={() => copyToClipboard(user?.public_id)}
-                >
-                  <Typography variant="body2" fontWeight="medium">
-                    Public ID: {user?.public_id}
-                  </Typography>
-                  <Copy size={16} />
-                </Box>
-              </Box>
-            ) : (
-              <CircularProgress sx={{ color: "#166534" }} />
-            )}
-          </Box>
+      <Dialog open={showQrDialog} onOpenChange={(isOpen) => !isOpen && setShowQrDialog(false)}>
+        <DialogContent className="sm:max-w-[400px] bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+          <DialogHeader className="mb-4">
+            <DialogTitle className="text-lg font-bold text-emerald-800">
+              Your Personal QR Code
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <p className="text-sm text-gray-500">
+              Scan this QR code to quickly access your profile or register for events.
+            </p>
+
+            <div className="flex flex-col items-center justify-center p-6 border border-dashed border-emerald-200 rounded-xl bg-emerald-50/10 min-h-[220px]">
+              {qrCode ? (
+                <div className="flex flex-col items-center">
+                  <img
+                    src={qrCode}
+                    alt="QR Code"
+                    className="max-w-[200px] h-auto rounded-lg shadow-sm"
+                  />
+                  <button
+                    onClick={() => copyToClipboard(user?.public_id)}
+                    className="mt-4 flex items-center justify-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-semibold text-xs rounded-lg transition-colors border border-emerald-200"
+                  >
+                    <span>Public ID: {user?.public_id}</span>
+                    <Copy size={14} />
+                  </button>
+                </div>
+              ) : (
+                <div className="w-8 h-8 border-4 border-emerald-700 border-t-transparent rounded-full animate-spin" />
+              )}
+            </div>
+          </div>
+
+          <DialogFooter className="mt-6">
+            <Button
+              text="Close"
+              onClick={() => setShowQrDialog(false)}
+              className="bg-emerald-600 text-white hover:bg-emerald-700 w-full"
+              padding="15px"
+            />
+          </DialogFooter>
         </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button
-            text="Close"
-            onClick={() => setShowQrDialog(false)}
-            className="bg-green-600 text-white hover:bg-green-700"
-            padding="15px"
-          />
-        </DialogActions>
       </Dialog>
     </div>
   );

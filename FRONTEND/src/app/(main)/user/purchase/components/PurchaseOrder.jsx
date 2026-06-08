@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 
 import { useAuthStore } from "@/src/store/auth/authStore";
 import {
-  CancelTransactionByIdAPI,
-  getAllShippingOrdersByBuyerApi,
+  cancelTransaction,
+  getAllShippingOrdersByBuyer,
   getBuyerTransactionHistory,
 } from "@/src/utils/api";
 
@@ -43,7 +43,7 @@ const PurchaseOrder = () => {
         if (activeTab === "all") {
           const [transactionResponse, shippingResponse] = await Promise.all([
             getBuyerTransactionHistory(user.id),
-            getAllShippingOrdersByBuyerApi(user.id),
+            getAllShippingOrdersByBuyer(user.id),
           ]);
 
           if (
@@ -86,7 +86,7 @@ const PurchaseOrder = () => {
               .map((tx) => normalizeTransaction(tx, "transaction"));
           }
         } else {
-          const response = await getAllShippingOrdersByBuyerApi(user.id);
+          const response = await getAllShippingOrdersByBuyer(user.id);
           if (response.success && Array.isArray(response.data)) {
             normalized = response.data
               .filter((tx) => {
@@ -136,7 +136,7 @@ const PurchaseOrder = () => {
   const handleCancelOrder = async (transactionId) => {
     try {
       const actualId = transactionId.replace("transaction-", "");
-      const response = await CancelTransactionByIdAPI(actualId);
+      const response = await cancelTransaction(actualId);
 
       if (response.success) {
         setTransactionList((prev) =>

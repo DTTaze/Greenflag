@@ -1,16 +1,17 @@
-import { Box, Typography } from "@mui/material";
+"use client";
+
 import React, { useEffect, useState } from "react";
 
 import {
-  createPermissionApi,
-  createRoleApi,
-  deletePermissionApi,
-  deleteRoleApi,
-  getAllPermissionsApi,
-  getAllRolesApi,
-  getAllRolesPermissionsApi,
-  updatePermissionApi,
-  updateRoleApi,
+  createPermission,
+  createRole,
+  deletePermission,
+  deleteRole,
+  getAllPermissions,
+  getAllRoles,
+  getAllRolesPermissions,
+  updatePermission,
+  updateRole,
 } from "@/src/utils/api";
 
 import AdminTabs from "../../components/AdminTabs";
@@ -31,22 +32,23 @@ function RolesManagement() {
   const [editData, setEditData] = useState(null);
   const [formMode, setFormMode] = useState("add");
 
-  useEffect(() => {
-    const fetchRoles = async () => {
-      setLoading(true);
-      try {
-        const res = await getAllRolesApi();
-        if (res.success) {
-          setRoles(res.data);
-        } else {
-          console.log(res.error);
-        }
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setLoading(false);
+  const fetchRoles = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllRoles();
+      if (res.success) {
+        setRoles(res.data);
+      } else {
+        console.log(res.error);
       }
-    };
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchRoles();
   }, []);
 
@@ -63,12 +65,14 @@ function RolesManagement() {
   };
 
   const handleDeleteRole = async (role) => {
-    if (confirm("Bạn có chắc chắn muốn xóa Role này không?")) {
+    if (window.confirm("Bạn có chắc chắn muốn xóa Role này không?")) {
       try {
-        const res = await deleteRoleApi(role.id);
+        const res = await deleteRole(role.id);
         if (res.success) {
           alert("Xóa Role thành công!");
           setRoles((prev) => prev.filter((r) => r.id !== role.id));
+        } else {
+          alert("Xóa Role thất bại!");
         }
       } catch (e) {
         console.log(e);
@@ -80,8 +84,8 @@ function RolesManagement() {
     try {
       const res =
         mode === "add"
-          ? await createRoleApi(data)
-          : await updateRoleApi(data.id, data);
+          ? await createRole(data)
+          : await updateRole(data.id, data);
 
       if (res.success) {
         alert(
@@ -89,6 +93,7 @@ function RolesManagement() {
             ? "Thêm Role thành công!"
             : "Cập nhật Role thành công!",
         );
+        fetchRoles();
       } else {
         alert("Có lỗi xảy ra!");
       }
@@ -99,7 +104,7 @@ function RolesManagement() {
   };
 
   return (
-    <Box>
+    <div>
       <DataTable
         title="Roles"
         columns={roleColumns}
@@ -116,7 +121,7 @@ function RolesManagement() {
         initialData={editData}
         mode={formMode}
       />
-    </Box>
+    </div>
   );
 }
 
@@ -128,22 +133,23 @@ function PermissionsManagement() {
   const [editData, setEditData] = useState(null);
   const [formMode, setFormMode] = useState("add");
 
-  useEffect(() => {
-    const fetchPermissions = async () => {
-      setLoading(true);
-      try {
-        const res = await getAllPermissionsApi();
-        if (res.success) {
-          setPermissions(res.data);
-        } else {
-          console.log(res.error);
-        }
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setLoading(false);
+  const fetchPermissions = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllPermissions();
+      if (res.success) {
+        setPermissions(res.data);
+      } else {
+        console.log(res.error);
       }
-    };
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchPermissions();
   }, []);
 
@@ -160,12 +166,14 @@ function PermissionsManagement() {
   };
 
   const handleDeletePermission = async (permission) => {
-    if (confirm("Bạn có chắc chắn muốn xóa Permission này không?")) {
+    if (window.confirm("Bạn có chắc chắn muốn xóa Permission này không?")) {
       try {
-        const res = await deletePermissionApi(permission.id);
+        const res = await deletePermission(permission.id);
         if (res.success) {
           alert("Xóa Permission thành công!");
           setPermissions((prev) => prev.filter((p) => p.id !== permission.id));
+        } else {
+          alert("Xóa Permission thất bại!");
         }
       } catch (e) {
         console.log(e);
@@ -177,8 +185,8 @@ function PermissionsManagement() {
     try {
       const res =
         mode === "add"
-          ? await createPermissionApi(data)
-          : await updatePermissionApi(data.id, data);
+          ? await createPermission(data)
+          : await updatePermission(data.id, data);
 
       if (res.success) {
         alert(
@@ -186,6 +194,7 @@ function PermissionsManagement() {
             ? "Thêm Permission thành công!"
             : "Cập nhật Permission thành công!",
         );
+        fetchPermissions();
       } else {
         alert("Có lỗi xảy ra!");
       }
@@ -196,7 +205,7 @@ function PermissionsManagement() {
   };
 
   return (
-    <Box>
+    <div>
       <DataTable
         title="Permissions"
         columns={permissionColumns}
@@ -213,10 +222,11 @@ function PermissionsManagement() {
         initialData={editData}
         mode={formMode}
       />
-    </Box>
+    </div>
   );
 }
 
+// Roles & Permissions mapping
 function RolesPermissionsManagement() {
   const [rolesPermissions, setRolesPermissions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -225,7 +235,7 @@ function RolesPermissionsManagement() {
     const fetchRolesPermissions = async () => {
       setLoading(true);
       try {
-        const res = await getAllRolesPermissionsApi();
+        const res = await getAllRolesPermissions();
         if (res.success) {
           setRolesPermissions(res.data);
         } else {
@@ -274,11 +284,11 @@ export default function RolesPermissions() {
   ];
 
   return (
-    <Box sx={{ width: "100%" }}>
-      <Typography variant="h5" component="h1" sx={{ mb: 3, p: 2 }}>
+    <div className="w-full space-y-4 p-4">
+      <h1 className="text-2xl font-bold text-gray-950 px-2">
         Roles & Permissions Management
-      </Typography>
+      </h1>
       <AdminTabs tabs={tabs} />
-    </Box>
+    </div>
   );
 }

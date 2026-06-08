@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, Divider, Paper, Stack, Typography } from "@mui/material";
+import Button from "@/src/components/ui/button";
 
 export default function RecentActivityList({ recentActivities = [], loading }) {
   const [showAll, setShowAll] = useState(false);
@@ -9,42 +9,45 @@ export default function RecentActivityList({ recentActivities = [], loading }) {
     : recentActivities.slice(0, 5);
 
   return (
-    <Paper className="admin-section" sx={{ p: 3, height: "100%" }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-        <Typography variant="h6">Recent Activities</Typography>
-        <Button
-          size="small"
-          variant="text"
-          onClick={() => setShowAll(!showAll)}
-        >
-          {showAll ? "Show Less" : "View All"}
-        </Button>
-      </Box>
-      <Stack spacing={2} divider={<Divider flexItem />}>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col h-full min-h-[400px]">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold text-gray-950">Recent Activities</h3>
+        {recentActivities.length > 5 && (
+          <button
+            onClick={() => setShowAll(!showAll)}
+            className="text-sm font-medium text-emerald-600 hover:text-emerald-700 hover:underline transition-colors focus:outline-none"
+          >
+            {showAll ? "Show Less" : "View All"}
+          </button>
+        )}
+      </div>
+
+      {/* List content */}
+      <div className="flex-1 flex flex-col gap-4 divide-y divide-gray-100 overflow-y-auto">
         {loading ? (
-          <Typography variant="body2" color="text.secondary">
-            Loading activities...
-          </Typography>
+          <p className="text-sm text-gray-500 py-4">Loading activities...</p>
         ) : displayedActivities.length > 0 ? (
-          displayedActivities.map((activity) => (
-            <Box key={activity.id}>
-              <Typography variant="body2" fontWeight={500}>
+          displayedActivities.map((activity, index) => (
+            <div
+              key={activity.id || index}
+              className={`flex flex-col gap-1 ${index > 0 ? "pt-4" : ""}`}
+            >
+              <div className="font-semibold text-sm text-gray-900">
                 {activity.user}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
+              </div>
+              <div className="text-sm text-gray-600">
                 {activity.action}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
+              </div>
+              <div className="text-xs text-gray-400">
                 {activity.time}
-              </Typography>
-            </Box>
+              </div>
+            </div>
           ))
         ) : (
-          <Typography variant="body2" color="text.secondary">
-            No recent activities
-          </Typography>
+          <p className="text-sm text-gray-500 py-4">No recent activities</p>
         )}
-      </Stack>
-    </Paper>
+      </div>
+    </div>
   );
 }

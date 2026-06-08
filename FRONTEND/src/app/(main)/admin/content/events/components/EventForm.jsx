@@ -1,22 +1,17 @@
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import DeleteIcon from "@mui/icons-material/Delete";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  Grid,
-  IconButton,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-} from "@mui/material";
+"use client";
+
 import React, { useEffect, useState } from "react";
+import { Upload, Trash } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/src/components/ui/dialog";
+import { Input } from "@/src/components/ui/input";
+import { Label } from "@/src/components/ui/label";
+import { Button } from "@/src/components/ui/button";
 
 export default function EventForm({
   open,
@@ -62,8 +57,8 @@ export default function EventForm({
       if (initialData.images && Array.isArray(initialData.images)) {
         setPreviewUrls(
           initialData.images.map((img) =>
-            typeof img === "string" ? img : URL.createObjectURL(img),
-          ),
+            typeof img === "string" ? img : URL.createObjectURL(img)
+          )
         );
       }
     } else {
@@ -92,7 +87,6 @@ export default function EventForm({
 
   const handleFileSelect = (e) => {
     const files = Array.from(e.target.files);
-    // Create preview URLs for new files
     const newPreviewUrls = files.map((file) => URL.createObjectURL(file));
     setPreviewUrls((prev) => [...prev, ...newPreviewUrls]);
 
@@ -116,184 +110,181 @@ export default function EventForm({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
-      <DialogTitle>
-        {mode === "add" ? "Thêm sự kiện mới" : "Chỉnh sửa sự kiện"}
-      </DialogTitle>
-      <form onSubmit={onSubmit}>
-        <DialogContent dividers>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                label="Tên sự kiện"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                fullWidth
-                required
-              />
-            </Grid>
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
+      <DialogContent className="sm:max-w-[700px] max-h-[85vh] overflow-y-auto bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+        <DialogHeader className="mb-4">
+          <DialogTitle className="text-lg font-bold text-gray-900">
+            {mode === "add" ? "Thêm sự kiện mới" : "Chỉnh sửa sự kiện"}
+          </DialogTitle>
+        </DialogHeader>
 
-            <Grid item xs={12}>
-              <TextField
-                label="Mô tả"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                fullWidth
-                multiline
-                rows={4}
-                required
-              />
-            </Grid>
+        <form onSubmit={onSubmit} className="space-y-4">
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="title">Tên sự kiện</Label>
+            <Input
+              id="title"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              required
+              placeholder="e.g. Sự kiện nhặt rác vì môi trường"
+            />
+          </div>
 
-            <Grid item xs={12}>
-              <TextField
-                label="Địa điểm"
-                name="location"
-                value={formData.location}
-                onChange={handleChange}
-                fullWidth
-                required
-              />
-            </Grid>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="description">Mô tả</Label>
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              required
+              rows={4}
+              placeholder="Mô tả nội dung, mục tiêu của sự kiện..."
+              className="w-full border border-gray-200 rounded-lg p-2.5 text-sm bg-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
+            />
+          </div>
 
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="Thời gian bắt đầu"
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="location">Địa điểm</Label>
+            <Input
+              id="location"
+              name="location"
+              value={formData.location}
+              onChange={handleChange}
+              required
+              placeholder="e.g. Công viên Thống Nhất, Hà Nội"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="start_time">Thời gian bắt đầu</Label>
+              <Input
+                id="start_time"
                 name="start_time"
                 type="datetime-local"
                 value={formData.start_time}
                 onChange={handleChange}
-                fullWidth
                 required
-                InputLabelProps={{
-                  shrink: true,
-                }}
               />
-            </Grid>
+            </div>
 
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="Thời gian kết thúc"
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="end_time">Thời gian kết thúc</Label>
+              <Input
+                id="end_time"
                 name="end_time"
                 type="datetime-local"
                 value={formData.end_time}
                 onChange={handleChange}
-                fullWidth
                 required
-                InputLabelProps={{
-                  shrink: true,
-                }}
               />
-            </Grid>
+            </div>
+          </div>
 
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="Số người tham gia tối đa"
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="max_participants">Số người tham gia tối đa</Label>
+              <Input
+                id="max_participants"
                 name="max_participants"
                 type="number"
                 value={formData.max_participants}
                 onChange={handleChange}
-                fullWidth
                 required
+                placeholder="100"
               />
-            </Grid>
+            </div>
 
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="Điểm thưởng"
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="points">Điểm thưởng</Label>
+              <Input
+                id="points"
                 name="points"
                 type="number"
                 value={formData.points}
                 onChange={handleChange}
-                fullWidth
                 required
+                placeholder="50"
               />
-            </Grid>
+            </div>
+          </div>
 
-            <Grid item xs={12}>
-              <FormControl fullWidth>
-                <InputLabel>Trạng thái</InputLabel>
-                <Select
-                  name="status"
-                  value={formData.status}
-                  onChange={handleChange}
-                  label="Trạng thái"
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="status">Trạng thái</Label>
+            <select
+              id="status"
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              className="w-full h-8 border border-gray-200 rounded-lg px-2.5 py-1 text-sm bg-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+            >
+              <option value="active">Hoạt động</option>
+              <option value="inactive">Không hoạt động</option>
+              <option value="completed">Đã kết thúc</option>
+            </select>
+          </div>
+
+          {/* Image Upload list */}
+          <div className="space-y-2.5 pt-2">
+            <Label>Hình ảnh sự kiện</Label>
+            <div className="flex flex-wrap gap-3">
+              {previewUrls.map((url, index) => (
+                <div
+                  key={index}
+                  className="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-100 shadow-sm"
                 >
-                  <MenuItem value="active">Hoạt động</MenuItem>
-                  <MenuItem value="inactive">Không hoạt động</MenuItem>
-                  <MenuItem value="completed">Đã kết thúc</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={12}>
-              <Typography variant="subtitle1" gutterBottom>
-                Hình ảnh sự kiện
-              </Typography>
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
-                {previewUrls.map((url, index) => (
-                  <Box
-                    key={index}
-                    sx={{
-                      position: "relative",
-                      width: 100,
-                      height: 100,
-                    }}
+                  <img
+                    src={url}
+                    alt={`Preview ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImage(index)}
+                    className="absolute top-1 right-1 p-1 bg-white/95 rounded-full text-rose-600 hover:bg-white transition-colors shadow-sm"
                   >
-                    <img
-                      src={url}
-                      alt={`Preview ${index + 1}`}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        borderRadius: "4px",
-                      }}
-                    />
-                    <IconButton
-                      size="small"
-                      sx={{
-                        position: "absolute",
-                        top: -8,
-                        right: -8,
-                        bgcolor: "background.paper",
-                      }}
-                      onClick={() => handleRemoveImage(index)}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </Box>
-                ))}
-              </Box>
-              <Button
-                component="label"
-                variant="outlined"
-                startIcon={<CloudUploadIcon />}
-                sx={{ mt: 1 }}
-              >
-                Tải ảnh lên
+                    <Trash size={12} />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div className="pt-1">
+              <label className="inline-flex items-center gap-2 px-4 py-2 border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium rounded-lg text-sm transition-colors cursor-pointer shadow-sm">
+                <Upload size={16} className="text-gray-500" />
+                <span>Tải ảnh lên</span>
                 <input
                   type="file"
-                  hidden
                   multiple
                   accept="image/*"
                   onChange={handleFileSelect}
+                  className="hidden"
                 />
-              </Button>
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="secondary">
-            Hủy
-          </Button>
-          <Button type="submit" variant="contained" color="primary">
-            {mode === "add" ? "Thêm" : "Lưu thay đổi"}
-          </Button>
-        </DialogActions>
-      </form>
+              </label>
+            </div>
+          </div>
+
+          <DialogFooter className="mt-6 border-t pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleClose}
+              className="mr-2"
+            >
+              Hủy
+            </Button>
+            <Button
+              type="submit"
+              variant="default"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
+              {mode === "add" ? "Thêm" : "Lưu thay đổi"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
     </Dialog>
   );
 }

@@ -3,7 +3,7 @@ import { Star, Truck, X } from "lucide-react";
 import { forwardRef, useEffect, useState } from "react";
 
 import { useAuthStore } from "@/src/store/auth/authStore";
-import { getReceiverInfoByUserIDAPI } from "@/src/utils/api";
+import { getReceiverInfoByUserId } from "@/src/utils/api";
 
 // Sử dụng forwardRef để nhận ref từ PurchaseModal
 const ShippingInfoModal = forwardRef(({ isOpen, onClose, onSelect }, ref) => {
@@ -16,7 +16,7 @@ const ShippingInfoModal = forwardRef(({ isOpen, onClose, onSelect }, ref) => {
       if (isOpen && user?.id) {
         try {
           setIsLoading(true);
-          const response = await getReceiverInfoByUserIDAPI(user.id);
+          const response = await getReceiverInfoByUserId(user.id);
           setShippingOptions(response?.data || []);
         } catch (error) {
           console.error("Error fetching shipping options:", error);

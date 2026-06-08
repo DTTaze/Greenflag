@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-import { getAllEventsApi, getEventSignedByUserIdApi } from "@/src/utils/api";
+import { getAllEvents, getEventSignedByUserId } from "@/src/utils/api";
 
 import EventCard from "./EventCard";
 import EventDetailsModal from "./EventDetailsModal";
@@ -22,7 +22,7 @@ const EventList = ({ userInfo }) => {
     const fetchData = async () => {
       try {
         // Fetch user's signed events
-        const eventUserSignedResponse = await getEventSignedByUserIdApi(
+        const eventUserSignedResponse = await getEventSignedByUserId(
           userInfo.id,
         );
         const eventUserSignedData = eventUserSignedResponse.data;
@@ -35,7 +35,7 @@ const EventList = ({ userInfo }) => {
         setEventsSigned(eventSignedData);
 
         // Fetch all events
-        const allEventsResponse = await getAllEventsApi();
+        const allEventsResponse = await getAllEvents();
         const allEvents = allEventsResponse.data;
 
         // Filter hot events

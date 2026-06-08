@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { getUserByIdApi, rearrangeRankApi } from "@/src/utils/api";
+import { getUserById, rearrangeRank } from "@/src/utils/api";
 
 function Ranking() {
   const [rankData, setRankData] = useState({
@@ -15,7 +15,7 @@ function Ranking() {
     const fetchRankingData = async () => {
       try {
         setLoading(true);
-        const response = await rearrangeRankApi();
+        const response = await rearrangeRank();
         console.log("ranking response: ", response);
 
         if (response.data && response.success) {
@@ -25,7 +25,7 @@ function Ranking() {
           const ranksWithUserDetails = await Promise.all(
             ranks.map(async (rank) => {
               try {
-                const userResponse = await getUserByIdApi(rank.user_id);
+                const userResponse = await getUserById(rank.user_id);
                 console.log("user response in ranking", userResponse);
 
                 if (userResponse.data && userResponse.success) {

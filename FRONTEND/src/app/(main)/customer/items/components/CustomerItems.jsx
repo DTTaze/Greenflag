@@ -1,19 +1,12 @@
-import AddIcon from "@mui/icons-material/Add";
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  Typography,
-} from "@mui/material";
 import React, { useEffect, useState } from "react";
-
+import { Plus } from "lucide-react";
+import { Button } from "@/src/components/ui/button";
 import {
-  deleteItemOfCustomerApi,
-  getItemByIdUserApi,
-  getUserApi,
-  updateItemOfCustomerApi,
-  upLoadItemApi,
+  deleteCustomerItem,
+  getItemByUserId,
+  getUser,
+  updateCustomerItem,
+  uploadItem,
 } from "@/src/utils/api";
 
 import ItemDialog from "./ItemDialog";
@@ -37,7 +30,7 @@ const CustomerItems = () => {
 
   const fetchUserInfo = async () => {
     try {
-      const response = await getUserApi();
+      const response = await getUser();
       if (response.data) {
         setUserInfo(response.data);
       }
@@ -52,7 +45,7 @@ const CustomerItems = () => {
 
     try {
       setLoading(true);
-      const response = await getItemByIdUserApi(userInfo.id);
+      const response = await getItemByUserId(userInfo.id);
       if (response.data) {
         setItems(response.data);
       }
@@ -131,8 +124,8 @@ const CustomerItems = () => {
     if (!window.confirm("Are you sure you want to delete this item?")) return;
 
     try {
-      await deleteItemOfCustomerApi(itemId);
-      await fetchItems(); // Refresh the items list after deletion
+      await deleteCustomerItem(itemId);
+      await fetchItems();
     } catch (err) {
       console.error("Error deleting item:", err);
       alert("Failed to delete item. Please try again.");
@@ -143,20 +136,18 @@ const CustomerItems = () => {
     try {
       setIsSubmitting(true);
       if (selectedItem) {
-        // Update existing item
-        const response = await updateItemOfCustomerApi(
+        const response = await updateCustomerItem(
           selectedItem.id,
           formData,
           images,
         );
         if (response.data) {
-          await fetchItems(); // Refresh the items list after update
+          await fetchItems();
         }
       } else {
-        // Create new item
-        const response = await upLoadItemApi(formData, images);
+        const response = await uploadItem(formData, images);
         if (response.data) {
-          await fetchItems(); // Refresh the items list after creation
+          await fetchItems();
         }
       }
       setOpenDialog(false);
@@ -169,54 +160,46 @@ const CustomerItems = () => {
 
   if (loading) {
     return (
-      <Box sx={{ p: 3, textAlign: "center" }}>
-        <Typography>Loading items...</Typography>
-      </Box>
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Box sx={{ p: 3, textAlign: "center" }}>
-        <Typography color="error">{error}</Typography>
+      <div className="p-6 text-center max-w-md mx-auto">
+        <p className="text-red-650 font-medium">{error}</p>
         <Button
-          variant="contained"
           onClick={fetchItems}
-          sx={{ mt: 2 }}
-          className="customer-button"
+          className="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white"
         >
           Retry
         </Button>
-      </Box>
+      </div>
     );
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 3,
-        }}
-      >
-        <Typography variant="h5" component="h2">
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">
           My Items
-        </Typography>
+        </h2>
         <Button
-          className="customer-button"
-          startIcon={<AddIcon />}
           onClick={handleAddItem}
+          className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
         >
+          <Plus size={18} />
           Add Item
         </Button>
-      </Box>
+      </div>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
-          {error}
-        </Alert>
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-650 rounded-md text-sm flex justify-between items-center">
+          <span>{error}</span>
+          <button onClick={() => setError(null)} className="text-red-500 hover:text-red-750 font-bold ml-2">×</button>
+        </div>
       )}
 
       <ItemFilters
@@ -225,18 +208,12 @@ const CustomerItems = () => {
         onReset={handleResetFilters}
       />
 
-      {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-          <CircularProgress />
-        </Box>
-      ) : (
-        <ItemTable
-          items={filteredItems}
-          onEdit={handleEditItem}
-          onDelete={handleDeleteItem}
-          onAdd={handleAddItem}
-        />
-      )}
+      <ItemTable
+        items={filteredItems}
+        onEdit={handleEditItem}
+        onDelete={handleDeleteItem}
+        onAdd={handleAddItem}
+      />
 
       <ItemDialog
         open={openDialog}
@@ -245,7 +222,7 @@ const CustomerItems = () => {
         item={selectedItem}
         isSubmitting={isSubmitting}
       />
-    </Box>
+    </div>
   );
 };
 

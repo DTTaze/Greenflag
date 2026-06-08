@@ -1,11 +1,12 @@
-import { Box } from "@mui/material";
+"use client";
+
 import React, { useEffect, useState } from "react";
 
 import {
-  createProductApi,
-  deleteProductApi,
-  getAllProductsApi,
-  updateProductApi,
+  createProduct,
+  deleteProduct,
+  getAllProducts,
+  updateProduct,
 } from "@/src/utils/api";
 
 import DataTable from "../../../components/DataTable";
@@ -18,26 +19,27 @@ export default function ProductsManagement() {
   const [formOpen, setFormOpen] = useState(false);
   const [editData, setEditData] = useState(null);
   const [formMode, setFormMode] = useState("add");
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const res = await getAllProductsApi();
 
-        if (res.success) {
-          setProducts(res.data);
-        } else {
-          console.log(res.error);
-        }
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setLoading(false);
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllProducts();
+      if (res.success) {
+        setProducts(res.data);
+      } else {
+        console.log(res.error);
       }
-    };
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchData();
+  useEffect(() => {
+    fetchProducts();
   }, []);
+
   const handleAddProduct = () => {
     setFormMode("add");
     setEditData(null);
@@ -51,20 +53,28 @@ export default function ProductsManagement() {
   };
 
   const handleDeleteProduct = async (item) => {
-    const res = await deleteProductApi(item.id);
-    if (confirm("Bạn có chắc chắn muốn xóa không?")) {
-      if (res.success) {
-        alert("Xóa sản phẩm thành công!");
-        setProducts((prev) => prev.filter((u) => u.id !== item.id));
+    if (window.confirm("Bạn có chắc chắn muốn xóa không?")) {
+      try {
+        const res = await deleteProduct(item.id);
+        if (res.success) {
+          alert("Xóa sản phẩm thành công!");
+          setProducts((prev) => prev.filter((u) => u.id !== item.id));
+        } else {
+          alert("Xóa sản phẩm thất bại!");
+        }
+      } catch (e) {
+        console.log(e);
       }
     }
   };
+
   const handleSubmitProduct = async (data, mode) => {
     if (mode === "add") {
       try {
-        const result = await createProductApi(data);
+        const result = await createProduct(data);
         if (result.success) {
           alert("Thêm sản phẩm thành công!");
+          fetchProducts();
         } else {
           alert("Thêm sản phẩm thất bại!");
         }
@@ -73,9 +83,10 @@ export default function ProductsManagement() {
       }
     } else if (mode === "edit") {
       try {
-        const result = await updateProductApi(data.id, data);
+        const result = await updateProduct(data.id, data);
         if (result.success) {
           alert("Cập nhật sản phẩm thành công!");
+          fetchProducts();
         } else {
           alert("Cập nhật sản phẩm thất bại!");
         }
@@ -85,8 +96,9 @@ export default function ProductsManagement() {
     }
     setFormOpen(false);
   };
+
   return (
-    <Box>
+    <div>
       <DataTable
         title="Products"
         columns={productColumns}
@@ -103,6 +115,6 @@ export default function ProductsManagement() {
         initialData={editData}
         mode={formMode}
       />
-    </Box>
+    </div>
   );
 }

@@ -1,23 +1,19 @@
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Typography,
-} from "@mui/material";
 import React, { useEffect, useState } from "react";
-
 import { useAuthStore } from "@/src/store/auth/authStore";
 import {
-  deleteEventUserByIdApi,
-  getEventUserByEventIdApi,
-  getOwnerEventApi,
-  getUserAvatarByIdApi,
+  deleteEventUserById,
+  getEventUsersByEventId,
+  getOwnerEvents,
+  getUserAvatarById,
 } from "@/src/utils/api";
+import { Button } from "@/src/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/src/components/ui/dialog";
 
 import UserFilters from "./UserFilters";
 import UserList from "./UserList";
@@ -45,18 +41,18 @@ export default function CustomerUsers() {
 
   const fetchEventUsers = async (eventId) => {
     try {
-      const usersResponse = await getEventUserByEventIdApi(eventId);
+      const usersResponse = await getEventUsersByEventId(eventId);
       return usersResponse.data;
     } catch (error) {
       console.error(`Error fetching users for event ${eventId}:`, error);
-      return []; // Return empty array if there's an error
+      return [];
     }
   };
 
   const fetchUserData = async (eventUser) => {
     try {
       const userData = eventUser.User;
-      const avatarResponse = await getUserAvatarByIdApi(eventUser.user_id);
+      const avatarResponse = await getUserAvatarById(eventUser.user_id);
       const avatarData = avatarResponse.data;
 
       return {
@@ -94,13 +90,11 @@ export default function CustomerUsers() {
         setLoading(true);
         setError(null);
 
-        // Fetch events owned by the current user
-        const eventsResponse = await getOwnerEventApi();
+        const eventsResponse = await getOwnerEvents();
         const eventsData = eventsResponse.data;
         setEvents(eventsData);
 
-        // Fetch users for each event
-        const allUsers = new Map(); // Use Map to avoid duplicates
+        const allUsers = new Map();
         for (const event of eventsData) {
           const eventUsers = await fetchEventUsers(event.id);
 
@@ -111,7 +105,6 @@ export default function CustomerUsers() {
                 allUsers.set(eventUser.user_id, userData);
               }
             } else {
-              // Add event to existing user
               const existingUser = allUsers.get(eventUser.user_id);
               const userData = await fetchUserData(eventUser);
               if (userData) {
@@ -170,9 +163,8 @@ export default function CustomerUsers() {
 
   const handleConfirmDelete = async () => {
     try {
-      await deleteEventUserByIdApi(deleteDialog.eventUser.id);
+      await deleteEventUserById(deleteDialog.eventUser.id);
 
-      // Close dialog first
       setDeleteDialog({
         open: false,
         user: null,
@@ -180,7 +172,6 @@ export default function CustomerUsers() {
         eventUser: null,
       });
 
-      // Trigger refresh to fetch updated data
       setRefreshTrigger((prev) => prev + 1);
     } catch (error) {
       setError(error.message || "Failed to remove user from event");
@@ -196,7 +187,6 @@ export default function CustomerUsers() {
     });
   };
 
-  // Filter users based on search term and selected event
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
       user.full_name.toLowerCase().includes(filters.search.toLowerCase()) ||
@@ -211,37 +201,28 @@ export default function CustomerUsers() {
 
   if (loading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
-        <CircularProgress />
-      </Box>
+      <div className="flex justify-center items-center p-8">
+        <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Box sx={{ p: 3 }}>
-        <Alert severity="error">{error}</Alert>
-      </Box>
+      <div className="p-4 bg-red-50 border border-red-200 text-red-600 rounded-md">
+        {error}
+      </div>
     );
   }
 
   return (
-    <Box className="customer-content-container">
-      <Box className="customer-section">
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexWrap: "wrap",
-            gap: 2,
-            mb: 3,
-          }}
-        >
-          <Typography className="customer-section-title">
+    <div className="customer-content-container">
+      <div className="customer-section">
+        <div className="flex justify-between items-center flex-wrap gap-4 mb-6">
+          <h2 className="customer-section-title text-2xl font-semibold text-gray-800">
             Event Participants
-          </Typography>
-        </Box>
+          </h2>
+        </div>
 
         <UserFilters
           events={events}
@@ -261,33 +242,31 @@ export default function CustomerUsers() {
 
         <Dialog
           open={deleteDialog.open}
-          onClose={handleCloseDeleteDialog}
-          maxWidth="sm"
-          fullWidth
+          onOpenChange={(isOpen) => !isOpen && handleCloseDeleteDialog()}
         >
-          <DialogTitle>Remove Participant</DialogTitle>
-          <DialogContent>
-            <Typography>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Remove Participant</DialogTitle>
+            </DialogHeader>
+            <div className="py-4 text-sm text-gray-500">
               Are you sure you want to remove {deleteDialog.user?.full_name}{" "}
               from{" "}
               {deleteDialog.user?.events.find(
                 (e) => e.id === deleteDialog.eventId,
               )?.title || "this event"}
               ?
-            </Typography>
+            </div>
+            <DialogFooter className="gap-2 sm:gap-0">
+              <Button variant="outline" onClick={handleCloseDeleteDialog}>
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={handleConfirmDelete}>
+                Remove
+              </Button>
+            </DialogFooter>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseDeleteDialog}>Cancel</Button>
-            <Button
-              onClick={handleConfirmDelete}
-              color="error"
-              variant="contained"
-            >
-              Remove
-            </Button>
-          </DialogActions>
         </Dialog>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }

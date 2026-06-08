@@ -4,10 +4,10 @@ import { useCallback, useEffect, useState } from "react";
 
 import { socket } from "@/src/config/socket";
 import {
-  getAllAvailableProductsApi,
-  getAllItemsApi,
-  getProductByIdUser,
-  getUserApi,
+  getAllAvailableProducts,
+  getAllItems,
+  getProductByUserId,
+  getUser,
 } from "@/src/utils/api";
 
 import { MarketplaceItem } from "./useMarketplaceCrud";
@@ -42,7 +42,7 @@ export function useMarketplaceData(userId?: number | string) {
   useEffect(() => {
     async function initialize() {
       try {
-        const userResponse = (await getUserApi()) as any as {
+        const userResponse = (await getUser()) as any as {
           success: boolean;
         };
         if (!userResponse.success) {
@@ -60,7 +60,7 @@ export function useMarketplaceData(userId?: number | string) {
 
   const fetchRedeemItems = useCallback(async () => {
     try {
-      const itemsResponse = await getAllItemsApi();
+      const itemsResponse = await getAllItems();
       if (itemsResponse?.data) {
         const rawItems = itemsResponse.data as RawProductData[];
         const mappedItems = rawItems.map((item) => ({
@@ -112,7 +112,7 @@ export function useMarketplaceData(userId?: number | string) {
   const fetchMyItems = useCallback(async () => {
     if (!userId) return;
     try {
-      const productResponse = await getProductByIdUser(userId);
+      const productResponse = await getProductByUserId(userId);
       if (productResponse?.data) {
         const rawItems = productResponse.data as RawProductData[];
         const mappedMyItems = rawItems.map((item) => ({
@@ -144,7 +144,7 @@ export function useMarketplaceData(userId?: number | string) {
 
   const fetchAllItems = useCallback(async () => {
     try {
-      const allProductsResponse = await getAllAvailableProductsApi();
+      const allProductsResponse = await getAllAvailableProducts();
       if (allProductsResponse?.data) {
         const rawItems = allProductsResponse.data as RawProductData[];
         const mappedAllItems = rawItems.map((item) => ({

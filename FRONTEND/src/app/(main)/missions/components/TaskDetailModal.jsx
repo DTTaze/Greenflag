@@ -2,7 +2,7 @@ import { X } from "lucide-react";
 import React from "react";
 import { toast } from "react-toastify";
 
-import { acceptTaskByIdApi } from "@/src/utils/api";
+import { acceptTask } from "@/src/utils/api";
 
 export default function TaskDetailModal({
   isOpen,
@@ -18,7 +18,7 @@ export default function TaskDetailModal({
   const handleAcceptTask = async () => {
     setIsSubmitting(true);
     try {
-      const response = await acceptTaskByIdApi(task.id);
+      const response = await acceptTask(task.id);
       if (response.success) {
         toast.success("Đã tham gia nhiệm vụ thành công!");
         onTaskAccepted(task);

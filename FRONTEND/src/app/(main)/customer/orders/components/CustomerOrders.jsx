@@ -1,4 +1,3 @@
-import { Alert, Box, CircularProgress } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 import { useAuthStore } from "@/src/store/auth/authStore";
@@ -31,6 +30,7 @@ export default function CustomerOrders() {
     setTimeout(() => setConfirmAlertOpen(false), 3000);
   };
 
+  const shippingAccountsState = useShippingAccounts(userInfo?.id, showAlert);
   const {
     shippingAccounts,
     isLoadingAccounts,
@@ -48,10 +48,19 @@ export default function CustomerOrders() {
     handleDeleteShippingAccount,
     handleSetDefaultShippingAccount,
     resetShippingAccountForm,
-  } = useShippingAccounts(userInfo?.id, showAlert);
+  } = shippingAccountsState;
 
   const hasLinkedShippingAccounts = () => shippingAccounts.length > 0;
 
+  const ordersState = useOrders({
+    shippingAccounts,
+    hasLinkedShippingAccounts,
+    showAlert,
+    selectedOrder,
+    setSelectedOrder,
+    setDetailsDialogOpen,
+    setShippingAccountsDialogOpen,
+  });
   const {
     orders,
     setOrders,
@@ -74,16 +83,19 @@ export default function CustomerOrders() {
     handleAddItem,
     handleRemoveItem,
     handleItemChange,
-  } = useOrders({
+  } = ordersState;
+
+  const transactionsState = useTransactions({
     shippingAccounts,
-    hasLinkedShippingAccounts,
     showAlert,
     selectedOrder,
     setSelectedOrder,
     setDetailsDialogOpen,
-    setShippingAccountsDialogOpen,
+    setNewOrder,
+    setIsCreatingBasedOn,
+    setCreateDialogOpen,
+    fetchOrders,
   });
-
   const {
     transactions,
     isLoadingTransactions,
@@ -98,17 +110,7 @@ export default function CustomerOrders() {
     handleOpenEditBuyerInfo,
     handleUpdateBuyerInfo,
     handleCreateOrderFromTransaction,
-  } = useTransactions({
-    shippingAccounts,
-    showAlert,
-    selectedOrder,
-    setSelectedOrder,
-    setDetailsDialogOpen,
-    setNewOrder,
-    setIsCreatingBasedOn,
-    setCreateDialogOpen,
-    fetchOrders,
-  });
+  } = transactionsState;
 
   useEffect(() => {
     fetchShippingAccounts();
@@ -132,27 +134,17 @@ export default function CustomerOrders() {
   const cancelledOrders = orders.filter((order) => order.status === "cancel");
 
   return (
-    <Box>
+    <div>
       {confirmAlertOpen && (
-        <Alert
-          severity={alertSeverity}
-          sx={{
-            position: "fixed",
-            top: "80px",
-            right: "20px",
-            zIndex: 9999,
-            backgroundColor:
-              alertSeverity === "success" ? "var(--light-green)" : "#FFF3E0",
-            color:
-              alertSeverity === "success" ? "var(--primary-green)" : "#E65100",
-            border: `1px solid ${
-              alertSeverity === "success" ? "var(--primary-green)" : "#FB8C00"
-            }`,
-          }}
-          onClose={() => setConfirmAlertOpen(false)}
+        <div
+          className={`fixed top-20 right-5 z-[9999] px-4 py-3 rounded border shadow-md flex items-center transition-all ${
+            alertSeverity === "success"
+              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+              : "bg-amber-50 text-amber-700 border-amber-200"
+          }`}
         >
           {alertMessage}
-        </Alert>
+        </div>
       )}
 
       <OrdersHeader
@@ -163,16 +155,9 @@ export default function CustomerOrders() {
       />
 
       {isLoadingOrders && isLoadingTransactions ? (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "200px",
-          }}
-        >
-          <CircularProgress color="success" />
-        </Box>
+        <div className="flex justify-center items-center h-[200px]">
+          <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
       ) : orders.length === 0 && transactions.length === 0 ? (
         <EmptyOrderState
           hasLinkedShippingAccounts={hasLinkedShippingAccounts()}
@@ -202,49 +187,13 @@ export default function CustomerOrders() {
       )}
 
       <OrdersDialogsOverlay
-        shippingAccountsDialogOpen={shippingAccountsDialogOpen}
-        setShippingAccountsDialogOpen={setShippingAccountsDialogOpen}
-        isLoadingAccounts={isLoadingAccounts}
-        shippingAccounts={shippingAccounts}
-        handleSetDefaultShippingAccount={handleSetDefaultShippingAccount}
-        handleEditShippingAccount={handleEditShippingAccount}
-        handleDeleteShippingAccount={handleDeleteShippingAccount}
-        resetShippingAccountForm={resetShippingAccountForm}
-        addShippingAccountDialogOpen={addShippingAccountDialogOpen}
-        setAddShippingAccountDialogOpen={setAddShippingAccountDialogOpen}
-        isEditingShippingAccount={isEditingShippingAccount}
-        newShippingAccount={newShippingAccount}
-        setNewShippingAccount={setNewShippingAccount}
-        handleAddShippingAccount={handleAddShippingAccount}
-        handleUpdateShippingAccount={handleUpdateShippingAccount}
-        createDialogOpen={createDialogOpen}
-        setCreateDialogOpen={setCreateDialogOpen}
-        setIsEditingOrder={setIsEditingOrder}
-        setIsCreatingBasedOn={setIsCreatingBasedOn}
-        newOrder={newOrder}
-        setNewOrder={setNewOrder}
-        initialOrderPayload={initialOrderPayload}
-        isEditingOrder={isEditingOrder}
-        handleUpdateOrder={handleUpdateOrder}
-        handleCreateOrder={handleCreateOrder}
-        calculatePoints={calculatePoints}
-        handleAddItem={handleAddItem}
-        handleRemoveItem={handleRemoveItem}
-        handleItemChange={handleItemChange}
-        isCreatingBasedOn={isCreatingBasedOn}
-        handleCreateBasedOn={handleCreateBasedOn}
+        shippingAccountsState={shippingAccountsState}
+        ordersState={ordersState}
+        transactionsState={transactionsState}
         selectedOrder={selectedOrder}
         detailsDialogOpen={detailsDialogOpen}
         setDetailsDialogOpen={setDetailsDialogOpen}
-        handleConfirmOrder={handleConfirmOrder}
-        handleCancelOrder={handleCancelOrder}
-        handleOpenEditBuyerInfo={handleOpenEditBuyerInfo}
-        buyerInfoDialogOpen={buyerInfoDialogOpen}
-        setBuyerInfoDialogOpen={setBuyerInfoDialogOpen}
-        buyerInfo={buyerInfo}
-        setBuyerInfo={setBuyerInfo}
-        handleUpdateBuyerInfo={() => handleUpdateBuyerInfo(orders, setOrders)}
       />
-    </Box>
+    </div>
   );
 }

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Button from "../components/ui/button";
 import InputField from "../components/ui/InputField";
 import { useNotification } from "../components/ui/NotificationProvider";
-import { forgotPasswordApi, resetPasswordApi } from "../utils/api";
+import { forgotPassword, resetPassword } from "../utils/api";
 
 const ForgotPassword = () => {
   const router = useRouter();
@@ -35,7 +35,7 @@ const ForgotPassword = () => {
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
     try {
-      const response = await forgotPasswordApi(email);
+      const response = await forgotPassword(email);
       if (response) {
         notify(
           "success",
@@ -60,7 +60,7 @@ const ForgotPassword = () => {
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
     try {
-      const res = await resetPasswordApi(token, newPassword);
+      const res = await resetPassword(token, newPassword);
       if (res && res.data.email) {
         notify("success", "Mật khẩu đã được thay đổi thành công!");
         router.push("/login");

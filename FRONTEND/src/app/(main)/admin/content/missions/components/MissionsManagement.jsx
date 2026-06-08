@@ -1,11 +1,12 @@
-import { Box } from "@mui/material";
+"use client";
+
 import React, { useEffect, useState } from "react";
 
 import {
-  createTaskApi,
-  deleteTaskApi,
-  getAllTasksApi,
-  updateTaskApi,
+  createTask,
+  deleteTask,
+  getAllTasks,
+  updateTask,
 } from "@/src/utils/api";
 
 import DataTable from "../../../components/DataTable";
@@ -18,26 +19,27 @@ export default function TasksManagement() {
   const [formOpen, setFormOpen] = useState(false);
   const [editData, setEditData] = useState(null);
   const [formMode, setFormMode] = useState("add");
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const res = await getAllTasksApi();
 
-        if (res.success) {
-          setTasks(res.data);
-        } else {
-          console.log(res.error);
-        }
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setLoading(false);
+  const fetchTasks = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllTasks();
+      if (res.success) {
+        setTasks(res.data);
+      } else {
+        console.log(res.error);
       }
-    };
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchData();
+  useEffect(() => {
+    fetchTasks();
   }, []);
+
   const handleAddTask = () => {
     setFormMode("add");
     setEditData(null);
@@ -51,20 +53,28 @@ export default function TasksManagement() {
   };
 
   const handleDeleteTask = async (task) => {
-    const res = await deleteTaskApi(task.id);
-    if (confirm("Bạn có chắc chắn muốn xóa không?")) {
-      if (res.success) {
-        alert("Xóa nhiệm vụ thành công!");
-        setTasks((prev) => prev.filter((t) => t.id !== task.id));
+    if (window.confirm("Bạn có chắc chắn muốn xóa không?")) {
+      try {
+        const res = await deleteTask(task.id);
+        if (res.success) {
+          alert("Xóa nhiệm vụ thành công!");
+          setTasks((prev) => prev.filter((t) => t.id !== task.id));
+        } else {
+          alert("Xóa nhiệm vụ thất bại!");
+        }
+      } catch (e) {
+        console.log(e);
       }
     }
   };
+
   const handleSubmitTask = async (data, mode) => {
     if (mode === "add") {
       try {
-        const result = await createTaskApi(data);
+        const result = await createTask(data);
         if (result.success) {
           alert("Thêm nhiệm vụ thành công!");
+          fetchTasks();
         } else {
           alert("Thêm nhiệm vụ thất bại!");
         }
@@ -73,9 +83,10 @@ export default function TasksManagement() {
       }
     } else if (mode === "edit") {
       try {
-        const result = await updateTaskApi(data.id, data);
+        const result = await updateTask(data.id, data);
         if (result.success) {
           alert("Cập nhật nhiệm vụ thành công!");
+          fetchTasks();
         } else {
           alert("Cập nhật nhiệm vụ thất bại!");
         }
@@ -85,8 +96,9 @@ export default function TasksManagement() {
     }
     setFormOpen(false);
   };
+
   return (
-    <Box>
+    <div>
       <DataTable
         title="Tasks"
         columns={taskColumns}
@@ -103,6 +115,6 @@ export default function TasksManagement() {
         initialData={editData}
         mode={formMode}
       />
-    </Box>
+    </div>
   );
 }

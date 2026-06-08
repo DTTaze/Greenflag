@@ -1,11 +1,12 @@
-import { Box, Typography } from "@mui/material";
+"use client";
+
 import React, { useEffect, useState } from "react";
 
 import {
-  createUserApi,
-  deleteUserApi,
-  getAllUserApi,
-  updateUserApi,
+  registerUser,
+  deleteUser,
+  getAllUsers,
+  updateUser,
 } from "@/src/utils/api";
 
 import DataTable from "../../components/DataTable";
@@ -19,22 +20,23 @@ export default function UsersManagement() {
   const [editData, setEditData] = useState(null);
   const [formMode, setFormMode] = useState("add");
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      setLoading(true);
-      try {
-        const res = await getAllUserApi();
-        if (res.success) {
-          setUsers(res.data);
-        } else {
-          console.log(res.error);
-        }
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setLoading(false);
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllUsers();
+      if (res.success) {
+        setUsers(res.data);
+      } else {
+        console.log(res.error);
       }
-    };
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchUsers();
   }, []);
 
@@ -51,11 +53,17 @@ export default function UsersManagement() {
   };
 
   const handleDeleteUser = async (user) => {
-    const res = await deleteUserApi(user.id);
-    if (confirm("Bạn có chắc chắn muốn xóa không?")) {
-      if (res.success) {
-        alert("Xóa người dùng thành công!");
-        setUsers((prev) => prev.filter((u) => u.id !== user.id));
+    if (window.confirm("Bạn có chắc chắn muốn xóa không?")) {
+      try {
+        const res = await deleteUser(user.id);
+        if (res.success) {
+          alert("Xóa người dùng thành công!");
+          setUsers((prev) => prev.filter((u) => u.id !== user.id));
+        } else {
+          alert("Xóa người dùng thất bại: " + (res.error || ""));
+        }
+      } catch (e) {
+        console.log(e);
       }
     }
   };
@@ -63,9 +71,10 @@ export default function UsersManagement() {
   const handleSubmitUser = async (data, mode) => {
     if (mode === "add") {
       try {
-        const result = await createUserApi(data);
+        const result = await registerUser(data);
         if (result.success) {
           alert("Thêm người dùng thành công!");
+          fetchUsers();
         } else {
           alert("Thêm người dùng thất bại!");
         }
@@ -74,9 +83,10 @@ export default function UsersManagement() {
       }
     } else if (mode === "edit") {
       try {
-        const result = await updateUserApi(data.id, data);
+        const result = await updateUser(data.id, data);
         if (result.success) {
           alert("Cập nhật người dùng thành công!");
+          fetchUsers();
         } else {
           alert("Cập nhật người dùng thất bại!");
         }
@@ -88,10 +98,8 @@ export default function UsersManagement() {
   };
 
   return (
-    <Box sx={{ p: 2 }}>
-      <Typography variant="h5" component="h1" sx={{ mb: 3 }}>
-        Users Management
-      </Typography>
+    <div className="p-4 space-y-4">
+      <h1 className="text-2xl font-bold text-gray-950">Users Management</h1>
       <DataTable
         title="Users"
         columns={userColumns}
@@ -108,6 +116,6 @@ export default function UsersManagement() {
         initialData={editData}
         mode={formMode}
       />
-    </Box>
+    </div>
   );
 }

@@ -1,18 +1,11 @@
-import AddIcon from "@mui/icons-material/Add";
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  Typography,
-} from "@mui/material";
 import React, { useEffect, useState } from "react";
-
+import { Plus } from "lucide-react";
+import { Button } from "@/src/components/ui/button";
 import {
-  createEventApi,
-  deleteEventApi,
-  getOwnerEventApi,
-  updateEventApi,
+  createEvent,
+  deleteEvent,
+  getOwnerEvents,
+  updateEvent,
 } from "@/src/utils/api";
 
 import EventDialog from "./EventDialog";
@@ -36,7 +29,7 @@ const CustomerEvents = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await getOwnerEventApi();
+      const response = await getOwnerEvents();
 
       console.log("events response: ", response);
       if (response.data) {
@@ -55,7 +48,7 @@ const CustomerEvents = () => {
     // Filter by search term
     if (filters.search) {
       filtered = filtered.filter((event) =>
-        event.name.toLowerCase().includes(filters.search.toLowerCase()),
+        event.title.toLowerCase().includes(filters.search.toLowerCase())
       );
     }
 
@@ -67,7 +60,7 @@ const CustomerEvents = () => {
     // Filter by minimum price
     if (filters.minPrice) {
       filtered = filtered.filter(
-        (event) => event.price >= parseFloat(filters.minPrice),
+        (event) => event.coins >= parseFloat(filters.minPrice),
       );
     }
 
@@ -111,7 +104,7 @@ const CustomerEvents = () => {
     if (window.confirm("Are you sure you want to delete this event?")) {
       try {
         setLoading(true);
-        await deleteEventApi(eventId);
+        await deleteEvent(eventId);
         await fetchEvents();
       } catch (err) {
         setError(err.response?.data?.message || "Failed to delete event");
@@ -127,9 +120,9 @@ const CustomerEvents = () => {
       setError(null);
 
       if (selectedEvent) {
-        await updateEventApi(selectedEvent.id, formData, images);
+        await updateEvent(selectedEvent.id, formData, images);
       } else {
-        await createEventApi(formData, images);
+        await createEvent(formData, images);
       }
 
       await fetchEvents();
@@ -143,46 +136,31 @@ const CustomerEvents = () => {
 
   if (loading) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "400px",
-        }}
-      >
-        <CircularProgress />
-      </Box>
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
     );
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 3,
-        }}
-      >
-        <Typography variant="h5" component="h2">
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">
           Events Management
-        </Typography>
+        </h2>
         <Button
-          variant="contained"
-          startIcon={<AddIcon />}
           onClick={handleAddEvent}
-          className="customer-button"
+          className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
         >
+          <Plus size={18} />
           Add Event
         </Button>
-      </Box>
+      </div>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-md text-sm">
           {error}
-        </Alert>
+        </div>
       )}
 
       <EventFilters
@@ -204,7 +182,7 @@ const CustomerEvents = () => {
         onSave={handleSaveEvent}
         event={selectedEvent}
       />
-    </Box>
+    </div>
   );
 };
 

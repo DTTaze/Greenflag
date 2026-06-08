@@ -1,11 +1,11 @@
 import { useState } from "react";
 
 import {
-  createShippingAccountApi,
-  deleteShippingAccountApi,
-  getShippingAccountsByUserApi,
-  setDefaultShippingAccountApi,
-  updateShippingAccountApi,
+  createShippingAccount,
+  deleteShippingAccount,
+  getShippingAccountsByUser,
+  setDefaultShippingAccount,
+  updateShippingAccount,
 } from "@/src/utils/api";
 
 const emptyShippingAccountForm = {
@@ -33,7 +33,7 @@ export default function useShippingAccounts(userId, showAlert) {
   const fetchShippingAccounts = async () => {
     try {
       setIsLoadingAccounts(true);
-      const response = await getShippingAccountsByUserApi();
+      const response = await getShippingAccountsByUser();
       if (response.status === 200) {
         setShippingAccounts(response.data);
       }
@@ -57,7 +57,7 @@ export default function useShippingAccounts(userId, showAlert) {
         is_default: shippingAccounts.length === 0,
       };
 
-      const response = await createShippingAccountApi(accountData);
+      const response = await createShippingAccount(accountData);
       if (response && response.data) {
         setShippingAccounts((prev) => [...prev, response.data]);
         setAddShippingAccountDialogOpen(false);
@@ -94,7 +94,7 @@ export default function useShippingAccounts(userId, showAlert) {
 
   const handleUpdateShippingAccount = async () => {
     try {
-      const response = await updateShippingAccountApi(
+      const response = await updateShippingAccount(
         selectedShippingAccount.id,
         newShippingAccount,
       );
@@ -120,7 +120,7 @@ export default function useShippingAccounts(userId, showAlert) {
 
   const handleDeleteShippingAccount = async (accountId) => {
     try {
-      await deleteShippingAccountApi(accountId);
+      await deleteShippingAccount(accountId);
       const updatedAccounts = shippingAccounts.filter(
         (account) => account.id !== accountId,
       );
@@ -130,7 +130,7 @@ export default function useShippingAccounts(userId, showAlert) {
         updatedAccounts.length > 0
       ) {
         updatedAccounts[0].is_default = true;
-        await setDefaultShippingAccountApi(updatedAccounts[0].id);
+        await setDefaultShippingAccount(updatedAccounts[0].id);
       }
 
       setShippingAccounts(updatedAccounts);
@@ -146,7 +146,7 @@ export default function useShippingAccounts(userId, showAlert) {
 
   const handleSetDefaultShippingAccount = async (accountId) => {
     try {
-      const response = await setDefaultShippingAccountApi(accountId);
+      const response = await setDefaultShippingAccount(accountId);
       if (response && response.data) {
         setShippingAccounts((prev) =>
           prev.map((account) =>

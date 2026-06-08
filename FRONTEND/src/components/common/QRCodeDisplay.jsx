@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { getQRApi } from "../../utils/api";
+import { getQR } from "../../utils/api";
 
 export default function QRCodeDisplay({ initialText }) {
   const [qr, setQr] = useState("");
@@ -9,7 +9,7 @@ export default function QRCodeDisplay({ initialText }) {
     const generateQR = async () => {
       if (initialText) {
         try {
-          const response = await getQRApi(initialText);
+          const response = await getQR(initialText);
           console.log("qr response: ", response);
           setQr(response.data);
         } catch (error) {

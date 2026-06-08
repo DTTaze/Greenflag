@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useAuthStore } from "@/src/store/auth/authStore";
 
 import { useNotification } from "../components/ui/NotificationProvider";
-import { getUserApi, getUserAvatarByIdApi, logoutUserApi } from "../utils/api";
+import { getUser, getUserAvatarById, logoutUser } from "../utils/api";
 
 function UserHeader() {
   const router = useRouter();
@@ -20,7 +20,7 @@ function UserHeader() {
   const fetchUser = async () => {
     if (!user?.username || !user?.email) {
       try {
-        const response = await getUserApi();
+        const response = await getUser();
         if (response?.data) {
           dispatch({ type: "UPDATE_USER", payload: response.data });
         }
@@ -33,7 +33,7 @@ function UserHeader() {
   const fetchAvatar = async () => {
     if (user?.id && !user?.avatar_url) {
       try {
-        const response = await getUserAvatarByIdApi(user.id);
+        const response = await getUserAvatarById(user.id);
         if (response?.avatar_url) {
           dispatch({
             type: "UPDATE_USER",
@@ -79,7 +79,7 @@ function UserHeader() {
 
   const handleLogout = async () => {
     try {
-      await logoutUserApi();
+      await logoutUser();
       dispatch({ type: "LOGOUT" });
       notify("success", "Đăng xuất thành công");
       router.push("/");

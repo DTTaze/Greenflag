@@ -1,178 +1,110 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Chip,
-  Divider,
-  Grid,
-  Stack,
-  Typography,
-} from "@mui/material";
-import { Coins, Star } from "lucide-react";
 import React from "react";
-
+import { Coins, Star } from "lucide-react";
+import { Button } from "@/src/components/ui/button";
 import getAmount from "@/src/utils/getAmount";
-
 import { getStatusColor, getStatusLabel } from "./userListHelpers";
 
 export default function UserMobileList({ users, onEvaluate, onAddToEvent }) {
+  const getBadgeClass = (status) => {
+    const color = getStatusColor(status);
+    switch (color) {
+      case "success":
+        return "bg-emerald-50 text-emerald-700 border-emerald-200";
+      case "primary":
+        return "bg-blue-50 text-blue-700 border-blue-200";
+      case "error":
+        return "bg-red-50 text-red-700 border-red-200";
+      default:
+        return "bg-gray-50 text-gray-700 border-gray-200";
+    }
+  };
+
   return (
-    <Grid container spacing={2}>
+    <div className="grid grid-cols-1 gap-4">
       {users.map((user) => (
-        <Grid item xs={12} key={user.id}>
-          <Card sx={{ mb: 2 }}>
-            <CardContent>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 2,
-                  mb: 2,
-                }}
+        <div key={user.id} className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+          <div className="flex items-center gap-3 mb-4">
+            <img
+              src={user.avatar}
+              alt={user.full_name}
+              className="h-12 w-12 rounded-full object-cover border border-gray-100"
+            />
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800">{user.full_name}</h3>
+              <p className="text-sm text-gray-500">{user.email}</p>
+            </div>
+          </div>
+
+          <hr className="border-gray-200 my-3" />
+
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <div className="text-xs text-gray-400 font-medium">Total Events</div>
+              <div className="text-sm font-semibold text-gray-700">{user.events.length}</div>
+            </div>
+            <div>
+              <div className="text-xs text-gray-400 font-medium">Coins</div>
+              <div className="flex items-center gap-1 mt-0.5">
+                <Coins className="text-amber-500" size={16} />
+                <span className="text-sm font-semibold text-gray-700">
+                  {getAmount(user.coins)}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-sm font-semibold text-gray-700 mb-2">Events</div>
+          <div className="space-y-2">
+            {user.events.map((event) => (
+              <div
+                key={event.id}
+                className="flex justify-between items-center p-2 bg-gray-50 border border-gray-100 rounded-md"
               >
-                <Avatar
-                  src={user.avatar}
-                  alt={user.full_name}
-                  sx={{ width: 60, height: 60 }}
-                />
-                <Box>
-                  <Typography variant="h6">{user.full_name}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {user.email}
-                  </Typography>
-                </Box>
-              </Box>
-
-              <Divider sx={{ mb: 2 }} />
-
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <Typography variant="body2" color="text.secondary">
-                    Total Events
-                  </Typography>
-                  <Typography variant="body2">{user.events.length}</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="body2" color="text.secondary">
-                    Coins
-                  </Typography>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 0.5,
-                    }}
+                <div>
+                  <div className="text-xs font-semibold text-gray-800">{event.title}</div>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium ${getBadgeClass(event.status)}`}>
+                      {getStatusLabel(event.status)}
+                    </span>
+                    <span className="text-[10px] text-gray-500">
+                      {event.completion_rate}% completed
+                    </span>
+                  </div>
+                </div>
+                {onEvaluate && (
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="h-7 w-7 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 border-emerald-200"
+                    onClick={() => onEvaluate(user, event.id)}
                   >
-                    <Coins style={{ color: "#ed6c02" }} size={16} />
-                    <Typography fontWeight={500}>
-                      {getAmount(user.coins)}
-                    </Typography>
-                  </Box>
-                </Grid>
-              </Grid>
+                    <Star size={14} />
+                  </Button>
+                )}
+              </div>
+            ))}
+          </div>
 
-              <Typography variant="subtitle2" sx={{ mt: 2, mb: 1 }}>
-                Events
-              </Typography>
-              <Stack spacing={1}>
-                {user.events.map((event) => (
-                  <Box
-                    key={event.id}
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      p: 1,
-                      backgroundColor: "var(--grey-100)",
-                      borderRadius: 1,
-                      border: "1px solid var(--grey-200)",
-                    }}
-                  >
-                    <Box>
-                      <Typography variant="body2" fontWeight={500}>
-                        {event.title}
-                      </Typography>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 0.5,
-                        }}
-                      >
-                        <Chip
-                          label={getStatusLabel(event.status)}
-                          color={getStatusColor(event.status)}
-                          size="small"
-                        />
-                        <Typography variant="caption">
-                          {event.completion_rate}% completed
-                        </Typography>
-                      </Box>
-                    </Box>
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      onClick={() => onEvaluate(user, event.id)}
-                      sx={{
-                        minWidth: 0,
-                        p: "4px",
-                        color: "var(--primary-green)",
-                        borderColor: "var(--light-green)",
-                      }}
-                    >
-                      <Star size={16} />
-                    </Button>
-                  </Box>
-                ))}
-              </Stack>
-
-              <Box
-                sx={{
-                  mt: 2,
-                  display: "flex",
-                  justifyContent: "flex-end",
-                }}
+          {onAddToEvent && (
+            <div className="mt-4 flex justify-end">
+              <Button
+                size="sm"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                onClick={() => onAddToEvent(user)}
               >
-                <Button
-                  size="small"
-                  variant="contained"
-                  onClick={() => onAddToEvent(user)}
-                  sx={{
-                    bgcolor: "var(--primary-green)",
-                    "&:hover": {
-                      bgcolor: "var(--dark-green)",
-                    },
-                  }}
-                >
-                  Add to Event
-                </Button>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+                Add to Event
+              </Button>
+            </div>
+          )}
+        </div>
       ))}
 
       {users.length === 0 && (
-        <Grid item xs={12}>
-          <Box
-            sx={{
-              textAlign: "center",
-              py: 5,
-              backgroundColor: "var(--grey-100)",
-              borderRadius: 2,
-            }}
-          >
-            <Typography variant="h6" color="text.secondary">
-              No users found
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Try adjusting your search or filters
-            </Typography>
-          </Box>
-        </Grid>
+        <div className="text-center py-8 bg-gray-50 border border-gray-150 rounded-lg text-gray-500">
+          <div className="text-base font-semibold">No users found</div>
+          <div className="text-sm text-gray-400">Try adjusting your search or filters</div>
+        </div>
       )}
-    </Grid>
+    </div>
   );
 }

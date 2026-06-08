@@ -1,11 +1,12 @@
-import { Box } from "@mui/material";
+"use client";
+
 import React, { useEffect, useState } from "react";
 
 import {
-  createItemApi,
-  deleteItemApi,
-  getAllItemsApi,
-  updateItemApi,
+  createItem,
+  deleteItem,
+  getAllItems,
+  updateItem,
 } from "@/src/utils/api";
 
 import DataTable from "../../../components/DataTable";
@@ -18,26 +19,27 @@ export default function ItemsManagement() {
   const [formOpen, setFormOpen] = useState(false);
   const [editData, setEditData] = useState(null);
   const [formMode, setFormMode] = useState("add");
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const res = await getAllItemsApi();
 
-        if (res.success) {
-          setItems(res.data);
-        } else {
-          console.log(res.error);
-        }
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setLoading(false);
+  const fetchItems = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllItems();
+      if (res.success) {
+        setItems(res.data);
+      } else {
+        console.log(res.error);
       }
-    };
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchData();
+  useEffect(() => {
+    fetchItems();
   }, []);
+
   const handleAddItem = () => {
     setFormMode("add");
     setEditData(null);
@@ -51,20 +53,28 @@ export default function ItemsManagement() {
   };
 
   const handleDeleteItem = async (item) => {
-    const res = await deleteItemApi(item.id);
-    if (confirm("Bạn có chắc chắn muốn xóa không?")) {
-      if (res.success) {
-        alert("Xóa vật phẩm thành công!");
-        setItems((prev) => prev.filter((i) => i.id !== item.id));
+    if (window.confirm("Bạn có chắc chắn muốn xóa không?")) {
+      try {
+        const res = await deleteItem(item.id);
+        if (res.success) {
+          alert("Xóa vật phẩm thành công!");
+          setItems((prev) => prev.filter((i) => i.id !== item.id));
+        } else {
+          alert("Xóa vật phẩm thất bại!");
+        }
+      } catch (e) {
+        console.log(e);
       }
     }
   };
+
   const handleSubmitItem = async (data, mode) => {
     if (mode === "add") {
       try {
-        const result = await createItemApi(data);
+        const result = await createItem(data);
         if (result.success) {
           alert("Thêm vật phẩm thành công!");
+          fetchItems();
         } else {
           alert("Thêm vật phẩm thất bại!");
         }
@@ -73,9 +83,10 @@ export default function ItemsManagement() {
       }
     } else if (mode === "edit") {
       try {
-        const result = await updateItemApi(data.id, data);
+        const result = await updateItem(data.id, data);
         if (result.success) {
           alert("Cập nhật vật phẩm thành công!");
+          fetchItems();
         } else {
           alert("Cập nhật vật phẩm thất bại!");
         }
@@ -85,8 +96,9 @@ export default function ItemsManagement() {
     }
     setFormOpen(false);
   };
+
   return (
-    <Box>
+    <div>
       <DataTable
         title="Items"
         columns={itemColumns}
@@ -103,6 +115,6 @@ export default function ItemsManagement() {
         initialData={editData}
         mode={formMode}
       />
-    </Box>
+    </div>
   );
 }

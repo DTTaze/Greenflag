@@ -1,20 +1,8 @@
-import CloseIcon from "@mui/icons-material/Close";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  Grid,
-  IconButton,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from "@mui/material";
 import React, { useEffect, useState } from "react";
-
+import { X } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/src/components/ui/dialog";
+import { Button } from "@/src/components/ui/button";
+import { Input } from "@/src/components/ui/input";
 import MultiImageUpload from "@/src/components/common/MultiImageUpload";
 
 const EventDialog = ({ open, onClose, onSave, event }) => {
@@ -63,11 +51,12 @@ const EventDialog = ({ open, onClose, onSave, event }) => {
         end_time: event.end_time
           ? new Date(event.end_time).toISOString().slice(0, 16)
           : "",
-        end_sign: event.end_sign || "",
-        coins: event.coins,
+        end_sign: event.end_sign
+          ? new Date(event.end_sign).toISOString().slice(0, 16)
+          : "",
+        coins: event.coins || "",
         status: event.status || "upcoming",
       });
-      // Ensure images is always an array
       const eventImages = event.images || [];
       const imageUrls = Array.isArray(eventImages)
         ? eventImages.map((img) => img.url || img)
@@ -84,7 +73,6 @@ const EventDialog = ({ open, onClose, onSave, event }) => {
       ...prev,
       [name]: value,
     }));
-    // Clear error when field is edited
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -143,163 +131,175 @@ const EventDialog = ({ open, onClose, onSave, event }) => {
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>
-        {event ? "Edit Event" : "Add New Event"}
-        <IconButton
-          aria-label="close"
-          onClick={handleClose}
-          sx={{
-            position: "absolute",
-            right: 8,
-            top: 8,
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
-      <DialogContent>
-        <Grid container spacing={2} sx={{ mt: 1 }}>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Title"
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
+      <DialogContent className="sm:max-w-3xl w-full p-6 max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="flex flex-row items-center justify-between border-b pb-4">
+          <DialogTitle className="text-xl font-bold text-gray-800">
+            {event ? "Edit Event" : "Add New Event"}
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
+          <div className="md:col-span-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Title <span className="text-red-500">*</span>
+            </label>
+            <Input
               name="title"
               value={formData.title}
               onChange={handleChange}
-              error={!!errors.title}
-              helperText={errors.title}
-              required
+              className={errors.title ? "border-red-500" : ""}
+              placeholder="Event Title"
             />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Description"
+            {errors.title && (
+              <span className="text-xs text-red-500 mt-1 block">{errors.title}</span>
+            )}
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Description
+            </label>
+            <textarea
               name="description"
-              multiline
-              rows={4}
               value={formData.description}
               onChange={handleChange}
+              rows={4}
+              className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              placeholder="Describe the event..."
             />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Location"
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Location <span className="text-red-500">*</span>
+            </label>
+            <Input
               name="location"
               value={formData.location}
               onChange={handleChange}
-              error={!!errors.location}
-              helperText={errors.location}
-              required
+              className={errors.location ? "border-red-500" : ""}
+              placeholder="Event Location"
             />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Capacity"
+            {errors.location && (
+              <span className="text-xs text-red-500 mt-1 block">{errors.location}</span>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Capacity <span className="text-red-500">*</span>
+            </label>
+            <Input
               name="capacity"
               type="number"
               value={formData.capacity}
               onChange={handleChange}
-              error={!!errors.capacity}
-              helperText={errors.capacity}
-              required
+              className={errors.capacity ? "border-red-500" : ""}
+              placeholder="Maximum Participants"
             />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Start Time"
+            {errors.capacity && (
+              <span className="text-xs text-red-500 mt-1 block">{errors.capacity}</span>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Start Time <span className="text-red-500">*</span>
+            </label>
+            <Input
               name="start_time"
               type="datetime-local"
               value={formData.start_time}
               onChange={handleChange}
-              error={!!errors.start_time}
-              helperText={errors.start_time}
-              required
-              InputLabelProps={{
-                shrink: true,
-              }}
+              className={errors.start_time ? "border-red-500" : ""}
             />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="End Time"
+            {errors.start_time && (
+              <span className="text-xs text-red-500 mt-1 block">{errors.start_time}</span>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              End Time <span className="text-red-500">*</span>
+            </label>
+            <Input
               name="end_time"
               type="datetime-local"
               value={formData.end_time}
               onChange={handleChange}
-              error={!!errors.end_time}
-              helperText={errors.end_time}
-              required
-              InputLabelProps={{
-                shrink: true,
-              }}
+              className={errors.end_time ? "border-red-500" : ""}
             />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="End Sign Up Time"
+            {errors.end_time && (
+              <span className="text-xs text-red-500 mt-1 block">{errors.end_time}</span>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              End Sign Up Time
+            </label>
+            <Input
               name="end_sign"
               type="datetime-local"
               value={formData.end_sign}
               onChange={handleChange}
-              InputLabelProps={{
-                shrink: true,
-              }}
             />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Coins Reward"
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Coins Reward
+            </label>
+            <Input
               name="coins"
               type="number"
               value={formData.coins}
               onChange={handleChange}
-              InputLabelProps={{
-                shrink: true,
-              }}
+              placeholder="e.g. 100"
             />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FormControl fullWidth>
-              <InputLabel>Status</InputLabel>
-              <Select
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-                label="Status"
-              >
-                <MenuItem value="upcoming">Upcoming</MenuItem>
-                <MenuItem value="active">Active</MenuItem>
-                <MenuItem value="completed">Completed</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12}>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Status
+            </label>
+            <select
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <option value="upcoming">Upcoming</option>
+              <option value="active">Active</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Event Images
+            </label>
             <MultiImageUpload
               previewImages={previewImages}
               onImageChange={handleImagesSelected}
               onRemoveImage={handleRemoveImage}
             />
-          </Grid>
-        </Grid>
+          </div>
+        </div>
+
+        <DialogFooter className="border-t pt-4 gap-2 sm:gap-0">
+          <Button variant="outline" onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+          >
+            {event ? "Update" : "Create"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button
-          onClick={handleSubmit}
-          variant="contained"
-          className="customer-button"
-        >
-          {event ? "Update" : "Create"}
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 };

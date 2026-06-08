@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { socket } from "@/src/config/socket";
 import { useAuthStore } from "@/src/store/auth/authStore";
 import {
-  getReceiverInfoByUserIDAPI,
-  PreviewOrderWithoutOrderCode,
+  getReceiverInfoByUserId,
+  previewOrderWithoutOrderCode,
 } from "@/src/utils/api";
 
 export default function usePurchaseModal({
@@ -80,7 +80,7 @@ export default function usePurchaseModal({
         ],
       };
 
-      const feeResponse = await PreviewOrderWithoutOrderCode(
+      const feeResponse = await previewOrderWithoutOrderCode(
         orderData,
         token,
         shop_id,
@@ -97,7 +97,7 @@ export default function usePurchaseModal({
       if (isOpen && user?.id) {
         try {
           setIsLoadingShipping(true);
-          const response = await getReceiverInfoByUserIDAPI(user.id);
+          const response = await getReceiverInfoByUserId(user.id);
           if (response?.data?.length > 0) {
             const defaultShipping =
               response.data.find((info) => info.is_default) || response.data[0];

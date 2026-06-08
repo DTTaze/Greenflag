@@ -7,7 +7,7 @@ import Loader from "@/src/components/ui/Loader";
 import { SocketProvider } from "@/src/contexts/socket.context";
 import UserHeader from "@/src/layouts/Header";
 import { useAuthStore } from "@/src/store/auth/authStore";
-import { getUserApi } from "@/src/utils/api";
+import { getUser } from "@/src/utils/api";
 
 const socket = io({
   path: "/socket.io",
@@ -25,7 +25,7 @@ export default function MainLayout({
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        const res = await getUserApi();
+        const res = await getUser();
         if (res && res.status === 200) {
           dispatch({
             type: "LOGIN_SUCCESS",

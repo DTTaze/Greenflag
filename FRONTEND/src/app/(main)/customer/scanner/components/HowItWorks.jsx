@@ -1,5 +1,5 @@
-import { Box, Card, CardContent, Grid, Typography } from "@mui/material";
 import React from "react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/src/components/ui/card";
 
 export default function HowItWorks() {
   const steps = [
@@ -30,39 +30,32 @@ export default function HowItWorks() {
   ];
 
   return (
-    <Box sx={{ mt: 4 }}>
-      <Typography variant="h5" gutterBottom>
+    <div className="mt-8">
+      <h3 className="text-xl font-bold text-gray-800 mb-6">
         How It Works
-      </Typography>
-      <Grid container spacing={3}>
+      </h3>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
         {steps.map((step) => (
-          <Grid item xs={12} sm={6} md={3} key={step.number}>
-            <Card
-              sx={{
-                height: "100%",
-                border: "1px solid var(--light-green)",
-                borderRadius: "8px",
-              }}
-            >
-              <CardContent>
-                <Typography
-                  variant="h6"
-                  color="primary"
-                  sx={{ mb: 1, color: "var(--primary-green)" }}
-                >
-                  Step {step.number}
-                </Typography>
-                <Typography variant="h6" gutterBottom>
-                  {step.title}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {step.description}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
+          <Card
+            key={step.number}
+            className="h-full border border-emerald-100 hover:border-emerald-250 transition-colors bg-white shadow-sm"
+          >
+            <CardHeader className="pb-2">
+              <span className="text-sm font-semibold text-emerald-600 uppercase tracking-wider">
+                Step {step.number}
+              </span>
+              <CardTitle className="text-lg font-bold text-gray-850">
+                {step.title}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                {step.description}
+              </p>
+            </CardContent>
+          </Card>
         ))}
-      </Grid>
-    </Box>
+      </div>
+    </div>
   );
 }

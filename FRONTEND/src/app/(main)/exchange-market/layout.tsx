@@ -2,7 +2,7 @@
 
 import React, { useContext } from "react";
 
-import { AuthContext } from "@/src/contexts/auth.context";
+import { useAuthStore } from "@/src/store/auth/authStore";
 
 import CatalogHeader from "./components/CatalogHeader";
 import ItemCatalogSkeleton from "./components/ItemCatalogSkeleton";
@@ -24,7 +24,7 @@ export {
 } from "./contexts/marketplace.context";
 
 function ExchangeMarketContent({ children }: { children: React.ReactNode }) {
-  const { auth } = useContext(AuthContext);
+  const { user } = useAuthStore();
   const {
     loading,
     error,
@@ -47,7 +47,7 @@ function ExchangeMarketContent({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="mx-auto max-w-screen-xl px-4 py-6 sm:px-6">
-        <CatalogHeader userCoins={auth.user?.coins?.amount || 0} />
+        <CatalogHeader userCoins={user?.coins?.amount || 0} />
         <MarketViewNavigation />
         <div className="flex flex-col rounded-lg bg-white p-4 shadow-sm">
           {error && (
@@ -84,7 +84,7 @@ function ExchangeMarketContent({ children }: { children: React.ReactNode }) {
                 isOpen: isModalOpen,
                 onClose: handleCloseModal,
                 item: selectedItem,
-                userCoins: auth.user?.coins?.amount || 0,
+                userCoins: user?.coins?.amount || 0,
                 onConfirm: confirmPurchase,
                 transactionStatus: transactionStatus,
               },

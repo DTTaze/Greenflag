@@ -9,9 +9,9 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import { AuthContext } from "@/src/contexts/auth.context";
+import { useAuthStore } from "@/src/store/auth/authStore";
 import {
   deleteEventUserByIdApi,
   getEventUserByEventIdApi,
@@ -23,8 +23,8 @@ import UserFilters from "./UserFilters";
 import UserList from "./UserList";
 
 export default function CustomerUsers() {
-  const { auth } = useContext(AuthContext);
-  const userInfo = auth.user;
+  const { user } = useAuthStore();
+  const userInfo = user;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [events, setEvents] = useState([]);

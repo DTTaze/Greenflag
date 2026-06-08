@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 import Loader from "@/src/components/ui/Loader";
-import { AuthContext } from "@/src/contexts/auth.context";
 import { SocketProvider } from "@/src/contexts/socket.context";
 import UserHeader from "@/src/layouts/Header";
+import { useAuthStore } from "@/src/store/auth/authStore";
 import { getUserApi } from "@/src/utils/api";
 
 const socket = io({
@@ -19,7 +19,7 @@ export default function MainLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { setAuth } = useContext(AuthContext);
+  const { dispatch } = useAuthStore();
   const [appLoading, setAppLoading] = useState(true);
 
   useEffect(() => {
@@ -27,22 +27,22 @@ export default function MainLayout({
       try {
         const res = await getUserApi();
         if (res && res.status === 200) {
-          setAuth({
-            isAuthenticated: true,
-            user: res.data,
+          dispatch({
+            type: "LOGIN_SUCCESS",
+            payload: res.data,
           });
         } else {
-          setAuth({ isAuthenticated: false, user: null });
+          dispatch({ type: "LOGOUT" });
         }
       } catch {
-        setAuth({ isAuthenticated: false, user: null });
+        dispatch({ type: "LOGOUT" });
       } finally {
         setAppLoading(false);
       }
     };
 
     initializeAuth();
-  }, [setAuth]);
+  }, [dispatch]);
 
   const SocketProviderCast = SocketProvider as React.ComponentType<{
     value: unknown;

@@ -2,10 +2,10 @@
 
 import "@/src/styles/pages/admin.css";
 
-import React, { useContext } from "react";
+import React from "react";
 
 import ProtectedRoute from "@/src/components/common/ProtectedRoute";
-import { AuthContext } from "@/src/contexts/auth.context";
+import { useAuthStore } from "@/src/store/auth/authStore";
 
 import TemporaryDrawer from "./components/SidebarAdmin";
 
@@ -14,18 +14,18 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { auth } = useContext(AuthContext);
+  const { user } = useAuthStore();
 
-  const userInfo = auth.user
+  const userInfo = user
     ? {
-        id: auth.user.id,
-        full_name: auth.user.full_name || "User",
-        avatar_url: auth.user.avatar_url,
-        username: auth.user.username || "Guest",
-        role_id: auth.user.role_id || 0,
-        email: auth.user.email,
-        phone_number: auth.user.phone_number,
-        last_logined: auth.user.last_logined,
+        id: user.id,
+        full_name: user.full_name || "User",
+        avatar_url: user.avatar_url,
+        username: user.username || "Guest",
+        role_id: user.role_id || 0,
+        email: user.email,
+        phone_number: user.phone_number,
+        last_logined: user.last_logined,
       }
     : {
         id: 0,

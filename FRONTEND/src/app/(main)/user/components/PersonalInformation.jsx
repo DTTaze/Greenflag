@@ -6,17 +6,17 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Typography from "@mui/material/Typography";
 import { Copy, QrCode } from "lucide-react";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import Button from "@/src/components/ui/button";
 import InputField from "@/src/components/ui/InputField.jsx";
-import { AuthContext } from "@/src/contexts/auth.context.jsx";
+import { useAuthStore } from "@/src/store/auth/authStore";
 import { getQRApi, updateUserPublicApi } from "@/src/utils/api.js";
 
 import PersonalInfomationSkeleton from "./PersonalInfomationSkeleton.jsx";
 
 function PersonalInformation() {
-  const { auth, setAuth } = useContext(AuthContext);
+  const { isAuthenticated, user: storeUser, dispatch } = useAuthStore();
   const [user, setUser] = useState(null);
   const [originalUser, setOriginalUser] = useState(null);
   const [errors, setErrors] = useState({});
@@ -25,17 +25,17 @@ function PersonalInformation() {
   const [showQrDialog, setShowQrDialog] = useState(false);
 
   useEffect(() => {
-    if (auth.user) {
+    if (storeUser) {
       setUser({
-        public_id: auth.user.public_id,
-        username: auth.user.username || "",
-        email: auth.user.email || "",
-        full_name: auth.user.full_name || "",
-        phone_number: auth.user.phone_number || "",
+        public_id: storeUser.public_id,
+        username: storeUser.username || "",
+        email: storeUser.email || "",
+        full_name: storeUser.full_name || "",
+        phone_number: storeUser.phone_number || "",
       });
-      setOriginalUser(auth.user);
+      setOriginalUser(storeUser);
     }
-  }, [auth.user]);
+  }, [storeUser]);
 
   const validateField = (name, value) => {
     let error = "";
@@ -99,10 +99,10 @@ function PersonalInformation() {
         phone_number: user.phone_number,
       };
       const res = await updateUserPublicApi(user.public_id, payload);
-      setAuth((prev) => ({
-        ...prev,
-        user: res.data,
-      }));
+      dispatch({
+        type: "UPDATE_USER",
+        payload: res.data,
+      });
       setOriginalUser(res.data);
       setUser({
         public_id: res.data.public_id,
@@ -153,7 +153,7 @@ function PersonalInformation() {
     alert("Copied to clipboard!");
   };
 
-  if (!auth.isAuthenticated || !user) return <PersonalInfomationSkeleton />;
+  if (!isAuthenticated || !user) return <PersonalInfomationSkeleton />;
 
   const inputFields = [
     { id: "username", label: "Tên người dùng" },

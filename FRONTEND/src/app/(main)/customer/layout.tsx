@@ -3,10 +3,10 @@
 import "@/src/styles/pages/customer.css";
 
 import { Box } from "@mui/material";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 
 import ProtectedRoute from "@/src/components/common/ProtectedRoute";
-import { AuthContext } from "@/src/contexts/auth.context";
+import { useAuthStore } from "@/src/store/auth/authStore";
 
 import CustomerAppBar from "./components/layout/CustomerAppBar";
 import CustomerDrawer from "./components/layout/CustomerDrawer";
@@ -18,8 +18,8 @@ export default function CustomerLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { auth } = useContext(AuthContext);
-  const userInfo = auth.user;
+  const { user } = useAuthStore();
+  const userInfo = user;
   const [open, setOpen] = useState(false);
 
   const handleDrawerToggle = () => {

@@ -1,6 +1,6 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-import { AuthContext } from "@/src/contexts/auth.context";
+import { useAuthStore } from "@/src/store/auth/authStore";
 import {
   CancelTransactionByIdAPI,
   getAllShippingOrdersByBuyerApi,
@@ -22,7 +22,7 @@ const PurchaseOrder = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { auth } = useContext(AuthContext);
+  const { user } = useAuthStore();
 
   const tabs = [
     { id: "all", label: "Tất cả" },
@@ -42,8 +42,8 @@ const PurchaseOrder = () => {
 
         if (activeTab === "all") {
           const [transactionResponse, shippingResponse] = await Promise.all([
-            getBuyerTransactionHistory(auth.user.id),
-            getAllShippingOrdersByBuyerApi(auth.user.id),
+            getBuyerTransactionHistory(user.id),
+            getAllShippingOrdersByBuyerApi(user.id),
           ]);
 
           if (
@@ -70,7 +70,7 @@ const PurchaseOrder = () => {
             ];
           }
         } else if (activeTab === "pending") {
-          const response = await getBuyerTransactionHistory(auth.user.id);
+          const response = await getBuyerTransactionHistory(user.id);
           if (response.success && Array.isArray(response.data)) {
             normalized = response.data
               .filter(
@@ -79,14 +79,14 @@ const PurchaseOrder = () => {
               .map((tx) => normalizeTransaction(tx, "transaction"));
           }
         } else if (activeTab === "cancelled") {
-          const response = await getBuyerTransactionHistory(auth.user.id);
+          const response = await getBuyerTransactionHistory(user.id);
           if (response.success && Array.isArray(response.data)) {
             normalized = response.data
               .filter((tx) => tx.status === "cancelled")
               .map((tx) => normalizeTransaction(tx, "transaction"));
           }
         } else {
-          const response = await getAllShippingOrdersByBuyerApi(auth.user.id);
+          const response = await getAllShippingOrdersByBuyerApi(user.id);
           if (response.success && Array.isArray(response.data)) {
             normalized = response.data
               .filter((tx) => {
@@ -128,10 +128,10 @@ const PurchaseOrder = () => {
       }
     };
 
-    if (auth.user?.id) {
+    if (user?.id) {
       fetchTransactions();
     }
-  }, [auth.user?.id, activeTab]);
+  }, [user?.id, activeTab]);
 
   const handleCancelOrder = async (transactionId) => {
     try {

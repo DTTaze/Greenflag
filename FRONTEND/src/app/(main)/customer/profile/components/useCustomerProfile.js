@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { useContext } from "react";
 
 import { useNotification } from "@/src/components/ui/NotificationProvider";
-import { AuthContext } from "@/src/contexts/auth.context";
+import { useAuthStore } from "@/src/store/auth/authStore";
 import {
   getBuyerTransactionHistory,
   getQRApi,
@@ -13,8 +12,8 @@ import {
 } from "@/src/utils/api";
 
 export default function useCustomerProfile() {
-  const { auth } = useContext(AuthContext);
-  const userInfo = auth.user;
+  const { user } = useAuthStore();
+  const userInfo = user;
   const { notify } = useNotification();
   const [activeTab, setActiveTab] = useState("profile");
   const [editMode, setEditMode] = useState(false);

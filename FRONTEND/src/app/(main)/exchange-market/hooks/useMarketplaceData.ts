@@ -32,7 +32,7 @@ interface RawProductData {
   height?: number;
 }
 
-export function useMarketplaceData(userId?: string) {
+export function useMarketplaceData(userId?: number | string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [items, setItems] = useState<MarketplaceItem[]>([]);

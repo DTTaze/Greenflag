@@ -25,11 +25,11 @@ import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 
 import { useNotification } from "@/src/components/ui/NotificationProvider";
-import { AuthContext } from "@/src/contexts/auth.context";
+import { useAuthStore } from "@/src/store/auth/authStore";
 import { logoutUserApi } from "@/src/utils/api";
 
 export default function CustomerAppBar({
-  _open,
+  open: _open,
   drawerWidth,
   handleDrawerToggle,
   userInfo,
@@ -42,7 +42,7 @@ export default function CustomerAppBar({
   const [notificationAnchor, setNotificationAnchor] = React.useState(null);
   const [loggingOut, setLoggingOut] = React.useState(false);
   const { notify } = useNotification();
-  const { setAuth } = React.useContext(AuthContext);
+  const { dispatch } = useAuthStore();
 
   const handleProfileClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -72,7 +72,7 @@ export default function CustomerAppBar({
 
       // Notify success but don't wait for the animation
       notify("success", "Đăng xuất thành công");
-      setAuth({ isAuthenticated: false, user: null });
+      dispatch({ type: "LOGOUT" });
 
       // Immediately navigate to home page
       window.location.href = "/";

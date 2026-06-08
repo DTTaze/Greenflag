@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import React, { createContext, useContext, useState } from "react";
 
-import { AuthContext } from "@/src/contexts/auth.context";
+import { useAuthStore } from "@/src/store/auth/authStore";
 
 import { useMarketplaceCrud } from "../hooks/useMarketplaceCrud";
 import { useMarketplaceData } from "../hooks/useMarketplaceData";
@@ -110,7 +110,8 @@ export function MarketplaceProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const { auth } = useContext(AuthContext);
+  const { user, isAuthenticated } = useAuthStore();
+  const auth = { user, isAuthenticated };
 
   const {
     loading,
@@ -123,7 +124,7 @@ export function MarketplaceProvider({
     fetchRedeemItems,
     fetchMyItems,
     fetchAllItems,
-  } = useMarketplaceData(auth.user?.id);
+  } = useMarketplaceData(user?.id);
 
   const {
     selectedItem,

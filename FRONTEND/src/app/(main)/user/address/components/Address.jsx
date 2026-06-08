@@ -1,7 +1,7 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import Button from "@/src/components/ui/button";
-import { AuthContext } from "@/src/contexts/auth.context.jsx";
+import { useAuthStore } from "@/src/store/auth/authStore";
 import {
   deleteReceiverInfoByIdAPI,
   getReceiverInfoByUserIDAPI,
@@ -11,7 +11,7 @@ import {
 import AddressFormDialog from "./AddressFormDialog";
 
 function Address() {
-  const { auth } = useContext(AuthContext);
+  const { user } = useAuthStore();
   const [addresses, setAddresses] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
@@ -21,11 +21,11 @@ function Address() {
 
   useEffect(() => {
     const fetchAddresses = async () => {
-      if (!auth.user?.id) return;
+      if (!user?.id) return;
       setIsLoading(true);
       setErrorMessage("");
       try {
-        const response = await getReceiverInfoByUserIDAPI(auth.user.id);
+        const response = await getReceiverInfoByUserIDAPI(user.id);
         if (response.status === 200 && response.data) {
           setAddresses(response.data);
           const defaultAddress = response.data.find((addr) => addr.is_default);
@@ -43,7 +43,7 @@ function Address() {
       }
     };
     fetchAddresses();
-  }, [auth.user?.id]);
+  }, [user?.id]);
 
   const handleUpdateAddress = (addr) => {
     setEditingAddress(addr);
@@ -186,7 +186,7 @@ function Address() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         editingAddress={editingAddress}
-        userId={auth.user?.id}
+        userId={user?.id}
         onSuccess={handleAddressSuccess}
       />
     </div>

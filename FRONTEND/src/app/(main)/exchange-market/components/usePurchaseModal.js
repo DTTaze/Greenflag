@@ -1,7 +1,7 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { socket } from "@/src/config/socket";
-import { AuthContext } from "@/src/contexts/auth.context";
+import { useAuthStore } from "@/src/store/auth/authStore";
 import {
   getReceiverInfoByUserIDAPI,
   PreviewOrderWithoutOrderCode,
@@ -22,7 +22,7 @@ export default function usePurchaseModal({
   const [isLoadingShipping, setIsLoadingShipping] = useState(false);
   const modalRef = useRef(null);
   const shippingModalRef = useRef(null);
-  const { auth } = useContext(AuthContext);
+  const { user } = useAuthStore();
   const token = "c3f24415-29b9-11f0-9b81-222185cb68c8";
   const shop_id = 196506;
   const [currentStock, setCurrentStock] = useState(item.stock);
@@ -94,10 +94,10 @@ export default function usePurchaseModal({
 
   useEffect(() => {
     async function fetchDefaultShipping() {
-      if (isOpen && auth.user?.id) {
+      if (isOpen && user?.id) {
         try {
           setIsLoadingShipping(true);
-          const response = await getReceiverInfoByUserIDAPI(auth.user.id);
+          const response = await getReceiverInfoByUserIDAPI(user.id);
           if (response?.data?.length > 0) {
             const defaultShipping =
               response.data.find((info) => info.is_default) || response.data[0];
@@ -112,7 +112,7 @@ export default function usePurchaseModal({
       }
     }
     fetchDefaultShipping();
-  }, [isOpen, auth.user?.id]);
+  }, [isOpen, user?.id]);
 
   useEffect(() => {
     socket.emit("join-item-room", item.id);

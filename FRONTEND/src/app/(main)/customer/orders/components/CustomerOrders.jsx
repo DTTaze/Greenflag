@@ -1,7 +1,7 @@
 import { Alert, Box, CircularProgress } from "@mui/material";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import { AuthContext } from "@/src/contexts/auth.context";
+import { useAuthStore } from "@/src/store/auth/authStore";
 
 import OrdersDialogsOverlay from "./orders/dialogs/OrdersDialogsOverlay";
 import EmptyOrderState from "./orders/EmptyOrderState";
@@ -13,8 +13,8 @@ import { calculatePoints } from "./orders/ordersHelpers";
 import OrdersTabPanels from "./orders/OrdersTabPanels";
 
 export default function CustomerOrders() {
-  const { auth } = useContext(AuthContext);
-  const userInfo = auth.user;
+  const { user } = useAuthStore();
+  const userInfo = user;
 
   const [confirmAlertOpen, setConfirmAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");

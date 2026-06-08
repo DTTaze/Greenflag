@@ -13,7 +13,7 @@ import { useContext, useEffect, useState } from "react";
 
 import DeleteConfirmModal from "@/src/components/common/DeleteConfirmModal";
 import { socket } from "@/src/config/socket";
-import { AuthContext } from "@/src/contexts/auth.context";
+import { useAuthStore } from "@/src/store/auth/authStore";
 
 import { MarketplaceContext } from "../layout";
 import DetailsModal from "./DetailsModal";
@@ -61,7 +61,7 @@ const MarketplaceItemCard = ({
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [currentStock, setCurrentStock] = useState(item.stock);
   const [currentStatus, setCurrentStatus] = useState(item.postStatus);
-  const { auth } = useContext(AuthContext);
+  const { user } = useAuthStore();
   const { confirmPurchase, handlePurchase } = useContext(MarketplaceContext);
 
   useEffect(() => {
@@ -103,7 +103,7 @@ const MarketplaceItemCard = ({
 
   const handleDetailsClick = () => {
     if (viewMode === "redeem") {
-      if (!auth.user) {
+      if (!user) {
         alert("Vui lòng đăng nhập để thực hiện giao dịch!");
         return;
       }
@@ -215,7 +215,7 @@ const MarketplaceItemCard = ({
           isOpen={showPurchaseModal}
           onClose={() => setShowPurchaseModal(false)}
           item={item}
-          userCoins={auth.user?.coins?.amount || 0}
+          userCoins={user?.coins?.amount || 0}
           onConfirm={(quantity, shippingInfo) => {
             confirmPurchase(quantity, shippingInfo);
             setShowPurchaseModal(false);

@@ -1,13 +1,13 @@
 import { useRouter } from "next/navigation";
-import { useContext, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 import Loader from "../components/ui/Loader";
-import { AuthContext } from "../contexts/auth.context";
+import { useAuthStore } from "@/src/store/auth/authStore";
 import { getUserApi } from "../utils/api";
 
 const AuthCallback = () => {
   const router = useRouter();
-  const { setAuth } = useContext(AuthContext);
+  const { dispatch } = useAuthStore();
   const handled = useRef(false);
 
   useEffect(() => {
@@ -17,9 +17,9 @@ const AuthCallback = () => {
         try {
           const res = await getUserApi();
           if (res && res.status === 200) {
-            setAuth({
-              isAuthenticated: true,
-              user: res.data,
+            dispatch({
+              type: "LOGIN_SUCCESS",
+              payload: res.data,
             });
             if (res.data.avatar_url) {
               localStorage.setItem("user_avatar_url", res.data.avatar_url);
@@ -42,7 +42,7 @@ const AuthCallback = () => {
       router.push("/login");
     }
     handled.current = true;
-  }, [router, setAuth]);
+  }, [router, dispatch]);
 
   return (
     <div style={styles.spinnerWrapper}>

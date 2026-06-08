@@ -1,22 +1,22 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Star, Truck, X } from "lucide-react";
-import { forwardRef, useContext, useEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 
-import { AuthContext } from "@/src/contexts/auth.context";
+import { useAuthStore } from "@/src/store/auth/authStore";
 import { getReceiverInfoByUserIDAPI } from "@/src/utils/api";
 
 // Sử dụng forwardRef để nhận ref từ PurchaseModal
 const ShippingInfoModal = forwardRef(({ isOpen, onClose, onSelect }, ref) => {
   const [shippingOptions, setShippingOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { auth } = useContext(AuthContext);
+  const { user } = useAuthStore();
 
   useEffect(() => {
     async function fetchShippingOptions() {
-      if (isOpen && auth.user?.id) {
+      if (isOpen && user?.id) {
         try {
           setIsLoading(true);
-          const response = await getReceiverInfoByUserIDAPI(auth.user.id);
+          const response = await getReceiverInfoByUserIDAPI(user.id);
           setShippingOptions(response?.data || []);
         } catch (error) {
           console.error("Error fetching shipping options:", error);
@@ -26,7 +26,7 @@ const ShippingInfoModal = forwardRef(({ isOpen, onClose, onSelect }, ref) => {
       }
     }
     fetchShippingOptions();
-  }, [isOpen, auth.user?.id]);
+  }, [isOpen, user?.id]);
 
   const handleSelect = (option) => {
     onSelect(option);

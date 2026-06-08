@@ -5,14 +5,13 @@ import TimelineIcon from "@mui/icons-material/Timeline";
 import { Box, Button, Paper, Stack, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import React from "react";
-import { useContext } from "react";
 
-import { AuthContext } from "@/src/contexts/auth.context";
+import { useAuthStore } from "@/src/store/auth/authStore";
 import getAmount from "@/src/utils/getAmount";
 
 export default function CustomerDashboard() {
-  const { auth } = useContext(AuthContext);
-  const userInfo = auth.user;
+  const { user } = useAuthStore();
+  const userInfo = user;
   const router = useRouter();
 
   return (

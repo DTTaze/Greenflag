@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useContext } from "react";
+import React from "react";
 
 import ProtectedRoute from "@/src/components/common/ProtectedRoute.jsx";
-import { AuthContext } from "@/src/contexts/auth.context";
+import { useAuthStore } from "@/src/store/auth/authStore";
 
 import ProfileCard from "./components/ProfileCard.jsx";
 import ProfileCardSkeleton from "./components/ProfileCardSkeleton.jsx";
@@ -13,8 +13,8 @@ export default function UserLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { auth } = useContext(AuthContext);
-  const isLoading = !(auth.isAuthenticated && auth.user);
+  const { isAuthenticated, user } = useAuthStore();
+  const isLoading = !(isAuthenticated && user);
 
   return (
     <ProtectedRoute requiredRole={undefined}>

@@ -1,15 +1,16 @@
 import { Coins } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+import { useAuthStore } from "@/src/store/auth/authStore";
 
 import { useNotification } from "../components/ui/NotificationProvider";
-import { AuthContext } from "../contexts/auth.context";
 import { getUserApi, getUserAvatarByIdApi, logoutUserApi } from "../utils/api";
 
 function UserHeader() {
   const router = useRouter();
   const { notify } = useNotification();
-  const { auth, setAuth } = useContext(AuthContext);
+  const { isAuthenticated, user, dispatch } = useAuthStore();
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const menuRef = useRef(null);
@@ -17,14 +18,11 @@ function UserHeader() {
   const menuButtonRef = useRef(null);
 
   const fetchUser = async () => {
-    if (!auth.user?.username || !auth.user?.email) {
+    if (!user?.username || !user?.email) {
       try {
         const response = await getUserApi();
         if (response?.data) {
-          setAuth((prevAuth) => ({
-            ...prevAuth,
-            user: { ...prevAuth.user, ...response.data },
-          }));
+          dispatch({ type: "UPDATE_USER", payload: response.data });
         }
       } catch (error) {
         console.error("Lỗi khi lấy thông tin người dùng:", error);
@@ -33,14 +31,14 @@ function UserHeader() {
   };
 
   const fetchAvatar = async () => {
-    if (auth?.user?.id && !auth?.user?.avatar_url) {
+    if (user?.id && !user?.avatar_url) {
       try {
-        const response = await getUserAvatarByIdApi(auth.user.id);
+        const response = await getUserAvatarByIdApi(user.id);
         if (response?.avatar_url) {
-          setAuth((prev) => ({
-            ...prev,
-            user: { ...prev.user, avatar_url: response.avatar_url },
-          }));
+          dispatch({
+            type: "UPDATE_USER",
+            payload: { avatar_url: response.avatar_url },
+          });
         }
       } catch (error) {
         console.error("Lỗi khi lấy avatar:", error);
@@ -49,7 +47,7 @@ function UserHeader() {
   };
 
   useEffect(() => {
-    if (auth.isAuthenticated) {
+    if (isAuthenticated) {
       fetchUser();
       fetchAvatar();
 
@@ -60,7 +58,7 @@ function UserHeader() {
       window.addEventListener("focus", handleFocus);
       return () => window.removeEventListener("focus", handleFocus);
     }
-  }, [auth.isAuthenticated]);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -82,7 +80,7 @@ function UserHeader() {
   const handleLogout = async () => {
     try {
       await logoutUserApi();
-      setAuth({ isAuthenticated: false, user: null });
+      dispatch({ type: "LOGOUT" });
       notify("success", "Đăng xuất thành công");
       router.push("/");
     } catch (error) {
@@ -98,12 +96,12 @@ function UserHeader() {
   ];
 
   // Add customer page link if user has customer role
-  if (auth.isAuthenticated && auth.user?.roles?.id === 3) {
+  if (isAuthenticated && user?.roles?.id === 3) {
     pages.push({ key: "customer", label: "Trang khách hàng" });
   }
 
   const avatarUrl =
-    (auth.user?.avatar_url || "../src/assets/images/default-avatar.jpg") +
+    (user?.avatar_url || "../src/assets/images/default-avatar.jpg") +
     `?t=${Date.now()}`;
 
   return (
@@ -124,7 +122,7 @@ function UserHeader() {
       </div>
 
       {/* Navigation */}
-      {auth.isAuthenticated && (
+      {isAuthenticated && (
         <nav className="hidden space-x-6 md:flex">
           {pages.map(({ key, label }) => (
             <button
@@ -139,7 +137,7 @@ function UserHeader() {
       )}
 
       {/* User Profile */}
-      {auth.isAuthenticated ? (
+      {isAuthenticated ? (
         <div className="relative z-10" ref={profileMenuRef}>
           <div
             className="hidden cursor-pointer items-center md:flex"
@@ -153,14 +151,14 @@ function UserHeader() {
           </div>
           {profileMenuOpen && (
             <div className="absolute right-0 w-48 rounded-lg bg-white px-2 py-2 shadow-lg">
-              <p className="p-2 font-bold">{auth.user?.username || "User"}</p>
+              <p className="p-2 font-bold">{user?.username || "User"}</p>
               <p className="px-2 py-1 text-xs text-gray-600">
-                {auth.user?.email || ""}
+                {user?.email || ""}
               </p>
               <hr className="mb-2 border border-gray-300" />
               <div className="ml-2 flex items-center py-2">
                 <span className="font-bold select-none">
-                  Số Coins: {auth.user?.coins?.amount || 0}
+                  Số Coins: {user?.coins?.amount || 0}
                 </span>
                 <Coins className="ml-2 h-6 w-6 text-amber-600" />
               </div>
@@ -212,7 +210,7 @@ function UserHeader() {
           menuOpen ? "translate-x-0" : "-translate-x-full"
         } z-10 flex flex-col items-center justify-center text-white`}
       >
-        {auth.isAuthenticated &&
+        {isAuthenticated &&
           pages.map(({ key, label }) => (
             <button
               key={key}
@@ -225,7 +223,7 @@ function UserHeader() {
               {label}
             </button>
           ))}
-        {!auth.isAuthenticated ? (
+        {!isAuthenticated ? (
           <>
             <button
               className="cursor-pointer py-3 text-2xl font-bold hover:text-[#62C370]"

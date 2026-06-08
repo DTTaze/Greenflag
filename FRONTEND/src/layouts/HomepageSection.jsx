@@ -1,9 +1,9 @@
 import "../styles/components/HomepageSection.css";
 
 import { useRouter } from "next/navigation";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-import { AuthContext } from "../contexts/auth.context";
+import { useAuthStore } from "@/src/store/auth/authStore";
 
 function SectionHero() {
   const [index, setIndex] = useState(0);
@@ -72,7 +72,7 @@ function Section({ imagePath, H2Text, PText, ButtonText, path, reverse }) {
   const sectionRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
   const router = useRouter();
-  const { auth } = useContext(AuthContext);
+  const { isAuthenticated } = useAuthStore();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -111,7 +111,7 @@ function Section({ imagePath, H2Text, PText, ButtonText, path, reverse }) {
         </p>
         <button
           onClick={() => {
-            if (auth.isAuthenticated) {
+            if (isAuthenticated) {
               router.push(path);
               window.scrollTo(0, 0);
             } else {

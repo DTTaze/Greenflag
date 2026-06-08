@@ -1,7 +1,7 @@
 import { usePathname, useRouter } from "next/navigation";
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 
-import { AuthContext } from "../../contexts/auth.context";
+import { useAuthStore } from "@/src/store/auth/authStore";
 
 const roleMap = {
   1: "Admin",
@@ -9,24 +9,24 @@ const roleMap = {
   3: "Customer",
 };
 
-const getUserRole = (auth) => {
-  const roleId = auth?.user?.roles?.id;
+const getUserRole = (user) => {
+  const roleId = user?.roles?.id;
   return roleMap[roleId] || null;
 };
 
 const ProtectedRoute = ({ children, requiredRole }) => {
-  const { auth } = useContext(AuthContext);
+  const { isAuthenticated, user } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!auth?.isAuthenticated) {
+    if (!isAuthenticated) {
       router.replace(`/login?from=${encodeURIComponent(pathname)}`);
       return;
     }
 
     if (requiredRole) {
-      const userRole = getUserRole(auth);
+      const userRole = getUserRole(user);
       const requiredRoles = Array.isArray(requiredRole)
         ? requiredRole.map((r) => r.toLowerCase())
         : [requiredRole.toLowerCase()];
@@ -35,14 +35,14 @@ const ProtectedRoute = ({ children, requiredRole }) => {
         router.replace("/");
       }
     }
-  }, [auth, requiredRole, router, pathname]);
+  }, [isAuthenticated, user, requiredRole, router, pathname]);
 
-  if (!auth?.isAuthenticated) {
+  if (!isAuthenticated) {
     return null;
   }
 
   if (requiredRole) {
-    const userRole = getUserRole(auth);
+    const userRole = getUserRole(user);
     const requiredRoles = Array.isArray(requiredRole)
       ? requiredRole.map((r) => r.toLowerCase())
       : [requiredRole.toLowerCase()];

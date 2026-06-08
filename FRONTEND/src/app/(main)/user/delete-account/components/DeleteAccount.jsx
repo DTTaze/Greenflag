@@ -1,11 +1,11 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 
 import Button from "@/src/components/ui/button";
 import InputField from "@/src/components/ui/InputField.jsx";
-import { AuthContext } from "@/src/contexts/auth.context.jsx";
+import { useAuthStore } from "@/src/store/auth/authStore";
 
 function DeleteAccount() {
-  const { auth } = useContext(AuthContext);
+  const { user } = useAuthStore();
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -33,8 +33,8 @@ function DeleteAccount() {
 
     try {
       // Placeholder for API call to request account deletion
-      // Example: await deleteAccountApi(auth.user.id, password);
-      console.log("Requesting account deletion for user:", auth.user.id);
+      // Example: await deleteAccountApi(user.id, password);
+      console.log("Requesting account deletion for user:", user?.id);
       setIsSubmitted(true);
       setPassword("");
       setError("");

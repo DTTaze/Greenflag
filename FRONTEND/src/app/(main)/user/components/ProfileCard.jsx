@@ -16,7 +16,7 @@ function NavLink({ to, className, children }) {
   );
 }
 
-import { AuthContext } from "@/src/contexts/auth.context.jsx";
+import { useAuthStore } from "@/src/store/auth/authStore";
 import {
   getUserAvatarByIdApi,
   updateUserAvatarApi,
@@ -79,7 +79,7 @@ function SubMenuItem({ text, path }) {
 }
 
 function ProfileCard() {
-  const { auth, setAuth } = useContext(AuthContext);
+  const { isAuthenticated, user, dispatch } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [avatar, setAvatar] = useState("");
   const fileInputRef = useRef(null);
@@ -87,29 +87,27 @@ function ProfileCard() {
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
 
   useEffect(() => {
-    if (!isFetched && auth?.user?.id) {
+    if (!isFetched && user?.id) {
       setIsFetched(true);
       (async () => {
         try {
-          const response = await getUserAvatarByIdApi(auth.user.id);
+          const response = await getUserAvatarByIdApi(user.id);
           if (response?.data?.avatar_url) {
             const avatarUrl = `${response.data.avatar_url}?t=${Date.now()}`;
             setAvatar(avatarUrl);
-            setAuth((prev) => ({
-              ...prev,
-              user: { ...prev.user, avatar_url: avatarUrl },
-            }));
+            dispatch({
+              type: "UPDATE_USER",
+              payload: { avatar_url: avatarUrl },
+            });
           }
         } catch (error) {
           console.error("Error fetching avatar:", error);
         }
       })();
     }
-  }, [auth?.user?.id, isFetched, setAuth]);
+  }, [user?.id, isFetched, dispatch]);
 
-  if (!auth.isAuthenticated) return <p>User not logged in.</p>;
-
-  const { user } = auth;
+  if (!isAuthenticated) return <p>User not logged in.</p>;
 
   const avatarUrl = avatar
     ? avatar
@@ -128,10 +126,10 @@ function ProfileCard() {
       if (response?.data?.avatar_url) {
         const updatedUrl = `${response.data.avatar_url}?t=${Date.now()}`;
         setAvatar(updatedUrl);
-        setAuth((prev) => ({
-          ...prev,
-          user: { ...prev.user, avatar_url: updatedUrl },
-        }));
+        dispatch({
+          type: "UPDATE_USER",
+          payload: { avatar_url: updatedUrl },
+        });
       }
     } catch (error) {
       console.error("Error uploading avatar:", error);

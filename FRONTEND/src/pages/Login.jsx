@@ -1,78 +1,16 @@
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useContext, useState } from "react";
+import { useState } from "react";
+
+import { useLoginForm } from "@/src/hooks/forms/useLoginForm";
 
 import Button from "../components/ui/button";
 import InputField from "../components/ui/InputField";
-import { useNotification } from "../components/ui/NotificationProvider";
 import SocialLoginIcons from "../components/ui/SocialLoginIcons";
-import { AuthContext } from "../contexts/auth.context";
-import { loginUserApi } from "../utils/api";
 
 const LoginPage = () => {
-  const router = useRouter();
-  const { setAuth } = useContext(AuthContext);
-  const { notify } = useNotification();
-  const [identifier, setIdentifier] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({});
-  const [isLoginDisabled, setIsLoginDisabled] = useState(false);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const newErrors = {};
-    if (!identifier.trim())
-      newErrors.identifier = "Vui lòng nhập email hoặc username.";
-    if (!password) newErrors.password = "Vui lòng nhập mật khẩu.";
-
-    setErrors(newErrors);
-    if (Object.keys(newErrors).length > 0) return;
-
-    try {
-      const isEmail = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(
-        identifier,
-      );
-      const loginData = isEmail
-        ? { email: identifier, password }
-        : { username: identifier, password };
-
-      const res = await loginUserApi(loginData);
-      if (res && res.status === 200) {
-        notify("success", "Đăng nhập thành công!");
-        setAuth({
-          isAuthenticated: true,
-          user: res.data.user,
-        });
-        if (res.data.user.role_id === 1) {
-          router.push("/admin");
-        } else if (res.data.user.role_id === 2) {
-          router.push("/");
-        } else if (res.data.user.role_id === 3) {
-          router.push("/customer");
-        } else {
-          notify("error", "Đã xảy ra lỗi, vui lòng thử lại sau");
-        }
-      } else {
-        notify("error", res.error || "Đăng nhập thất bại, vui lòng thử lại.");
-      }
-    } catch (error) {
-      if (error.status === 401) {
-        notify("error", "Thông tin đăng nhập không đúng");
-      } else if (error.status === 429) {
-        notify("error", "Quá nhiều yêu cầu, vui lòng thử lại sau 5 phút");
-        setIsLoginDisabled(true);
-        setTimeout(() => {
-          setIsLoginDisabled(false);
-          notify("info", "Bạn có thể thử đăng nhập lại bây giờ");
-        }, 300000);
-      } else {
-        notify("error", error.message || "Đã xảy ra lỗi, vui lòng thử lại.");
-      }
-    }
-  };
+  const { register, handleSubmit, errors, isLoginDisabled } = useLoginForm();
 
   return (
     <div className="mx-auto mt-8 max-w-sm rounded border border-gray-300 bg-white p-4 shadow">
@@ -81,18 +19,15 @@ const LoginPage = () => {
         <InputField
           id="identifier"
           label="Email hoặc Username"
-          value={identifier}
-          onChange={(e) => setIdentifier(e.target.value)}
-          error={errors.identifier}
+          error={errors.identifier?.message}
+          {...register("identifier")}
         />
 
         <InputField
           id="password"
           label="Mật khẩu"
           type={showPassword ? "text" : "password"}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          error={errors.password}
+          error={errors.password?.message}
           suffix={
             <button
               type="button"
@@ -102,9 +37,9 @@ const LoginPage = () => {
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           }
+          {...register("password")}
         />
 
-        {/* Nút đăng nhập sẽ bị vô hiệu hóa khi isLoginDisabled = true */}
         <Button
           text="Đăng nhập"
           disabled={isLoginDisabled}

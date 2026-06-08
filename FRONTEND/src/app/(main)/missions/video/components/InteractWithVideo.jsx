@@ -4,13 +4,11 @@ import CommentButton from "./CommentButton";
 import HeartButton from "./HeartButton";
 import ShareButton from "./ShareButton";
 
-export default function InteractWithVideo({
-  video,
-  index,
-  updateLike,
-  onShare,
-  videoId,
-}) {
+import { useVideoSection } from "./VideoSectionContext";
+
+export default function InteractWithVideo({ video, index }) {
+  const { updateLike, handleShare: onShare } = useVideoSection();
+  const videoId = video?.id;
   return (
     <div className="absolute right-4 bottom-[120px] z-10 flex flex-col gap-4">
       <div className="flex flex-col items-center gap-1">

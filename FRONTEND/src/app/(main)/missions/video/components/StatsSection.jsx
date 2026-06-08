@@ -3,7 +3,12 @@ import React from "react";
 import CoinImg from "@/src/assets/images/Coin";
 import Timer from "@/src/assets/images/Timer";
 
-export default function StatsSection({ video, task, userStats, coins, timer }) {
+import { useVideoSection } from "./VideoSectionContext";
+
+export default function StatsSection({ video }) {
+  const { taskData: task, userStats, user, timer } = useVideoSection();
+  const coins = user?.coins?.amount ?? 0;
+
   const onReceiveCoins = () => {
     // onReceiveCoins placeholder
   };

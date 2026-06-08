@@ -1,20 +1,18 @@
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import { Box, Button, Divider, Paper, Stack, Typography } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
+import { Box, Button, Paper, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 import { getAllUserApi } from "@/src/utils/api";
 
 import SimpleLineChart from "./ChartAdmin";
+import RecentActivityList from "./RecentActivityList";
+import StatCard from "./StatCard";
 
 export default function AdminDashboard() {
   const [recentActivities, setRecentActivities] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -44,10 +42,6 @@ export default function AdminDashboard() {
     fetchUsers();
   }, []);
 
-  const displayedActivities = showAll
-    ? recentActivities
-    : recentActivities.slice(0, 5);
-
   return (
     <Box sx={{ flexGrow: 1, p: 0 }}>
       <Box sx={{ mb: 3 }}>
@@ -73,165 +67,40 @@ export default function AdminDashboard() {
           gap: 3,
         }}
       >
-        {/* Statistic Cards */}
-        <Box>
-          <Paper
-            className="admin-card"
-            sx={{
-              p: 2,
-              display: "flex",
-              flexDirection: "column",
-              height: 140,
-              position: "relative",
-              backgroundColor: "#e3f2fd",
-              borderRadius: 2,
-            }}
-          >
-            <Box sx={{ position: "absolute", top: 8, right: 8 }}>
-              <IconButton size="small">
-                <MoreVertIcon fontSize="small" />
-              </IconButton>
-            </Box>
-            <Typography variant="subtitle2" color="text.secondary">
-              Total Users
-            </Typography>
-            <Typography variant="h4" sx={{ my: 1, fontWeight: 600 }}>
-              1,285
-            </Typography>
-            <Box sx={{ mt: "auto", display: "flex", alignItems: "center" }}>
-              <TrendingUpIcon fontSize="small" color="success" />
-              <Typography variant="body2" color="success.main" sx={{ ml: 0.5 }}>
-                +12.5%
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
-                Since last month
-              </Typography>
-            </Box>
-            <Box
-              sx={{ position: "absolute", top: 10, right: 10, opacity: 0.1 }}
-            >
-              <PeopleAltIcon sx={{ fontSize: 60 }} />
-            </Box>
-          </Paper>
-        </Box>
+        <StatCard
+          title="Total Users"
+          value="1,285"
+          bgColor="#e3f2fd"
+          trendText="+12.5%"
+          trendSubtext="Since last month"
+          icon={PeopleAltIcon}
+        />
 
-        <Box>
-          <Paper
-            className="admin-card"
-            sx={{
-              p: 2,
-              display: "flex",
-              flexDirection: "column",
-              height: 140,
-              position: "relative",
-              backgroundColor: "#c8e6c9",
-              borderRadius: 2,
-            }}
-          >
-            <Box sx={{ position: "absolute", top: 8, right: 8 }}>
-              <IconButton size="small">
-                <MoreVertIcon fontSize="small" />
-              </IconButton>
-            </Box>
-            <Typography variant="subtitle2" color="text.secondary">
-              Tasks Completed
-            </Typography>
-            <Typography variant="h4" sx={{ my: 1, fontWeight: 600 }}>
-              824
-            </Typography>
-            <Box sx={{ mt: "auto", display: "flex", alignItems: "center" }}>
-              <TrendingUpIcon fontSize="small" color="success" />
-              <Typography variant="body2" color="success.main" sx={{ ml: 0.5 }}>
-                +8.2%
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
-                Since last week
-              </Typography>
-            </Box>
-            <Box
-              sx={{ position: "absolute", top: 10, right: 10, opacity: 0.1 }}
-            >
-              <TaskAltIcon sx={{ fontSize: 60 }} />
-            </Box>
-          </Paper>
-        </Box>
+        <StatCard
+          title="Tasks Completed"
+          value="824"
+          bgColor="#c8e6c9"
+          trendText="+8.2%"
+          trendSubtext="Since last week"
+          icon={TaskAltIcon}
+        />
 
-        <Box>
-          <Paper
-            className="admin-card"
-            sx={{
-              p: 2,
-              display: "flex",
-              flexDirection: "column",
-              height: 140,
-              position: "relative",
-              backgroundColor: "#fff9c4",
-              borderRadius: 2,
-            }}
-          >
-            <Box sx={{ position: "absolute", top: 8, right: 8 }}>
-              <IconButton size="small">
-                <MoreVertIcon fontSize="small" />
-              </IconButton>
-            </Box>
-            <Typography variant="subtitle2" color="text.secondary">
-              Total Items
-            </Typography>
-            <Typography variant="h4" sx={{ my: 1, fontWeight: 600 }}>
-              452
-            </Typography>
-            <Box sx={{ mt: "auto", display: "flex", alignItems: "center" }}>
-              <TrendingUpIcon fontSize="small" color="success" />
-              <Typography variant="body2" color="success.main" sx={{ ml: 0.5 }}>
-                +5.3%
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
-                Since last month
-              </Typography>
-            </Box>
-            <Box
-              sx={{ position: "absolute", top: 10, right: 10, opacity: 0.1 }}
-            >
-              <ShoppingBagIcon sx={{ fontSize: 60 }} />
-            </Box>
-          </Paper>
-        </Box>
+        <StatCard
+          title="Total Items"
+          value="452"
+          bgColor="#fff9c4"
+          trendText="+5.3%"
+          trendSubtext="Since last month"
+          icon={ShoppingBagIcon}
+        />
 
-        <Box>
-          <Paper
-            className="admin-card"
-            sx={{
-              p: 2,
-              display: "flex",
-              flexDirection: "column",
-              height: 140,
-              position: "relative",
-              backgroundColor: "#ffe0b2",
-              borderRadius: 2,
-            }}
-          >
-            <Box sx={{ position: "absolute", top: 8, right: 8 }}>
-              <IconButton size="small">
-                <MoreVertIcon fontSize="small" />
-              </IconButton>
-            </Box>
-            <Typography variant="subtitle2" color="text.secondary">
-              Total Revenue
-            </Typography>
-            <Typography variant="h4" sx={{ my: 1, fontWeight: 600 }}>
-              $28,450
-            </Typography>
-            <Box sx={{ mt: "auto", display: "flex", alignItems: "center" }}>
-              <TrendingUpIcon fontSize="small" color="success" />
-              <Typography variant="body2" color="success.main" sx={{ ml: 0.5 }}>
-                +16.8%
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
-                Since last month
-              </Typography>
-            </Box>
-          </Paper>
-        </Box>
+        <StatCard
+          title="Total Revenue"
+          value="$28,450"
+          bgColor="#ffe0b2"
+          trendText="+16.8%"
+          trendSubtext="Since last month"
+        />
       </Box>
 
       {/* Charts and Recent Activities Grid */}
@@ -259,43 +128,7 @@ export default function AdminDashboard() {
         </Paper>
 
         {/* Recent Activities */}
-        <Paper className="admin-section" sx={{ p: 3, height: "100%" }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-            <Typography variant="h6">Recent Activities</Typography>
-            <Button
-              size="small"
-              variant="text"
-              onClick={() => setShowAll(!showAll)}
-            >
-              {showAll ? "Show Less" : "View All"}
-            </Button>
-          </Box>
-          <Stack spacing={2} divider={<Divider flexItem />}>
-            {loading ? (
-              <Typography variant="body2" color="text.secondary">
-                Loading activities...
-              </Typography>
-            ) : displayedActivities.length > 0 ? (
-              displayedActivities.map((activity) => (
-                <Box key={activity.id}>
-                  <Typography variant="body2" fontWeight={500}>
-                    {activity.user}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {activity.action}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {activity.time}
-                  </Typography>
-                </Box>
-              ))
-            ) : (
-              <Typography variant="body2" color="text.secondary">
-                No recent activities
-              </Typography>
-            )}
-          </Stack>
-        </Paper>
+        <RecentActivityList recentActivities={recentActivities} loading={loading} />
       </Box>
     </Box>
   );

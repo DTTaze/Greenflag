@@ -6,8 +6,10 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { AuthModule } from '@modules/auth/auth.module';
 import { GlobalModule } from '@modules/global/global.module';
 import { HealthModule } from '@modules/health/health.module';
+import { UserModule } from '@modules/user/user.module';
 
 import configs from './configs';
 
@@ -37,6 +39,8 @@ import configs from './configs';
     ScheduleModule.forRoot(),
     GlobalModule,
     HealthModule,
+    UserModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

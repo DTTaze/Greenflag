@@ -22,6 +22,18 @@ This plan outlines the adjusted roadmap, files to be modified in the boilerplate
 
 ---
 
+## Strategic Pivots (Phase 2 Strategy Update)
+
+> [!IMPORTANT]
+> The Identity & Access Context has been simplified to favor development speed and maintainability:
+> 1. **Auth Strategy:** Single JWT access token stored in an `HttpOnly`, `Secure`, `SameSite=Strict` cookie. The `AuthGuard` extracts this token strictly from `req.cookies.access_token`.
+> 2. **Authorization Strategy:** Static RBAC (dropped CASL ABAC). The role enum is strictly `admin`, `partner`, and `user`.
+> 3. **Database Schema Simplification:** Separate `Role`, `Permission`, and `RolePermission` tables are deleted. The `User` entity holds a direct `role` column mapping the `ROLE` enum value.
+> 4. **CORS credentials support:** Modified CORS settings to `{ origin: true, credentials: true }` allowing browsers to exchange cookies securely.
+> 5. **Ownership Checks:** Verified directly in controllers or services using direct equality comparison (`if (resource.userId !== req.user.id)`).
+
+---
+
 ## Boilerplate Code Reuse & Customizations
 
 We will reuse the following files directly from the boilerplate with minimal changes:
@@ -56,11 +68,13 @@ We will implement/modify the following additions to the boilerplate:
 - [x] Add `shared/guards/auth.guard.ts` and `shared/guards/roles.guard.ts`.
 - [x] Verify basic health check `/api/v1/health` compiles and runs.
 
-### Phase 2: Identity & Access Context (`auth`, `user`, `role`, `permission`)
-- [ ] Define TypeORM entities: `User`, `Role`, `Permission`, `Rank`, `Coin`.
-- [ ] Implement `UserModule`, `RoleModule`, `PermissionModule`.
-- [ ] Integrate CASL Ability Factory for dynamic ABAC ownership rules.
-- [ ] Implement `AuthModule` with JWT and Passport (Local & Google OAuth 2.0).
+### Phase 2: Identity & Access Context (`auth`, `user`)
+- [x] Define TypeORM entities: `User`, `Rank`, `Coin` (Dropped separate role/permission tables).
+- [x] Refactor `User` entity to use a direct enum `role` column (`admin`, `partner`, `user`).
+- [x] Implement `UserModule` (incorporating `UserService`, `UserController` and consolidated `user.dto.ts`).
+- [x] Implement static RBAC guards and drop CASL ABAC ability factory.
+- [x] Implement `AuthModule` with JWT (HTTP-only cookies), passport Local, and passport Google OAuth 2.0 callback.
+- [x] Apply cascading updates (cookie-only extraction in AuthGuard, credentials-enabled CORS in setup.ts).
 
 ### Phase 3: Core Task & Acceptance Context (`task`, `task-submit`)
 - [ ] Define TypeORM entities: `Task`, `TaskType`, `TaskUser`, `TaskSubmit`.

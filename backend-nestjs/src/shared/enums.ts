@@ -1,7 +1,7 @@
 export enum ROLE {
   ADMIN = 'admin',
+  PARTNER = 'partner',
   USER = 'user',
-  CUSTOMER = 'customer',
 }
 
 export enum ITEM_STATUS {

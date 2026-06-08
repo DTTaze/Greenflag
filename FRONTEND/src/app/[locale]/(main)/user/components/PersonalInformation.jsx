@@ -1,6 +1,5 @@
-"use client";
-
 import { Copy, QrCode } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import Button from "@/src/components/ui/button";
@@ -18,6 +17,8 @@ import { getQR, updateUserPublic } from "@/src/utils/api";
 import PersonalInfomationSkeleton from "./PersonalInfomationSkeleton.jsx";
 
 function PersonalInformation() {
+  const t = useTranslations("user");
+  const tAuth = useTranslations("auth");
   const { isAuthenticated, user: storeUser, dispatch } = useAuthStore();
   const [user, setUser] = useState(null);
   const [originalUser, setOriginalUser] = useState(null);
@@ -43,25 +44,23 @@ function PersonalInformation() {
     let error = "";
     switch (name) {
       case "username":
-        if (!value) error = "Tên người dùng không được để trống";
-        else if (value.length < 3)
-          error = "Tên người dùng phải dài hơn 3 ký tự";
+        if (!value) error = tAuth("usernameRequired");
+        else if (value.length < 3) error = tAuth("usernameInvalid");
         else if (!/^[a-zA-Z0-9]+$/.test(value))
-          error = "Tên người dùng chỉ được chứa chữ cái và số";
+          error = tAuth("usernameInvalid");
         break;
       case "email":
-        if (!value) error = "Email không được để trống";
-        else if (!/\S+@\S+\.\S+/.test(value)) error = "Email không hợp lệ";
+        if (!value) error = tAuth("emailRequired");
+        else if (!/\S+@\S+\.\S+/.test(value)) error = tAuth("emailInvalid");
         break;
       case "full_name":
-        if (!value) error = "Họ và tên không được để trống";
+        if (!value) error = tAuth("fullNameRequired");
         else if (!/^[a-zA-ZÀ-ỹà-ỹ\s]+$/.test(value))
-          error = "Họ và tên không được chứa ký tự đặc biệt";
+          error = tAuth("fullNameInvalid");
         break;
       case "phone_number":
-        if (!value) error = "Số điện thoại không được để trống";
-        else if (!/^\d{10}$/.test(value))
-          error = "Số điện thoại phải là 10 chữ số";
+        if (!value) error = t("phoneInvalid");
+        else if (!/^\d{10}$/.test(value)) error = t("phoneInvalid");
         break;
       default:
         break;
@@ -89,7 +88,7 @@ function PersonalInformation() {
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
-      alert("Vui lòng kiểm tra lại thông tin");
+      alert(t("invalidInfo"));
       return;
     }
 
@@ -113,11 +112,11 @@ function PersonalInformation() {
         full_name: res.data.full_name || "",
         phone_number: res.data.phone_number || "",
       });
-      alert("Cập nhật thông tin thành công!");
+      alert(t("updateSuccess"));
       setIsEditing(false);
     } catch (error) {
       console.error("Lỗi khi cập nhật thông tin:", error);
-      alert("Cập nhật thất bại!");
+      alert(t("updateFailed"));
     }
   };
 
@@ -147,30 +146,30 @@ function PersonalInformation() {
       }
     } catch (error) {
       console.error("Error generating QR code:", error);
-      alert("Could not generate QR code. Please try again later.");
+      alert(t("generateQrFailed"));
       setShowQrDialog(false);
     }
   };
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
-    alert("Copied to clipboard!");
+    alert(t("copiedToClipboard"));
   };
 
   if (!isAuthenticated || !user) return <PersonalInfomationSkeleton />;
 
   const inputFields = [
-    { id: "username", label: "Tên người dùng" },
-    { id: "email", label: "Email" },
-    { id: "full_name", label: "Họ và Tên" },
-    { id: "phone_number", label: "Số điện thoại" },
+    { id: "username", label: tAuth("username") },
+    { id: "email", label: t("email") },
+    { id: "full_name", label: tAuth("fullName") },
+    { id: "phone_number", label: t("phone") },
   ];
 
   return (
     <div className="rounded-lg bg-white p-4 shadow-md">
       <div className="flex items-center justify-between">
         <h4 className="text-lg font-semibold text-gray-900">
-          Thông tin cá nhân
+          {t("profileTitle")}
         </h4>
         <div className="flex gap-2">
           <Button
@@ -181,11 +180,7 @@ function PersonalInformation() {
             className="bg-green-100 text-green-600 hover:bg-green-200"
           />
           {!isEditing && (
-            <Button
-              text="Chỉnh sửa hồ sơ"
-              onClick={handleEdit}
-              padding="15px"
-            />
+            <Button text={t("editBtn")} onClick={handleEdit} padding="15px" />
           )}
         </div>
       </div>
@@ -213,13 +208,13 @@ function PersonalInformation() {
         {isEditing && (
           <div className="flex justify-end space-x-2">
             <Button
-              text="Lưu"
+              text={t("saveBtn")}
               type="submit"
               className="bg-green-500 text-white hover:bg-green-600"
               padding="15px"
             />
             <Button
-              text="Hủy"
+              text={t("cancelBtn")}
               type="button"
               onClick={handleCancel}
               className="bg-red-500 text-white hover:bg-red-600"

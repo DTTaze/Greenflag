@@ -1,9 +1,13 @@
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import Button from "@/src/components/ui/button";
 import InputField from "@/src/components/ui/InputField.jsx";
 
 function ChangePassword() {
+  const t = useTranslations("user");
+  const tAuth = useTranslations("auth");
+
   const [formData, setFormData] = useState({
     currentPassword: "",
     newPassword: "",
@@ -15,23 +19,19 @@ function ChangePassword() {
     let error = "";
     switch (name) {
       case "currentPassword":
-        if (!value) error = "Mật khẩu hiện tại không được để trống";
-        else if (value.length < 6)
-          error = "Mật khẩu hiện tại phải có ít nhất 6 ký tự";
+        if (!value) error = tAuth("passwordRequired");
+        else if (value.length < 6) error = tAuth("passwordRequired");
         break;
       case "newPassword":
-        if (!value) error = "Mật khẩu mới không được để trống";
-        else if (value.length < 6)
-          error = "Mật khẩu mới phải có ít nhất 6 ký tự";
-        else if (!/[A-Z]/.test(value))
-          error = "Mật khẩu mới phải chứa ít nhất một chữ cái in hoa";
-        else if (!/[0-9]/.test(value))
-          error = "Mật khẩu mới phải chứa ít nhất một số";
+        if (!value) error = tAuth("passwordRequired");
+        else if (value.length < 6) error = tAuth("passwordRequired");
+        else if (!/[A-Z]/.test(value)) error = t("passwordUppercaseRequired");
+        else if (!/[0-9]/.test(value)) error = t("passwordNumberRequired");
         break;
       case "confirmPassword":
-        if (!value) error = "Xác nhận mật khẩu không được để trống";
+        if (!value) error = tAuth("passwordRequired");
         else if (value !== formData.newPassword)
-          error = "Xác nhận mật khẩu không khớp với mật khẩu mới";
+          error = tAuth("passwordsDoNotMatch");
         break;
       default:
         break;
@@ -58,14 +58,12 @@ function ChangePassword() {
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
-      alert("Vui lòng kiểm tra lại thông tin");
+      alert(t("invalidInfo"));
       return;
     }
 
-    // Placeholder for API call to change password
     try {
-      // Example: await changePasswordApi(formData.currentPassword, formData.newPassword);
-      alert("Đổi mật khẩu thành công! (API chưa triển khai)");
+      alert(t("passwordChangedSuccess"));
       setFormData({
         currentPassword: "",
         newPassword: "",
@@ -74,19 +72,19 @@ function ChangePassword() {
       setErrors({});
     } catch (error) {
       console.error("Lỗi khi đổi mật khẩu:", error);
-      alert("Đổi mật khẩu thất bại!");
+      alert(t("passwordChangedFailed"));
     }
   };
 
   return (
     <div className="rounded-lg border bg-white p-4 shadow-md">
-      <h4 className="text-lg font-semibold">Đổi mật khẩu</h4>
+      <h4 className="text-lg font-semibold">{t("changePasswordTitle")}</h4>
       <hr className="my-2 border-gray-300" />
 
       <form className="space-y-4" onSubmit={handleSubmit}>
         <InputField
           id="currentPassword"
-          label="Mật khẩu hiện tại"
+          label={t("currentPassword")}
           type="password"
           name="currentPassword"
           value={formData.currentPassword}
@@ -95,7 +93,7 @@ function ChangePassword() {
         />
         <InputField
           id="newPassword"
-          label="Mật khẩu mới"
+          label={t("newPassword")}
           type="password"
           name="newPassword"
           value={formData.newPassword}
@@ -104,7 +102,7 @@ function ChangePassword() {
         />
         <InputField
           id="confirmPassword"
-          label="Xác nhận mật khẩu mới"
+          label={t("confirmPassword")}
           type="password"
           name="confirmPassword"
           value={formData.confirmPassword}
@@ -113,7 +111,7 @@ function ChangePassword() {
         />
         <div className="flex justify-end space-x-2">
           <Button
-            text="Hủy"
+            text={t("cancelBtn")}
             type="button"
             onClick={() =>
               setFormData({
@@ -124,7 +122,7 @@ function ChangePassword() {
             }
             padding="15px"
           />
-          <Button text="Lưu" type="submit" padding="15px" />
+          <Button text={t("saveBtn")} type="submit" padding="15px" />
         </div>
       </form>
     </div>

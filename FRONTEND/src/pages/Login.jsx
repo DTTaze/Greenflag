@@ -1,4 +1,5 @@
 import { Eye, EyeOff } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { useLoginForm } from "@/src/hooks/forms/useLoginForm";
@@ -9,23 +10,26 @@ import InputField from "../components/ui/InputField";
 import SocialLoginIcons from "../components/ui/SocialLoginIcons";
 
 const LoginPage = () => {
+  const t = useTranslations("auth");
   const [showPassword, setShowPassword] = useState(false);
   const { register, handleSubmit, errors, isLoginDisabled } = useLoginForm();
 
   return (
     <div className="mx-auto mt-8 max-w-sm rounded border border-gray-300 bg-white p-4 shadow">
-      <h2 className="mb-4 text-center text-xl font-semibold">Đăng nhập</h2>
+      <h2 className="mb-4 text-center text-xl font-semibold">
+        {t("loginTitle")}
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <InputField
           id="identifier"
-          label="Email hoặc Username"
+          label={t("emailOrUsername")}
           error={errors.identifier?.message}
           {...register("identifier")}
         />
 
         <InputField
           id="password"
-          label="Mật khẩu"
+          label={t("password")}
           type={showPassword ? "text" : "password"}
           error={errors.password?.message}
           suffix={
@@ -42,7 +46,7 @@ const LoginPage = () => {
 
         <Button
           type="submit"
-          text="Đăng nhập"
+          text={t("loginTitle")}
           disabled={isLoginDisabled}
           width="100%"
           padding="15px"
@@ -53,7 +57,7 @@ const LoginPage = () => {
             href="/forgot-password"
             className="text-blue-600 hover:underline"
           >
-            Quên mật khẩu?
+            {t("forgotPassword")}
           </Link>
         </div>
       </form>
@@ -61,9 +65,9 @@ const LoginPage = () => {
       <hr className="my-6 border-gray-300" />
       <SocialLoginIcons />
       <div className="text-center">
-        Chưa có tài khoản?{" "}
+        {t("noAccount")}{" "}
         <Link href="/register" className="text-blue-600 hover:underline">
-          Đăng ký tại đây
+          {t("registerHere")}
         </Link>
       </div>
     </div>

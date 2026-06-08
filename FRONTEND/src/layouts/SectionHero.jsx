@@ -92,7 +92,7 @@ export default function SectionHero() {
           {!isAuthenticated && (
             <button
               onClick={() => router.push("/login")}
-              className="dark:hover:bg-zinc-850 flex cursor-pointer items-center justify-center rounded-full border-2 border-zinc-200 bg-white px-8 py-4 text-base font-bold text-zinc-700 transition-all duration-300 hover:border-emerald-600 hover:bg-zinc-50 hover:text-emerald-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-emerald-500"
+              className="flex cursor-pointer items-center justify-center rounded-full border-2 border-zinc-200 bg-white px-8 py-4 text-base font-bold text-zinc-700 transition-all duration-300 hover:border-emerald-600 hover:bg-zinc-50 hover:text-emerald-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-emerald-500 dark:hover:bg-zinc-800"
             >
               {tMenu("login")}
             </button>

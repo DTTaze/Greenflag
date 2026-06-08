@@ -116,8 +116,8 @@ function UserHeader() {
     <header
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${
         scrolled
-          ? "border-b border-gray-100/80 bg-white/85 shadow-sm backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-950/85"
-          : "border-b border-transparent bg-white dark:bg-zinc-950"
+          ? "border-b border-emerald-600/10 bg-white/95 shadow-md backdrop-blur-md dark:border-emerald-500/20 dark:bg-zinc-900/95 dark:shadow-zinc-950/50"
+          : "border-b border-gray-200 bg-white/90 shadow-sm backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-950/90"
       }`}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -152,11 +152,11 @@ function UserHeader() {
                     className={`relative flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-semibold transition-colors duration-200 ${
                       isActive
                         ? "text-[#0B6E4F] dark:text-emerald-400"
-                        : "dark:text-zinc-350 text-gray-600 hover:bg-gray-50 hover:text-[#0B6E4F] dark:hover:bg-zinc-900 dark:hover:text-emerald-400"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-[#0B6E4F] dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-emerald-400"
                     }`}
                   >
                     <Icon
-                      className={`h-4.5 w-4.5 ${isActive ? "text-[#0B6E4F] dark:text-emerald-400" : "dark:text-zinc-550 text-gray-400"}`}
+                      className={`h-4.5 w-4.5 ${isActive ? "text-[#0B6E4F] dark:text-emerald-400" : "text-gray-400 dark:text-zinc-500"}`}
                     />
                     <span>{label}</span>
                     {isActive && (

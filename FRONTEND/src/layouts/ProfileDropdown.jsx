@@ -37,7 +37,7 @@ export default function ProfileDropdown({ user, avatarUrl, onLogout }) {
               transition={{ duration: 0.15, ease: "easeOut" }}
               className="absolute right-0 z-40 mt-2.5 w-60 rounded-xl border border-gray-100 bg-white p-1.5 shadow-xl dark:border-zinc-800 dark:bg-zinc-900"
             >
-              <div className="dark:bg-zinc-850/50 mb-1 rounded-lg bg-gray-50/50 px-3 py-2.5">
+              <div className="mb-1 rounded-lg bg-gray-50/50 px-3 py-2.5 dark:bg-zinc-800/50">
                 <p className="truncate text-sm font-bold text-gray-800 dark:text-zinc-200">
                   {user?.username || "User"}
                 </p>
@@ -49,7 +49,7 @@ export default function ProfileDropdown({ user, avatarUrl, onLogout }) {
               <Link
                 href="/user"
                 onClick={() => setIsOpen(false)}
-                className="dark:hover:bg-zinc-850 dark:hover:text-emerald-450 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-semibold text-gray-700 transition-colors hover:bg-[#0B6E4F]/5 hover:text-[#0B6E4F] dark:text-zinc-300"
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-semibold text-gray-700 transition-colors hover:bg-[#0B6E4F]/5 hover:text-[#0B6E4F] dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-emerald-400"
               >
                 <User className="h-4 w-4 text-gray-400" />
                 <span>{t("profile")}</span>

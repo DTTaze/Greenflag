@@ -80,7 +80,7 @@ export default function SectionFeatures({
         <h2 className="mt-3 text-2xl font-black text-zinc-900 sm:text-3xl lg:text-4xl dark:text-white">
           {H2Text}
         </h2>
-        <p className="text-zinc-650 mt-4 text-base leading-relaxed dark:text-zinc-400">
+        <p className="mt-4 text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
           {PText}
         </p>
 

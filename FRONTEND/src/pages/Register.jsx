@@ -1,4 +1,5 @@
 import { Eye, EyeOff } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { useRegisterForm } from "@/src/hooks/forms/useRegisterForm";
@@ -10,48 +11,49 @@ import SelectField from "../components/ui/SelectField";
 import SocialLoginIcons from "../components/ui/SocialLoginIcons";
 
 function RegisterPage() {
+  const t = useTranslations("auth");
   const [showPassword, setShowPassword] = useState(false);
   const { register, handleSubmit, errors, loading } = useRegisterForm();
 
   return (
     <div className="mx-auto mt-10 max-w-md rounded-md border-2 p-4 shadow">
-      <h4 className="mb-4 text-xl font-semibold">Đăng ký tài khoản</h4>
+      <h4 className="mb-4 text-xl font-semibold">{t("registerTitle")}</h4>
       <hr className="my-2 border-gray-300" />
 
       <form className="space-y-4" onSubmit={handleSubmit}>
         <InputField
           id="full_name"
-          label="Họ tên"
+          label={t("fullName")}
           error={errors.full_name?.message}
           {...register("full_name")}
         />
         <InputField
           id="username"
-          label="Tên tài khoản"
+          label={t("username")}
           error={errors.username?.message}
           {...register("username")}
         />
 
         <SelectField
           id="role_id"
-          label="Loại tài khoản"
+          label={t("accountType")}
           error={errors.role_id?.message}
           options={[
-            { value: 2, label: "Người dùng" },
-            { value: 3, label: "Đối tác" },
+            { value: 2, label: t("userRole") },
+            { value: 3, label: t("partnerRole") },
           ]}
           {...register("role_id", { valueAsNumber: true })}
         />
 
         <InputField
           id="email"
-          label="Email"
+          label={t("email")}
           error={errors.email?.message}
           {...register("email")}
         />
         <InputField
           id="password"
-          label="Mật khẩu"
+          label={t("password")}
           type={showPassword ? "text" : "password"}
           error={errors.password?.message}
           suffix={
@@ -67,7 +69,7 @@ function RegisterPage() {
         />
         <Button
           type="submit"
-          text={loading ? "Đang đăng ký..." : "Đăng ký"}
+          text={loading ? t("registering") : t("registerBtn")}
           disabled={loading}
           className="h-11 w-full"
         />
@@ -75,16 +77,16 @@ function RegisterPage() {
 
       <div className="mt-6 flex items-center">
         <hr className="flex-grow border-t border-gray-300" />
-        <span className="mx-4 font-medium text-gray-500">Hoặc</span>
+        <span className="mx-4 font-medium text-gray-500">{t("or")}</span>
         <hr className="flex-grow border-t border-gray-300" />
       </div>
 
       <SocialLoginIcons />
 
       <p className="mt-4 text-center">
-        Đã có tài khoản?{" "}
+        {t("alreadyHaveAccount")}{" "}
         <Link href="/login" className="font-medium text-blue-600">
-          Đăng nhập
+          {t("loginTitle")}
         </Link>
       </p>
     </div>

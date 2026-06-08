@@ -50,7 +50,7 @@ export default function LocaleSwitcher() {
           className={`flex cursor-pointer items-center justify-between px-3 py-2 text-sm font-semibold ${
             locale === "vi"
               ? "font-bold text-[#0B6E4F] dark:text-emerald-400"
-              : "dark:text-zinc-350 text-gray-700"
+              : "text-gray-700 dark:text-zinc-400"
           }`}
         >
           <span>Tiếng Việt</span>
@@ -63,7 +63,7 @@ export default function LocaleSwitcher() {
           className={`flex cursor-pointer items-center justify-between px-3 py-2 text-sm font-semibold ${
             locale === "en"
               ? "font-bold text-[#0B6E4F] dark:text-emerald-400"
-              : "dark:text-zinc-350 text-gray-700"
+              : "text-gray-700 dark:text-zinc-400"
           }`}
         >
           <span>English</span>

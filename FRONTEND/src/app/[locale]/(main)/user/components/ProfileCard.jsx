@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
 function NavLink({ to, className, children }) {
@@ -79,6 +80,7 @@ function SubMenuItem({ text, path }) {
 }
 
 function ProfileCard() {
+  const t = useTranslations("user");
   const { isAuthenticated, user, dispatch } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [avatar, setAvatar] = useState("");
@@ -107,7 +109,7 @@ function ProfileCard() {
     }
   }, [user?.id, isFetched, dispatch]);
 
-  if (!isAuthenticated) return <p>User not logged in.</p>;
+  if (!isAuthenticated) return <p>{t("notLoggedIn")}</p>;
 
   const avatarUrl = avatar
     ? avatar
@@ -140,18 +142,18 @@ function ProfileCard() {
 
   const menuItems = [
     {
-      text: "Tài khoản của tôi",
+      text: t("myAccount"),
       hasSubmenu: true,
       subItems: [
-        { text: "Xem hồ sơ", path: "/user/account" },
-        { text: "Địa chỉ", path: "/user/address" },
-        { text: "Đổi mật khẩu", path: "/user/change-password" },
-        { text: "Xóa tài khoản", path: "/user/delete-account" },
+        { text: t("viewProfile"), path: "/user/account" },
+        { text: t("address"), path: "/user/address" },
+        { text: t("changePasswordTitle"), path: "/user/change-password" },
+        { text: t("deleteAccount"), path: "/user/delete-account" },
       ],
     },
-    { text: "Nhiệm vụ hoàn thành", path: "/user/missions" },
-    { text: "Đơn mua", path: "/user/purchase" },
-    { text: "Lịch sử hoạt động & Giao dịch xu", path: "/user/history" },
+    { text: t("completedMissions"), path: "/user/missions" },
+    { text: t("purchaseOrders"), path: "/user/purchase" },
+    { text: t("activityHistory"), path: "/user/history" },
   ];
 
   return (
@@ -179,9 +181,7 @@ function ProfileCard() {
           <h2 className="text-base font-semibold">
             {user?.full_name || "null"}
           </h2>
-          <p className="text-xs text-gray-600">
-            {user?.email || "No email available"}
-          </p>
+          <p className="text-xs text-gray-600">{user?.email || t("noEmail")}</p>
         </div>
       </div>
       <div className="my-4 h-px w-full border-b"></div>

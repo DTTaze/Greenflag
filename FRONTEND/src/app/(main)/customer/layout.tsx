@@ -3,11 +3,11 @@
 import "@/src/styles/pages/customer.css";
 
 import { Box } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { Outlet } from "react-router-dom";
 
 import ProtectedRoute from "@/src/components/common/ProtectedRoute";
-import { getUserApi } from "@/src/utils/api";
+import { AuthContext } from "@/src/contexts/auth.context";
 
 import CustomerAppBar from "./components/layout/CustomerAppBar";
 import CustomerDrawer from "./components/layout/CustomerDrawer";
@@ -19,24 +19,9 @@ export default function CustomerLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [userInfo, setUserInfo] = useState<any>(null);
+  const { auth } = useContext(AuthContext);
+  const userInfo = auth.user;
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const userResponse = await getUserApi();
-        if (userResponse?.data) {
-          setUserInfo(userResponse.data);
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-
-    fetchUserData();
-  }, []);
 
   const handleDrawerToggle = () => {
     setOpen(!open);

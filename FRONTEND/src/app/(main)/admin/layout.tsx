@@ -2,11 +2,11 @@
 
 import "@/src/styles/pages/admin.css";
 
-import React, { useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { Outlet } from "react-router-dom";
 
 import ProtectedRoute from "@/src/components/common/ProtectedRoute";
-import { getUserApi } from "@/src/utils/api";
+import { AuthContext } from "@/src/contexts/auth.context";
 
 import TemporaryDrawer from "./components/SidebarAdmin";
 
@@ -15,38 +15,23 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [userInfo, setUserInfo] = useState<any>(null);
+  const { auth } = useContext(AuthContext);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const userResponse = await getUserApi();
-        if (userResponse?.data) {
-          const dataOfUser = {
-            id: userResponse.data.id,
-            full_name: userResponse.data.full_name || "User",
-            avatar_url: userResponse.data.avatar_url,
-            username: userResponse.data.username || "Guest",
-            role_id: userResponse.data.role_id || 0,
-            email: userResponse.data.email,
-            phone_number: userResponse.data.phone_number,
-            last_logined: userResponse.data.last_logined,
-          };
-          setUserInfo(dataOfUser);
-        } else {
-          setUserInfo({
-            id: 0,
-            name: "Guest User",
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
+  const userInfo = auth.user
+    ? {
+        id: auth.user.id,
+        full_name: auth.user.full_name || "User",
+        avatar_url: auth.user.avatar_url,
+        username: auth.user.username || "Guest",
+        role_id: auth.user.role_id || 0,
+        email: auth.user.email,
+        phone_number: auth.user.phone_number,
+        last_logined: auth.user.last_logined,
       }
-    };
-
-    fetchUserData();
-  }, []);
+    : {
+        id: 0,
+        name: "Guest User",
+      };
 
   return (
     <ProtectedRoute requiredRole="Admin">

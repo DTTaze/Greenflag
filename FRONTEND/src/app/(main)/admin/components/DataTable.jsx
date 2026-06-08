@@ -1,19 +1,19 @@
-import * as React from "react";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
-import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import Stack from "@mui/material/Stack";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
-import { alpha } from "@mui/material/styles";
+import IconButton from "@mui/material/IconButton";
 import LinearProgress from "@mui/material/LinearProgress";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import { alpha } from "@mui/material/styles";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import * as React from "react";
 
 // Custom NoRowsOverlay component
 function CustomNoRowsOverlay() {
@@ -193,7 +193,6 @@ export default function DataTable({
             toolbar: {
               showQuickFilter: true,
               quickFilterProps: { debounceMs: 500 },
-              
             },
           }}
           sx={{

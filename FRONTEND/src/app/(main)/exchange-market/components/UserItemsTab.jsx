@@ -1,17 +1,18 @@
-import { useMemo, useContext, useEffect } from "react";
+import { useContext, useEffect, useMemo } from "react";
+
 import {
-  MarketplaceContext,
+  getCategoryDisplayName,
   marketplaceCategories,
+  MarketplaceContext,
   statusColors,
   statusConfig,
-  getCategoryDisplayName,
   userItemStatuses,
 } from "../layout";
-import MarketSearchBar from "./MarketSearchBar";
+import CreateItemModal from "./CreateItemModal";
+import MarketEmptyState from "./MarketEmptyState";
 import MarketFilterButtons from "./MarketFilterButtons";
 import MarketItemList from "./MarketItemList";
-import MarketEmptyState from "./MarketEmptyState";
-import CreateItemModal from "./CreateItemModal";
+import MarketSearchBar from "./MarketSearchBar";
 
 function UserItemsTab({ fetchItems }) {
   const {
@@ -42,14 +43,16 @@ function UserItemsTab({ fetchItems }) {
     if (!myItems?.length) return [];
     let filtered = [...myItems];
     if (marketStatusFilter !== "all") {
-      filtered = filtered.filter((item) => item.postStatus === marketStatusFilter);
+      filtered = filtered.filter(
+        (item) => item.postStatus === marketStatusFilter,
+      );
     }
     if (marketSearchText) {
       const searchLower = marketSearchText.toLowerCase();
       filtered = filtered.filter(
         (item) =>
           item.name.toLowerCase().includes(searchLower) ||
-          item.description.toLowerCase().includes(searchLower)
+          item.description.toLowerCase().includes(searchLower),
       );
     }
     return filtered;
@@ -63,15 +66,15 @@ function UserItemsTab({ fetchItems }) {
         onSubmit={handleSubmitItem}
         onCancel={handleCancelForm}
       />
-      <div className="flex justify-end mb-4">
+      <div className="mb-4 flex justify-end">
         <button
           onClick={handleAddItem}
-          className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium"
+          className="rounded-lg bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-700"
         >
           Thêm sản phẩm
         </button>
       </div>
-      <div className="bg-white p-4 rounded-lg border border-gray-200 flex flex-col gap-4">
+      <div className="flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-4">
         <MarketSearchBar
           marketSearchText={marketSearchText}
           setMarketSearchText={setMarketSearchText}

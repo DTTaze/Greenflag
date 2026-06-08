@@ -1,18 +1,19 @@
-import { useState, useEffect, useContext } from "react";
-import { updateUserPublicApi, getQRApi } from "@/src/utils/api.js";
-import { AuthContext } from "@/src/contexts/auth.context.jsx";
-import InputField from "@/src/components/ui/InputField.jsx";
-import Button from "@/src/components/ui/button";
-import PersonalInfomationSkeleton from "./PersonalInfomationSkeleton.jsx";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 import Typography from "@mui/material/Typography";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import QrCodeIcon from "@mui/icons-material/QrCode";
+import { Copy, QrCode } from "lucide-react";
+import { useContext, useEffect, useState } from "react";
+
+import Button from "@/src/components/ui/button";
+import InputField from "@/src/components/ui/InputField.jsx";
+import { AuthContext } from "@/src/contexts/auth.context.jsx";
+import { getQRApi, updateUserPublicApi } from "@/src/utils/api.js";
+
+import PersonalInfomationSkeleton from "./PersonalInfomationSkeleton.jsx";
 
 function PersonalInformation() {
   const { auth, setAuth } = useContext(AuthContext);
@@ -162,15 +163,15 @@ function PersonalInformation() {
   ];
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-md">
-      <div className="flex justify-between items-center">
-        <h4 className="font-semibold text-lg">Thông tin cá nhân</h4>
+    <div className="rounded-lg bg-white p-4 shadow-md">
+      <div className="flex items-center justify-between">
+        <h4 className="text-lg font-semibold">Thông tin cá nhân</h4>
         <div className="flex gap-2">
           <Button
             text="QR Code"
             onClick={generateQRCode}
             padding="15px"
-            icon={<QrCodeIcon />}
+            icon={<QrCode size={20} />}
             className="bg-green-100 text-green-600 hover:bg-green-200"
           />
           {!isEditing && (
@@ -195,7 +196,7 @@ function PersonalInformation() {
                 onChange={handleChange}
                 error={errors[id]}
                 disabled={!isEditing}
-                className={isEditing ? "" : "bg-gray-100 cursor-not-allowed"}
+                className={isEditing ? "" : "cursor-not-allowed bg-gray-100"}
               />
             </div>
           ))}
@@ -206,14 +207,14 @@ function PersonalInformation() {
             <Button
               text="Lưu"
               type="submit"
-              className="bg-green-500 hover:bg-green-600 text-white"
+              className="bg-green-500 text-white hover:bg-green-600"
               padding="15px"
             />
             <Button
               text="Hủy"
               type="button"
               onClick={handleCancel}
-              className="bg-red-500 hover:bg-red-600 text-white"
+              className="bg-red-500 text-white hover:bg-red-600"
               padding="15px"
             />
           </div>
@@ -292,7 +293,7 @@ function PersonalInformation() {
                   <Typography variant="body2" fontWeight="medium">
                     Public ID: {user?.public_id}
                   </Typography>
-                  <ContentCopyIcon fontSize="small" />
+                  <Copy size={16} />
                 </Box>
               </Box>
             ) : (
@@ -304,7 +305,7 @@ function PersonalInformation() {
           <Button
             text="Close"
             onClick={() => setShowQrDialog(false)}
-            className="bg-green-600 hover:bg-green-700 text-white"
+            className="bg-green-600 text-white hover:bg-green-700"
             padding="15px"
           />
         </DialogActions>

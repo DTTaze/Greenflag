@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from "react";
-import DataTable from "../../components/DataTable";
-import { userColumns } from "../../components/HeaderColumn";
 import { Box, Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
+
 import {
-  getAllUserApi,
-  deleteUserApi,
   createUserApi,
+  deleteUserApi,
+  getAllUserApi,
   updateUserApi,
 } from "@/src/utils/api";
+
+import DataTable from "../../components/DataTable";
+import { userColumns } from "../../components/HeaderColumn";
 import UserForm from "./UserForm";
 
 export default function UsersManagement() {

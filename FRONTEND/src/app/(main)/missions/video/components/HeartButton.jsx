@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+
 import Heart from "@/src/assets/images/Heart";
 
 export default function HeartButton({ initialLikes, onLike }) {
@@ -22,15 +23,15 @@ export default function HeartButton({ initialLikes, onLike }) {
 
   return (
     <button
-      className={`backdrop-blur-md p-3 rounded-full transition-colors flex flex-col items-center gap-1 ${
-                  heart 
-                    ? "bg-red-500/20 text-red-500 hover:bg-red-500/30"
-                    : "bg-white/10 hover:bg-white/20 text-white"
-                }`}
+      className={`flex flex-col items-center gap-1 rounded-full p-3 backdrop-blur-md transition-colors ${
+        heart
+          ? "bg-red-500/20 text-red-500 hover:bg-red-500/30"
+          : "bg-white/10 text-white hover:bg-white/20"
+      }`}
       onClick={handleLike}
     >
       <Heart color={heart ? "#FF0000" : "#808080"} />
-      <div className="text-white text-sm mt-1">{likes}</div>
+      <div className="mt-1 text-sm text-white">{likes}</div>
     </button>
   );
 }

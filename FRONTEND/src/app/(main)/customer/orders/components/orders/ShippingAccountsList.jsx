@@ -1,18 +1,18 @@
-import React from "react";
 import {
   Box,
   Button,
   Card,
   CardContent,
-  Typography,
   Chip,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
   Grid,
-  DialogContent,
-  DialogActions,
-  DialogTitle,
+  Typography,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
+import { Plus } from "lucide-react";
+import React from "react";
 
 const ShippingAccountsList = ({
   shippingAccounts,
@@ -45,7 +45,7 @@ const ShippingAccountsList = ({
                 handleCloseDialog();
                 handleOpenAddDialog();
               }}
-              startIcon={<AddIcon />}
+              startIcon={<Plus size={20} />}
             >
               Add Shipping Account
             </Button>
@@ -65,7 +65,7 @@ const ShippingAccountsList = ({
                   handleCloseDialog();
                   handleOpenAddDialog();
                 }}
-                startIcon={<AddIcon />}
+                startIcon={<Plus size={20} />}
                 size="small"
               >
                 Add Account
@@ -110,8 +110,8 @@ const ShippingAccountsList = ({
                         {account.carrier == "ghn"
                           ? "Giao Hàng Nhanh"
                           : account.carrier == "grab"
-                          ? "Grab Hỏa Tốc"
-                          : "Giao Hàng Tiết Kiệm"}
+                            ? "Grab Hỏa Tốc"
+                            : "Giao Hàng Tiết Kiệm"}
                       </Typography>
                       <Divider sx={{ my: 1 }} />
                       <Typography variant="body2" sx={{ mb: 0.5 }}>

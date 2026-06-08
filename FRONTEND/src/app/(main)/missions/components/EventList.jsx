@@ -1,7 +1,9 @@
+import { CalendarIcon, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { CalendarIcon, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
-import { getEventSignedByUserIdApi, getAllEventsApi } from "@/src/utils/api";
 import { toast } from "react-toastify";
+
+import { getAllEventsApi, getEventSignedByUserIdApi } from "@/src/utils/api";
+
 import EventDetailsModal from "./EventDetailsModal";
 import Pagination from "./Pagination";
 
@@ -22,14 +24,14 @@ const EventList = ({ userInfo }) => {
       try {
         // Fetch user's signed events
         const eventUserSignedResponse = await getEventSignedByUserIdApi(
-          userInfo.id
+          userInfo.id,
         );
         const eventUserSignedData = eventUserSignedResponse.data;
         setEventUser(eventUserSignedData);
 
         // Extract Event objects from eventUser data
         const eventSignedData = eventUserSignedData.map(
-          (eventUser) => eventUser.Event
+          (eventUser) => eventUser.Event,
         );
         setEventsSigned(eventSignedData);
 
@@ -111,12 +113,12 @@ const EventList = ({ userInfo }) => {
   const renderEventCard = (event) => (
     <div
       key={event.id}
-      className="flex rounded-lg border border-gray-200 overflow-hidden"
+      className="flex overflow-hidden rounded-lg border border-gray-200"
     >
       <div className="w-1 bg-green-500"></div>
       <div className="flex-1 p-3">
-        <h3 className="font-semibold text-gray-800 text-sm">{event.title}</h3>
-        <p className="text-xs text-gray-600 mt-0.5 line-clamp-1">
+        <h3 className="text-sm font-semibold text-gray-800">{event.title}</h3>
+        <p className="mt-0.5 line-clamp-1 text-xs text-gray-600">
           {event.description}
         </p>
 
@@ -134,7 +136,7 @@ const EventList = ({ userInfo }) => {
           </div>
 
           <div className="flex items-center gap-1.5">
-            <div className="flex items-center text-amber-600 font-medium text-xs">
+            <div className="flex items-center text-xs font-medium text-amber-600">
               <span>+{event.coins}</span>
               <svg
                 className="ml-0.5 h-3.5 w-3.5"
@@ -148,7 +150,7 @@ const EventList = ({ userInfo }) => {
 
             <button
               onClick={() => handleOpenModal(event)}
-              className="bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium py-1 px-2.5 rounded-md transition-colors"
+              className="rounded-md bg-blue-500 px-2.5 py-1 text-xs font-medium text-white transition-colors hover:bg-blue-600"
             >
               {isEventParticipated(event.id) ? "Xem chi tiết" : "Tham gia"}
             </button>
@@ -159,11 +161,11 @@ const EventList = ({ userInfo }) => {
   );
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-6">
-      <div className="px-5 py-3 border-b border-gray-100 flex justify-between items-center">
-        <h2 className="text-lg font-semibold text-gray-800 flex items-center">
+    <div className="mb-6 overflow-hidden rounded-xl border border-gray-200 bg-white">
+      <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3">
+        <h2 className="flex items-center text-lg font-semibold text-gray-800">
           <svg
-            className="w-5 h-5 mr-2 text-green-600"
+            className="mr-2 h-5 w-5 text-green-600"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -184,20 +186,20 @@ const EventList = ({ userInfo }) => {
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 py-1 px-2">
+      <div className="border-b border-gray-200 px-2 py-1">
         <div className="flex">
           <button
-            className={`tab flex-1 py-1.5 text-center rounded-lg text-sm font-medium transition-all duration-200 ${
+            className={`tab flex-1 rounded-lg py-1.5 text-center text-sm font-medium transition-all duration-200 ${
               activeTab === "hot"
                 ? "bg-gradient-to-r from-red-50 to-orange-50 text-red-600 shadow-sm"
                 : "text-gray-600 hover:bg-gray-50"
             }`}
             onClick={() => setActiveTab("hot")}
           >
-            <div className="flex justify-center items-center">
+            <div className="flex items-center justify-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-3.5 w-3.5 mr-1"
+                className="mr-1 h-3.5 w-3.5"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -213,17 +215,17 @@ const EventList = ({ userInfo }) => {
             </div>
           </button>
           <button
-            className={`tab flex-1 py-1.5 text-center rounded-lg text-sm font-medium transition-all duration-200 ${
+            className={`tab flex-1 rounded-lg py-1.5 text-center text-sm font-medium transition-all duration-200 ${
               activeTab === "current"
                 ? "bg-gradient-to-r from-green-50 to-emerald-50 text-green-600 shadow-sm"
                 : "text-gray-600 hover:bg-gray-50"
             }`}
             onClick={() => setActiveTab("current")}
           >
-            <div className="flex justify-center items-center">
+            <div className="flex items-center justify-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-3.5 w-3.5 mr-1"
+                className="mr-1 h-3.5 w-3.5"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -239,17 +241,17 @@ const EventList = ({ userInfo }) => {
             </div>
           </button>
           <button
-            className={`tab flex-1 py-1.5 text-center rounded-lg text-sm font-medium transition-all duration-200 ${
+            className={`tab flex-1 rounded-lg py-1.5 text-center text-sm font-medium transition-all duration-200 ${
               activeTab === "completed"
                 ? "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-600 shadow-sm"
                 : "text-gray-600 hover:bg-gray-50"
             }`}
             onClick={() => setActiveTab("completed")}
           >
-            <div className="flex justify-center items-center">
+            <div className="flex items-center justify-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-3.5 w-3.5 mr-1"
+                className="mr-1 h-3.5 w-3.5"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"

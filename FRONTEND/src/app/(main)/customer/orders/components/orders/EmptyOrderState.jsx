@@ -1,6 +1,6 @@
-import React from "react";
 import { Box, Button, Card, CardContent, Typography } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
+import { Plus } from "lucide-react";
+import React from "react";
 
 const EmptyOrderState = ({
   hasLinkedShippingAccounts,
@@ -50,7 +50,7 @@ const EmptyOrderState = ({
               variant="contained"
               className="customer-button"
               onClick={handleOpenCreateDialog}
-              startIcon={<AddIcon />}
+              startIcon={<Plus size={20} />}
             >
               Create Your First Order
             </Button>

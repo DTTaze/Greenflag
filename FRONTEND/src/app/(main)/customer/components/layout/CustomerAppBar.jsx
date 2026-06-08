@@ -1,32 +1,33 @@
-import React from "react";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import HomeIcon from "@mui/icons-material/Home";
+import LogoutIcon from "@mui/icons-material/Logout";
+import MenuIcon from "@mui/icons-material/Menu";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import PersonIcon from "@mui/icons-material/Person";
 import {
   AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
-  Breadcrumbs,
-  Link,
-  Button,
-  Box,
-  Badge,
   Avatar,
+  Badge,
+  Box,
+  Breadcrumbs,
+  Button,
+  CircularProgress,
+  IconButton,
+  Link,
   Menu,
   MenuItem,
+  Toolbar,
   Tooltip,
+  Typography,
   useMediaQuery,
   useTheme,
-  CircularProgress,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import PersonIcon from "@mui/icons-material/Person";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import LogoutIcon from "@mui/icons-material/Logout";
-import HomeIcon from "@mui/icons-material/Home";
+import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { logoutUserApi } from "@/src/utils/api";
+
 import { useNotification } from "@/src/components/ui/NotificationProvider";
 import { AuthContext } from "@/src/contexts/auth.context";
+import { logoutUserApi } from "@/src/utils/api";
 
 export default function CustomerAppBar({
   open,

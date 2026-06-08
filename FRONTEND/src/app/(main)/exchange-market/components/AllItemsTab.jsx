@@ -1,15 +1,16 @@
-import { useMemo, useContext, useEffect } from "react";
+import { useContext, useEffect, useMemo } from "react";
+
 import {
-  MarketplaceContext,
+  getCategoryDisplayName,
   marketplaceCategories,
+  MarketplaceContext,
   statusColors,
   statusConfig,
-  getCategoryDisplayName,
 } from "../layout";
-import MarketSearchBar from "./MarketSearchBar";
+import MarketEmptyState from "./MarketEmptyState";
 import MarketFilterButtons from "./MarketFilterButtons";
 import MarketItemList from "./MarketItemList";
-import MarketEmptyState from "./MarketEmptyState";
+import MarketSearchBar from "./MarketSearchBar";
 
 function AllItemsTab({ fetchItems }) {
   const {
@@ -38,7 +39,7 @@ function AllItemsTab({ fetchItems }) {
       filtered = filtered.filter(
         (item) =>
           item.name.toLowerCase().includes(searchLower) ||
-          item.description.toLowerCase().includes(searchLower)
+          item.description.toLowerCase().includes(searchLower),
       );
     }
     return filtered;
@@ -46,7 +47,7 @@ function AllItemsTab({ fetchItems }) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white p-4 rounded-lg border border-gray-200 flex flex-col gap-4">
+      <div className="flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-4">
         <MarketSearchBar
           marketSearchText={marketSearchText}
           setMarketSearchText={setMarketSearchText}

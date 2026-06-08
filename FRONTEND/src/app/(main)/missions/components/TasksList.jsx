@@ -1,8 +1,10 @@
 import React from "react";
+
+import imgSrc from "@/src/assets/images/seedling-solid.svg";
+
+import Pagination from "./Pagination";
 import TaskCard from "./TaskCard";
 import TaskCardSkeleton from "./TaskCardSkeleton";
-import Pagination from "./Pagination";
-import imgSrc from "@/src/assets/images/seedling-solid.svg";
 
 /**
  * Component to display a list of tasks with pagination
@@ -34,10 +36,10 @@ const TasksList = ({
 
   if (selectedTab === "daily") {
     return (
-      <div className="min-h-[650px] flex flex-col">
+      <div className="flex min-h-[650px] flex-col">
         <div className="flex-grow">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-            <span className="bg-blue-100 text-blue-700 p-1.5 rounded-full mr-2">
+          <h2 className="mb-4 flex items-center text-xl font-semibold text-gray-800">
+            <span className="mr-2 rounded-full bg-blue-100 p-1.5 text-blue-700">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-5 w-5"
@@ -67,7 +69,7 @@ const TasksList = ({
               {tasks
                 .slice(
                   (currentPage - 1) * (taskPerPage || 3),
-                  currentPage * (taskPerPage || 3)
+                  currentPage * (taskPerPage || 3),
                 )
                 .map(
                   (task) =>
@@ -79,20 +81,20 @@ const TasksList = ({
                         completingTask={completingTask}
                         userId={userId}
                       />
-                    )
+                    ),
                 )}
             </div>
           ) : (
-            <div className="text-center py-16 px-4 bg-blue-50 rounded-xl">
+            <div className="rounded-xl bg-blue-50 px-4 py-16 text-center">
               <img
                 src={imgSrc}
                 alt="All done!"
-                className="w-20 h-20 mx-auto mb-4 opacity-30"
+                className="mx-auto mb-4 h-20 w-20 opacity-30"
               />
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">
+              <h3 className="mb-2 text-lg font-semibold text-gray-700">
                 Tuyệt vời!
               </h3>
-              <p className="text-gray-600 max-w-md mx-auto mb-4">
+              <p className="mx-auto mb-4 max-w-md text-gray-600">
                 Bạn đã hoàn thành tất cả nhiệm vụ hôm nay. Hãy quay lại vào ngày
                 mai để tiếp tục chuỗi hoạt động!
               </p>
@@ -114,10 +116,10 @@ const TasksList = ({
     );
   } else if (selectedTab === "other") {
     return (
-      <div className="min-h-[650px] flex flex-col">
+      <div className="flex min-h-[650px] flex-col">
         <div className="flex-grow">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-            <span className="bg-indigo-100 text-indigo-700 p-1.5 rounded-full mr-2">
+          <h2 className="mb-4 flex items-center text-xl font-semibold text-gray-800">
+            <span className="mr-2 rounded-full bg-indigo-100 p-1.5 text-indigo-700">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-5 w-5"
@@ -141,7 +143,7 @@ const TasksList = ({
               {tasks
                 .slice(
                   (currentPage - 1) * (taskPerPage || 3),
-                  currentPage * (taskPerPage || 3)
+                  currentPage * (taskPerPage || 3),
                 )
                 .map(
                   (task) =>
@@ -153,20 +155,20 @@ const TasksList = ({
                         completingTask={completingTask}
                         userId={userId}
                       />
-                    )
+                    ),
                 )}
             </div>
           ) : (
-            <div className="text-center py-16 px-4 bg-indigo-50 rounded-xl">
+            <div className="rounded-xl bg-indigo-50 px-4 py-16 text-center">
               <img
                 src={imgSrc}
                 alt="No tasks"
-                className="w-20 h-20 mx-auto mb-4 opacity-30"
+                className="mx-auto mb-4 h-20 w-20 opacity-30"
               />
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">
+              <h3 className="mb-2 text-lg font-semibold text-gray-700">
                 Chưa có nhiệm vụ!
               </h3>
-              <p className="text-gray-600 max-w-md mx-auto">
+              <p className="mx-auto max-w-md text-gray-600">
                 Hiện tại chưa có nhiệm vụ khác nào. Hãy hoàn thành nhiệm vụ hàng
                 ngày trước nhé!
               </p>
@@ -190,8 +192,8 @@ const TasksList = ({
     // For the completed section
     return (
       <div className="min-h-[650px]">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-          <span className="bg-green-100 text-green-700 p-1.5 rounded-full mr-2">
+        <h2 className="mb-4 flex items-center text-xl font-semibold text-gray-800">
+          <span className="mr-2 rounded-full bg-green-100 p-1.5 text-green-700">
             <svg
               xmlns={imgSrc}
               className="h-5 w-5"
@@ -215,16 +217,16 @@ const TasksList = ({
             {tasks.map((task) => (
               <div
                 key={task.id}
-                className="bg-gray-50 rounded-xl border border-gray-200 p-4 opacity-80 hover:opacity-100 transition-opacity"
+                className="rounded-xl border border-gray-200 bg-gray-50 p-4 opacity-80 transition-opacity hover:opacity-100"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center border border-green-200 bg-green-50">
-                    <img src={imgSrc} alt="task icon" className="w-5 h-5" />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full border border-green-200 bg-green-50">
+                    <img src={imgSrc} alt="task icon" className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-700 flex items-center">
+                    <h3 className="flex items-center font-medium text-gray-700">
                       {task.tasks.title}
-                      <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                      <span className="ml-2 inline-flex items-center rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
                         ✓ Hoàn thành
                       </span>
                     </h3>
@@ -244,21 +246,21 @@ const TasksList = ({
             ))}
           </div>
         ) : (
-          <div className="text-center py-16 px-4 bg-green-50 rounded-xl">
+          <div className="rounded-xl bg-green-50 px-4 py-16 text-center">
             <img
               src={imgSrc}
               alt="No tasks"
-              className="w-20 h-20 mx-auto mb-4 opacity-30"
+              className="mx-auto mb-4 h-20 w-20 opacity-30"
             />
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">
+            <h3 className="mb-2 text-lg font-semibold text-gray-700">
               Chưa có nhiệm vụ hoàn thành!
             </h3>
-            <p className="text-gray-600 max-w-md mx-auto">
+            <p className="mx-auto max-w-md text-gray-600">
               Bạn chưa hoàn thành nhiệm vụ nào. Hãy bắt đầu với nhiệm vụ hàng
               ngày.
             </p>
           </div>
-        )}    
+        )}
       </div>
     );
   }

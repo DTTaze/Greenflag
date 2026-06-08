@@ -1,17 +1,24 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Box } from "@mui/material";
-import { Outlet } from "react-router-dom";
-import CustomerDrawer from "./components/layout/CustomerDrawer";
-import CustomerAppBar from "./components/layout/CustomerAppBar";
 import "@/src/styles/pages/customer.css";
-import { getUserApi } from "@/src/utils/api";
+
+import { Box } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Outlet } from "react-router-dom";
+
 import ProtectedRoute from "@/src/components/common/ProtectedRoute";
+import { getUserApi } from "@/src/utils/api";
+
+import CustomerAppBar from "./components/layout/CustomerAppBar";
+import CustomerDrawer from "./components/layout/CustomerDrawer";
 
 const drawerWidth = 240;
 
-export default function CustomerLayout({ children }: { children: React.ReactNode }) {
+export default function CustomerLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [userInfo, setUserInfo] = useState<any>(null);
   const [open, setOpen] = useState(false);
 

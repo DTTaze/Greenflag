@@ -1,21 +1,23 @@
-import React, { useState, useEffect } from "react";
+import AddIcon from "@mui/icons-material/Add";
 import {
+  Alert,
   Box,
-  Typography,
   Button,
   CircularProgress,
-  Alert,
+  Typography,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import EventDialog from "./EventDialog";
-import EventList from "./EventList";
-import EventFilters from "./EventFilters";
+import React, { useEffect, useState } from "react";
+
 import {
-  getOwnerEventApi,
   createEventApi,
-  updateEventApi,
   deleteEventApi,
+  getOwnerEventApi,
+  updateEventApi,
 } from "@/src/utils/api";
+
+import EventDialog from "./EventDialog";
+import EventFilters from "./EventFilters";
+import EventList from "./EventList";
 
 const CustomerEvents = () => {
   const [events, setEvents] = useState([]);
@@ -61,7 +63,7 @@ const CustomerEvents = () => {
     // Filter by search term
     if (filters.search) {
       filtered = filtered.filter((event) =>
-        event.name.toLowerCase().includes(filters.search.toLowerCase())
+        event.name.toLowerCase().includes(filters.search.toLowerCase()),
       );
     }
 
@@ -73,7 +75,7 @@ const CustomerEvents = () => {
     // Filter by minimum price
     if (filters.minPrice) {
       filtered = filtered.filter(
-        (event) => event.price >= parseFloat(filters.minPrice)
+        (event) => event.price >= parseFloat(filters.minPrice),
       );
     }
 

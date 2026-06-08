@@ -1,7 +1,6 @@
+import { Box, Chip, Typography } from "@mui/material";
+import { MapPin, Route } from "lucide-react";
 import React from "react";
-import { Box, Typography, Chip } from "@mui/material";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import TimelineIcon from "@mui/icons-material/Timeline";
 
 const LocationHistory = ({ locationHistory, status }) => {
   if (!locationHistory || locationHistory.length === 0) {
@@ -29,7 +28,7 @@ const LocationHistory = ({ locationHistory, status }) => {
           mb: 3,
         }}
       >
-        <TimelineIcon sx={{ mr: 1 }} /> Location History
+        <Route style={{ marginRight: 8 }} size={20} /> Location History
       </Typography>
 
       {/* Location Timeline */}
@@ -65,7 +64,7 @@ const LocationHistory = ({ locationHistory, status }) => {
                 zIndex: 2,
               }}
             >
-              <LocationOnIcon />
+              <MapPin size={20} />
             </Box>
 
             {/* Vertical connecting line */}

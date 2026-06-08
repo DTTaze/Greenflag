@@ -1,26 +1,28 @@
-import React, { useState, useEffect } from "react";
+import { Box, Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
+
+import {
+  createPermissionApi,
+  createRoleApi,
+  deletePermissionApi,
+  deleteRoleApi,
+  getAllPermissionsApi,
+  getAllRolesApi,
+  getAllRolesPermissionsApi,
+  updatePermissionApi,
+  updateRoleApi,
+} from "@/src/utils/api";
+
+import AdminTabs from "../../components/AdminTabs";
 import DataTable from "../../components/DataTable";
 import {
+  permissionColumns,
   roleColumns,
   rolesPermissionsColumns,
-  permissionColumns,
 } from "../../components/HeaderColumn";
-import { Box, Typography } from "@mui/material";
-import AdminTabs from "../../components/AdminTabs";
-import RoleForm from "./RoleForm";
 import PermissionForm from "./PermissionForm";
+import RoleForm from "./RoleForm";
 import RolePermissionForm from "./RolePermissionForm";
-import {
-  getAllRolesApi,
-  getAllPermissionsApi,
-  getAllRolesPermissionsApi,
-  createRoleApi,
-  updateRoleApi,
-  deleteRoleApi,
-  createPermissionApi,
-  updatePermissionApi,
-  deletePermissionApi,
-} from "@/src/utils/api";
 
 // Roles Management
 function RolesManagement() {
@@ -80,7 +82,9 @@ function RolesManagement() {
 
       if (res.success) {
         alert(
-          mode === "add" ? "Thêm Role thành công!" : "Cập nhật Role thành công!"
+          mode === "add"
+            ? "Thêm Role thành công!"
+            : "Cập nhật Role thành công!",
         );
       } else {
         alert("Có lỗi xảy ra!");
@@ -173,7 +177,7 @@ function PermissionsManagement() {
         alert(
           mode === "add"
             ? "Thêm Permission thành công!"
-            : "Cập nhật Permission thành công!"
+            : "Cập nhật Permission thành công!",
         );
       } else {
         alert("Có lỗi xảy ra!");

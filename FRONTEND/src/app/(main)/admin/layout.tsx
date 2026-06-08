@@ -1,13 +1,20 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
 import "@/src/styles/pages/admin.css";
-import TemporaryDrawer from "./components/SidebarAdmin";
-import { Outlet } from "react-router-dom";
-import { getUserApi } from "@/src/utils/api";
-import ProtectedRoute from "@/src/components/common/ProtectedRoute";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+import React, { useEffect, useState } from "react";
+import { Outlet } from "react-router-dom";
+
+import ProtectedRoute from "@/src/components/common/ProtectedRoute";
+import { getUserApi } from "@/src/utils/api";
+
+import TemporaryDrawer from "./components/SidebarAdmin";
+
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [userInfo, setUserInfo] = useState<any>(null);
 
   useEffect(() => {
@@ -44,8 +51,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <ProtectedRoute requiredRole="Admin">
       <div className="admin-page admin-pages-container">
         {/* Header AppBar */}
-        <div className="flex justify-start items-center p-1.5">
-          <div className="rounded-full bg-gray-100 w-10 h-10 flex justify-center items-center">
+        <div className="flex items-center justify-start p-1.5">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
             <TemporaryDrawer userInfo={userInfo} />
           </div>
         </div>

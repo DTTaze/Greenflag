@@ -1,4 +1,5 @@
 import axios from "axios";
+
 import { VITE_BACKEND_URL } from "../config/env.js";
 
 const instance = axios.create({

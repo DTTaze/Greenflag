@@ -1,7 +1,12 @@
-import { useState } from "react";
 import { Minus, Plus } from "lucide-react";
+import { useState } from "react";
 
-export default function QuantityInput({ min = 0, max = 10, value = 1, onChange }) {
+export default function QuantityInput({
+  min = 0,
+  max = 10,
+  value = 1,
+  onChange,
+}) {
   const [qty, setQty] = useState(value);
 
   const handleChange = (newQty) => {
@@ -12,13 +17,13 @@ export default function QuantityInput({ min = 0, max = 10, value = 1, onChange }
   };
 
   return (
-    <div className="flex items-center border rounded-md overflow-hidden w-28">
+    <div className="flex w-28 items-center overflow-hidden rounded-md border">
       <button
-        className="w-10 h-10 flex items-center justify-center border-r disabled:opacity-50"
+        className="flex h-10 w-10 items-center justify-center border-r disabled:opacity-50"
         onClick={() => handleChange(qty - 1)}
         disabled={qty <= min}
       >
-        <Minus className="w-4 h-4" />
+        <Minus className="h-4 w-4" />
       </button>
       <input
         type="number"
@@ -29,11 +34,11 @@ export default function QuantityInput({ min = 0, max = 10, value = 1, onChange }
         max={max}
       />
       <button
-        className="w-10 h-10 flex items-center justify-center border-l disabled:opacity-50"
+        className="flex h-10 w-10 items-center justify-center border-l disabled:opacity-50"
         onClick={() => handleChange(qty + 1)}
         disabled={qty >= max}
       >
-        <Plus className="w-4 h-4" />
+        <Plus className="h-4 w-4" />
       </button>
     </div>
   );

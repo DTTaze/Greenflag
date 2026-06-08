@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import dayjs from "dayjs";
+import React, { useEffect, useState } from "react";
+
 import { getOwnerEventApi } from "@/src/utils/api";
-import dayjs from 'dayjs';
 
 export const getEventNameById = (eventId, events = []) => {
   const event = events.find((e) => String(e.id) === String(eventId));
@@ -10,15 +11,18 @@ export const getEventNameById = (eventId, events = []) => {
 
 export default function EventSelector({ selectedEvent, onEventChange }) {
   const [events, setEvents] = useState([]);
-  console.log("selected event: ", selectedEvent)
-  console.log("on event change: ", onEventChange)
+  console.log("selected event: ", selectedEvent);
+  console.log("on event change: ", onEventChange);
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         const response = await getOwnerEventApi();
         console.log("Fetched events:", response.data); // Debugging line
-        console.log("Start time:", dayjs(response.data[0].start_time).format("HH:mm DD/MM/YYYY")); // Debugging line
+        console.log(
+          "Start time:",
+          dayjs(response.data[0].start_time).format("HH:mm DD/MM/YYYY"),
+        ); // Debugging line
 
         setEvents(response.data);
       } catch (error) {
@@ -26,7 +30,7 @@ export default function EventSelector({ selectedEvent, onEventChange }) {
       }
     };
 
-    fetchEvents(); 
+    fetchEvents();
   }, []);
 
   return (
@@ -41,8 +45,8 @@ export default function EventSelector({ selectedEvent, onEventChange }) {
       >
         {events.map((event) => (
           <MenuItem key={event.id} value={event.id}>
-            {event.title} -{" "}
-            {dayjs(event.start_time).format("HH:mm DD/MM/YYYY")} to {dayjs(event.end_time).format("HH:mm DD/MM/YYYY")}
+            {event.title} - {dayjs(event.start_time).format("HH:mm DD/MM/YYYY")}{" "}
+            to {dayjs(event.end_time).format("HH:mm DD/MM/YYYY")}
           </MenuItem>
         ))}
       </Select>

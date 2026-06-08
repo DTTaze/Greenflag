@@ -1,53 +1,55 @@
+import "./index.css";
+
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import {
   createBrowserRouter,
-  RouterProvider,
   Navigate,
+  RouterProvider,
 } from "react-router-dom";
-import { StrictMode } from "react";
-import { AuthProvider } from "./contexts/auth.context.jsx";
-import { NotificationProvider } from "./components/ui/NotificationProvider";
-import AuthCallback from "./pages/AuthCallback.jsx";
-import LoginPage from "./pages/Login.jsx";
-import RegisterPage from "./pages/Register.jsx";
-import ForgotPassword from "./pages/ForgotPassword.jsx";
-import Homepage from "./pages/Homepage.jsx";
-import MissionPage from "./pages/Mission.jsx";
-import ExchangeMarket from "./pages/ExchangeMarket.jsx";
+
+import App from "./App.jsx";
+import AdminDashboard from "./components/admin/AdminDashboard.jsx";
+import ContentManagement from "./components/admin/ContentManagement.jsx";
+import EventsManagement from "./components/admin/EventsManagement.jsx";
+import ItemsManagement from "./components/admin/ItemsManagement.jsx";
+import MissionsManagement from "./components/admin/MissionsManagement.jsx";
+import OrdersManagement from "./components/admin/OrdersManagement.jsx";
+import ProductsManagement from "./components/admin/ProductsManagement.jsx";
+import RolesPermissions from "./components/admin/RolesPermissions.jsx";
+import TransactionsManagement from "./components/admin/TransactionsManagement.jsx";
+import UsersManagement from "./components/admin/UsersManagement.jsx";
+import ProtectedRoute from "./components/common/ProtectedRoute.jsx";
+import CustomerDashboard from "./components/customer/CustomerDashboard.jsx";
+import CustomerEvents from "./components/customer/CustomerEvents/CustomerEvents.jsx";
+import CustomerItems from "./components/customer/CustomerItems/index.jsx";
+import CustomerOrders from "./components/customer/CustomerOrders.jsx";
+import CustomerProfile from "./components/customer/CustomerProfile.jsx";
+import CustomerQRScanner from "./components/customer/CustomerQRScanner/CustomerQRScanner.jsx";
+import CustomerRewards from "./components/customer/CustomerRewards.jsx";
+import CustomerUsers from "./components/customer/CustomerUsers/CustomerUsers.jsx";
+import AllItemsTab from "./components/features/exchangemarket/AllItemsTab.jsx";
 import RedeemTab from "./components/features/exchangemarket/RedeemTab.jsx";
 import UserItemsTab from "./components/features/exchangemarket/UserItemsTab.jsx";
-import AllItemsTab from "./components/features/exchangemarket/AllItemsTab.jsx";
-import User from "./pages/User.jsx";
-import PersonalInformation from "./components/features/user/PersonalInformation.jsx";
 import Address from "./components/features/user/Address.jsx";
-import PurchaseOrder from "./components/features/user/PurchaseOrder.jsx";
 import ChangePassword from "./components/features/user/ChangePassword.jsx";
 import DeleteAccount from "./components/features/user/DeleteAccount.jsx";
 import MissionCompleted from "./components/features/user/MissionCompleted.jsx";
-import ProtectedRoute from "./components/common/ProtectedRoute.jsx";
+import PersonalInformation from "./components/features/user/PersonalInformation.jsx";
+import PurchaseOrder from "./components/features/user/PurchaseOrder.jsx";
+import { NotificationProvider } from "./components/ui/NotificationProvider";
+import { AuthProvider } from "./contexts/auth.context.jsx";
 import Admin from "./pages/Admin.jsx";
-import AdminDashboard from "./components/admin/AdminDashboard.jsx";
-import UsersManagement from "./components/admin/UsersManagement.jsx";
-import ContentManagement from "./components/admin/ContentManagement.jsx";
-import RolesPermissions from "./components/admin/RolesPermissions.jsx";
-import MissionsManagement from "./components/admin/MissionsManagement.jsx";
-import ItemsManagement from "./components/admin/ItemsManagement.jsx";
-import TransactionsManagement from "./components/admin/TransactionsManagement.jsx";
-import Customer from "./pages/Customer.jsx";
-import CustomerDashboard from "./components/customer/CustomerDashboard.jsx";
-import CustomerProfile from "./components/customer/CustomerProfile.jsx";
-import CustomerOrders from "./components/customer/CustomerOrders.jsx";
-import CustomerRewards from "./components/customer/CustomerRewards.jsx";
 import AdminQueue from "./pages/AdminQueue.jsx";
-import ProductsManagement from "./components/admin/ProductsManagement.jsx";
-import CustomerQRScanner from "./components/customer/CustomerQRScanner/CustomerQRScanner.jsx";
-import CustomerUsers from "./components/customer/CustomerUsers/CustomerUsers.jsx";
-import CustomerItems from "./components/customer/CustomerItems/index.jsx";
-import CustomerEvents from "./components/customer/CustomerEvents/CustomerEvents.jsx";
-import App from "./App.jsx";
-import "./index.css";
-import OrdersManagement from "./components/admin/OrdersManagement.jsx";
-import EventsManagement from "./components/admin/EventsManagement.jsx";
+import AuthCallback from "./pages/AuthCallback.jsx";
+import Customer from "./pages/Customer.jsx";
+import ExchangeMarket from "./pages/ExchangeMarket.jsx";
+import ForgotPassword from "./pages/ForgotPassword.jsx";
+import Homepage from "./pages/Homepage.jsx";
+import LoginPage from "./pages/Login.jsx";
+import MissionPage from "./pages/Mission.jsx";
+import RegisterPage from "./pages/Register.jsx";
+import User from "./pages/User.jsx";
 
 const router = createBrowserRouter([
   {
@@ -81,7 +83,7 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <User />
-          </ProtectedRoute>       
+          </ProtectedRoute>
         ),
         children: [
           { index: true, element: <PersonalInformation /> },
@@ -162,5 +164,5 @@ createRoot(document.getElementById("root")).render(
         <RouterProvider router={router} />
       </NotificationProvider>
     </AuthProvider>
-  </StrictMode>
+  </StrictMode>,
 );

@@ -1,12 +1,13 @@
-import { Routes, Route } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
+
 import CustomerDashboard from "../components/customer/CustomerDashboard";
-import CustomerProfile from "../components/customer/CustomerProfile";
-import CustomerOrders from "../components/customer/CustomerOrders";
-import CustomerRewards from "../components/customer/CustomerRewards";
 import CustomerEvents from "../components/customer/CustomerEvents";
 import CustomerItems from "../components/customer/CustomerItems";
-import CustomerUsers from "../components/customer/CustomerUsers";
+import CustomerOrders from "../components/customer/CustomerOrders";
+import CustomerProfile from "../components/customer/CustomerProfile";
 import CustomerQRScanner from "../components/customer/CustomerQRScanner";
+import CustomerRewards from "../components/customer/CustomerRewards";
+import CustomerUsers from "../components/customer/CustomerUsers";
 
 export default function CustomerRoutes() {
   return (

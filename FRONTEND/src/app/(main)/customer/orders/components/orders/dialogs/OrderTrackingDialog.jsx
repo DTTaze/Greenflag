@@ -1,16 +1,17 @@
-import React from "react";
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Typography,
   Box,
-  Grid,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
+  Grid,
+  Typography,
 } from "@mui/material";
-import ReceiptIcon from "@mui/icons-material/Receipt";
+import { Receipt } from "lucide-react";
+import React from "react";
+
 import LocationHistory from "../LocationHistory";
 
 const OrderTrackingDialog = ({ open, onClose, order, handleViewDetails }) => {
@@ -90,7 +91,7 @@ const OrderTrackingDialog = ({ open, onClose, order, handleViewDetails }) => {
       <DialogActions sx={{ px: 3, py: 2 }}>
         <Button
           className="customer-button-secondary"
-          startIcon={<ReceiptIcon />}
+          startIcon={<Receipt size={20} />}
           onClick={() => {
             onClose();
             setTimeout(() => handleViewDetails(order), 10);

@@ -1,18 +1,18 @@
-import React from "react";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import PeopleIcon from "@mui/icons-material/People";
 import {
+  Box,
   Card,
   CardContent,
   CardMedia,
-  Typography,
-  Box,
   Chip,
-  IconButton,
   Divider,
+  IconButton,
+  Typography,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import PeopleIcon from "@mui/icons-material/People";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
+import React from "react";
 
 const EventCard = ({ event, onEdit, onDelete }) => {
   return (
@@ -54,8 +54,8 @@ const EventCard = ({ event, onEdit, onDelete }) => {
                 event.status === "active"
                   ? "success"
                   : event.status === "upcoming"
-                  ? "info"
-                  : "default"
+                    ? "info"
+                    : "default"
               }
               sx={{ textTransform: "capitalize" }}
             />

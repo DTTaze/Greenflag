@@ -1,42 +1,46 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useOutletContext } from "react-router-dom";
-import { 
-  User, 
-  History, 
-  Edit2, 
-  X, 
-  Check, 
-  MoreVertical, 
-  LogOut 
+import {
+  Check,
+  Edit2,
+  History,
+  LogOut,
+  MoreVertical,
+  User,
+  X,
 } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { useOutletContext } from "react-router-dom";
 
+import { Button } from "@/src/components/ui/button";
+import { Card, CardContent } from "@/src/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/src/components/ui/dropdown-menu";
 import { useNotification } from "@/src/components/ui/NotificationProvider";
 import {
-  getUserApi,
-  updateUserApi,
-  uploadUserAvatarApi,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/src/components/ui/tabs";
+import {
   getBuyerTransactionHistory,
   getQRApi,
+  getUserApi,
   logoutUserApi,
+  updateUserApi,
+  uploadUserAvatarApi,
 } from "@/src/utils/api";
 import getAmount from "@/src/utils/getAmount";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
-import { Button } from "@/src/components/ui/button";
-import { Card, CardContent } from "@/src/components/ui/card";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from "@/src/components/ui/dropdown-menu";
-
 // Import modular subcomponents
 import CustomerAvatar from "./CustomerAvatar";
-import CustomerStatsCard from "./CustomerStatsCard";
 import CustomerInfoForm from "./CustomerInfoForm";
+import CustomerStatsCard from "./CustomerStatsCard";
 import TransactionHistoryList from "./TransactionHistoryList";
 
 export default function CustomerProfile() {
@@ -173,7 +177,7 @@ export default function CustomerProfile() {
       console.error("Error uploading avatar:", error);
       notify(
         "error",
-        "Failed to upload profile picture. Please try again later."
+        "Failed to upload profile picture. Please try again later.",
       );
     } finally {
       setAvatarUploading(false);
@@ -200,32 +204,37 @@ export default function CustomerProfile() {
 
   if (loadingUserData) {
     return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-600"></div>
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-emerald-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-        
+    <div className="mx-auto max-w-7xl px-4 py-8">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
         {/* Left Side: Avatar and Quick Info (Span 4) */}
-        <div className="md:col-span-4 space-y-6">
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden relative pb-6">
-            
+        <div className="space-y-6 md:col-span-4">
+          <div className="relative overflow-hidden rounded-2xl border border-slate-100 bg-white pb-6 shadow-sm">
             {/* Emerald Header Banner */}
-            <div className="h-28 bg-gradient-to-r from-emerald-600 to-teal-600 relative">
+            <div className="relative h-28 bg-gradient-to-r from-emerald-600 to-teal-600">
               <div className="absolute top-4 right-4">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 rounded-full h-8 w-8 cursor-pointer">
-                      <MoreVertical className="w-5 h-5" />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 cursor-pointer rounded-full text-white hover:bg-white/20"
+                    >
+                      <MoreVertical className="h-5 w-5" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="bg-white">
-                    <DropdownMenuItem onClick={handleLogout} className="text-red-600 flex items-center gap-2 cursor-pointer">
-                      <LogOut className="w-4 h-4" />
+                    <DropdownMenuItem
+                      onClick={handleLogout}
+                      className="flex cursor-pointer items-center gap-2 text-red-600"
+                    >
+                      <LogOut className="h-4 w-4" />
                       Logout
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -234,7 +243,7 @@ export default function CustomerProfile() {
             </div>
 
             {/* Sub-component: Avatar Picker */}
-            <CustomerAvatar 
+            <CustomerAvatar
               userInfo={userInfo}
               avatarUploading={avatarUploading}
               handleAvatarChange={handleAvatarChange}
@@ -242,7 +251,7 @@ export default function CustomerProfile() {
 
             {/* Sub-component: Stats & Basic Fields */}
             <div className="px-6">
-              <CustomerStatsCard 
+              <CustomerStatsCard
                 userData={userData}
                 generateQRCode={generateQRCode}
                 qrCode={qrCode}
@@ -252,38 +261,40 @@ export default function CustomerProfile() {
                 userInfo={userInfo}
               />
             </div>
-
           </div>
         </div>
 
         {/* Right Side: Detailed Profile Tabs (Span 8) */}
         <div className="md:col-span-8">
-          <Card className="border border-slate-100 shadow-sm bg-white rounded-2xl">
+          <Card className="rounded-2xl border border-slate-100 bg-white shadow-sm">
             <CardContent className="p-6">
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                
+              <Tabs
+                value={activeTab}
+                onValueChange={setActiveTab}
+                className="w-full"
+              >
                 {/* Header Section with Tab selectors and Action buttons */}
-                <div className="flex flex-col sm:flex-row justify-between sm:items-center border-b border-slate-100 pb-4 mb-6 gap-4">
-                  <TabsList className="bg-slate-100/60 p-1 rounded-lg">
-                    <TabsTrigger 
-                      value="profile" 
-                      className="flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-md transition-all data-[state=active]:bg-white data-[state=active]:shadow-xs data-[state=active]:text-emerald-700 text-slate-600 cursor-pointer"
+                <div className="mb-6 flex flex-col justify-between gap-4 border-b border-slate-100 pb-4 sm:flex-row sm:items-center">
+                  <TabsList className="rounded-lg bg-slate-100/60 p-1">
+                    <TabsTrigger
+                      value="profile"
+                      className="flex cursor-pointer items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold text-slate-600 transition-all data-[state=active]:bg-white data-[state=active]:text-emerald-700 data-[state=active]:shadow-xs"
                     >
-                      <User className="w-4 h-4" />
+                      <User className="h-4 w-4" />
                       Profile Details
                     </TabsTrigger>
-                    <TabsTrigger 
-                      value="transactions" 
-                      className="flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-md transition-all data-[state=active]:bg-white data-[state=active]:shadow-xs data-[state=active]:text-emerald-700 text-slate-600 cursor-pointer"
+                    <TabsTrigger
+                      value="transactions"
+                      className="flex cursor-pointer items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold text-slate-600 transition-all data-[state=active]:bg-white data-[state=active]:text-emerald-700 data-[state=active]:shadow-xs"
                     >
-                      <History className="w-4 h-4" />
+                      <History className="h-4 w-4" />
                       Transaction History
                     </TabsTrigger>
                   </TabsList>
 
                   {/* Actions (Only visible in Profile Tab) */}
-                  {activeTab === "profile" && (
-                    editMode ? (
+                  {activeTab === "profile" &&
+                    (editMode ? (
                       <div className="flex items-center gap-2">
                         <Button
                           variant="outline"
@@ -296,21 +307,21 @@ export default function CustomerProfile() {
                               username: userData?.username || "",
                             });
                           }}
-                          className="border-red-200 text-red-600 hover:bg-red-50 flex items-center gap-1.5 font-bold h-9 rounded-lg transition-colors cursor-pointer"
+                          className="flex h-9 cursor-pointer items-center gap-1.5 rounded-lg border-red-200 font-bold text-red-600 transition-colors hover:bg-red-50"
                         >
-                          <X className="w-4 h-4" />
+                          <X className="h-4 w-4" />
                           Cancel
                         </Button>
                         <Button
                           onClick={handleSubmit}
                           disabled={loading}
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1.5 font-bold h-9 rounded-lg transition-colors cursor-pointer"
+                          className="flex h-9 cursor-pointer items-center gap-1.5 rounded-lg bg-emerald-600 font-bold text-white transition-colors hover:bg-emerald-700"
                         >
                           {loading ? (
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
                           ) : (
                             <>
-                              <Check className="w-4 h-4" />
+                              <Check className="h-4 w-4" />
                               Save
                             </>
                           )}
@@ -320,18 +331,17 @@ export default function CustomerProfile() {
                       <Button
                         variant="outline"
                         onClick={() => setEditMode(true)}
-                        className="border-emerald-600 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 flex items-center gap-1.5 font-bold h-9 rounded-lg transition-colors cursor-pointer"
+                        className="flex h-9 cursor-pointer items-center gap-1.5 rounded-lg border-emerald-600 font-bold text-emerald-700 transition-colors hover:bg-emerald-50 hover:text-emerald-800"
                       >
-                        <Edit2 className="w-4 h-4" />
+                        <Edit2 className="h-4 w-4" />
                         Edit Profile
                       </Button>
-                    )
-                  )}
+                    ))}
                 </div>
 
                 {/* Tab: Profile Form */}
                 <TabsContent value="profile" className="mt-0 outline-none">
-                  <CustomerInfoForm 
+                  <CustomerInfoForm
                     formData={formData}
                     handleChange={handleChange}
                     handleSubmit={handleSubmit}
@@ -346,19 +356,17 @@ export default function CustomerProfile() {
                     <h3 className="text-lg font-bold text-slate-800">
                       Transaction History
                     </h3>
-                    <TransactionHistoryList 
+                    <TransactionHistoryList
                       transactions={transactions}
                       loadingTransactions={loadingTransactions}
                       getAmount={getAmount}
                     />
                   </div>
                 </TabsContent>
-
               </Tabs>
             </CardContent>
           </Card>
         </div>
-
       </div>
     </div>
   );

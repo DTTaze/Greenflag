@@ -1,5 +1,6 @@
-import React from "react";
 import "@/src/styles/pages/admin.css";
+
+import React from "react";
 
 function AdminQueue() {
   return (

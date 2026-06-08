@@ -1,7 +1,12 @@
-import { getBuyerTransactionHistory, getAllShippingOrdersByBuyerApi, CancelTransactionByIdAPI } from "@/src/utils/api";
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "@/src/contexts/auth.context";
 import { Coins } from "lucide-react";
+import { useContext, useEffect, useState } from "react";
+
+import { AuthContext } from "@/src/contexts/auth.context";
+import {
+  CancelTransactionByIdAPI,
+  getAllShippingOrdersByBuyerApi,
+  getBuyerTransactionHistory,
+} from "@/src/utils/api";
 
 const OrderItem = ({ transaction, onClick, onCancel }) => {
   const item = transaction.item_snapshot;
@@ -34,41 +39,41 @@ const OrderItem = ({ transaction, onClick, onCancel }) => {
   };
 
   return (
-    <div 
-      className="rounded-lg p-4 mb-4 bg-white shadow-sm hover:shadow-md transition cursor-pointer" 
+    <div
+      className="mb-4 cursor-pointer rounded-lg bg-white p-4 shadow-sm transition hover:shadow-md"
       onClick={() => onClick(transaction)}
     >
-      <div className="flex justify-between items-start">
+      <div className="flex items-start justify-between">
         <div className="text-sm font-semibold text-gray-700">
           Người bán: {item.creator?.full_name || "Không xác định"}
         </div>
-        <div className="text-right mb-2">
+        <div className="mb-2 text-right">
           <span
-            className={`px-2 py-1 rounded text-sm ${statusStyles[transaction.status] || "bg-gray-100 text-gray-800"}`}
+            className={`rounded px-2 py-1 text-sm ${statusStyles[transaction.status] || "bg-gray-100 text-gray-800"}`}
           >
             {transaction.status_label.toUpperCase()}
           </span>
         </div>
       </div>
       <hr className="text-gray-300"></hr>
-      <div className="flex items-center my-4">
+      <div className="my-4 flex items-center">
         <div className="flex-1">
           <h3 className="font-semibold">{item.name}</h3>
           <p className="text-sm text-gray-600">
             Số lượng: {transaction.quantity || 1}
           </p>
-          <p className="text-sm text-gray-600 flex items-center">
+          <p className="flex items-center text-sm text-gray-600">
             Đơn giá: {(item.price || transaction.total_price).toLocaleString()}{" "}
-            <Coins className="h-5 w-5 text-emerald-600 ml-1" />
+            <Coins className="ml-1 h-5 w-5 text-emerald-600" />
           </p>
         </div>
       </div>
       <hr className="text-gray-300"></hr>
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div className="space-x-2">
           {transaction.status === "delivered" && (
             <button
-              className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm"
+              className="rounded bg-blue-500 px-3 py-1 text-sm text-white hover:bg-blue-600"
               onClick={(e) => {
                 e.stopPropagation();
                 /* Handle confirm receipt */
@@ -79,7 +84,7 @@ const OrderItem = ({ transaction, onClick, onCancel }) => {
           )}
           {transaction.status === "pending" && (
             <button
-              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 text-sm mt-2"
+              className="mt-2 rounded bg-red-500 px-4 py-2 text-sm text-white hover:bg-red-600"
               onClick={(e) => {
                 e.stopPropagation();
                 onCancel(transaction.id);
@@ -90,46 +95,66 @@ const OrderItem = ({ transaction, onClick, onCancel }) => {
           )}
         </div>
         <div className="text-right">
-          <p className="font-semibold flex items-center justify-end">
+          <p className="flex items-center justify-end font-semibold">
             Thành tiền: {transaction.total_price.toLocaleString()}{" "}
-            <Coins className="h-5 w-5 text-emerald-600 ml-1" />
+            <Coins className="ml-1 h-5 w-5 text-emerald-600" />
           </p>
         </div>
       </div>
 
-      {(transaction.shipping_info || ["ready_to_pick", "picking", "picked", "storing", "transporting", "sorting", "delivering"].includes(transaction.status)) && (
+      {(transaction.shipping_info ||
+        [
+          "ready_to_pick",
+          "picking",
+          "picked",
+          "storing",
+          "transporting",
+          "sorting",
+          "delivering",
+        ].includes(transaction.status)) && (
         <div className="mt-4">
           <button
             onClick={(e) => {
               e.stopPropagation();
               setShowShippingInfo(!showShippingInfo);
             }}
-            className="text-emerald-600 hover:text-emerald-800 text-sm font-medium flex items-center"
+            className="flex items-center text-sm font-medium text-emerald-600 hover:text-emerald-800"
           >
-            {showShippingInfo ? "Ẩn thông tin vận chuyển" : "Xem thông tin vận chuyển"}
+            {showShippingInfo
+              ? "Ẩn thông tin vận chuyển"
+              : "Xem thông tin vận chuyển"}
             <svg
-              className={`w-4 h-4 ml-1 transform transition-transform ${showShippingInfo ? "rotate-180" : ""}`}
+              className={`ml-1 h-4 w-4 transform transition-transform ${showShippingInfo ? "rotate-180" : ""}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </button>
-          
+
           {showShippingInfo && (
-            <div className="mt-2 pt-2 border-t">
-              <h4 className="font-semibold text-sm">Thông tin vận chuyển</h4>
+            <div className="mt-2 border-t pt-2">
+              <h4 className="text-sm font-semibold">Thông tin vận chuyển</h4>
               <p className="text-sm text-gray-600">
-                Đơn vị vận chuyển: {transaction.shipping_info?.carrier || "Không xác định"}
+                Đơn vị vận chuyển:{" "}
+                {transaction.shipping_info?.carrier || "Không xác định"}
               </p>
               <p className="text-sm text-gray-600">
-                Mã vận đơn: {transaction.shipping_info?.tracking_number || "Không có"}
+                Mã vận đơn:{" "}
+                {transaction.shipping_info?.tracking_number || "Không có"}
               </p>
               <p className="text-sm text-gray-600">
                 Dự kiến giao:{" "}
                 {transaction.shipping_info?.estimated_delivery
-                  ? new Date(transaction.shipping_info.estimated_delivery).toLocaleDateString("vi-VN")
+                  ? new Date(
+                      transaction.shipping_info.estimated_delivery,
+                    ).toLocaleDateString("vi-VN")
                   : "Không xác định"}
               </p>
               {transaction.shipping_info?.to_name && (
@@ -144,7 +169,8 @@ const OrderItem = ({ transaction, onClick, onCancel }) => {
                     Địa chỉ: {transaction.shipping_info.to_address}
                   </p>
                   <p className="text-sm text-gray-600">
-                    Phí COD: {transaction.shipping_info.cod_amount?.toLocaleString()} VNĐ
+                    Phí COD:{" "}
+                    {transaction.shipping_info.cod_amount?.toLocaleString()} VNĐ
                   </p>
                   <p className="text-sm text-gray-600">
                     Cân nặng: {transaction.shipping_info.weight} gram
@@ -237,8 +263,20 @@ const PurchaseOrder = () => {
       return {
         id: `transaction-${tx.id}`,
         public_id: tx.public_id,
-        status: tx.status === "accepted" ? "pending" : tx.status === "rejected" ? "cancel" : tx.status,
-        status_label: statusLabels[tx.status === "accepted" ? "pending" : tx.status === "rejected" ? "cancel" : tx.status] || tx.status,
+        status:
+          tx.status === "accepted"
+            ? "pending"
+            : tx.status === "rejected"
+              ? "cancel"
+              : tx.status,
+        status_label:
+          statusLabels[
+            tx.status === "accepted"
+              ? "pending"
+              : tx.status === "rejected"
+                ? "cancel"
+                : tx.status
+          ] || tx.status,
         item_snapshot: tx.item_snapshot,
         quantity: tx.quantity,
         total_price: tx.total_price,
@@ -289,18 +327,36 @@ const PurchaseOrder = () => {
             getAllShippingOrdersByBuyerApi(auth.user.id),
           ]);
 
-          if (transactionResponse.success && Array.isArray(transactionResponse.data)) {
-            normalized = [...normalized, ...transactionResponse.data.map((tx) => normalizeTransaction(tx, "transaction"))];
+          if (
+            transactionResponse.success &&
+            Array.isArray(transactionResponse.data)
+          ) {
+            normalized = [
+              ...normalized,
+              ...transactionResponse.data.map((tx) =>
+                normalizeTransaction(tx, "transaction"),
+              ),
+            ];
           }
 
-          if (shippingResponse.success && Array.isArray(shippingResponse.data)) {
-            normalized = [...normalized, ...shippingResponse.data.map((tx) => normalizeTransaction(tx, "shipping"))];
+          if (
+            shippingResponse.success &&
+            Array.isArray(shippingResponse.data)
+          ) {
+            normalized = [
+              ...normalized,
+              ...shippingResponse.data.map((tx) =>
+                normalizeTransaction(tx, "shipping"),
+              ),
+            ];
           }
         } else if (activeTab === "pending") {
           const response = await getBuyerTransactionHistory(auth.user.id);
           if (response.success && Array.isArray(response.data)) {
             normalized = response.data
-              .filter((tx) => tx.status === "pending" || tx.status === "accepted")
+              .filter(
+                (tx) => tx.status === "pending" || tx.status === "accepted",
+              )
               .map((tx) => normalizeTransaction(tx, "transaction"));
           }
         } else if (activeTab === "cancelled") {
@@ -341,7 +397,9 @@ const PurchaseOrder = () => {
           }
         }
 
-        normalized.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        normalized.sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at),
+        );
         setTransactionList(normalized);
       } catch (error) {
         setError("Không thể tải lịch sử giao dịch. Vui lòng thử lại.");
@@ -365,9 +423,13 @@ const PurchaseOrder = () => {
         setTransactionList((prev) =>
           prev.map((tx) =>
             tx.id === transactionId
-              ? { ...tx, status: "cancel", status_label: statusLabels["cancel"] }
-              : tx
-          )
+              ? {
+                  ...tx,
+                  status: "cancel",
+                  status_label: statusLabels["cancel"],
+                }
+              : tx,
+          ),
         );
         setError(null);
       } else {
@@ -383,8 +445,10 @@ const PurchaseOrder = () => {
     .filter((tx) => activeTab === "all" || statusToTab[tx.status] === activeTab)
     .filter(
       (tx) =>
-        tx.item_snapshot.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tx.public_id.toLowerCase().includes(searchQuery.toLowerCase())
+        tx.item_snapshot.name
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        tx.public_id.toLowerCase().includes(searchQuery.toLowerCase()),
     );
 
   const openModal = (tx) => {
@@ -408,8 +472,8 @@ const PurchaseOrder = () => {
   };
 
   return (
-    <div className="p-4 max-w-4xl mx-auto">
-      <div className="flex flex-wrap gap-2 mb-4 bg-white rounded-md">
+    <div className="mx-auto max-w-4xl p-4">
+      <div className="mb-4 flex flex-wrap gap-2 rounded-md bg-white">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -431,12 +495,12 @@ const PurchaseOrder = () => {
           placeholder="Tìm kiếm theo tên sản phẩm hoặc mã giao dịch..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-md border p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
         />
       </div>
 
-      {isLoading && <div className="text-center py-8">Đang tải...</div>}
-      {error && <div className="text-red-500 text-center py-8">{error}</div>}
+      {isLoading && <div className="py-8 text-center">Đang tải...</div>}
+      {error && <div className="py-8 text-center text-red-500">{error}</div>}
       {!isLoading && !error && filteredTransactions.length > 0 ? (
         <div>
           {filteredTransactions.map((tx) => (
@@ -451,7 +515,7 @@ const PurchaseOrder = () => {
       ) : (
         !isLoading &&
         !error && (
-          <div className="text-gray-500 text-center py-8">
+          <div className="py-8 text-center text-gray-500">
             Chưa có giao dịch{" "}
             {activeTab !== "all"
               ? `ở trạng thái ${tabs
@@ -465,22 +529,22 @@ const PurchaseOrder = () => {
 
       {showModal && transaction && (
         <div
-          className="fixed inset-0 flex items-center justify-center bg-opacity-50 p-4"
+          className="bg-opacity-50 fixed inset-0 flex items-center justify-center p-4"
           role="dialog"
           aria-labelledby="modal-title"
           onKeyDown={(e) => e.key === "Escape" && setShowModal(false)}
         >
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative">
+          <div className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-3 right-2 text-3xl text-gray-600 hover:text-gray-800 cursor-pointer"
+              className="absolute top-3 right-2 cursor-pointer text-3xl text-gray-600 hover:text-gray-800"
               aria-label="Đóng modal"
             >
               ✖
             </button>
             <h3
               id="modal-title"
-              className="text-lg font-semibold mb-4 text-center"
+              className="mb-4 text-center text-lg font-semibold"
             >
               Chi tiết giao dịch
             </h3>
@@ -489,10 +553,10 @@ const PurchaseOrder = () => {
                 <tbody>
                   {Object.entries(transaction).map(([key, value]) => (
                     <tr key={key}>
-                      <td className="border border-gray-300 p-2 font-semibold w-1/2">
+                      <td className="w-1/2 border border-gray-300 p-2 font-semibold">
                         {key}
                       </td>
-                      <td className="border border-gray-300 p-2 w-1/2">
+                      <td className="w-1/2 border border-gray-300 p-2">
                         {value}
                       </td>
                     </tr>

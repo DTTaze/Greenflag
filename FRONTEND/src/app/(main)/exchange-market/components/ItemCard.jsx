@@ -1,6 +1,7 @@
-import { Coins, Leaf } from "lucide-react";
 import { motion } from "framer-motion";
+import { Coins, Leaf } from "lucide-react";
 import { useEffect, useState } from "react";
+
 import { socket } from "@/src/config/socket";
 
 export default function ItemCard({ item, onPurchase }) {
@@ -38,7 +39,7 @@ export default function ItemCard({ item, onPurchase }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="group flex flex-col justify-between border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all bg-white h-full"
+      className="group flex h-full flex-col justify-between overflow-hidden rounded-xl border border-gray-200 bg-white transition-all hover:shadow-lg"
     >
       <div className="relative h-48 w-full overflow-hidden">
         <img
@@ -47,25 +48,29 @@ export default function ItemCard({ item, onPurchase }) {
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
         {item.isEco && (
-          <div className="absolute top-2 left-2 bg-emerald-600 text-white px-2 py-1 rounded-full text-xs flex items-center">
-            <Leaf className="h-3 w-3 mr-1" />
+          <div className="absolute top-2 left-2 flex items-center rounded-full bg-emerald-600 px-2 py-1 text-xs text-white">
+            <Leaf className="mr-1 h-3 w-3" />
             Eco
           </div>
         )}
         {isOutOfStock && (
-          <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
-            <span className="text-white font-semibold text-lg">Hết hàng</span>
+          <div className="bg-opacity-60 absolute inset-0 flex items-center justify-center bg-black">
+            <span className="text-lg font-semibold text-white">Hết hàng</span>
           </div>
         )}
       </div>
 
-      <div className="p-4 flex-grow">
-        <h2 className="text-xl font-semibold mb-2 text-gray-800">{item.name}</h2>
-        <p className="text-gray-600 text-sm mb-3 line-clamp-2">{item.description}</p>
+      <div className="flex-grow p-4">
+        <h2 className="mb-2 text-xl font-semibold text-gray-800">
+          {item.name}
+        </h2>
+        <p className="mb-3 line-clamp-2 text-sm text-gray-600">
+          {item.description}
+        </p>
 
-        <div className="flex justify-between items-center mb-2">
-          <div className="flex items-center text-emerald-600 font-bold">
-            <Coins className="h-4 w-4 mr-1" />
+        <div className="mb-2 flex items-center justify-between">
+          <div className="flex items-center font-bold text-emerald-600">
+            <Coins className="mr-1 h-4 w-4" />
             {item.price} xu
           </div>
           {!isOutOfStock && (
@@ -86,10 +91,10 @@ export default function ItemCard({ item, onPurchase }) {
         <button
           onClick={handlePurchase}
           disabled={isOutOfStock}
-          className={`w-full px-4 rounded-full py-2.5 text-white transition-all ${
+          className={`w-full rounded-full px-4 py-2.5 text-white transition-all ${
             isOutOfStock
-              ? "bg-gray-300 cursor-not-allowed"
-              : "bg-emerald-600 hover:bg-emerald-700 shadow-sm hover:shadow"
+              ? "cursor-not-allowed bg-gray-300"
+              : "bg-emerald-600 shadow-sm hover:bg-emerald-700 hover:shadow"
           }`}
         >
           {isOutOfStock ? "Hết hàng" : "Trao đổi ngay"}

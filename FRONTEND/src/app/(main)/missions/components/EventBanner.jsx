@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
-import {
-  getAllEventsApi,
-  getEventSignedByUserIdApi,
-} from "@/src/utils/api.js";
-import { toast } from "react-toastify";
-import EventDetailsModal from "./EventDetailsModal";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+
+import { getAllEventsApi, getEventSignedByUserIdApi } from "@/src/utils/api.js";
+
+import EventDetailsModal from "./EventDetailsModal";
 
 const EventBanner = ({ userInfo }) => {
   const [events, setEvents] = useState([]);
@@ -26,7 +25,7 @@ const EventBanner = ({ userInfo }) => {
 
         // Fetch signed events
         const signedEventsResponse = await getEventSignedByUserIdApi(
-          userInfo.id
+          userInfo.id,
         );
         const signedEventIds =
           signedEventsResponse?.data?.map((event) => event.event_id) || [];
@@ -47,11 +46,14 @@ const EventBanner = ({ userInfo }) => {
 
   useEffect(() => {
     if (events.length > 1 && !isModalOpen) {
-      const interval = setInterval(() => {
-        setCurrentEventIndex((prevIndex) =>
-          prevIndex === events.length - 1 ? 0 : prevIndex + 1
-        );
-      }, Math.random() * 2000 + 3000);
+      const interval = setInterval(
+        () => {
+          setCurrentEventIndex((prevIndex) =>
+            prevIndex === events.length - 1 ? 0 : prevIndex + 1,
+          );
+        },
+        Math.random() * 2000 + 3000,
+      );
 
       return () => clearInterval(interval);
     }
@@ -93,7 +95,7 @@ const EventBanner = ({ userInfo }) => {
 
   return (
     <>
-      <div className="relative w-full h-48 rounded-xl overflow-hidden shadow-lg mb-6">
+      <div className="relative mb-6 h-48 w-full overflow-hidden rounded-xl shadow-lg">
         {/* Background Image */}
         <div
           className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
@@ -112,33 +114,33 @@ const EventBanner = ({ userInfo }) => {
         {/* Navigation Buttons - Positioned at edges */}
         <button
           onClick={handlePreviousEvent}
-          className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/30 backdrop-blur-sm transition-all duration-300 cursor-pointer z-10 rounded-r-xl group"
+          className="group absolute top-1/2 left-0 z-10 flex h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center rounded-r-xl bg-white/10 backdrop-blur-sm transition-all duration-300 hover:bg-white/30"
           aria-label="Previous event"
         >
-          <ChevronLeft className="w-6 h-6 text-white transform transition-transform duration-300 group-hover:scale-125" />
+          <ChevronLeft className="h-6 w-6 transform text-white transition-transform duration-300 group-hover:scale-125" />
         </button>
 
         <button
           onClick={handleNextEvent}
-          className="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/30 backdrop-blur-sm transition-all duration-300 cursor-pointer z-10 rounded-l-xl group"
+          className="group absolute top-1/2 right-0 z-10 flex h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center rounded-l-xl bg-white/10 backdrop-blur-sm transition-all duration-300 hover:bg-white/30"
           aria-label="Next event"
         >
-          <ChevronRight className="w-6 h-6 text-white transform transition-transform duration-300 group-hover:scale-125" />
+          <ChevronRight className="h-6 w-6 transform text-white transition-transform duration-300 group-hover:scale-125" />
         </button>
 
         {/* Content */}
-        <div className="relative h-full flex items-center justify-between px-16 pointer-events-none">
-          <div className="text-white max-w-2xl">
-            <h2 className="text-2xl font-bold mb-2 drop-shadow-lg">
+        <div className="pointer-events-none relative flex h-full items-center justify-between px-16">
+          <div className="max-w-2xl text-white">
+            <h2 className="mb-2 text-2xl font-bold drop-shadow-lg">
               {currentEvent.title}
             </h2>
-            <p className="text-sm mb-4 line-clamp-2 drop-shadow-md">
+            <p className="mb-4 line-clamp-2 text-sm drop-shadow-md">
               {currentEvent.description}
             </p>
             <div className="flex items-center space-x-4 text-sm drop-shadow-sm">
               <div className="flex items-center">
                 <svg
-                  className="w-4 h-4 mr-1"
+                  className="mr-1 h-4 w-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -160,7 +162,7 @@ const EventBanner = ({ userInfo }) => {
               </div>
               <div className="flex items-center">
                 <svg
-                  className="w-4 h-4 mr-1"
+                  className="mr-1 h-4 w-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -181,7 +183,7 @@ const EventBanner = ({ userInfo }) => {
 
           {/* Join Button */}
           <button
-            className="bg-white text-green-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-green-50 hover:scale-105 hover:shadow-xl transition-all duration-300 shadow-lg transform active:scale-95 pointer-events-auto"
+            className="pointer-events-auto transform rounded-lg bg-white px-8 py-4 text-lg font-bold text-green-600 shadow-lg transition-all duration-300 hover:scale-105 hover:bg-green-50 hover:shadow-xl active:scale-95"
             onClick={() => handleOpenModal(currentEvent)}
           >
             {isParticipated ? "Xem chi tiết" : "Tham gia ngay!"}
@@ -189,13 +191,13 @@ const EventBanner = ({ userInfo }) => {
         </div>
 
         {/* Event Indicators */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-3">
+        <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 space-x-3">
           {events.map((_, index) => (
             <button
               key={index}
-              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 transform ${
+              className={`h-2.5 w-2.5 transform rounded-full transition-all duration-300 ${
                 index === currentEventIndex
-                  ? "bg-white scale-125 shadow-lg"
+                  ? "scale-125 bg-white shadow-lg"
                   : "bg-white/50 hover:bg-white/70"
               }`}
               onClick={() => setCurrentEventIndex(index)}

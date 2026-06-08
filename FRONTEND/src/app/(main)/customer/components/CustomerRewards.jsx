@@ -1,17 +1,18 @@
-import React from "react";
 import {
   Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Grid,
+  LinearProgress,
   Paper,
   Typography,
-  Grid,
-  Card,
-  CardContent,
-  CardActions,
-  Button,
-  LinearProgress,
 } from "@mui/material";
+import React from "react";
 import { useOutletContext } from "react-router-dom";
-import getAmount from '@/src/utils/getAmount';
+
+import getAmount from "@/src/utils/getAmount";
 
 // Mock data for rewards
 const mockRewards = [

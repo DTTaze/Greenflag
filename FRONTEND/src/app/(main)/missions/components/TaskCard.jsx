@@ -1,8 +1,10 @@
 import React from "react";
-import ProgressBar from "./ProgressBar";
-import { getLevelColor, getLevelText } from "./TaskUtils";
+
 import imgScr from "@/src/assets/images/seedling-solid.svg";
+
+import ProgressBar from "./ProgressBar";
 import TaskDetailModal from "./TaskDetailModal";
+import { getLevelColor, getLevelText } from "./TaskUtils";
 
 /**
  * Task Card component for displaying mission tasks
@@ -32,42 +34,41 @@ const TaskCard = React.memo(
     return (
       <>
         <div
-          className={`task-card bg-white rounded-xl border ${
+          className={`task-card rounded-xl border bg-white ${
             isCompleted
               ? "border-emerald-200 shadow-emerald-100"
               : "border-gray-200"
-          } shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group hover:translate-y-[-2px] ${
+          } group overflow-hidden shadow-sm transition-all duration-300 hover:translate-y-[-2px] hover:shadow-md ${
             isLoading ? "opacity-70" : ""
           }`}
         >
           {/* Difficulty badge at top */}
           <div
-            className={`w-full h-1.5 ${levelColorClass.split(" ")[0]}`}
+            className={`h-1.5 w-full ${levelColorClass.split(" ")[0]}`}
           ></div>
 
           <div className="px-4 py-3">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="mb-2 flex items-center gap-2">
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center border p-1 bg-gray-50 
-              ${
-                isCompleted
-                  ? "border-emerald-300 bg-emerald-50"
-                  : "border-gray-200"
-              }`}
+                className={`flex h-8 w-8 items-center justify-center rounded-full border bg-gray-50 p-1 ${
+                  isCompleted
+                    ? "border-emerald-300 bg-emerald-50"
+                    : "border-gray-200"
+                }`}
               >
-                <img src={imgScr} alt="task icon" className="w-full h-full" />
+                <img src={imgScr} alt="task icon" className="h-full w-full" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-800 text-sm">
+                <h3 className="text-sm font-semibold text-gray-800">
                   {task.title}
                 </h3>
                 <span
-                  className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full text-white ${levelColorClass}`}
+                  className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium text-white ${levelColorClass}`}
                 >
                   {getLevelText(task.difficulty)}
                 </span>
               </div>
-              <div className="task-coin-reward flex items-center bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded-lg font-medium border border-amber-100 text-xs">
+              <div className="task-coin-reward flex items-center rounded-lg border border-amber-100 bg-amber-50 px-1.5 py-0.5 text-xs font-medium text-amber-700">
                 <span className="coin-value mr-1 ml-1">+{task.coins || 0}</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -79,7 +80,7 @@ const TaskCard = React.memo(
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="lucide lucide-coins h-6 w-6 text-amber-600 mr-1"
+                  className="lucide lucide-coins mr-1 h-6 w-6 text-amber-600"
                 >
                   <circle cx="8" cy="8" r="6"></circle>
                   <path d="M18.09 10.37A6 6 0 1 1 10.34 18"></path>
@@ -89,7 +90,7 @@ const TaskCard = React.memo(
               </div>
             </div>
 
-            <p className="text-gray-600 text-xs mb-2 line-clamp-2 min-h-[32px]">
+            <p className="mb-2 line-clamp-2 min-h-[32px] text-xs text-gray-600">
               {task.description || "Mô tả nhiệm vụ đang được cập nhật..."}
             </p>
 
@@ -108,23 +109,22 @@ const TaskCard = React.memo(
                 }
               }}
               disabled={task.completed_at || isLoading}
-              className={`w-full mt-3 rounded-lg py-1.5 text-sm font-medium text-white transition-colors ${
+              className={`mt-3 w-full rounded-lg py-1.5 text-sm font-medium text-white transition-colors ${
                 isUserTask
                   ? "bg-green-600 hover:bg-green-700 active:bg-green-800"
                   : "bg-blue-500 hover:bg-blue-600 active:bg-blue-700"
               } ${
                 task.completed_at || isLoading
-                  ? "opacity-50 cursor-not-allowed"
+                  ? "cursor-not-allowed opacity-50"
                   : ""
-              } 
-            focus:outline-none focus:ring-2 ${
-              isCompleted ? "focus:ring-emerald-500" : "focus:ring-green-500"
-            } focus:ring-opacity-50`}
+              } focus:ring-2 focus:outline-none ${
+                isCompleted ? "focus:ring-emerald-500" : "focus:ring-green-500"
+              } focus:ring-opacity-50`}
             >
               {isLoading ? (
                 <span className="flex items-center justify-center">
                   <svg
-                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                    className="mr-2 -ml-1 h-4 w-4 animate-spin text-white"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -168,7 +168,7 @@ const TaskCard = React.memo(
         />
       </>
     );
-  }
+  },
 );
 
 export default TaskCard;

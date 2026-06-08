@@ -12,7 +12,10 @@ const nextConfig: NextConfig = {
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
-      "react-router-dom": path.resolve(__dirname, "src/utils/react-router-dom-shim.tsx"),
+      "react-router-dom": path.resolve(
+        __dirname,
+        "src/utils/react-router-dom-shim.tsx",
+      ),
     };
     return config;
   },

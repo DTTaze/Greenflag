@@ -1,20 +1,21 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+
+import Button from "../components/ui/button";
+import InputField from "../components/ui/InputField";
 import { useNotification } from "../components/ui/NotificationProvider";
 import { forgotPasswordApi, resetPasswordApi } from "../utils/api";
-import InputField from "../components/ui/InputField";
-import Button from "../components/ui/button";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { notify } = useNotification();
-  const token = searchParams.get("token"); 
+  const token = searchParams.get("token");
   const [email, setEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({});
-  const [step, setStep] = useState(1); 
+  const [step, setStep] = useState(1);
   const [emailSent, setEmailSent] = useState(false);
 
   useEffect(() => {
@@ -36,7 +37,10 @@ const ForgotPassword = () => {
     try {
       const response = await forgotPasswordApi(email);
       if (response) {
-        notify("success", "Link đặt lại mật khẩu đã được gửi đến email của bạn!");
+        notify(
+          "success",
+          "Link đặt lại mật khẩu đã được gửi đến email của bạn!",
+        );
         setEmailSent(true);
       } else {
         notify("error", "Không thể gửi email, vui lòng thử lại.");
@@ -69,8 +73,8 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="max-w-sm mx-auto mt-8 p-4 border border-gray-300 rounded shadow bg-white">
-      <h2 className="text-xl font-semibold text-center mb-4">
+    <div className="mx-auto mt-8 max-w-sm rounded border border-gray-300 bg-white p-4 shadow">
+      <h2 className="mb-4 text-center text-xl font-semibold">
         {step === 1 ? "Quên mật khẩu" : "Đặt lại mật khẩu"}
       </h2>
 
@@ -90,7 +94,8 @@ const ForgotPassword = () => {
           ) : (
             <div className="text-center">
               <p className="text-green-600">
-                Link đặt lại mật khẩu đã được gửi đến {email}. Vui lòng kiểm tra email của bạn!
+                Link đặt lại mật khẩu đã được gửi đến {email}. Vui lòng kiểm tra
+                email của bạn!
               </p>
             </div>
           )}
@@ -119,7 +124,7 @@ const ForgotPassword = () => {
         </form>
       )}
 
-      <div className="text-center mt-4">
+      <div className="mt-4 text-center">
         <button
           onClick={() => navigate("/login")}
           className="text-blue-600 hover:underline"

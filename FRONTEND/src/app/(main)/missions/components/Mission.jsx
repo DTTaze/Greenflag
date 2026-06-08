@@ -1,25 +1,28 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import "react-toastify/dist/ReactToastify.css";
+
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
+
+import {
+  AllTaskByIdApi,
+  getAllTasksApi,
+  getAllTasksByTypeNameApi,
+  getTaskByIdApi,
+  getUserApi,
+  increaseProgressCountApi,
+  receiveCoinApi,
+} from "@/src/utils/api.js";
+
 import Calendar from "./Calendar.jsx";
 import Ranking from "./ChartRank.jsx";
-import TaskSubmissionModal from "./TaskSubmissionModal.jsx";
-import QrTaskSubmissionModal from "./QrTaskSubmissionModal.jsx";
 import EventBanner from "./EventBanner.jsx";
 import EventList from "./EventList.jsx";
-import {
-  getAllTasksApi,
-  receiveCoinApi,
-  getUserApi,
-  getTaskByIdApi,
-  increaseProgressCountApi,
-  AllTaskByIdApi,
-  getAllTasksByTypeNameApi,
-} from "@/src/utils/api.js";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import TaskCardSkeleton from "./TaskCardSkeleton.jsx";
-import TasksList from "./TasksList.jsx";
 import MissionHeader from "./MissionHeader.jsx";
 import MissionTabs from "./MissionTabs.jsx";
+import QrTaskSubmissionModal from "./QrTaskSubmissionModal.jsx";
+import TaskCardSkeleton from "./TaskCardSkeleton.jsx";
+import TasksList from "./TasksList.jsx";
+import TaskSubmissionModal from "./TaskSubmissionModal.jsx";
 /* ------------------------------------------------------------ Mission ------------------------------------------------------------ */
 
 function Mission() {
@@ -161,7 +164,7 @@ function Mission() {
     async (userId, taskId, numOfProgress) => {
       try {
         const userTask = userTasks.find(
-          (ut) => ut.user_id === userId && ut.task_id === taskId
+          (ut) => ut.user_id === userId && ut.task_id === taskId,
         );
 
         console.log("User task:", userTask);
@@ -190,8 +193,8 @@ function Mission() {
                     progress_count: updatedTaskUser.data.progress_count,
                     completed_at: updatedTaskUser.data.completed_at,
                   }
-                : ut
-            )
+                : ut,
+            ),
           );
         }
 
@@ -287,7 +290,7 @@ function Mission() {
         setCompletingTask(null);
       }
     },
-    [tasks, userTasks]
+    [tasks, userTasks],
   );
 
   // Handle task selection for modal
@@ -347,14 +350,14 @@ function Mission() {
           TasksByTypeName.data.map(async (task) => {
             const taskData = await getTaskByIdApi(task.id);
             return taskData.data;
-          })
+          }),
         );
 
         // Process user tasks that are in daily tasks
         const userDailyTasks = await Promise.all(
           userTasks
             .filter((userTask) =>
-              TasksByTypeName.data.some((task) => task.id === userTask.task_id)
+              TasksByTypeName.data.some((task) => task.id === userTask.task_id),
             )
             .map(async (userTask) => {
               const taskData = await getTaskByIdApi(userTask.task_id);
@@ -367,12 +370,12 @@ function Mission() {
                     isUserTask: true,
                   }
                 : null;
-            })
+            }),
         );
 
         // Filter out null values
         const validUserDailyTasks = userDailyTasks.filter(
-          (task) => task !== null
+          (task) => task !== null,
         );
         console.log("user daily task: ", validUserDailyTasks);
 
@@ -382,7 +385,7 @@ function Mission() {
           ...dailyTasksData
             .filter(
               (task) =>
-                !userTasks.some((userTask) => userTask.task_id === task.id)
+                !userTasks.some((userTask) => userTask.task_id === task.id),
             )
             .map((task) => ({
               ...task,
@@ -418,7 +421,7 @@ function Mission() {
           TasksByTypeName.data.map(async (task) => {
             const taskData = await getTaskByIdApi(task.id);
             return taskData.data;
-          })
+          }),
         );
 
         // Process user tasks that are in other tasks and not completed
@@ -428,8 +431,8 @@ function Mission() {
               (userTask) =>
                 userTask.completed_at === null && // Only get uncompleted tasks
                 TasksByTypeName.data.some(
-                  (task) => task.task_id === userTask.task_id
-                )
+                  (task) => task.task_id === userTask.task_id,
+                ),
             )
             .map(async (userTask) => {
               const taskData = await getTaskByIdApi(userTask.id);
@@ -442,12 +445,12 @@ function Mission() {
                     isUserTask: true,
                   }
                 : null;
-            })
+            }),
         );
 
         // Filter out null values
         const validUserOtherTasks = userOtherTasks.filter(
-          (task) => task !== null
+          (task) => task !== null,
         );
 
         // Combine tasks that user is doing with tasks they haven't started
@@ -457,13 +460,13 @@ function Mission() {
             .filter(
               (task) =>
                 !validUserOtherTasks.some(
-                  (userTask) => userTask.id === task.id
+                  (userTask) => userTask.id === task.id,
                 ) &&
                 !userTasks.some(
                   (userTask) =>
                     userTask.task_id === task.id &&
-                    userTask.completed_at !== null
-                ) // Exclude completed tasks
+                    userTask.completed_at !== null,
+                ), // Exclude completed tasks
             )
             .map((task) => ({
               ...task,
@@ -543,7 +546,7 @@ function Mission() {
         }
       }
     },
-    [selectedTab === "daily" ? dailyTotalPages : otherTotalPages]
+    [selectedTab === "daily" ? dailyTotalPages : otherTotalPages],
   );
 
   // Add filter function
@@ -567,35 +570,35 @@ function Mission() {
   // Show loading skeleton while data is being fetched
   if (loading) {
     return (
-      <div className="bg-gray-50 min-h-screen pb-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16">
+      <div className="min-h-screen bg-gray-50 pb-12">
+        <div className="mx-auto max-w-7xl px-4 pt-16 sm:px-6 lg:px-8">
           {/* Loading skeleton for header */}
-          <div className="mb-8 flex flex-col sm:flex-row justify-between items-center bg-gradient-to-r from-green-500 to-green-400 rounded-xl p-6 text-white shadow-lg animate-pulse">
+          <div className="mb-8 flex animate-pulse flex-col items-center justify-between rounded-xl bg-gradient-to-r from-green-500 to-green-400 p-6 text-white shadow-lg sm:flex-row">
             <div>
-              <div className="h-8 bg-white bg-opacity-20 rounded w-56 mb-2"></div>
-              <div className="h-4 bg-white bg-opacity-20 rounded w-80"></div>
+              <div className="bg-opacity-20 mb-2 h-8 w-56 rounded bg-white"></div>
+              <div className="bg-opacity-20 h-4 w-80 rounded bg-white"></div>
             </div>
-            <div className="mt-4 sm:mt-0 flex items-center">
-              <div className="bg-white bg-opacity-20 rounded-lg p-3 mr-4 h-16 w-20"></div>
-              <div className="h-10 bg-white bg-opacity-20 rounded-lg w-24"></div>
+            <div className="mt-4 flex items-center sm:mt-0">
+              <div className="bg-opacity-20 mr-4 h-16 w-20 rounded-lg bg-white p-3"></div>
+              <div className="bg-opacity-20 h-10 w-24 rounded-lg bg-white"></div>
             </div>
           </div>
 
           {/* Main Content Skeleton */}
-          <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex flex-col gap-8 lg:flex-row">
             {/* Left Column - Tasks */}
             <div className="w-full lg:w-2/3">
               {/* Tabs Skeleton */}
-              <div className="bg-white rounded-t-xl border border-gray-200 p-1 shadow-sm">
+              <div className="rounded-t-xl border border-gray-200 bg-white p-1 shadow-sm">
                 <div className="flex">
-                  <div className="tab flex-1 py-3 text-center rounded-lg bg-gray-100"></div>
-                  <div className="tab flex-1 py-3 text-center rounded-lg"></div>
+                  <div className="tab flex-1 rounded-lg bg-gray-100 py-3 text-center"></div>
+                  <div className="tab flex-1 rounded-lg py-3 text-center"></div>
                 </div>
               </div>
 
               {/* Tasks Skeleton */}
-              <div className="bg-white rounded-b-xl border-x border-b border-gray-200 p-6 shadow-sm">
-                <div className="h-6 w-40 bg-gray-200 rounded mb-6"></div>
+              <div className="rounded-b-xl border-x border-b border-gray-200 bg-white p-6 shadow-sm">
+                <div className="mb-6 h-6 w-40 rounded bg-gray-200"></div>
                 <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-1">
                   <TaskCardSkeleton />
                   <TaskCardSkeleton />
@@ -604,17 +607,17 @@ function Mission() {
             </div>
 
             {/* Right Column Skeleton */}
-            <div className="w-full lg:w-1/3 space-y-6">
+            <div className="w-full space-y-6 lg:w-1/3">
               {/* Calendar Skeleton */}
-              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden animate-pulse">
-                <div className="h-16 bg-green-500 w-full"></div>
+              <div className="animate-pulse overflow-hidden rounded-xl border border-gray-200 bg-white">
+                <div className="h-16 w-full bg-green-500"></div>
                 <div className="p-4">
-                  <div className="h-8 bg-gray-200 rounded w-full mb-4"></div>
-                  <div className="grid grid-cols-7 gap-1 mb-4">
+                  <div className="mb-4 h-8 w-full rounded bg-gray-200"></div>
+                  <div className="mb-4 grid grid-cols-7 gap-1">
                     {Array.from({ length: 7 }).map((_, i) => (
                       <div
                         key={i}
-                        className="h-6 bg-gray-200 rounded-full"
+                        className="h-6 rounded-full bg-gray-200"
                       ></div>
                     ))}
                   </div>
@@ -622,7 +625,7 @@ function Mission() {
                     {Array.from({ length: 28 }).map((_, i) => (
                       <div
                         key={i}
-                        className="h-8 w-8 mx-auto bg-gray-100 rounded-full"
+                        className="mx-auto h-8 w-8 rounded-full bg-gray-100"
                       ></div>
                     ))}
                   </div>
@@ -630,18 +633,18 @@ function Mission() {
               </div>
 
               {/* Ranking Skeleton */}
-              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden animate-pulse">
-                <div className="p-4 border-b border-gray-100">
-                  <div className="h-6 bg-gray-200 rounded w-40"></div>
+              <div className="animate-pulse overflow-hidden rounded-xl border border-gray-200 bg-white">
+                <div className="border-b border-gray-100 p-4">
+                  <div className="h-6 w-40 rounded bg-gray-200"></div>
                 </div>
                 <div className="p-5">
-                  <div className="flex justify-center items-end mb-6">
+                  <div className="mb-6 flex items-end justify-center">
                     {Array.from({ length: 3 }).map((_, i) => (
                       <div key={i} className="mx-2 flex flex-col items-center">
                         <div
                           className={`w-${i === 1 ? 14 : 12} h-${
                             i === 1 ? 14 : 12
-                          } rounded-full bg-gray-200 mb-2`}
+                          } mb-2 rounded-full bg-gray-200`}
                         ></div>
                         <div
                           className={`h-${i === 1 ? 24 : 16} w-${
@@ -651,11 +654,11 @@ function Mission() {
                       </div>
                     ))}
                   </div>
-                  <div className="space-y-2 mt-4">
+                  <div className="mt-4 space-y-2">
                     {Array.from({ length: 2 }).map((_, i) => (
                       <div
                         key={i}
-                        className="h-10 bg-gray-100 rounded-lg w-full"
+                        className="h-10 w-full rounded-lg bg-gray-100"
                       ></div>
                     ))}
                   </div>
@@ -663,16 +666,16 @@ function Mission() {
               </div>
 
               {/* Stats Skeleton */}
-              <div className="bg-white rounded-xl border border-gray-200 p-5 animate-pulse">
-                <div className="h-6 bg-gray-200 rounded w-24 mb-3"></div>
+              <div className="animate-pulse rounded-xl border border-gray-200 bg-white p-5">
+                <div className="mb-3 h-6 w-24 rounded bg-gray-200"></div>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-gray-100 rounded-lg p-3">
-                    <div className="h-8 bg-gray-200 rounded w-12 mx-auto mb-1"></div>
-                    <div className="h-4 bg-gray-200 rounded w-24 mx-auto"></div>
+                  <div className="rounded-lg bg-gray-100 p-3">
+                    <div className="mx-auto mb-1 h-8 w-12 rounded bg-gray-200"></div>
+                    <div className="mx-auto h-4 w-24 rounded bg-gray-200"></div>
                   </div>
-                  <div className="bg-gray-100 rounded-lg p-3">
-                    <div className="h-8 bg-gray-200 rounded w-12 mx-auto mb-1"></div>
-                    <div className="h-4 bg-gray-200 rounded w-24 mx-auto"></div>
+                  <div className="rounded-lg bg-gray-100 p-3">
+                    <div className="mx-auto mb-1 h-8 w-12 rounded bg-gray-200"></div>
+                    <div className="mx-auto h-4 w-24 rounded bg-gray-200"></div>
                   </div>
                 </div>
               </div>
@@ -684,7 +687,7 @@ function Mission() {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen pb-12">
+    <div className="min-h-screen bg-gray-50 pb-12">
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -697,7 +700,7 @@ function Mission() {
         pauseOnHover
         theme="colored"
       />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16">
+      <div className="mx-auto max-w-7xl px-4 pt-16 sm:px-6 lg:px-8">
         <MissionHeader userInfo={userInfo} loading={loading} />
 
         {/* Event Banner */}
@@ -709,7 +712,7 @@ function Mission() {
         </div>
 
         {/* Main Content */}
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex flex-col gap-8 lg:flex-row">
           {/* Left Column - Tasks */}
           <div className="w-full lg:w-2/3">
             {/* Tabs */}
@@ -719,7 +722,7 @@ function Mission() {
             />
 
             {/* Difficulty Filter Buttons */}
-            <div className="bg-white border-x border-gray-200 p-4 shadow-sm">
+            <div className="border-x border-gray-200 bg-white p-4 shadow-sm">
               <div className="flex space-x-2">
                 {selectedTab === "daily" ? (
                   <>
@@ -728,7 +731,7 @@ function Mission() {
                         setDailyDifficultyFilter("all");
                         setDailyCurrentPage(1);
                       }}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                      className={`rounded-lg px-4 py-2 text-sm font-medium ${
                         dailyDifficultyFilter === "all"
                           ? "bg-green-100 text-green-800"
                           : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -741,7 +744,7 @@ function Mission() {
                         setDailyDifficultyFilter("easy");
                         setDailyCurrentPage(1);
                       }}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                      className={`rounded-lg px-4 py-2 text-sm font-medium ${
                         dailyDifficultyFilter === "easy"
                           ? "bg-green-100 text-green-800"
                           : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -754,7 +757,7 @@ function Mission() {
                         setDailyDifficultyFilter("medium");
                         setDailyCurrentPage(1);
                       }}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                      className={`rounded-lg px-4 py-2 text-sm font-medium ${
                         dailyDifficultyFilter === "medium"
                           ? "bg-green-100 text-green-800"
                           : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -767,7 +770,7 @@ function Mission() {
                         setDailyDifficultyFilter("hard");
                         setDailyCurrentPage(1);
                       }}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                      className={`rounded-lg px-4 py-2 text-sm font-medium ${
                         dailyDifficultyFilter === "hard"
                           ? "bg-green-100 text-green-800"
                           : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -783,7 +786,7 @@ function Mission() {
                         setOtherDifficultyFilter("all");
                         setOtherCurrentPage(1);
                       }}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                      className={`rounded-lg px-4 py-2 text-sm font-medium ${
                         otherDifficultyFilter === "all"
                           ? "bg-green-100 text-green-800"
                           : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -796,7 +799,7 @@ function Mission() {
                         setOtherDifficultyFilter("easy");
                         setOtherCurrentPage(1);
                       }}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                      className={`rounded-lg px-4 py-2 text-sm font-medium ${
                         otherDifficultyFilter === "easy"
                           ? "bg-green-100 text-green-800"
                           : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -809,7 +812,7 @@ function Mission() {
                         setOtherDifficultyFilter("medium");
                         setOtherCurrentPage(1);
                       }}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                      className={`rounded-lg px-4 py-2 text-sm font-medium ${
                         otherDifficultyFilter === "medium"
                           ? "bg-green-100 text-green-800"
                           : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -822,7 +825,7 @@ function Mission() {
                         setOtherDifficultyFilter("hard");
                         setOtherCurrentPage(1);
                       }}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                      className={`rounded-lg px-4 py-2 text-sm font-medium ${
                         otherDifficultyFilter === "hard"
                           ? "bg-green-100 text-green-800"
                           : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -836,16 +839,16 @@ function Mission() {
             </div>
 
             {/* Task List */}
-            <div className="bg-white rounded-b-xl border-x border-b border-gray-200 p-6 shadow-sm">
+            <div className="rounded-b-xl border-x border-b border-gray-200 bg-white p-6 shadow-sm">
               {selectedTab === "daily" && dailyTasks.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-gray-500 mb-4">
+                <div className="py-8 text-center">
+                  <p className="mb-4 text-gray-500">
                     Không có nhiệm vụ hàng ngày nào
                   </p>
                 </div>
               ) : selectedTab === "other" && otherTasks.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-gray-500 mb-4">
+                <div className="py-8 text-center">
+                  <p className="mb-4 text-gray-500">
                     Không có nhiệm vụ phụ nào
                   </p>
                 </div>
@@ -860,17 +863,17 @@ function Mission() {
                     selectedTab === "daily"
                       ? dailyCurrentPage
                       : selectedTab === "other"
-                      ? otherCurrentPage
-                      : completedPages
+                        ? otherCurrentPage
+                        : completedPages
                   }
                   totalPages={
                     selectedTab === "daily"
                       ? dailyTotalPages
                       : selectedTab === "other"
-                      ? otherTotalPages
-                      : selectedTab === "completed"
-                      ? completedPages
-                      : 1
+                        ? otherTotalPages
+                        : selectedTab === "completed"
+                          ? completedPages
+                          : 1
                   }
                   goToNextPage={goToNextPage}
                   goToPreviousPage={goToPreviousPage}
@@ -884,9 +887,9 @@ function Mission() {
           </div>
 
           {/* Right Column - Calendar and Rankings */}
-          <div className="w-full lg:w-1/3 space-y-6">
+          <div className="w-full space-y-6 lg:w-1/3">
             {/* Calendar Component */}
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
               <Calendar
                 streak={userInfo?.streak || 0}
                 lastLogin={userInfo?.last_completed_task || null}
@@ -894,8 +897,8 @@ function Mission() {
             </div>
 
             {/* Ranking Component */}
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-              <div className="p-4 border-b border-gray-100">
+            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+              <div className="border-b border-gray-100 p-4">
                 <h2 className="text-lg font-semibold text-gray-800">
                   Bảng Xếp Hạng
                 </h2>
@@ -906,12 +909,12 @@ function Mission() {
             </div>
 
             {/* Stats Card */}
-            <div className="bg-white rounded-xl border border-gray-200 p-5">
-              <h2 className="text-lg font-semibold text-gray-800 mb-3">
+            <div className="rounded-xl border border-gray-200 bg-white p-5">
+              <h2 className="mb-3 text-lg font-semibold text-gray-800">
                 Thống Kê
               </h2>
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-blue-50 rounded-lg p-3 text-center">
+                <div className="rounded-lg bg-blue-50 p-3 text-center">
                   <p className="text-2xl font-bold text-blue-600">
                     {completedTasks.length}
                   </p>
@@ -919,7 +922,7 @@ function Mission() {
                     Nhiệm vụ đã hoàn thành
                   </p>
                 </div>
-                <div className="bg-emerald-50 rounded-lg p-3 text-center">
+                <div className="rounded-lg bg-emerald-50 p-3 text-center">
                   <p className="text-2xl font-bold text-emerald-600">
                     {completedTasks.reduce((sum, task) => {
                       return sum + (task.coin || 0);

@@ -1,7 +1,7 @@
-import React, { useRef, useEffect } from "react";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
-import QrCodeScannerIcon from "@mui/icons-material/QrCodeScanner";
 import { BrowserMultiFormatReader } from "@zxing/browser";
+import { QrCode } from "lucide-react";
+import React, { useEffect, useRef } from "react";
 
 export default function QRScanner({
   scanning,
@@ -65,7 +65,7 @@ export default function QRScanner({
           if (err && err.name !== "NotFoundException") {
             console.error("Error scanning QR code:", err.message);
           }
-        }
+        },
       );
     } catch (e) {
       console.error("Could not access camera: ", e.message);
@@ -135,15 +135,16 @@ export default function QRScanner({
               bgcolor: "rgba(255,255,255,0.7)",
             }}
           >
-            <QrCodeScannerIcon
-              sx={{
-                fontSize: 60,
-                mb: 1,
+            <QrCode
+              style={{
+                width: 60,
+                height: 60,
+                marginBottom: 8,
                 color: "var(--primary-green)",
               }}
             />
             <Typography variant="body2" color="text.secondary">
-              Click "Start Scanning" to open your camera
+              {'Click "Start Scanning" to open your camera'}
             </Typography>
           </Box>
         )}
@@ -177,7 +178,7 @@ export default function QRScanner({
         {!scanning ? (
           <Button
             className="customer-button"
-            startIcon={<QrCodeScannerIcon />}
+            startIcon={<QrCode size={20} />}
             onClick={handleStartScan}
             disabled={disabled}
           >

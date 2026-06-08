@@ -1,22 +1,22 @@
-import React from "react";
+import CategoryIcon from "@mui/icons-material/Category";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import LocalOfferIcon from "@mui/icons-material/LocalOffer";
+import WarningIcon from "@mui/icons-material/Warning";
 import {
-  Grid,
+  Badge,
+  Box,
   Card,
   CardContent,
   CardMedia,
-  Typography,
   Chip,
-  IconButton,
-  Box,
   Divider,
-  Badge,
+  Grid,
+  IconButton,
+  Typography,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import WarningIcon from "@mui/icons-material/Warning";
-import LocalOfferIcon from "@mui/icons-material/LocalOffer";
-import InventoryIcon from "@mui/icons-material/Inventory";
-import CategoryIcon from "@mui/icons-material/Category";
+import React from "react";
 
 const ItemGrid = ({ items, onEdit, onDelete }) => {
   const getStatusColor = (status) => {

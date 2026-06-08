@@ -1,14 +1,14 @@
-import React from "react";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import SearchIcon from "@mui/icons-material/Search";
 import {
   Box,
-  TextField,
-  MenuItem,
   Button,
   Grid,
   InputAdornment,
+  MenuItem,
+  TextField,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import FilterListIcon from "@mui/icons-material/FilterList";
+import React from "react";
 
 const EventFilters = ({ filters, onFilterChange, onReset }) => {
   const statusOptions = [

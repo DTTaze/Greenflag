@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { Box, Paper, Typography, Divider, Stack, Button } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
+import TaskAltIcon from "@mui/icons-material/TaskAlt";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import { Box, Button, Divider, Paper, Stack, Typography } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
-import SimpleLineChart from "./ChartAdmin";
+import React, { useEffect, useState } from "react";
+
 import { getAllUserApi } from "@/src/utils/api";
+
+import SimpleLineChart from "./ChartAdmin";
 
 export default function AdminDashboard() {
   const [recentActivities, setRecentActivities] = useState([]);

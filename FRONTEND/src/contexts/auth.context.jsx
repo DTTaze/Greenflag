@@ -7,7 +7,7 @@ export const AuthProvider = (props) => {
     isAuthenticated: false,
     user: null,
   });
-  
+
   return (
     <AuthContext.Provider
       value={{

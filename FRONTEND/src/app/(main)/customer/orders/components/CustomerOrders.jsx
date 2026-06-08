@@ -1,66 +1,46 @@
-import React, { useState, useEffect } from "react";
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Alert,
   Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  FormControl,
+  Grid,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
   Paper,
-  Typography,
+  Select,
+  Step,
+  StepLabel,
+  Stepper,
+  Tab,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Chip,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Grid,
-  Stepper,
-  Step,
-  StepLabel,
-  IconButton,
-  Divider,
-  Card,
-  CardContent,
-  useMediaQuery,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Alert,
-  CircularProgress,
   Tabs,
-  Tab,
-  InputAdornment,
+  TextField,
   Tooltip,
+  Typography,
+  useMediaQuery,
 } from "@mui/material";
+import { CheckCircle, Copy, Eye, Plus, Search, XCircle } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import AddIcon from "@mui/icons-material/Add";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import ReceiptIcon from "@mui/icons-material/Receipt";
-import LocalShippingIcon from "@mui/icons-material/LocalShipping";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import CancelIcon from "@mui/icons-material/Cancel";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import TimelineIcon from "@mui/icons-material/Timeline";
-import EditIcon from "@mui/icons-material/Edit";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import SearchIcon from "@mui/icons-material/Search";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-
-// Import extracted components
-import OrdersList from "./orders/OrdersList";
-import EmptyOrderState from "./orders/EmptyOrderState";
-import CreateOrderForm from "./orders/forms/CreateOrderForm";
-import AddShippingAccountForm from "./orders/forms/AddShippingAccountForm";
-import ShippingAccountsList from "./orders/ShippingAccountsList";
-import OrderDetailsDialog from "./orders/dialogs/OrderDetailsDialog";
 
 // Import mock data and utilities
 import {
@@ -68,24 +48,31 @@ import {
   wasteCategories,
   wasteTypesMap,
 } from "@/src/data/ordersMockData";
-
 import {
-  createShippingOrderApi,
-  getShippingOrderDetailApi,
-  updateShippingOrderApi,
   cancelShippingOrderApi,
-  getAllShippingOrdersBySellerApi,
-  getShippingAccountsByUserApi,
-  createShippingAccountApi,
-  updateShippingAccountApi,
-  deleteShippingAccountApi,
-  setDefaultShippingAccountApi,
-  getSellerTransactionHistory,
-  getTransactionByIdApi,
-  transactionMakeDicisionApi,
   createDeliveryOrderFromTransactionApi,
+  createShippingAccountApi,
+  createShippingOrderApi,
+  deleteShippingAccountApi,
   getAllShippingOrdersByBuyerApi,
+  getAllShippingOrdersBySellerApi,
+  getSellerTransactionHistory,
+  getShippingAccountsByUserApi,
+  getShippingOrderDetailApi,
+  getTransactionByIdApi,
+  setDefaultShippingAccountApi,
+  transactionMakeDicisionApi,
+  updateShippingAccountApi,
+  updateShippingOrderApi,
 } from "@/src/utils/api";
+
+import OrderDetailsDialog from "./orders/dialogs/OrderDetailsDialog";
+import EmptyOrderState from "./orders/EmptyOrderState";
+import AddShippingAccountForm from "./orders/forms/AddShippingAccountForm";
+import CreateOrderForm from "./orders/forms/CreateOrderForm";
+// Import extracted components
+import OrdersList from "./orders/OrdersList";
+import ShippingAccountsList from "./orders/ShippingAccountsList";
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -154,7 +141,7 @@ function TransactionOrdersList({
         .includes(searchTerm.toLowerCase()) ||
       transaction.buyer?.username
         ?.toLowerCase()
-        .includes(searchTerm.toLowerCase())
+        .includes(searchTerm.toLowerCase()),
   );
 
   const renderActionButtons = (transaction) => {
@@ -177,9 +164,9 @@ function TransactionOrdersList({
                 },
               }}
             >
-              <VisibilityIcon fontSize="small" />
+              <Eye size={16} />
             </Button>
-            {transaction.status !== "rejected" && 
+            {transaction.status !== "rejected" && (
               <Button
                 size="small"
                 variant="contained"
@@ -192,9 +179,9 @@ function TransactionOrdersList({
                   "&:hover": { bgcolor: "var(--dark-green)" },
                 }}
               >
-                <CheckCircleIcon fontSize="small" />
+                <CheckCircle size={16} />
               </Button>
-            }
+            )}
             <Button
               size="small"
               variant="contained"
@@ -205,7 +192,7 @@ function TransactionOrdersList({
                 p: "4px 8px",
               }}
             >
-              <CancelIcon fontSize="small" />
+              <XCircle size={16} />
             </Button>
           </Box>
         );
@@ -227,7 +214,7 @@ function TransactionOrdersList({
                 },
               }}
             >
-              <VisibilityIcon fontSize="small" />
+              <Eye size={16} />
             </Button>
             <Tooltip title="Create new order based on this transaction">
               <Button
@@ -245,7 +232,7 @@ function TransactionOrdersList({
                   },
                 }}
               >
-                <ContentCopyIcon fontSize="small" />
+                <Copy size={16} />
               </Button>
             </Tooltip>
           </Box>
@@ -268,9 +255,9 @@ function TransactionOrdersList({
                 },
               }}
             >
-              <VisibilityIcon fontSize="small" />
+              <Eye size={16} />
             </Button>
-            {transaction.status !== "rejected" && 
+            {transaction.status !== "rejected" && (
               <Button
                 size="small"
                 variant="contained"
@@ -283,9 +270,9 @@ function TransactionOrdersList({
                   "&:hover": { bgcolor: "var(--dark-green)" },
                 }}
               >
-                <CheckCircleIcon fontSize="small" />
+                <CheckCircle size={16} />
               </Button>
-            }
+            )}
           </Box>
         );
       case "cancelled":
@@ -306,7 +293,7 @@ function TransactionOrdersList({
                 },
               }}
             >
-              <VisibilityIcon fontSize="small" />
+              <Eye size={16} />
             </Button>
           </Box>
         );
@@ -328,7 +315,7 @@ function TransactionOrdersList({
                 },
               }}
             >
-              <VisibilityIcon fontSize="small" />
+              <Eye size={16} />
             </Button>
           </Box>
         );
@@ -346,7 +333,7 @@ function TransactionOrdersList({
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon />
+                <Search size={20} />
               </InputAdornment>
             ),
           }}
@@ -406,10 +393,10 @@ function TransactionOrdersList({
                           transaction.status === "pending"
                             ? "warning"
                             : transaction.status === "accepted"
-                            ? "success"
-                            : transaction.status === "rejected"
-                            ? "error"
-                            : "default"
+                              ? "success"
+                              : transaction.status === "rejected"
+                                ? "error"
+                                : "default"
                         }
                         size="small"
                       />
@@ -505,7 +492,7 @@ export default function CustomerOrders() {
   const [alertMessage, setAlertMessage] = useState("");
   const [alertSeverity, setAlertSeverity] = useState("success");
   const [newShippingAccount, setNewShippingAccount] = useState(
-    emptyShippingAccountForm
+    emptyShippingAccountForm,
   );
   const [buyerInfo, setBuyerInfo] = useState({
     name: "",
@@ -577,7 +564,7 @@ export default function CustomerOrders() {
 
           // Format date from ISO to local date format
           const formattedDate = new Date(
-            order.created_date
+            order.created_date,
           ).toLocaleDateString();
 
           // Create a dummy items array (since GHN doesn't provide item details in the orders list)
@@ -684,7 +671,7 @@ export default function CustomerOrders() {
     if (!hasLinkedShippingAccounts()) {
       showAlert(
         "Please link at least one shipping account before creating orders.",
-        "error"
+        "error",
       );
       setCreateDialogOpen(false);
       setShippingAccountsDialogOpen(true);
@@ -701,14 +688,14 @@ export default function CustomerOrders() {
           selectedOrder.id,
           newOrder,
           selectedAccount.token,
-          selectedAccount.shop_id
+          selectedAccount.shop_id,
         );
       } else {
         // Normal order creation
         response = await createShippingOrderApi(
           newOrder,
           selectedAccount.token,
-          selectedAccount.shop_id
+          selectedAccount.shop_id,
         );
       }
 
@@ -786,15 +773,15 @@ export default function CustomerOrders() {
     try {
       const response = await updateShippingAccountApi(
         selectedShippingAccount.id,
-        newShippingAccount
+        newShippingAccount,
       );
 
       const updatedAccount = response.data;
 
       setShippingAccounts((prevAccounts) =>
         prevAccounts.map((account) =>
-          account.id === updatedAccount.id ? updatedAccount : account
-        )
+          account.id === updatedAccount.id ? updatedAccount : account,
+        ),
       );
 
       setAddShippingAccountDialogOpen(false);
@@ -805,7 +792,7 @@ export default function CustomerOrders() {
       console.error("Error updating shipping account:", error);
       showAlert(
         "Failed to update shipping account. Please try again.",
-        "error"
+        "error",
       );
     }
   };
@@ -814,7 +801,7 @@ export default function CustomerOrders() {
     try {
       await deleteShippingAccountApi(accountId);
       const updatedAccounts = shippingAccounts.filter(
-        (account) => account.id !== accountId
+        (account) => account.id !== accountId,
       );
 
       if (
@@ -831,7 +818,7 @@ export default function CustomerOrders() {
       console.error("Error deleting shipping account:", error);
       showAlert(
         "Failed to delete shipping account. Please try again.",
-        "error"
+        "error",
       );
     }
   };
@@ -844,15 +831,15 @@ export default function CustomerOrders() {
         prev.map((account) =>
           account.id === updatedAccount.id
             ? { ...updatedAccount, is_default: true }
-            : { ...account, is_default: false }
-        )
+            : { ...account, is_default: false },
+        ),
       );
       showAlert("Default shipping account updated!");
     } catch (error) {
       console.error("Error setting default shipping account:", error);
       showAlert(
         "Failed to update default shipping account. Please try again.",
-        "error"
+        "error",
       );
     }
   };
@@ -956,7 +943,7 @@ export default function CustomerOrders() {
       console.error("Error updating buyer information:", error);
       showAlert(
         "Failed to update buyer information. Please try again.",
-        "error"
+        "error",
       );
     }
   };
@@ -994,7 +981,7 @@ export default function CustomerOrders() {
       console.error("Error fetching transaction details:", error);
       showAlert(
         "Failed to load transaction details. Please try again.",
-        "error"
+        "error",
       );
     }
   };
@@ -1008,7 +995,7 @@ export default function CustomerOrders() {
       const response = await getShippingOrderDetailApi(
         transaction.orderCode,
         selectedAccount.token,
-        selectedAccount.shop_id
+        selectedAccount.shop_id,
       );
       if (response && response.data) {
         const transactionDetails = {
@@ -1040,7 +1027,7 @@ export default function CustomerOrders() {
       console.error("Error fetching transaction details:", error);
       showAlert(
         "Failed to load transaction details. Please try again.",
-        "error"
+        "error",
       );
     }
   };
@@ -1049,7 +1036,7 @@ export default function CustomerOrders() {
     try {
       const response = await transactionMakeDicisionApi(
         transactionId,
-        "rejected"
+        "rejected",
       );
       if (response && response.data) {
         showAlert("Transaction has been rejected successfully!");
@@ -1065,7 +1052,7 @@ export default function CustomerOrders() {
     try {
       const response = await transactionMakeDicisionApi(
         transactionId,
-        "accepted"
+        "accepted",
       );
       if (response && response.data) {
         showAlert("Transaction has been accepted successfully!");
@@ -1085,13 +1072,13 @@ export default function CustomerOrders() {
   // Filter orders by status for each tab
   const pendingTransactions = transactions; // Show all transactions, not just pending ones
   const readyToPick = orders.filter(
-    (order) => order.status === "ready_to_pick"
+    (order) => order.status === "ready_to_pick",
   );
   const confirmedOrders = orders.filter(
-    (order) => order.status === "delivering"
+    (order) => order.status === "delivering",
   );
   const completedOrders = orders.filter(
-    (order) => order.status === "delivered"
+    (order) => order.status === "delivered",
   );
   const cancelledOrders = orders.filter((order) => order.status === "cancel");
 
@@ -1280,7 +1267,7 @@ export default function CustomerOrders() {
       console.error("Error fetching transaction details:", error);
       showAlert(
         "Failed to load transaction details. Please try again.",
-        "error"
+        "error",
       );
     }
   };
@@ -1344,14 +1331,14 @@ export default function CustomerOrders() {
               if (!hasLinkedShippingAccounts()) {
                 showAlert(
                   "Please link at least one shipping account before creating orders.",
-                  "error"
+                  "error",
                 );
                 setShippingAccountsDialogOpen(true);
               } else {
                 setCreateDialogOpen(true);
               }
             }}
-            startIcon={<AddIcon />}
+            startIcon={<Plus size={20} />}
             sx={{ mb: { xs: 2, sm: 0 } }}
           >
             New Order

@@ -1,5 +1,7 @@
-import React from "react";
 import "@/src/styles/pages/mission-video.css";
+
+import React from "react";
+
 import VideosSection from "./VideosSection";
 
 function MissionVideo() {

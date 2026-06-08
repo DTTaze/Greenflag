@@ -1,18 +1,33 @@
-import { useState, useEffect, useCallback, createContext, useContext } from "react";
 import {
-  purchaseItemApi,
+  CheckCircle,
+  ClipboardEdit,
+  Clock,
+  EyeOff,
+  FileWarning,
+  Filter,
+} from "lucide-react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+
+import { AuthContext } from "@/src/contexts/auth.context";
+import {
   createProductApi,
-  updateProductApi,
-  getProductByIdUser,
   getAllAvailableProductsApi,
   getAllItemsApi,
+  getProductByIdUser,
+  purchaseItemApi,
+  updateProductApi,
 } from "@/src/utils/api";
-import RedeemTab from "./RedeemTab";
-import UserItemsTab from "./UserItemsTab";
+
 import AllItemsTab from "./AllItemsTab";
 import PurchaseModal from "./PurchaseModal";
-import { AuthContext } from "@/src/contexts/auth.context";
-import { Filter, CheckCircle, Clock, FileWarning, EyeOff, ClipboardEdit } from "lucide-react";
+import RedeemTab from "./RedeemTab";
+import UserItemsTab from "./UserItemsTab";
 
 export const marketplaceCategories = [
   { key: "all", name: "Tất cả" },
@@ -104,7 +119,9 @@ function ItemCatalog({ items: propItems, view }) {
       }
     } catch (error) {
       console.error("Lỗi khi lấy sản phẩm cho tab đổi quà:", error);
-      alert("Có lỗi xảy ra khi tải danh sách sản phẩm đổi quà, vui lòng thử lại sau!");
+      alert(
+        "Có lỗi xảy ra khi tải danh sách sản phẩm đổi quà, vui lòng thử lại sau!",
+      );
     }
   }, [view]);
 
@@ -132,7 +149,9 @@ function ItemCatalog({ items: propItems, view }) {
       }
     } catch (error) {
       console.error("Lỗi khi lấy sản phẩm của người dùng:", error);
-      alert("Có lỗi xảy ra khi tải danh sách sản phẩm của bạn, vui lòng thử lại sau!");
+      alert(
+        "Có lỗi xảy ra khi tải danh sách sản phẩm của bạn, vui lòng thử lại sau!",
+      );
     }
   }, [auth.user?.id, view]);
 
@@ -160,7 +179,9 @@ function ItemCatalog({ items: propItems, view }) {
       }
     } catch (error) {
       console.error("Lỗi khi lấy tất cả sản phẩm:", error);
-      alert("Có lỗi xảy ra khi tải danh sách sản phẩm chợ trao đổi, vui lòng thử lại sau!");
+      alert(
+        "Có lỗi xảy ra khi tải danh sách sản phẩm chợ trao đổi, vui lòng thử lại sau!",
+      );
     }
   }, [view]);
 
@@ -188,7 +209,7 @@ function ItemCatalog({ items: propItems, view }) {
       setSelectedItem(item);
       setIsModalOpen(true);
     },
-    [auth.user?.coins?.amount]
+    [auth.user?.coins?.amount],
   );
 
   const confirmPurchase = useCallback(
@@ -216,7 +237,7 @@ function ItemCatalog({ items: propItems, view }) {
         alert("Có lỗi xảy ra, vui lòng thử lại!");
       }
     },
-    [selectedItem, auth.user]
+    [selectedItem, auth.user],
   );
 
   const handleAddItem = () => {
@@ -245,7 +266,7 @@ function ItemCatalog({ items: propItems, view }) {
         !productData.product_status
       ) {
         alert(
-          "Vui lòng điền đầy đủ các trường bắt buộc: tên, giá, số lượng, danh mục, tình trạng sản phẩm!"
+          "Vui lòng điền đầy đủ các trường bắt buộc: tên, giá, số lượng, danh mục, tình trạng sản phẩm!",
         );
         return;
       }
@@ -259,7 +280,11 @@ function ItemCatalog({ items: propItems, view }) {
       }
 
       if (isEditing) {
-        const response = await updateProductApi(itemToEdit.id, productData, images || []);
+        const response = await updateProductApi(
+          itemToEdit.id,
+          productData,
+          images || [],
+        );
         if (response) {
           setMyItems((prev) =>
             prev.map((item) =>
@@ -274,15 +299,19 @@ function ItemCatalog({ items: propItems, view }) {
                     canPurchase: response.post_status === "public",
                     purchaseLimitPerDay: response.purchase_limit_per_day,
                   }
-                : item
-            )
+                : item,
+            ),
           );
           alert("Cập nhật sản phẩm thành công!");
         } else {
           alert("Cập nhật sản phẩm thất bại, vui lòng thử lại!");
         }
       } else {
-        const response = await createProductApi(productData, auth.user?.id, images || []);
+        const response = await createProductApi(
+          productData,
+          auth.user?.id,
+          images || [],
+        );
         if (response) {
           const newItem = {
             id: response.data.id,

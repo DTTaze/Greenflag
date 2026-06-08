@@ -1,12 +1,23 @@
-import { useState, useContext, useEffect } from "react";
-import { CheckCircle, EyeOff, Clock, FileWarning, ClipboardEdit, Eye, Coins } from "lucide-react";
-import { FiEdit, FiTrash2 } from "react-icons/fi";
+import {
+  CheckCircle,
+  ClipboardEdit,
+  Clock,
+  Coins,
+  Eye,
+  EyeOff,
+  FileWarning,
+  Pencil,
+  Trash2,
+} from "lucide-react";
+import { useContext, useEffect, useState } from "react";
+
 import DeleteConfirmModal from "@/src/components/common/DeleteConfirmModal";
-import PurchaseModal from "./PurchaseModal";
-import DetailsModal from "./DetailsModal";
-import { AuthContext } from "@/src/contexts/auth.context";
-import { MarketplaceContext } from "../layout";
 import { socket } from "@/src/config/socket";
+import { AuthContext } from "@/src/contexts/auth.context";
+
+import { MarketplaceContext } from "../layout";
+import DetailsModal from "./DetailsModal";
+import PurchaseModal from "./PurchaseModal";
 
 export const statusConfig = {
   public: { name: "Đang hiển thị", color: "text-green-600", Icon: CheckCircle },
@@ -107,13 +118,15 @@ const MarketplaceItemCard = ({
   return (
     <div
       className={`relative rounded-lg border p-4 shadow-sm transition-all duration-200 hover:shadow-md ${getStatusClass(
-        currentStatus
+        currentStatus,
       )} group`}
     >
       {/* Item Image */}
       <div
         className={`relative mb-3 h-48 w-full overflow-hidden rounded-md transition-all duration-200 ${
-          viewMode === "all_items" || viewMode === "redeem" ? "group-hover:blur-sm" : ""
+          viewMode === "all_items" || viewMode === "redeem"
+            ? "group-hover:blur-sm"
+            : ""
         } ${showPurchaseModal || showDetailsModal ? "blur-sm" : ""}`}
       >
         <img
@@ -126,21 +139,23 @@ const MarketplaceItemCard = ({
       {/* Item Details */}
       <div
         className={`mb-4 transition-all duration-200 ${
-          viewMode === "all_items" || viewMode === "redeem" ? "group-hover:blur-sm" : ""
+          viewMode === "all_items" || viewMode === "redeem"
+            ? "group-hover:blur-sm"
+            : ""
         } ${showPurchaseModal || showDetailsModal ? "blur-sm" : ""}`}
       >
         <h3 className="text-lg font-semibold">{item.name}</h3>
         <p className="text-sm text-gray-600">
           {getCategoryDisplayName(item.category)}
         </p>
-        <p className="mt-1 text-sm text-gray-700 line-clamp-2">
+        <p className="mt-1 line-clamp-2 text-sm text-gray-700">
           {item.description}
         </p>
         <div className="mt-2 flex items-center">
           <span className="font-medium text-amber-600">{item.price}</span>
           <Coins className="ml-1 h-5 w-5 text-amber-600" />
         </div>
-        <div className="text-sm text-gray-500 mt-1">
+        <div className="mt-1 text-sm text-gray-500">
           Còn lại: {currentStock} sản phẩm
         </div>
       </div>
@@ -149,7 +164,7 @@ const MarketplaceItemCard = ({
       {(viewMode === "all_items" || viewMode === "redeem") && (
         <button
           onClick={handleDetailsClick}
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center rounded-md gap-1 border border-gray-300 p-3 text-sm bg-white hover:bg-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10"
+          className="absolute top-1/2 left-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 transform items-center gap-1 rounded-md border border-gray-300 bg-white p-3 text-sm opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-gray-100"
         >
           <Eye size={16} />
           {viewMode === "redeem" ? "Mua" : "Xem chi tiết"}
@@ -158,24 +173,26 @@ const MarketplaceItemCard = ({
 
       {/* Edit/Delete Buttons */}
       <div
-        className={`mt-2 flex flex-wrap justify-between items-center transition-all duration-200 ${
-          viewMode === "all_items" || viewMode === "redeem" ? "group-hover:blur-sm" : ""
+        className={`mt-2 flex flex-wrap items-center justify-between transition-all duration-200 ${
+          viewMode === "all_items" || viewMode === "redeem"
+            ? "group-hover:blur-sm"
+            : ""
         } ${showPurchaseModal || showDetailsModal ? "blur-sm" : ""}`}
       >
-        <div className="flex gap-2 mt-2 sm:mt-0">
+        <div className="mt-2 flex gap-2 sm:mt-0">
           {viewMode === "my_items" && (
             <>
               <button
                 onClick={handleEditClick}
-                className="flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm"
+                className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
               >
-                <FiEdit />
+                <Pencil size={16} />
               </button>
               <button
                 onClick={handleDeleteClick}
-                className="flex items-center gap-1 text-red-600 hover:text-red-800 text-sm"
+                className="flex items-center gap-1 text-sm text-red-600 hover:text-red-800"
               >
-                <FiTrash2 />
+                <Trash2 size={16} />
               </button>
             </>
           )}

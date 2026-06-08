@@ -1,13 +1,15 @@
-import { useState, useEffect, useRef, useContext } from "react";
-import { Coins, X, ShoppingBag, CheckCircle } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import ShippingInfoModal from "./ShippingInfoModal";
+import { AnimatePresence, motion } from "framer-motion";
+import { CheckCircle, Coins, ShoppingBag, X } from "lucide-react";
+import { useContext, useEffect, useRef, useState } from "react";
+
+import { socket } from "@/src/config/socket";
+import { AuthContext } from "@/src/contexts/auth.context";
 import {
   getReceiverInfoByUserIDAPI,
   PreviewOrderWithoutOrderCode,
 } from "@/src/utils/api";
-import { AuthContext } from "@/src/contexts/auth.context";
-import { socket } from "@/src/config/socket";
+
+import ShippingInfoModal from "./ShippingInfoModal";
 
 export default function PurchaseModal({
   isOpen,
@@ -128,7 +130,7 @@ export default function PurchaseModal({
       const feeResponse = await PreviewOrderWithoutOrderCode(
         orderData,
         token,
-        shop_id
+        shop_id,
       );
       setShippingFee(feeResponse?.data?.data?.total_fee || 0);
     } catch (error) {
@@ -183,13 +185,13 @@ export default function PurchaseModal({
   const canPurchase = userCoins >= totalCost && quantity <= currentStock;
   const maxQuantity = Math.min(
     Math.floor(userCoins / item.price),
-    currentStock
+    currentStock,
   );
 
   const handleQuantityChange = (e) => {
     const value = Math.max(
       1,
-      Math.min(maxQuantity, parseInt(e.target.value) || 1)
+      Math.min(maxQuantity, parseInt(e.target.value) || 1),
     );
     setQuantity(value);
   };
@@ -236,28 +238,28 @@ export default function PurchaseModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-black/30 z-50 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.2 }}
             ref={modalRef}
-            className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden"
+            className="w-full max-w-md overflow-hidden rounded-xl bg-white shadow-2xl"
           >
             {/* Header */}
-            <div className="bg-emerald-600 py-4 px-6 text-white relative">
+            <div className="relative bg-emerald-600 px-6 py-4 text-white">
               <button
                 onClick={onClose}
-                className="absolute right-4 top-4 text-white hover:text-emerald-100 transition-colors"
+                className="absolute top-4 right-4 text-white transition-colors hover:text-emerald-100"
               >
                 <X className="h-5 w-5" />
               </button>
-              <h2 className="text-xl font-semibold flex items-center">
-                <ShoppingBag className="h-5 w-5 mr-2" />
+              <h2 className="flex items-center text-xl font-semibold">
+                <ShoppingBag className="mr-2 h-5 w-5" />
                 Xác nhận trao đổi
               </h2>
-              <p className="text-emerald-100 text-sm mt-1">
+              <p className="mt-1 text-sm text-emerald-100">
                 Vui lòng xác nhận thông tin giao dịch của bạn
               </p>
             </div>
@@ -266,24 +268,24 @@ export default function PurchaseModal({
             <div className="p-6">
               {/* Shipping Information */}
               <div className="mb-4">
-                <div className="flex justify-between items-center mb-2">
+                <div className="mb-2 flex items-center justify-between">
                   <h3 className="font-medium text-gray-800">
                     Thông tin nhận hàng
                   </h3>
                   <button
                     onClick={handleChangeShipping}
-                    className="text-emerald-600 hover:text-emerald-800 text-sm"
+                    className="text-sm text-emerald-600 hover:text-emerald-800"
                   >
                     Thay đổi
                   </button>
                 </div>
                 {isLoadingShipping ? (
-                  <div className="animate-pulse bg-gray-100 p-3 rounded-lg">
-                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                  <div className="animate-pulse rounded-lg bg-gray-100 p-3">
+                    <div className="mb-2 h-4 w-3/4 rounded bg-gray-200"></div>
+                    <div className="h-4 w-1/2 rounded bg-gray-200"></div>
                   </div>
                 ) : shippingInfo ? (
-                  <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                  <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
                     <p className="text-sm text-gray-800">
                       {shippingInfo.to_name}
                     </p>
@@ -307,38 +309,38 @@ export default function PurchaseModal({
               </div>
 
               {/* Item Details */}
-              <div className="flex items-center gap-4 py-2 border-b border-gray-100 pb-4">
-                <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
+              <div className="flex items-center gap-4 border-b border-gray-100 py-2 pb-4">
+                <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
                   <img
                     src={item.image || "/placeholder.svg"}
                     alt={item.name}
-                    className="w-full h-full object-cover"
+                    className="h-full w-full object-cover"
                   />
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-800 text-lg">
+                  <h3 className="text-lg font-medium text-gray-800">
                     {item.name}
                   </h3>
-                  <p className="text-sm text-gray-600 line-clamp-2">
+                  <p className="line-clamp-2 text-sm text-gray-600">
                     {item.description}
                   </p>
-                  <div className="flex items-center text-emerald-600 mt-1">
+                  <div className="mt-1 flex items-center text-emerald-600">
                     <span className="font-semibold">{item.price}</span>
-                    <Coins className="h-4 w-4 ml-1" />
+                    <Coins className="ml-1 h-4 w-4" />
                   </div>
-                  <div className="text-sm text-gray-500 mt-1">
+                  <div className="mt-1 text-sm text-gray-500">
                     Còn lại: {currentStock} sản phẩm
                   </div>
                 </div>
               </div>
 
               {/* Quantity Selector */}
-              <div className="flex justify-between items-center mt-5">
+              <div className="mt-5 flex items-center justify-between">
                 <span className="text-gray-700">Số lượng:</span>
                 <div className="flex items-center">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-l-md bg-gray-50 hover:bg-gray-100"
+                    className="flex h-8 w-8 items-center justify-center rounded-l-md border border-gray-300 bg-gray-50 hover:bg-gray-100"
                   >
                     -
                   </button>
@@ -346,7 +348,7 @@ export default function PurchaseModal({
                     type="number"
                     value={quantity}
                     onChange={handleQuantityChange}
-                    className="border-y border-gray-300 h-8 w-12 text-center focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                    className="h-8 w-12 border-y border-gray-300 text-center focus:ring-1 focus:ring-emerald-600 focus:outline-none"
                     min="1"
                     max={maxQuantity}
                   />
@@ -354,7 +356,7 @@ export default function PurchaseModal({
                     onClick={() =>
                       setQuantity(Math.min(maxQuantity, quantity + 1))
                     }
-                    className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-r-md bg-gray-50 hover:bg-gray-100"
+                    className="flex h-8 w-8 items-center justify-center rounded-r-md border border-gray-300 bg-gray-50 hover:bg-gray-100"
                   >
                     +
                   </button>
@@ -362,35 +364,35 @@ export default function PurchaseModal({
               </div>
 
               {/* Transaction Summary */}
-              <div className="bg-emerald-50 p-4 rounded-lg mt-5 border border-emerald-100">
-                <div className="flex justify-between items-center">
+              <div className="mt-5 rounded-lg border border-emerald-100 bg-emerald-50 p-4">
+                <div className="flex items-center justify-between">
                   <span className="text-gray-600">Giá sản phẩm:</span>
                   <div className="flex items-center font-medium text-emerald-600">
                     <span>{item.price * quantity}</span>
-                    <Coins className="h-4 w-4 ml-1" />
+                    <Coins className="ml-1 h-4 w-4" />
                   </div>
                 </div>
-                <div className="flex justify-between items-center mt-2">
+                <div className="mt-2 flex items-center justify-between">
                   <span className="text-gray-600">Phí giao hàng:</span>
                   <span className="font-medium text-emerald-600">
                     {shippingFee} VND
                   </span>
                 </div>
-                <div className="flex justify-between items-center mt-2 pt-2 border-t border-emerald-100">
+                <div className="mt-2 flex items-center justify-between border-t border-emerald-100 pt-2">
                   <span className="text-gray-600">Tổng giá sản phẩm:</span>
                   <div className="flex items-center font-medium text-emerald-600">
                     <span>{totalCost}</span>
-                    <Coins className="h-4 w-4 ml-1" />
+                    <Coins className="ml-1 h-4 w-4" />
                   </div>
                 </div>
-                <div className="flex justify-between items-center mt-2">
+                <div className="mt-2 flex items-center justify-between">
                   <span className="text-gray-600">Số dư hiện tại:</span>
                   <div className="flex items-center font-medium text-emerald-600">
                     <span>{userCoins}</span>
-                    <Coins className="h-4 w-4 ml-1" />
+                    <Coins className="ml-1 h-4 w-4" />
                   </div>
                 </div>
-                <div className="flex justify-between items-center mt-2 pt-2 border-t border-emerald-100">
+                <div className="mt-2 flex items-center justify-between border-t border-emerald-100 pt-2">
                   <span className="text-gray-600">Số dư sau giao dịch:</span>
                   <div
                     className={`flex items-center font-medium ${
@@ -398,26 +400,26 @@ export default function PurchaseModal({
                     }`}
                   >
                     <span>{userCoins - totalCost}</span>
-                    <Coins className="h-4 w-4 ml-1" />
+                    <Coins className="ml-1 h-4 w-4" />
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-3 mt-6">
+              <div className="mt-6 flex gap-3">
                 <button
                   onClick={onClose}
-                  className="flex-1 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition font-medium text-gray-700"
+                  className="flex-1 rounded-lg border border-gray-300 py-2.5 font-medium text-gray-700 transition hover:bg-gray-50"
                 >
                   Hủy
                 </button>
                 <button
                   onClick={handleConfirm}
                   disabled={!canPurchase || isProcessing || !shippingInfo}
-                  className={`flex-1 py-2.5 rounded-lg text-white font-medium flex items-center justify-center ${
+                  className={`flex flex-1 items-center justify-center rounded-lg py-2.5 font-medium text-white ${
                     canPurchase && !isProcessing && shippingInfo
                       ? "bg-emerald-600 hover:bg-emerald-700"
-                      : "bg-gray-400 cursor-not-allowed"
+                      : "cursor-not-allowed bg-gray-400"
                   }`}
                 >
                   {isProcessing ? (
@@ -428,7 +430,7 @@ export default function PurchaseModal({
                     "Chọn thông tin giao hàng"
                   ) : (
                     <>
-                      <CheckCircle className="h-4 w-4 mr-1" />
+                      <CheckCircle className="mr-1 h-4 w-4" />
                       Xác nhận
                     </>
                   )}

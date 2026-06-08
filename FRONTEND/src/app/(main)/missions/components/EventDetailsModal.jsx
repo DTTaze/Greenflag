@@ -1,7 +1,8 @@
 import React from "react";
-import { acceptEventApi } from "@/src/utils/api";
 import { toast } from "react-toastify";
+
 import QRCodeDisplay from "@/src/components/common/QRCodeDisplay";
+import { acceptEventApi } from "@/src/utils/api";
 
 const EventDetailsModal = ({
   event,
@@ -56,16 +57,16 @@ const EventDetailsModal = ({
   const isRegistrationOpen = new Date(event.end_time) > new Date();
 
   return (
-    <div className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto shadow-2xl transform transition-all">
-        <div className="flex justify-between items-start mb-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+      <div className="mx-4 max-h-[90vh] w-full max-w-2xl transform overflow-y-auto rounded-xl bg-white p-6 shadow-2xl transition-all">
+        <div className="mb-4 flex items-start justify-between">
           <h2 className="text-2xl font-bold text-gray-800">{event.title}</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
+            className="text-gray-500 transition-colors hover:text-gray-700"
           >
             <svg
-              className="w-6 h-6"
+              className="h-6 w-6"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -115,7 +116,7 @@ const EventDetailsModal = ({
 
           {isParticipated ? (
             <div className="mt-6">
-              <h3 className="font-semibold text-gray-700 mb-4">
+              <h3 className="mb-4 font-semibold text-gray-700">
                 Mã QR của bạn
               </h3>
               <QRCodeDisplay initialText={userPublicId} />
@@ -123,12 +124,12 @@ const EventDetailsModal = ({
           ) : isRegistrationOpen ? (
             <button
               onClick={handleJoinEvent}
-              className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors transform hover:scale-[1.02] active:scale-[0.98]"
+              className="w-full transform rounded-lg bg-green-600 py-3 font-semibold text-white transition-colors hover:scale-[1.02] hover:bg-green-700 active:scale-[0.98]"
             >
               Tham gia
             </button>
           ) : (
-            <p className="text-red-600 text-center font-semibold">
+            <p className="text-center font-semibold text-red-600">
               Đã hết thời gian đăng ký
             </p>
           )}

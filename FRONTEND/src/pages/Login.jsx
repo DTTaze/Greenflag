@@ -1,12 +1,13 @@
+import { Eye, EyeOff } from "lucide-react";
 import { useContext, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
+import Button from "../components/ui/button";
+import InputField from "../components/ui/InputField";
 import { useNotification } from "../components/ui/NotificationProvider";
+import SocialLoginIcons from "../components/ui/SocialLoginIcons";
 import { AuthContext } from "../contexts/auth.context";
 import { loginUserApi } from "../utils/api";
-import InputField from "../components/ui/InputField";
-import Button from "../components/ui/button";
-import SocialLoginIcons from "../components/ui/SocialLoginIcons";
-import { Eye, EyeOff } from "lucide-react";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ const LoginPage = () => {
 
     try {
       const isEmail = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(
-        identifier
+        identifier,
       );
       const loginData = isEmail
         ? { email: identifier, password }
@@ -73,8 +74,8 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="max-w-sm mx-auto mt-8 p-4 border border-gray-300 rounded shadow bg-white">
-      <h2 className="text-xl font-semibold text-center mb-4">Đăng nhập</h2>
+    <div className="mx-auto mt-8 max-w-sm rounded border border-gray-300 bg-white p-4 shadow">
+      <h2 className="mb-4 text-center text-xl font-semibold">Đăng nhập</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <InputField
           id="identifier"

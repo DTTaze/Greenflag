@@ -1,11 +1,11 @@
 import HomepageSection from "../layouts/HomepageSection";
 
 function Homepage() {
-    return (
-        <>
-            <HomepageSection />
-        </>
-    );
+  return (
+    <>
+      <HomepageSection />
+    </>
+  );
 }
 
 export default Homepage;

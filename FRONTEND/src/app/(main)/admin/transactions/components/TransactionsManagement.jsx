@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { Box, Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
+
+import { deleteTransactionsApi, getAllTransactionsApi } from "@/src/utils/api";
+
 import DataTable from "../../components/DataTable";
 import { transactionsColumns } from "../../components/HeaderColumn";
-import { Box, Typography } from "@mui/material";
-import { getAllTransactionsApi, deleteTransactionsApi } from "@/src/utils/api";
 
 export default function TransactionsManagement() {
   const [transactions, setTransactions] = useState([]);

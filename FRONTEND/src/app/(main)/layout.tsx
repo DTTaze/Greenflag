@@ -1,20 +1,25 @@
 "use client";
 
-import React, { useState, useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { Outlet } from "react-router-dom";
+import { io } from "socket.io-client";
+
+import Loader from "@/src/components/ui/Loader";
+import { VITE_BACKEND_URL } from "@/src/config/env.js";
 import { AuthContext } from "@/src/contexts/auth.context";
+import { SocketProvider } from "@/src/contexts/socket.context";
 import UserHeader from "@/src/layouts/Header";
 import { getUserApi } from "@/src/utils/api";
-import Loader from "@/src/components/ui/Loader";
-import { io } from "socket.io-client";
-import { SocketProvider } from "@/src/contexts/socket.context";
-import { Outlet } from "react-router-dom";
-import { VITE_BACKEND_URL } from "@/src/config/env.js";
 
 const socket = io(VITE_BACKEND_URL, {
   withCredentials: true,
 });
 
-export default function MainLayout({ children }: { children: React.ReactNode }) {
+export default function MainLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { setAuth } = useContext(AuthContext);
   const [appLoading, setAppLoading] = useState(true);
 

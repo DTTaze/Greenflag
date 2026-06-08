@@ -1,4 +1,11 @@
-import { Filter, CheckCircle, Clock, FileWarning, EyeOff, ClipboardEdit } from "lucide-react";
+import {
+  CheckCircle,
+  ClipboardEdit,
+  Clock,
+  EyeOff,
+  FileWarning,
+  Filter,
+} from "lucide-react";
 
 function MarketFilterButtons({
   marketView,
@@ -13,7 +20,10 @@ function MarketFilterButtons({
 }) {
   return (
     <div className="flex flex-wrap gap-2">
-      {(marketView === "my_items" ? userItemStatuses : marketplaceCategories).map((filterItem) => {
+      {(marketView === "my_items"
+        ? userItemStatuses
+        : marketplaceCategories
+      ).map((filterItem) => {
         const isActive =
           marketView === "my_items"
             ? marketStatusFilter === filterItem.key
@@ -21,20 +31,21 @@ function MarketFilterButtons({
         const filterKey = filterItem.key;
         const filterName = filterItem.name;
         const Icon = marketView === "my_items" && filterItem.icon;
-        const statusColor = marketView === "my_items"
-          ? statusColors[filterKey] || statusColors.all
-          : isActive
-          ? "bg-emerald-100 text-emerald-700 font-medium"
-          : "bg-gray-100 text-gray-600 hover:bg-gray-200";
+        const statusColor =
+          marketView === "my_items"
+            ? statusColors[filterKey] || statusColors.all
+            : isActive
+              ? "bg-emerald-100 text-emerald-700 font-medium"
+              : "bg-gray-100 text-gray-600 hover:bg-gray-200";
 
         return (
           <button
             key={filterKey}
-            className={`px-3 py-1.5 rounded-lg text-sm flex items-center transition-all duration-150 ${
+            className={`flex items-center rounded-lg px-3 py-1.5 text-sm transition-all duration-150 ${
               isActive
                 ? marketView === "my_items"
                   ? `${statusColor} font-medium shadow-sm`
-                  : "bg-emerald-100 text-emerald-700 font-medium"
+                  : "bg-emerald-100 font-medium text-emerald-700"
                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
             onClick={() =>
@@ -43,13 +54,13 @@ function MarketFilterButtons({
                 : setMarketCategory(filterKey)
             }
           >
-            {Icon && <Icon className="h-3.5 w-3.5 mr-1.5" />}
+            {Icon && <Icon className="mr-1.5 h-3.5 w-3.5" />}
             {filterName}
             {isActive && marketView === "my_items" && (
-              <span className="ml-1.5 bg-white bg-opacity-30 text-xs font-normal rounded-full px-1.5 py-0.5">
+              <span className="bg-opacity-30 ml-1.5 rounded-full bg-white px-1.5 py-0.5 text-xs font-normal">
                 {
                   filteredMarketItems.filter((item) =>
-                    filterKey === "all" ? true : item.postStatus === filterKey
+                    filterKey === "all" ? true : item.postStatus === filterKey,
                   ).length
                 }
               </span>

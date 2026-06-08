@@ -1,17 +1,18 @@
+import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useNotification } from "../components/ui/NotificationProvider";
-import { createUserApi } from "../utils/api";
-import { Eye, EyeOff } from "lucide-react";
+
+import SubmitButton from "../components/ui/button";
 import InputField from "../components/ui/InputField";
+import { useNotification } from "../components/ui/NotificationProvider";
 import SelectField from "../components/ui/SelectField";
 import SocialLoginIcons from "../components/ui/SocialLoginIcons";
-import SubmitButton from "../components/ui/button";
+import { createUserApi } from "../utils/api";
 
 const initialFormData = {
   full_name: "",
   username: "",
-  role_id: 2, 
+  role_id: 2,
   email: "",
   password: "",
 };
@@ -31,10 +32,10 @@ function RegisterPage() {
         if (!/^[a-zA-ZÀ-ỹà-ỹ\s]+$/.test(value))
           return "Họ tên chỉ được chứa chữ cái tiếng Việt và dấu cách!";
         return "";
-        case "username":
+      case "username":
         if (!value.trim()) return "Vui lòng nhập tên tài khoản!";
         if (!/^[a-zA-Z0-9]+$/.test(value))
-            return "Tên tài khoản chỉ được chứa chữ cái không dấu và số!";
+          return "Tên tài khoản chỉ được chứa chữ cái không dấu và số!";
         return "";
       case "role_id":
         return !value ? "Vui lòng chọn loại tài khoản!" : "";
@@ -85,18 +86,24 @@ function RegisterPage() {
         navigate("/login");
         notify("success", "Đăng ký thành công!");
       } else {
-        notify("error", res?.error || "Đăng ký không thành công. Vui lòng thử lại!");
+        notify(
+          "error",
+          res?.error || "Đăng ký không thành công. Vui lòng thử lại!",
+        );
       }
     } catch (e) {
-      notify("error", e.message || "Đăng ký không thành công. Vui lòng thử lại!");
+      notify(
+        "error",
+        e.message || "Đăng ký không thành công. Vui lòng thử lại!",
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="p-4 max-w-md mx-auto mt-10 border-2 rounded-md shadow">
-      <h4 className="text-xl font-semibold mb-4">Đăng ký tài khoản</h4>
+    <div className="mx-auto mt-10 max-w-md rounded-md border-2 p-4 shadow">
+      <h4 className="mb-4 text-xl font-semibold">Đăng ký tài khoản</h4>
       <hr className="my-2 border-gray-300" />
 
       <form className="space-y-4" onSubmit={handleSubmit}>
@@ -151,20 +158,25 @@ function RegisterPage() {
             </button>
           }
         />
-        <SubmitButton text="Đăng ký" width="100%" padding="15px" loading={loading} />
+        <SubmitButton
+          text="Đăng ký"
+          width="100%"
+          padding="15px"
+          loading={loading}
+        />
       </form>
 
-      <div className="flex items-center mt-6">
+      <div className="mt-6 flex items-center">
         <hr className="flex-grow border-t border-gray-300" />
-        <span className="mx-4 text-gray-500 font-medium">Hoặc</span>
+        <span className="mx-4 font-medium text-gray-500">Hoặc</span>
         <hr className="flex-grow border-t border-gray-300" />
       </div>
 
       <SocialLoginIcons />
 
-      <p className="text-center mt-4">
+      <p className="mt-4 text-center">
         Đã có tài khoản?{" "}
-        <Link to="/login" className="text-blue-600 font-medium">
+        <Link to="/login" className="font-medium text-blue-600">
           Đăng nhập
         </Link>
       </p>

@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../contexts/auth.context";
-import { useNotification } from "../components/ui/NotificationProvider";
-import { getUserApi, getUserAvatarByIdApi, logoutUserApi } from "../utils/api";
 import { Coins } from "lucide-react";
+import { useContext, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { useNotification } from "../components/ui/NotificationProvider";
+import { AuthContext } from "../contexts/auth.context";
+import { getUserApi, getUserAvatarByIdApi, logoutUserApi } from "../utils/api";
 
 function UserHeader() {
   const navigate = useNavigate();
@@ -106,29 +107,29 @@ function UserHeader() {
     `?t=${Date.now()}`;
 
   return (
-    <header className="w-full px-5 pt-2 flex justify-between items-center bg-white z-10 relative">
+    <header className="relative z-10 flex w-full items-center justify-between bg-white px-5 pt-2">
       {/* Logo */}
       <div
-        className="flex items-center cursor-pointer select-none"
+        className="flex cursor-pointer items-center select-none"
         onClick={() => navigate("/")}
       >
         <img
           src="../src/assets/images/Logo-Greenflag.png"
-          className="w-10 h-10 md:w-12 md:h-12"
+          className="h-10 w-10 md:h-12 md:w-12"
           alt="Logo"
         />
-        <span className="text-lg md:text-2xl font-bold ml-2 text-[#0B6E4F]">
+        <span className="ml-2 text-lg font-bold text-[#0B6E4F] md:text-2xl">
           Green Flag
         </span>
       </div>
 
       {/* Navigation */}
       {auth.isAuthenticated && (
-        <nav className="hidden md:flex space-x-6">
+        <nav className="hidden space-x-6 md:flex">
           {pages.map(({ key, label }) => (
             <button
               key={key}
-              className="font-bold hover:text-[#62C370] text-lg cursor-pointer"
+              className="cursor-pointer text-lg font-bold hover:text-[#62C370]"
               onClick={() => navigate(`/${key}`)}
             >
               {label}
@@ -141,36 +142,36 @@ function UserHeader() {
       {auth.isAuthenticated ? (
         <div className="relative z-10" ref={profileMenuRef}>
           <div
-            className="hidden md:flex items-center cursor-pointer"
+            className="hidden cursor-pointer items-center md:flex"
             onClick={() => setProfileMenuOpen(!profileMenuOpen)}
           >
             <img
               src={avatarUrl}
               alt="Avatar"
-              className="w-10 h-10 rounded-full border-2 border-gray-300 object-cover"
+              className="h-10 w-10 rounded-full border-2 border-gray-300 object-cover"
             />
           </div>
           {profileMenuOpen && (
-            <div className="absolute right-0 bg-white rounded-lg shadow-lg w-48 px-2 py-2">
+            <div className="absolute right-0 w-48 rounded-lg bg-white px-2 py-2 shadow-lg">
               <p className="p-2 font-bold">{auth.user?.username || "User"}</p>
               <p className="px-2 py-1 text-xs text-gray-600">
                 {auth.user?.email || ""}
               </p>
-              <hr className="border border-gray-300 mb-2" />
-              <div className="flex items-center ml-2 py-2">
+              <hr className="mb-2 border border-gray-300" />
+              <div className="ml-2 flex items-center py-2">
                 <span className="font-bold select-none">
                   Số Coins: {auth.user?.coins?.amount || 0}
                 </span>
-                <Coins className="h-6 w-6 text-amber-600 ml-2" />
+                <Coins className="ml-2 h-6 w-6 text-amber-600" />
               </div>
               <button
-                className="w-full p-2 text-left hover:text-[#62C370] hover:bg-white font-bold rounded-lg cursor-pointer"
+                className="w-full cursor-pointer rounded-lg p-2 text-left font-bold hover:bg-white hover:text-[#62C370]"
                 onClick={() => navigate("/user")}
               >
                 Tài khoản của tôi
               </button>
               <button
-                className="w-full p-2 text-left hover:text-[#62C370] hover:bg-white rounded-lg font-bold cursor-pointer"
+                className="w-full cursor-pointer rounded-lg p-2 text-left font-bold hover:bg-white hover:text-[#62C370]"
                 onClick={handleLogout}
               >
                 Đăng xuất
@@ -179,15 +180,15 @@ function UserHeader() {
           )}
         </div>
       ) : (
-        <div className="hidden md:flex gap-3">
+        <div className="hidden gap-3 md:flex">
           <button
-            className="text-lg font-bold hover:text-[#62C370] cursor-pointer"
+            className="cursor-pointer text-lg font-bold hover:text-[#62C370]"
             onClick={() => navigate("/register")}
           >
             Đăng ký
           </button>
           <button
-            className="text-lg font-bold hover:text-[#62C370] cursor-pointer"
+            className="cursor-pointer text-lg font-bold hover:text-[#62C370]"
             onClick={() => navigate("/login")}
           >
             Đăng nhập
@@ -198,7 +199,7 @@ function UserHeader() {
       {/* Mobile Menu Button */}
       <button
         ref={menuButtonRef}
-        className="md:hidden text-2xl cursor-pointer z-20"
+        className="z-20 cursor-pointer text-2xl md:hidden"
         onClick={() => setMenuOpen(!menuOpen)}
       >
         {menuOpen ? "✖" : "☰"}
@@ -207,15 +208,15 @@ function UserHeader() {
       {/* Mobile Menu */}
       <div
         ref={menuRef}
-        className={`fixed top-0 left-0 w-full h-screen bg-[#0B6E4F] transition-transform duration-300 ${
+        className={`fixed top-0 left-0 h-screen w-full bg-[#0B6E4F] transition-transform duration-300 ${
           menuOpen ? "translate-x-0" : "-translate-x-full"
-        } flex flex-col items-center justify-center text-white z-10`}
+        } z-10 flex flex-col items-center justify-center text-white`}
       >
         {auth.isAuthenticated &&
           pages.map(({ key, label }) => (
             <button
               key={key}
-              className="text-2xl font-bold py-3 hover:text-[#62C370] cursor-pointer"
+              className="cursor-pointer py-3 text-2xl font-bold hover:text-[#62C370]"
               onClick={() => {
                 navigate(`/${key}`);
                 setMenuOpen(false);
@@ -227,13 +228,13 @@ function UserHeader() {
         {!auth.isAuthenticated ? (
           <>
             <button
-              className="text-2xl font-bold py-3 hover:text-[#62C370] cursor-pointer"
+              className="cursor-pointer py-3 text-2xl font-bold hover:text-[#62C370]"
               onClick={() => navigate("/register")}
             >
               Đăng ký
             </button>
             <button
-              className="text-2xl font-bold py-3 hover:text-[#62C370] cursor-pointer"
+              className="cursor-pointer py-3 text-2xl font-bold hover:text-[#62C370]"
               onClick={() => navigate("/login")}
             >
               Đăng nhập
@@ -242,7 +243,7 @@ function UserHeader() {
         ) : (
           <>
             <button
-              className="text-2xl font-bold py-3 hover:text-[#62C370] cursor-pointer"
+              className="cursor-pointer py-3 text-2xl font-bold hover:text-[#62C370]"
               onClick={() => {
                 navigate("/user");
                 setMenuOpen(false);
@@ -251,7 +252,7 @@ function UserHeader() {
               Tài khoản của tôi
             </button>
             <button
-              className="text-2xl font-bold py-3 hover:text-[#62C370] cursor-pointer"
+              className="cursor-pointer py-3 text-2xl font-bold hover:text-[#62C370]"
               onClick={handleLogout}
             >
               Đăng xuất

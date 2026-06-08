@@ -1,6 +1,7 @@
 import { useState } from "react";
-import InputField from "@/src/components/ui/InputField.jsx";
+
 import Button from "@/src/components/ui/button";
+import InputField from "@/src/components/ui/InputField.jsx";
 
 function ChangePassword() {
   const [formData, setFormData] = useState({
@@ -78,8 +79,8 @@ function ChangePassword() {
   };
 
   return (
-    <div className="p-4 border bg-white rounded-lg shadow-md">
-      <h4 className="font-semibold text-lg">Đổi mật khẩu</h4>
+    <div className="rounded-lg border bg-white p-4 shadow-md">
+      <h4 className="text-lg font-semibold">Đổi mật khẩu</h4>
       <hr className="my-2 border-gray-300" />
 
       <form className="space-y-4" onSubmit={handleSubmit}>
@@ -123,11 +124,7 @@ function ChangePassword() {
             }
             padding="15px"
           />
-          <Button
-            text="Lưu"
-            type="submit"
-            padding="15px"
-          />
+          <Button text="Lưu" type="submit" padding="15px" />
         </div>
       </form>
     </div>

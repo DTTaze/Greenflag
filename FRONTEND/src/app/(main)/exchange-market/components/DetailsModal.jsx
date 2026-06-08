@@ -1,5 +1,6 @@
 import { format } from "date-fns";
-import { X, Coins } from "lucide-react";
+import { Coins, X } from "lucide-react";
+
 import { statusConfig } from "./MarketplaceItemCard";
 
 export default function DetailsModal({
@@ -26,17 +27,17 @@ export default function DetailsModal({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="fixed inset-0 bg-black bg-opacity-25" onClick={onClose} />
+      <div className="bg-opacity-25 fixed inset-0 bg-black" onClick={onClose} />
       <div className="flex min-h-full items-center justify-center p-4">
         <div className="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl">
           <button
             onClick={onClose}
-            className="absolute right-4 top-4 text-gray-400 hover:text-gray-500"
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-500"
           >
             <X size={20} />
           </button>
 
-          <h3 className="text-lg font-medium leading-6 text-gray-900 pr-8">
+          <h3 className="pr-8 text-lg leading-6 font-medium text-gray-900">
             Chi tiết sản phẩm
           </h3>
 
@@ -44,7 +45,7 @@ export default function DetailsModal({
             <img
               src={item.image || "/placeholder.svg"}
               alt={item.name}
-              className="w-full h-48 object-cover rounded-lg"
+              className="h-48 w-full rounded-lg object-cover"
             />
             <div>
               <h4 className="font-medium">{item.name}</h4>

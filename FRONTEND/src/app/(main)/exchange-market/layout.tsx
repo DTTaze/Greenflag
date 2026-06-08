@@ -1,37 +1,39 @@
 "use client";
 
+import {
+  CheckCircle,
+  ClipboardEdit,
+  Clock,
+  EyeOff,
+  FileWarning,
+  Filter,
+} from "lucide-react";
 import React, {
+  createContext,
+  useCallback,
+  useContext,
   useEffect,
   useState,
-  useCallback,
-  createContext,
-  useContext,
 } from "react";
 import { Outlet } from "react-router-dom";
+
+import { socket } from "@/src/config/socket";
+import { AuthContext } from "@/src/contexts/auth.context";
 import {
-  getUserApi,
-  purchaseItemApi,
   createProductApi,
-  updateProductApi,
-  getProductByIdUser,
+  deleteProductApi,
   getAllAvailableProductsApi,
   getAllItemsApi,
-  deleteProductApi,
+  getProductByIdUser,
+  getUserApi,
+  purchaseItemApi,
+  updateProductApi,
 } from "@/src/utils/api";
-import { AuthContext } from "@/src/contexts/auth.context";
-import ItemCatalogSkeleton from "./components/ItemCatalogSkeleton";
+
 import CatalogHeader from "./components/CatalogHeader";
+import ItemCatalogSkeleton from "./components/ItemCatalogSkeleton";
 import MarketViewNavigation from "./components/MarketViewNavigation";
 import PurchaseModal from "./components/PurchaseModal";
-import {
-  Filter,
-  CheckCircle,
-  Clock,
-  FileWarning,
-  EyeOff,
-  ClipboardEdit,
-} from "lucide-react";
-import { socket } from "@/src/config/socket";
 
 export const marketplaceCategories = [
   { key: "all", name: "Tất cả" },
@@ -82,10 +84,16 @@ export const getCategoryDisplayName = (key: string) => {
 
 export const MarketplaceContext = createContext<any>(null);
 
-export default function ExchangeMarketLayout({ children }: { children: React.ReactNode }) {
+export default function ExchangeMarketLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [transactionStatus, setTransactionStatus] = useState<string | null>(null);
+  const [transactionStatus, setTransactionStatus] = useState<string | null>(
+    null,
+  );
   const { auth } = useContext(AuthContext);
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -155,8 +163,8 @@ export default function ExchangeMarketLayout({ children }: { children: React.Rea
             prevItems.map((prevItem) =>
               prevItem.id === data.itemId
                 ? { ...prevItem, stock: data.stock, postStatus: data.status }
-                : prevItem
-            )
+                : prevItem,
+            ),
           );
         });
       }
@@ -248,7 +256,7 @@ export default function ExchangeMarketLayout({ children }: { children: React.Rea
       setIsModalOpen(true);
       setTransactionStatus(null);
     },
-    [auth.user]
+    [auth.user],
   );
 
   const confirmPurchase = useCallback(
@@ -284,7 +292,7 @@ export default function ExchangeMarketLayout({ children }: { children: React.Rea
         const response = await purchaseItemApi(
           auth.user.id,
           selectedItem.id,
-          purchaseData
+          purchaseData,
         );
 
         if (response.data?.job_id) {
@@ -293,7 +301,7 @@ export default function ExchangeMarketLayout({ children }: { children: React.Rea
           setSelectedItem(null);
           setTransactionStatus(null);
           alert(
-            `Giao dịch ${quantity} ${selectedItem.name} đã được khởi tạo thành công!`
+            `Giao dịch ${quantity} ${selectedItem.name} đã được khởi tạo thành công!`,
           );
           await fetchRedeemItems();
         } else {
@@ -308,7 +316,7 @@ export default function ExchangeMarketLayout({ children }: { children: React.Rea
         setTransactionStatus(null);
       }
     },
-    [selectedItem, auth.user, fetchRedeemItems]
+    [selectedItem, auth.user, fetchRedeemItems],
   );
 
   const handleCloseModal = () => {
@@ -415,8 +423,8 @@ export default function ExchangeMarketLayout({ children }: { children: React.Rea
 
           setMyItems((prev) =>
             prev.map((item) =>
-              item.id === itemToEdit.id ? updatedProduct : item
-            )
+              item.id === itemToEdit.id ? updatedProduct : item,
+            ),
           );
           alert("Cập nhật sản phẩm thành công!");
         } else {
@@ -496,7 +504,7 @@ export default function ExchangeMarketLayout({ children }: { children: React.Rea
 
   if (loading) {
     return (
-      <main className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6">
+      <main className="mx-auto max-w-screen-xl px-4 py-6 sm:px-6">
         <ItemCatalogSkeleton />
       </main>
     );
@@ -505,39 +513,39 @@ export default function ExchangeMarketLayout({ children }: { children: React.Rea
   return (
     <div className="min-h-screen bg-gray-50">
       <MarketplaceContext.Provider value={contextValue}>
-        <main className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6">
+        <main className="mx-auto max-w-screen-xl px-4 py-6 sm:px-6">
           <CatalogHeader userCoins={auth.user?.coins?.amount || 0} />
           <MarketViewNavigation />
-          <div className="flex flex-col bg-white rounded-lg shadow-sm p-4">
+          <div className="flex flex-col rounded-lg bg-white p-4 shadow-sm">
             {error && (
-              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4">
                 <p className="text-red-600">{error}</p>
                 <button
                   onClick={() => setError(null)}
-                  className="mt-2 px-3 py-1 bg-red-100 hover:bg-red-200 text-red-800 rounded"
+                  className="mt-2 rounded bg-red-100 px-3 py-1 text-red-800 hover:bg-red-200"
                 >
                   Đóng
                 </button>
               </div>
             )}
             {transactionStatus === "processing" && (
-              <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-4">
                 <p className="text-blue-600">Đang xử lý giao dịch...</p>
               </div>
             )}
-            
+
             <Outlet>{children}</Outlet>
-            
-            {selectedItem && isModalOpen && (
+
+            {selectedItem &&
+              isModalOpen &&
               React.createElement(PurchaseModal as any, {
                 isOpen: isModalOpen,
                 onClose: handleCloseModal,
                 item: selectedItem,
                 userCoins: auth.user?.coins?.amount || 0,
                 onConfirm: confirmPurchase,
-                transactionStatus: transactionStatus
-              })
-            )}
+                transactionStatus: transactionStatus,
+              })}
           </div>
         </main>
       </MarketplaceContext.Provider>

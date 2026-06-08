@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { CheckCircle, XCircle, AlertCircle, Info, X } from "lucide-react";
+import { AlertCircle, CheckCircle, Info, X, XCircle } from "lucide-react";
+import React, { createContext, useContext, useState } from "react";
 
 const NotificationContext = createContext(null);
 
@@ -44,7 +44,7 @@ export const NotificationProvider = ({ children }) => {
   return (
     <NotificationContext.Provider value={{ notify }}>
       {children}
-      <div className="fixed top-15 right-4 space-y-2 z-50">
+      <div className="fixed top-15 right-4 z-50 space-y-2">
         <AnimatePresence>
           {notifications.map((n) => (
             <motion.div
@@ -52,7 +52,7 @@ export const NotificationProvider = ({ children }) => {
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 50 }}
-              className={`w-80 rounded-lg border p-4 flex items-start gap-3 shadow-md ${
+              className={`flex w-80 items-start gap-3 rounded-lg border p-4 shadow-md ${
                 bgMap[n.type]
               }`}
             >

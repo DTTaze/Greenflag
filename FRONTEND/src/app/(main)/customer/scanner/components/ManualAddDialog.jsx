@@ -1,15 +1,16 @@
-import React from "react";
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
+  Alert,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Grid,
   TextField,
-  Alert,
 } from "@mui/material";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import { UserPlus } from "lucide-react";
+import React from "react";
+
 import { getEventNameById } from "./EventSelector";
 
 export default function ManualAddDialog({
@@ -62,7 +63,7 @@ export default function ManualAddDialog({
           className="customer-button"
           onClick={onManualAdd}
           disabled={!manualUser.name || !manualUser.email}
-          startIcon={<PersonAddIcon />}
+          startIcon={<UserPlus size={20} />}
         >
           Add to Event
         </Button>

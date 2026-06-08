@@ -1,10 +1,11 @@
-import React from "react";
-import { Box, Paper, Typography, Stack, Button } from "@mui/material";
-import { useNavigate, useOutletContext } from "react-router-dom";
-import LocalShippingIcon from "@mui/icons-material/LocalShipping";
-import ForestIcon from "@mui/icons-material/Forest";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import ForestIcon from "@mui/icons-material/Forest";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import TimelineIcon from "@mui/icons-material/Timeline";
+import { Box, Button, Paper, Stack, Typography } from "@mui/material";
+import React from "react";
+import { useNavigate, useOutletContext } from "react-router-dom";
+
 import getAmount from "@/src/utils/getAmount";
 
 export default function CustomerDashboard() {

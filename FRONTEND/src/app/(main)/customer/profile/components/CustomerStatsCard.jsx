@@ -1,7 +1,23 @@
+import {
+  Calendar,
+  Check,
+  Coins,
+  Copy,
+  Mail,
+  Phone,
+  QrCode,
+  ShieldCheck,
+} from "lucide-react";
 import React from "react";
-import { Coins, QrCode, Mail, Phone, Calendar, ShieldCheck, Copy, Check } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
+
 import { Button } from "@/src/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/src/components/ui/dialog";
 
 export default function CustomerStatsCard({
   userData,
@@ -10,7 +26,7 @@ export default function CustomerStatsCard({
   showQrDialog,
   setShowQrDialog,
   copyToClipboard,
-  userInfo
+  userInfo,
 }) {
   const [copied, setCopied] = React.useState(false);
 
@@ -28,18 +44,18 @@ export default function CustomerStatsCard({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col items-center">
+    <div className="flex flex-col items-center rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
       {/* Name and Username */}
       <h2 className="text-xl font-bold text-slate-800">
         {userData?.full_name || "Customer"}
       </h2>
-      <p className="text-sm text-slate-500 mb-4">
+      <p className="mb-4 text-sm text-slate-500">
         @{userData?.username || "username"}
       </p>
 
       {/* Coins Count banner */}
-      <div className="w-full flex items-center justify-center gap-2 py-3 px-4 mb-4 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-100/50 shadow-sm">
-        <Coins className="w-6 h-6 text-amber-600" />
+      <div className="mb-4 flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-100/50 bg-gradient-to-r from-emerald-50 to-teal-50 px-4 py-3 shadow-sm">
+        <Coins className="h-6 w-6 text-amber-600" />
         <span className="text-lg font-bold text-emerald-800">
           {getAmount(userData?.coins)} Coins
         </span>
@@ -48,30 +64,30 @@ export default function CustomerStatsCard({
       {/* Show QR Code button */}
       <Button
         variant="outline"
-        className="w-full flex items-center justify-center gap-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 font-bold h-10 rounded-lg transition-colors cursor-pointer"
+        className="flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-emerald-600 font-bold text-emerald-700 transition-colors hover:bg-emerald-50 hover:text-emerald-800"
         onClick={generateQRCode}
       >
-        <QrCode className="w-4 h-4" />
+        <QrCode className="h-4 w-4" />
         Show QR Code
       </Button>
 
       {/* Details divider */}
-      <div className="w-full h-px bg-slate-100 my-5" />
+      <div className="my-5 h-px w-full bg-slate-100" />
 
       {/* Profile Details fields */}
       <div className="w-full space-y-4">
-        <div className="flex items-center text-slate-700 text-sm">
-          <Mail className="w-4 h-4 text-emerald-600 mr-3 shrink-0" />
+        <div className="flex items-center text-sm text-slate-700">
+          <Mail className="mr-3 h-4 w-4 shrink-0 text-emerald-600" />
           <span className="truncate">{userData?.email || "Email not set"}</span>
         </div>
 
-        <div className="flex items-center text-slate-700 text-sm">
-          <Phone className="w-4 h-4 text-emerald-600 mr-3 shrink-0" />
+        <div className="flex items-center text-sm text-slate-700">
+          <Phone className="mr-3 h-4 w-4 shrink-0 text-emerald-600" />
           <span>{userData?.phone_number || "Phone not set"}</span>
         </div>
 
-        <div className="flex items-center text-slate-700 text-sm">
-          <Calendar className="w-4 h-4 text-emerald-600 mr-3 shrink-0" />
+        <div className="flex items-center text-sm text-slate-700">
+          <Calendar className="mr-3 h-4 w-4 shrink-0 text-emerald-600" />
           <span>
             Joined:{" "}
             {userData?.last_logined
@@ -81,9 +97,9 @@ export default function CustomerStatsCard({
         </div>
 
         {userData?.role && (
-          <div className="flex items-center mt-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-600 mr-3 shrink-0" />
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
+          <div className="mt-2 flex items-center">
+            <ShieldCheck className="mr-3 h-4 w-4 shrink-0 text-emerald-600" />
+            <span className="inline-flex items-center rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
               {userData.role}
             </span>
           </div>
@@ -92,45 +108,46 @@ export default function CustomerStatsCard({
 
       {/* QR Code Dialog */}
       <Dialog open={showQrDialog} onOpenChange={setShowQrDialog}>
-        <DialogContent className="sm:max-w-md bg-white">
+        <DialogContent className="bg-white sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold text-emerald-800">
               Your Personal QR Code
             </DialogTitle>
             <DialogDescription className="text-slate-500">
-              Scan this QR code to quickly access your profile or register for events.
+              Scan this QR code to quickly access your profile or register for
+              events.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-emerald-200 rounded-xl bg-emerald-50/20 my-2">
+          <div className="my-2 flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-emerald-200 bg-emerald-50/20 p-6">
             {qrCode ? (
               <div className="flex flex-col items-center gap-4">
                 <img
                   src={qrCode}
                   alt="QR Code"
-                  className="max-w-[200px] h-auto rounded-md shadow-sm bg-white p-2 border border-slate-100"
+                  className="h-auto max-w-[200px] rounded-md border border-slate-100 bg-white p-2 shadow-sm"
                 />
                 <button
                   onClick={handleCopy}
-                  className="flex items-center gap-2 text-xs font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg border border-emerald-100 transition-colors cursor-pointer"
+                  className="flex cursor-pointer items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 transition-colors hover:bg-emerald-100"
                 >
                   <span>Public ID: {userInfo?.public_id}</span>
                   {copied ? (
-                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    <Check className="h-3.5 w-3.5 text-emerald-600" />
                   ) : (
-                    <Copy className="w-3.5 h-3.5" />
+                    <Copy className="h-3.5 w-3.5" />
                   )}
                 </button>
               </div>
             ) : (
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+              <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-emerald-600"></div>
             )}
           </div>
 
           <div className="flex justify-end pt-2">
             <Button
               onClick={() => setShowQrDialog(false)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2 rounded-lg cursor-pointer"
+              className="cursor-pointer rounded-lg bg-emerald-600 px-5 py-2 font-bold text-white hover:bg-emerald-700"
             >
               Close
             </Button>

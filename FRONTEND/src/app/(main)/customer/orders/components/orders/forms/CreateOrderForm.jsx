@@ -1,52 +1,51 @@
-import React, { useState, useEffect } from "react";
 import {
+  Autocomplete,
   Box,
-  Typography,
-  Grid,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Button,
-  IconButton,
-  DialogContent,
-  DialogActions,
-  DialogTitle,
-  RadioGroup,
-  Radio,
-  FormControlLabel,
-  Divider,
-  FormLabel,
-  Stack,
-  Paper,
-  InputAdornment,
-  Checkbox,
-  Dialog,
-  OutlinedInput,
-  InputBase,
   Card,
   CardContent,
+  Checkbox,
   CircularProgress,
-  Autocomplete,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Grid,
+  IconButton,
+  InputAdornment,
+  InputBase,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Paper,
+  Radio,
+  RadioGroup,
+  Select,
+  Stack,
+  TextField,
   Tooltip,
+  Typography,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import CancelIcon from "@mui/icons-material/Cancel";
-import InfoIcon from "@mui/icons-material/Info";
-import SearchIcon from "@mui/icons-material/Search";
-import DeleteIcon from "@mui/icons-material/Delete";
-import CloseIcon from "@mui/icons-material/Close";
-import ImageIcon from "@mui/icons-material/Image";
-import EditIcon from "@mui/icons-material/Edit";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import AutorenewIcon from "@mui/icons-material/Autorenew";
-import KeyIcon from "@mui/icons-material/Key";
+import {
+  ChevronDown,
+  Key,
+  Pencil,
+  Plus,
+  Search,
+  Trash2,
+  X,
+  XCircle,
+} from "lucide-react";
+import React, { useEffect, useState } from "react";
 
 // Import API functions
 import {
-  getAllProvincesApi,
   getAllDistrictsByProvinceApi,
+  getAllProvincesApi,
   getAllWardsByDistrictApi,
   getShippingAccountsByUserApi,
 } from "@/src/utils/api";
@@ -97,7 +96,7 @@ const ProductListDialog = ({ open, onClose, onAddProduct }) => {
 
   const handleAddSelectedToOrder = () => {
     const productsToAdd = savedProducts.filter((p) =>
-      selectedProducts.includes(p.id)
+      selectedProducts.includes(p.id),
     );
     if (productsToAdd.length > 0) {
       onAddProduct(productsToAdd[0]); // For now just add the first one
@@ -116,19 +115,20 @@ const ProductListDialog = ({ open, onClose, onAddProduct }) => {
       >
         Danh sách sản phẩm sẵn
         <IconButton onClick={onClose}>
-          <CloseIcon />
+          <X size={20} />
         </IconButton>
       </DialogTitle>
       <DialogContent sx={{ p: 0 }}>
         <Box sx={{ p: 2 }}>
           <Box sx={{ position: "relative", mb: 3 }}>
-            <SearchIcon
-              sx={{
+            <Search
+              style={{
                 position: "absolute",
                 left: 12,
                 top: 12,
-                color: "text.secondary",
               }}
+              className="text-gray-500"
+              size={20}
             />
             <InputBase
               placeholder="Nhập tên để tìm kiếm"
@@ -194,7 +194,7 @@ const ProductListDialog = ({ open, onClose, onAddProduct }) => {
                 >
                   <Box sx={{ display: "flex", alignItems: "center" }}>
                     <Button
-                      startIcon={<AddIcon />}
+                      startIcon={<Plus size={20} />}
                       size="small"
                       onClick={() => setShowAddForm(true)}
                       sx={{ mr: 2 }}
@@ -214,7 +214,7 @@ const ProductListDialog = ({ open, onClose, onAddProduct }) => {
                         1
                       </Typography>
                       <IconButton size="small" sx={{ p: 0.5 }}>
-                        <ArrowDropDownIcon />
+                        <ChevronDown size={16} />
                       </IconButton>
                     </Box>
                   </Box>
@@ -225,7 +225,7 @@ const ProductListDialog = ({ open, onClose, onAddProduct }) => {
                     .filter((product) =>
                       product.name
                         .toLowerCase()
-                        .includes(searchTerm.toLowerCase())
+                        .includes(searchTerm.toLowerCase()),
                     )
                     .map((product) => (
                       <Paper
@@ -278,7 +278,7 @@ const ProductListDialog = ({ open, onClose, onAddProduct }) => {
                         </Box>
                         <Box sx={{ display: "flex", gap: 1, ml: 2 }}>
                           <IconButton size="small" sx={{ color: "#1976d2" }}>
-                            <EditIcon fontSize="small" />
+                            <Pencil size={16} />
                           </IconButton>
                           <IconButton
                             size="small"
@@ -286,11 +286,13 @@ const ProductListDialog = ({ open, onClose, onAddProduct }) => {
                             onClick={(e) => {
                               e.stopPropagation();
                               setSavedProducts(
-                                savedProducts.filter((p) => p.id !== product.id)
+                                savedProducts.filter(
+                                  (p) => p.id !== product.id,
+                                ),
                               );
                             }}
                           >
-                            <DeleteIcon fontSize="small" />
+                            <Trash2 size={16} />
                           </IconButton>
                         </Box>
                       </Paper>
@@ -462,10 +464,10 @@ const CreateOrderForm = ({
   isBasedOnMode = false,
 }) => {
   const [servicePackage, setServicePackage] = useState(
-    newOrder.servicePackage || "light"
+    newOrder.servicePackage || "light",
   );
   const [pickupOption, setPickupOption] = useState(
-    newOrder.pickupOption || "pickup"
+    newOrder.pickupOption || "pickup",
   );
   const [productListDialogOpen, setProductListDialogOpen] = useState(false);
   const [provinces, setProvinces] = useState([
@@ -486,19 +488,19 @@ const CreateOrderForm = ({
 
   // Add separate state variables for the fields to exclude from newOrder
   const [fromProvinceId, setFromProvinceId] = useState(
-    newOrder.from_province_id || null
+    newOrder.from_province_id || null,
   );
   const [fromDistrictId, setFromDistrictId] = useState(
-    newOrder.from_district_id || null
+    newOrder.from_district_id || null,
   );
   const [fromWardCode, setFromWardCode] = useState(
-    newOrder.from_ward_code || ""
+    newOrder.from_ward_code || "",
   );
   const [toProvinceId, setToProvinceId] = useState(
-    newOrder.to_province_id || null
+    newOrder.to_province_id || null,
   );
   const [toDistrictId, setToDistrictId] = useState(
-    newOrder.to_district_id || null
+    newOrder.to_district_id || null,
   );
   const [toWardCode, setToWardCode] = useState(newOrder.to_ward_code || "");
 
@@ -570,19 +572,19 @@ const CreateOrderForm = ({
           { id: 1442, name: "Quận 1", province_id: 202 },
           { id: 1443, name: "Quận 2", province_id: 202 },
           { id: 1444, name: "Quận 3", province_id: 202 },
-          { id: 1445, name: "Quận 10", province_id: 202 }
+          { id: 1445, name: "Quận 10", province_id: 202 },
         );
       } else if (fromProvinceId === 201) {
         // Hanoi
         fetchedDistricts.push(
           { id: 1447, name: "Quận Ba Đình", province_id: 201 },
-          { id: 1448, name: "Quận Hoàn Kiếm", province_id: 201 }
+          { id: 1448, name: "Quận Hoàn Kiếm", province_id: 201 },
         );
       } else {
         // Da Nang or other
         fetchedDistricts.push(
           { id: 1449, name: "Quận Hải Châu", province_id: 203 },
-          { id: 1450, name: "Quận Thanh Khê", province_id: 203 }
+          { id: 1450, name: "Quận Thanh Khê", province_id: 203 },
         );
       }
 
@@ -611,7 +613,7 @@ const CreateOrderForm = ({
           { code: "W01", name: "Phường 1", district_id: 1444 },
           { code: "W02", name: "Phường 2", district_id: 1444 },
           { code: "W03", name: "Phường 3", district_id: 1444 },
-          { code: "W14", name: "Phường 14", district_id: 1444 }
+          { code: "W14", name: "Phường 14", district_id: 1444 },
         );
       } else {
         // Default wards for other districts
@@ -625,14 +627,14 @@ const CreateOrderForm = ({
             code: "W08",
             name: "Phường B",
             district_id: fromDistrictId,
-          }
+          },
         );
       }
 
       setSenderWards(fetchedWards);
       // Set district name and clear ward selection
       const selectedDistrict = senderDistricts.find(
-        (d) => d.id === fromDistrictId
+        (d) => d.id === fromDistrictId,
       );
       setFromWardCode("");
       setNewOrder({
@@ -668,19 +670,19 @@ const CreateOrderForm = ({
           { id: 1442, name: "Quận 1", province_id: 202 },
           { id: 1443, name: "Quận 2", province_id: 202 },
           { id: 1444, name: "Quận 3", province_id: 202 },
-          { id: 1445, name: "Quận 10", province_id: 202 }
+          { id: 1445, name: "Quận 10", province_id: 202 },
         );
       } else if (toProvinceId === 201) {
         // Hanoi
         fetchedDistricts.push(
           { id: 1447, name: "Quận Ba Đình", province_id: 201 },
-          { id: 1448, name: "Quận Hoàn Kiếm", province_id: 201 }
+          { id: 1448, name: "Quận Hoàn Kiếm", province_id: 201 },
         );
       } else {
         // Da Nang or other
         fetchedDistricts.push(
           { id: 1449, name: "Quận Hải Châu", province_id: 203 },
-          { id: 1450, name: "Quận Thanh Khê", province_id: 203 }
+          { id: 1450, name: "Quận Thanh Khê", province_id: 203 },
         );
       }
 
@@ -710,14 +712,14 @@ const CreateOrderForm = ({
           { code: "W01", name: "Phường 1", district_id: 1444 },
           { code: "W02", name: "Phường 2", district_id: 1444 },
           { code: "W03", name: "Phường 3", district_id: 1444 },
-          { code: "W14", name: "Phường 14", district_id: 1444 }
+          { code: "W14", name: "Phường 14", district_id: 1444 },
         );
       } else if (toDistrictId === 1445) {
         // Quận 10 - HCM
         fetchedWards.push(
           { code: "W04", name: "Phường 4", district_id: 1445 },
           { code: "W05", name: "Phường 5", district_id: 1445 },
-          { code: "W06", name: "Phường 6", district_id: 1445 }
+          { code: "W06", name: "Phường 6", district_id: 1445 },
         );
       } else {
         // Default wards for other districts
@@ -731,7 +733,7 @@ const CreateOrderForm = ({
             code: "W08",
             name: "Phường B",
             district_id: toDistrictId,
-          }
+          },
         );
       }
 
@@ -892,7 +894,7 @@ const CreateOrderForm = ({
           accountsResponse.data.length === 0
         ) {
           setProvinceError(
-            "No shipping accounts found. Please add a shipping account first."
+            "No shipping accounts found. Please add a shipping account first.",
           );
           setLoadingProvinces(false);
           return;
@@ -909,7 +911,7 @@ const CreateOrderForm = ({
               id: province.ProvinceID,
               name: province.ProvinceName,
               code: province.Code,
-            }))
+            })),
           );
         } else {
           setProvinceError("Failed to load provinces");
@@ -955,7 +957,7 @@ const CreateOrderForm = ({
               id: province.ProvinceID,
               name: province.ProvinceName,
               code: province.Code,
-            }))
+            })),
           );
         }
       } catch (error) {
@@ -986,7 +988,7 @@ const CreateOrderForm = ({
           accountsResponse.data.length === 0
         ) {
           setDistrictError(
-            "No shipping accounts found. Please add a shipping account first."
+            "No shipping accounts found. Please add a shipping account first.",
           );
           setLoadingDistricts(false);
           return;
@@ -998,7 +1000,7 @@ const CreateOrderForm = ({
 
         const response = await getAllDistrictsByProvinceApi(
           toProvinceId,
-          defaultAccount.token
+          defaultAccount.token,
         );
 
         if ((response.code = 200)) {
@@ -1007,7 +1009,7 @@ const CreateOrderForm = ({
               id: district.DistrictID,
               name: district.DistrictName,
               province_id: toProvinceId,
-            }))
+            })),
           );
         } else {
           setDistrictError("Failed to load districts");
@@ -1060,7 +1062,7 @@ const CreateOrderForm = ({
         // Fetch districts
         const response = await getAllDistrictsByProvinceApi(
           fromProvinceId,
-          defaultAccount.token
+          defaultAccount.token,
         );
 
         if (response.code === 200) {
@@ -1069,7 +1071,7 @@ const CreateOrderForm = ({
               id: district.DistrictID,
               name: district.DistrictName,
               province_id: fromProvinceId,
-            }))
+            })),
           );
         }
 
@@ -1110,7 +1112,7 @@ const CreateOrderForm = ({
           accountsResponse.data.length === 0
         ) {
           setWardError(
-            "No shipping accounts found. Please add a shipping account first."
+            "No shipping accounts found. Please add a shipping account first.",
           );
           setLoadingWards(false);
           return;
@@ -1122,7 +1124,7 @@ const CreateOrderForm = ({
 
         const response = await getAllWardsByDistrictApi(
           toDistrictId,
-          defaultAccount.token
+          defaultAccount.token,
         );
 
         if (response.code === 200) {
@@ -1131,7 +1133,7 @@ const CreateOrderForm = ({
               code: ward.WardCode,
               name: ward.WardName,
               district_id: toDistrictId,
-            }))
+            })),
           );
         } else {
           setWardError("Failed to load wards");
@@ -1182,7 +1184,7 @@ const CreateOrderForm = ({
         // Fetch wards
         const response = await getAllWardsByDistrictApi(
           fromDistrictId,
-          defaultAccount.token
+          defaultAccount.token,
         );
 
         if (response.code === 200) {
@@ -1191,12 +1193,12 @@ const CreateOrderForm = ({
               code: ward.WardCode,
               name: ward.WardName,
               district_id: fromDistrictId,
-            }))
+            })),
           );
         }
 
         const selectedDistrict = senderDistricts.find(
-          (d) => d.id === fromDistrictId
+          (d) => d.id === fromDistrictId,
         );
         setFromWardCode("");
         setNewOrder({
@@ -1224,7 +1226,7 @@ const CreateOrderForm = ({
         accountsResponse.data.length === 0
       ) {
         alert(
-          "No shipping accounts found. Please add a shipping account first."
+          "No shipping accounts found. Please add a shipping account first.",
         );
         return;
       }
@@ -1270,10 +1272,10 @@ const CreateOrderForm = ({
         {isViewMode
           ? `Chi tiết đơn hàng #${newOrder.orderCode || newOrder.id}`
           : isEditMode
-          ? `Chỉnh sửa đơn hàng #${newOrder.orderCode || newOrder.id}`
-          : isBasedOnMode
-          ? "Tạo đơn hàng mới từ đơn hiện có"
-          : "Tạo đơn mới"}
+            ? `Chỉnh sửa đơn hàng #${newOrder.orderCode || newOrder.id}`
+            : isBasedOnMode
+              ? "Tạo đơn hàng mới từ đơn hiện có"
+              : "Tạo đơn mới"}
       </DialogTitle>
       <DialogContent dividers>
         <Grid container spacing={3}>
@@ -1308,7 +1310,7 @@ const CreateOrderForm = ({
                   <Button
                     variant="outlined"
                     size="small"
-                    startIcon={<KeyIcon />}
+                    startIcon={<Key size={16} />}
                     onClick={handleUseTokenForShipping}
                     sx={{
                       borderColor: "#f97316",
@@ -1405,7 +1407,7 @@ const CreateOrderForm = ({
                         onChange={(e) => {
                           const provinceId = e.target.value;
                           const selectedProvince = senderProvinces.find(
-                            (p) => p.id === provinceId
+                            (p) => p.id === provinceId,
                           );
                           setFromProvinceId(provinceId);
                           updateOrder({
@@ -1424,7 +1426,7 @@ const CreateOrderForm = ({
                             );
                           }
                           const selectedProvince = senderProvinces.find(
-                            (p) => p.id === selected
+                            (p) => p.id === selected,
                           );
                           return selectedProvince?.name || "";
                         }}
@@ -1453,7 +1455,7 @@ const CreateOrderForm = ({
                             InputProps={{
                               startAdornment: (
                                 <InputAdornment position="start">
-                                  <SearchIcon fontSize="small" />
+                                  <Search size={16} />
                                 </InputAdornment>
                               ),
                             }}
@@ -1469,8 +1471,8 @@ const CreateOrderForm = ({
                             province.name
                               .toLowerCase()
                               .includes(
-                                (senderProvinceSearch || "").toLowerCase()
-                              )
+                                (senderProvinceSearch || "").toLowerCase(),
+                              ),
                           )
                           .map((province) => (
                             <MenuItem key={province.id} value={province.id}>
@@ -1514,7 +1516,7 @@ const CreateOrderForm = ({
                         onChange={(e) => {
                           const districtId = e.target.value;
                           const selectedDistrict = senderDistricts.find(
-                            (d) => d.id === districtId
+                            (d) => d.id === districtId,
                           );
                           setFromDistrictId(districtId);
                           updateOrder({
@@ -1533,7 +1535,7 @@ const CreateOrderForm = ({
                             );
                           }
                           const selectedDistrict = senderDistricts.find(
-                            (d) => d.id === selected
+                            (d) => d.id === selected,
                           );
                           return selectedDistrict?.name || "";
                         }}
@@ -1562,7 +1564,7 @@ const CreateOrderForm = ({
                             InputProps={{
                               startAdornment: (
                                 <InputAdornment position="start">
-                                  <SearchIcon fontSize="small" />
+                                  <Search size={16} />
                                 </InputAdornment>
                               ),
                             }}
@@ -1578,8 +1580,8 @@ const CreateOrderForm = ({
                             district.name
                               .toLowerCase()
                               .includes(
-                                (senderDistrictSearch || "").toLowerCase()
-                              )
+                                (senderDistrictSearch || "").toLowerCase(),
+                              ),
                           )
                           .map((district) => (
                             <MenuItem key={district.id} value={district.id}>
@@ -1628,7 +1630,7 @@ const CreateOrderForm = ({
                         onChange={(e) => {
                           const wardCode = e.target.value;
                           const selectedWard = senderWards.find(
-                            (w) => w.code === wardCode
+                            (w) => w.code === wardCode,
                           );
                           setFromWardCode(wardCode);
                           updateOrder({
@@ -1647,7 +1649,7 @@ const CreateOrderForm = ({
                             );
                           }
                           const selectedWard = senderWards.find(
-                            (w) => w.code === selected
+                            (w) => w.code === selected,
                           );
                           return selectedWard?.name || "";
                         }}
@@ -1676,7 +1678,7 @@ const CreateOrderForm = ({
                             InputProps={{
                               startAdornment: (
                                 <InputAdornment position="start">
-                                  <SearchIcon fontSize="small" />
+                                  <Search size={16} />
                                 </InputAdornment>
                               ),
                             }}
@@ -1691,7 +1693,7 @@ const CreateOrderForm = ({
                           .filter((ward) =>
                             ward.name
                               .toLowerCase()
-                              .includes((senderWardSearch || "").toLowerCase())
+                              .includes((senderWardSearch || "").toLowerCase()),
                           )
                           .map((ward) => (
                             <MenuItem key={ward.code} value={ward.code}>
@@ -1837,7 +1839,7 @@ const CreateOrderForm = ({
                         onChange={(e) => {
                           const provinceId = e.target.value;
                           const selectedProvince = provinces.find(
-                            (p) => p.id === provinceId
+                            (p) => p.id === provinceId,
                           );
                           setToProvinceId(provinceId);
                           updateOrder({
@@ -1856,7 +1858,7 @@ const CreateOrderForm = ({
                             );
                           }
                           const selectedProvince = provinces.find(
-                            (p) => p.id === selected
+                            (p) => p.id === selected,
                           );
                           return selectedProvince?.name || "";
                         }}
@@ -1885,7 +1887,7 @@ const CreateOrderForm = ({
                             InputProps={{
                               startAdornment: (
                                 <InputAdornment position="start">
-                                  <SearchIcon fontSize="small" />
+                                  <Search size={16} />
                                 </InputAdornment>
                               ),
                             }}
@@ -1898,7 +1900,7 @@ const CreateOrderForm = ({
                           .filter((province) =>
                             province.name
                               .toLowerCase()
-                              .includes((provinceSearch || "").toLowerCase())
+                              .includes((provinceSearch || "").toLowerCase()),
                           )
                           .map((province) => (
                             <MenuItem key={province.id} value={province.id}>
@@ -1946,7 +1948,7 @@ const CreateOrderForm = ({
                         onChange={(e) => {
                           const districtId = e.target.value;
                           const selectedDistrict = districts.find(
-                            (d) => d.id === districtId
+                            (d) => d.id === districtId,
                           );
                           setToDistrictId(districtId);
                           updateOrder({
@@ -1965,7 +1967,7 @@ const CreateOrderForm = ({
                             );
                           }
                           const selectedDistrict = districts.find(
-                            (d) => d.id === selected
+                            (d) => d.id === selected,
                           );
                           return selectedDistrict?.name || "";
                         }}
@@ -1994,7 +1996,7 @@ const CreateOrderForm = ({
                             InputProps={{
                               startAdornment: (
                                 <InputAdornment position="start">
-                                  <SearchIcon fontSize="small" />
+                                  <Search size={16} />
                                 </InputAdornment>
                               ),
                             }}
@@ -2007,7 +2009,7 @@ const CreateOrderForm = ({
                           .filter((district) =>
                             district.name
                               .toLowerCase()
-                              .includes((districtSearch || "").toLowerCase())
+                              .includes((districtSearch || "").toLowerCase()),
                           )
                           .map((district) => (
                             <MenuItem key={district.id} value={district.id}>
@@ -2059,7 +2061,7 @@ const CreateOrderForm = ({
                         onChange={(e) => {
                           const wardCode = e.target.value;
                           const selectedWard = wards.find(
-                            (w) => w.code === wardCode
+                            (w) => w.code === wardCode,
                           );
                           setToWardCode(wardCode);
                           updateOrder({
@@ -2076,7 +2078,7 @@ const CreateOrderForm = ({
                             );
                           }
                           const selectedWard = wards.find(
-                            (w) => w.code === selected
+                            (w) => w.code === selected,
                           );
                           return selectedWard?.name || "";
                         }}
@@ -2105,7 +2107,7 @@ const CreateOrderForm = ({
                             InputProps={{
                               startAdornment: (
                                 <InputAdornment position="start">
-                                  <SearchIcon fontSize="small" />
+                                  <Search size={16} />
                                 </InputAdornment>
                               ),
                             }}
@@ -2118,7 +2120,7 @@ const CreateOrderForm = ({
                           .filter((ward) =>
                             ward.name
                               .toLowerCase()
-                              .includes((wardSearch || "").toLowerCase())
+                              .includes((wardSearch || "").toLowerCase()),
                           )
                           .map((ward) => (
                             <MenuItem key={ward.code} value={ward.code}>
@@ -2164,7 +2166,7 @@ const CreateOrderForm = ({
                     <Button
                       variant="outlined"
                       size="small"
-                      startIcon={<AddIcon />}
+                      startIcon={<Plus size={20} />}
                       onClick={() => setProductListDialogOpen(true)}
                       sx={{
                         borderColor: "var(--primary-green)",
@@ -2250,7 +2252,7 @@ const CreateOrderForm = ({
                                 });
                               }}
                             >
-                              <DeleteIcon fontSize="small" />
+                              <Trash2 size={16} />
                             </IconButton>
                           )}
                         </Box>
@@ -2297,7 +2299,7 @@ const CreateOrderForm = ({
                   )}
 
                   <Button
-                    startIcon={<AddIcon />}
+                    startIcon={<Plus size={20} />}
                     onClick={() => {
                       const newItem = {
                         name: "",
@@ -2344,7 +2346,7 @@ const CreateOrderForm = ({
                     <Button
                       variant="outlined"
                       size="small"
-                      startIcon={<AddIcon />}
+                      startIcon={<Plus size={20} />}
                       sx={{
                         borderColor: "var(--primary-green)",
                         color: "var(--primary-green)",
@@ -2377,8 +2379,8 @@ const CreateOrderForm = ({
                             Kiện {index + 1}
                           </Typography>
                           <Box sx={{ display: "flex", gap: 1 }}>
-                            <IconButton size="small">
-                              <CancelIcon fontSize="small" color="error" />
+                            <IconButton size="small" color="error">
+                              <XCircle size={16} />
                             </IconButton>
                           </Box>
                         </Box>
@@ -2489,7 +2491,7 @@ const CreateOrderForm = ({
                       </Typography>
                       <Button
                         variant="contained"
-                        startIcon={<AddIcon />}
+                        startIcon={<Plus size={20} />}
                         onClick={() => {
                           const newPackage = {
                             name: `Kiện ${
@@ -2531,12 +2533,12 @@ const CreateOrderForm = ({
                         Tổng KL tính cước ({newOrder.packages.length} kiện):{" "}
                         {newOrder.packages.reduce(
                           (sum, pkg) => sum + parseInt(pkg.weight || 0),
-                          0
+                          0,
                         )}{" "}
                         g
                       </Typography>
                       <Button
-                        startIcon={<AddIcon />}
+                        startIcon={<Plus size={20} />}
                         onClick={() => {
                           const newPackage = {
                             name: `Kiện ${newOrder.packages.length + 1}`,
@@ -3126,8 +3128,8 @@ const CreateOrderForm = ({
                 {isEditMode
                   ? "Cập nhật đơn"
                   : isBasedOnMode
-                  ? "Tạo đơn mới"
-                  : "Tạo đơn"}
+                    ? "Tạo đơn mới"
+                    : "Tạo đơn"}
               </Button>
             </>
           )}

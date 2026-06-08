@@ -1,35 +1,32 @@
-import React from "react";
 import {
+  Avatar,
   Box,
-  Typography,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  Divider,
+  Grid,
+  IconButton,
+  LinearProgress,
+  Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
-  TableRow,
-  Paper,
-  Avatar,
-  Chip,
-  Button,
-  Stack,
   TablePagination,
+  TableRow,
+  Tooltip,
+  Typography,
   useMediaQuery,
   useTheme,
-  Card,
-  CardContent,
-  Grid,
-  Divider,
-  LinearProgress,
-  IconButton,
-  Tooltip,
 } from "@mui/material";
-import EventIcon from "@mui/icons-material/Event";
-import StarIcon from "@mui/icons-material/Star";
-import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
+import { Coins, Star, UserMinus } from "lucide-react";
+import React from "react";
+
 import getAmount from "@/src/utils/getAmount";
-import DeleteIcon from "@mui/icons-material/Delete";
-import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 
 const UserList = ({
   users,
@@ -166,9 +163,7 @@ const UserList = ({
                             gap: 0.5,
                           }}
                         >
-                          <MonetizationOnIcon
-                            sx={{ color: "warning.main", fontSize: 20 }}
-                          />
+                          <Coins style={{ color: "#ed6c02" }} size={20} />
                           <Typography variant="body2">
                             {getAmount(user.coins)}
                           </Typography>
@@ -188,7 +183,7 @@ const UserList = ({
                               },
                             }}
                           >
-                            <PersonRemoveIcon />
+                            <UserMinus size={20} />
                           </IconButton>
                         </Tooltip>
                       </TableCell>
@@ -272,7 +267,7 @@ const UserList = ({
                       gap: 0.5,
                     }}
                   >
-                    <MonetizationOnIcon color="warning" fontSize="small" />
+                    <Coins style={{ color: "#ed6c02" }} size={16} />
                     <Typography fontWeight={500}>
                       {getAmount(user.coins)}
                     </Typography>
@@ -329,7 +324,7 @@ const UserList = ({
                         borderColor: "var(--light-green)",
                       }}
                     >
-                      <StarIcon fontSize="small" />
+                      <Star size={16} />
                     </Button>
                   </Box>
                 ))}

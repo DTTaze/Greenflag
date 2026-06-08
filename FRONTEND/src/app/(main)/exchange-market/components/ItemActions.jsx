@@ -1,5 +1,6 @@
 import { useState } from "react";
-import DetailsModal from "./DetailsModal"; 
+
+import DetailsModal from "./DetailsModal";
 
 function ItemActions({
   marketView,

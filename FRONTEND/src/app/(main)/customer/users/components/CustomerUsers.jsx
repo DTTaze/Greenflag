@@ -1,22 +1,24 @@
-import React, { useState, useEffect } from "react";
 import {
-  Box,
-  Typography,
-  CircularProgress,
   Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
+  Box,
   Button,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Typography,
 } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
+
 import {
-  getOwnerEventApi,
-  getEventUserByEventIdApi,
-  getUserAvatarByIdApi,
   deleteEventUserByIdApi,
+  getEventUserByEventIdApi,
+  getOwnerEventApi,
+  getUserAvatarByIdApi,
 } from "@/src/utils/api";
+
 import UserFilters from "./UserFilters";
 import UserList from "./UserList";
 
@@ -70,8 +72,8 @@ export default function CustomerUsers() {
             completion_rate: !eventUser.joined_at
               ? 0
               : eventUser.completed_at
-              ? 100
-              : 50,
+                ? 100
+                : 50,
             eventUser: eventUser,
           },
         ],
@@ -79,7 +81,7 @@ export default function CustomerUsers() {
     } catch (error) {
       console.error(
         `Error fetching user data for user ${eventUser.user_id}:`,
-        error
+        error,
       );
       return null;
     }
@@ -268,7 +270,7 @@ export default function CustomerUsers() {
               Are you sure you want to remove {deleteDialog.user?.full_name}{" "}
               from{" "}
               {deleteDialog.user?.events.find(
-                (e) => e.id === deleteDialog.eventId
+                (e) => e.id === deleteDialog.eventId,
               )?.title || "this event"}
               ?
             </Typography>

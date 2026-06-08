@@ -1,14 +1,14 @@
-import React from "react";
 import {
   Box,
-  TextField,
+  Button,
   FormControl,
   InputLabel,
-  Select,
   MenuItem,
-  Button,
+  Select,
+  TextField,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
+import { Search } from "lucide-react";
+import React from "react";
 
 const UserFilters = ({ events, filters, onFilterChange, onReset }) => {
   return (
@@ -28,7 +28,11 @@ const UserFilters = ({ events, filters, onFilterChange, onReset }) => {
         onChange={(e) => onFilterChange("search", e.target.value)}
         InputProps={{
           startAdornment: (
-            <SearchIcon sx={{ color: "text.secondary", mr: 1 }} />
+            <Search
+              style={{ marginRight: 8 }}
+              size={20}
+              className="text-gray-500"
+            />
           ),
         }}
         sx={{ minWidth: 250 }}

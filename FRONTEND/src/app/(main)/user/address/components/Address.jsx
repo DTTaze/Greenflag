@@ -1,17 +1,18 @@
-import { useState, useEffect, useContext } from "react";
-import InputField from "@/src/components/ui/InputField.jsx";
+import { useContext, useEffect, useState } from "react";
+
 import Button from "@/src/components/ui/button";
-import {
-  getAllProvincesApi,
-  getAllDistrictsByProvinceApi,
-  getAllWardsByDistrictApi,
-  createReceiverInfoAPI,
-  getReceiverInfoByUserIDAPI,
-  updateReceiverInfoByIdAPI,
-  deleteReceiverInfoByIdAPI,
-  SetDefaultReceiverInfoByIdAPI,
-} from "@/src/utils/api.js";
+import InputField from "@/src/components/ui/InputField.jsx";
 import { AuthContext } from "@/src/contexts/auth.context.jsx";
+import {
+  createReceiverInfoAPI,
+  deleteReceiverInfoByIdAPI,
+  getAllDistrictsByProvinceApi,
+  getAllProvincesApi,
+  getAllWardsByDistrictApi,
+  getReceiverInfoByUserIDAPI,
+  SetDefaultReceiverInfoByIdAPI,
+  updateReceiverInfoByIdAPI,
+} from "@/src/utils/api.js";
 
 function Address() {
   const { auth } = useContext(AuthContext);
@@ -76,7 +77,9 @@ function Address() {
         }
       } catch (error) {
         console.error("Error fetching provinces:", error);
-        setErrorMessage("Error fetching provinces. Please check your connection.");
+        setErrorMessage(
+          "Error fetching provinces. Please check your connection.",
+        );
       } finally {
         setIsLoading(false);
       }
@@ -91,7 +94,7 @@ function Address() {
         try {
           const response = await getAllDistrictsByProvinceApi(
             newAddress.province,
-            token
+            token,
           );
           if (response.code === 200) {
             setDistricts(response.data);
@@ -102,7 +105,9 @@ function Address() {
           }
         } catch (error) {
           console.error("Error fetching districts:", error);
-          setErrorMessage("Error fetching districts. Please check your connection.");
+          setErrorMessage(
+            "Error fetching districts. Please check your connection.",
+          );
         } finally {
           setIsLoading(false);
         }
@@ -122,7 +127,7 @@ function Address() {
         try {
           const response = await getAllWardsByDistrictApi(
             newAddress.district,
-            token
+            token,
           );
           if (response.code === 200) {
             setWards(response.data);
@@ -132,7 +137,9 @@ function Address() {
           }
         } catch (error) {
           console.error("Error fetching wards:", error);
-          setErrorMessage("Error fetching wards. Please check your connection.");
+          setErrorMessage(
+            "Error fetching wards. Please check your connection.",
+          );
         } finally {
           setIsLoading(false);
         }
@@ -217,9 +224,11 @@ function Address() {
     }
 
     const provinceName =
-      provinces.find((p) => p.ProvinceID === newAddress.province)?.ProvinceName || "";
+      provinces.find((p) => p.ProvinceID === newAddress.province)
+        ?.ProvinceName || "";
     const districtName =
-      districts.find((d) => d.DistrictID === newAddress.district)?.DistrictName || "";
+      districts.find((d) => d.DistrictID === newAddress.district)
+        ?.DistrictName || "";
     const wardName =
       wards.find((w) => w.WardCode === newAddress.ward)?.WardName || "";
 
@@ -239,12 +248,17 @@ function Address() {
     try {
       let newAddressId;
       if (editingAddressId) {
-        const response = await updateReceiverInfoByIdAPI(editingAddressId, addressData);
+        const response = await updateReceiverInfoByIdAPI(
+          editingAddressId,
+          addressData,
+        );
         if (response.data) {
           setAddresses(
             addresses.map((addr) =>
-              addr.id === editingAddressId ? { ...response.data, id: editingAddressId } : addr
-            )
+              addr.id === editingAddressId
+                ? { ...response.data, id: editingAddressId }
+                : addr,
+            ),
           );
           newAddressId = editingAddressId;
         }
@@ -257,13 +271,14 @@ function Address() {
       }
 
       if (newAddress.isDefault && newAddressId) {
-        const defaultResponse = await SetDefaultReceiverInfoByIdAPI(newAddressId);
+        const defaultResponse =
+          await SetDefaultReceiverInfoByIdAPI(newAddressId);
         if (defaultResponse.data) {
           setAddresses((prev) =>
             prev.map((addr) => ({
               ...addr,
               is_default: addr.id === newAddressId,
-            }))
+            })),
           );
           setDefaultAddressId(newAddressId);
         }
@@ -294,8 +309,12 @@ function Address() {
     try {
       const address = addresses.find((addr) => addr.id === id);
       if (address) {
-        const province = provinces.find((p) => p.ProvinceName === address.to_province_name);
-        const district = districts.find((d) => d.DistrictName === address.to_district_name);
+        const province = provinces.find(
+          (p) => p.ProvinceName === address.to_province_name,
+        );
+        const district = districts.find(
+          (d) => d.DistrictName === address.to_district_name,
+        );
         const ward = wards.find((w) => w.WardName === address.to_ward_name);
 
         setNewAddress({
@@ -342,7 +361,7 @@ function Address() {
           addresses.map((addr) => ({
             ...addr,
             is_default: addr.id === id,
-          }))
+          })),
         );
         setDefaultAddressId(id);
       }
@@ -355,9 +374,9 @@ function Address() {
   };
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-md">
-      <div className="flex justify-between items-center">
-        <h4 className="font-semibold text-lg">Địa chỉ của tôi</h4>
+    <div className="rounded-lg bg-white p-4 shadow-md">
+      <div className="flex items-center justify-between">
+        <h4 className="text-lg font-semibold">Địa chỉ của tôi</h4>
         <Button
           text="Thêm địa chỉ mới"
           onClick={() => {
@@ -388,7 +407,7 @@ function Address() {
         {addresses.map((addr) => (
           <div
             key={addr.id}
-            className={`flex justify-between items-start p-4 border rounded-lg ${
+            className={`flex items-start justify-between rounded-lg border p-4 ${
               defaultAddressId === addr.id ? "border-green-500 bg-green-50" : ""
             }`}
           >
@@ -400,21 +419,21 @@ function Address() {
                 {addr.account_type === "home" ? "Nhà riêng" : "Văn phòng"}
               </p>
               {defaultAddressId === addr.id && (
-                <p className="text-sm text-green-600 font-semibold">Mặc định</p>
+                <p className="text-sm font-semibold text-green-600">Mặc định</p>
               )}
             </div>
             <div className="flex flex-col space-y-2">
               <div className="flex space-x-2">
                 <button
                   onClick={() => handleUpdateAddress(addr.id)}
-                  className="text-blue-500 text-sm font-medium py-2 px-4 rounded-md cursor-pointer"
+                  className="cursor-pointer rounded-md px-4 py-2 text-sm font-medium text-blue-500"
                 >
                   Cập nhật
                 </button>
                 {defaultAddressId !== addr.id && (
                   <button
                     onClick={() => handleDeleteAddress(addr.id)}
-                    className="text-blue-500 text-sm font-medium py-2 px-4 rounded-md cursor-pointer"
+                    className="cursor-pointer rounded-md px-4 py-2 text-sm font-medium text-blue-500"
                   >
                     Xóa
                   </button>
@@ -423,7 +442,7 @@ function Address() {
               {defaultAddressId !== addr.id && (
                 <button
                   onClick={() => handleSetDefault(addr.id)}
-                  className="bg-gray-300 text-sm font-medium py-2 px-4 rounded-md cursor-pointer"
+                  className="cursor-pointer rounded-md bg-gray-300 px-4 py-2 text-sm font-medium"
                 >
                   Thiết lập mặc định
                 </button>
@@ -434,16 +453,16 @@ function Address() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg w-full max-w-lg shadow-2xl transform transition-all">
-            <h4 className="font-semibold text-lg mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+          <div className="w-full max-w-lg transform rounded-lg bg-white p-6 shadow-2xl transition-all">
+            <h4 className="mb-4 text-lg font-semibold">
               {editingAddressId ? "Cập nhật địa chỉ" : "Thêm địa chỉ mới"}
             </h4>
             {isLoading && <p className="text-gray-500">Đang tải...</p>}
             {errorMessage && (
-              <p className="text-red-500 mb-4">{errorMessage}</p>
+              <p className="mb-4 text-red-500">{errorMessage}</p>
             )}
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="mb-4 grid grid-cols-2 gap-4">
               <InputField
                 id="fullName"
                 label="Họ và tên"
@@ -464,7 +483,7 @@ function Address() {
             <div className="mb-4">
               <label
                 htmlFor="province"
-                className="text-sm font-semibold mb-2 block"
+                className="mb-2 block text-sm font-semibold"
               >
                 Tỉnh/Thành phố
               </label>
@@ -473,7 +492,7 @@ function Address() {
                 name="province"
                 value={newAddress.province}
                 onChange={handleInputChange}
-                className="w-full p-2 border rounded-md"
+                className="w-full rounded-md border p-2"
                 disabled={isLoading}
               >
                 <option value="">Chọn Tỉnh/Thành phố</option>
@@ -490,13 +509,13 @@ function Address() {
                   ))}
               </select>
               {errors.province && (
-                <p className="text-red-500 text-sm">{errors.province}</p>
+                <p className="text-sm text-red-500">{errors.province}</p>
               )}
             </div>
             <div className="mb-4">
               <label
                 htmlFor="district"
-                className="text-sm font-semibold mb-2 block"
+                className="mb-2 block text-sm font-semibold"
               >
                 Quận/Huyện
               </label>
@@ -505,7 +524,7 @@ function Address() {
                 name="district"
                 value={newAddress.district}
                 onChange={handleInputChange}
-                className="w-full p-2 border rounded-md"
+                className="w-full rounded-md border p-2"
                 disabled={!newAddress.province || isLoading}
               >
                 <option value="">Chọn Quận/Huyện</option>
@@ -516,13 +535,13 @@ function Address() {
                 ))}
               </select>
               {errors.district && (
-                <p className="text-red-500 text-sm">{errors.district}</p>
+                <p className="text-sm text-red-500">{errors.district}</p>
               )}
             </div>
             <div className="mb-4">
               <label
                 htmlFor="ward"
-                className="text-sm font-semibold mb-2 block"
+                className="mb-2 block text-sm font-semibold"
               >
                 Phường/Xã
               </label>
@@ -531,7 +550,7 @@ function Address() {
                 name="ward"
                 value={newAddress.ward}
                 onChange={handleInputChange}
-                className="w-full p-2 border rounded-md"
+                className="w-full rounded-md border p-2"
                 disabled={!newAddress.district || isLoading}
               >
                 <option value="">Chọn Phường/Xã</option>
@@ -542,7 +561,7 @@ function Address() {
                 ))}
               </select>
               {errors.ward && (
-                <p className="text-red-500 text-sm">{errors.ward}</p>
+                <p className="text-sm text-red-500">{errors.ward}</p>
               )}
             </div>
             <InputField
@@ -554,7 +573,7 @@ function Address() {
               error={errors.specificAddress}
             />
             <div className="mb-4">
-              <label className="text-sm font-semibold mb-2 block mt-2">
+              <label className="mt-2 mb-2 block text-sm font-semibold">
                 Loại địa chỉ
               </label>
               <div className="flex space-x-4">
@@ -562,7 +581,7 @@ function Address() {
                   type="button"
                   value="home"
                   onClick={handleTypeChange}
-                  className={`py-2 px-4 border rounded-md font-medium ${
+                  className={`rounded-md border px-4 py-2 font-medium ${
                     newAddress.type === "home"
                       ? "border-emerald-800"
                       : "border-gray-300"
@@ -574,7 +593,7 @@ function Address() {
                   type="button"
                   value="office"
                   onClick={handleTypeChange}
-                  className={`py-2 px-4 border rounded-md font-medium ${
+                  className={`rounded-md border px-4 py-2 font-medium ${
                     newAddress.type === "office"
                       ? "border-emerald-800"
                       : "border-gray-300"

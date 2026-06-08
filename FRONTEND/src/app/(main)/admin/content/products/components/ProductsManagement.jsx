@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from "react";
-import DataTable from "../../../components/DataTable";
-import { productColumns } from "../../../components/HeaderColumn";
+import { Box } from "@mui/material";
+import React, { useEffect, useState } from "react";
+
 import {
-  getAllProductsApi,
-  deleteProductApi,
   createProductApi,
+  deleteProductApi,
+  getAllProductsApi,
   updateProductApi,
 } from "@/src/utils/api";
-import { Box } from "@mui/material";
+
+import DataTable from "../../../components/DataTable";
+import { productColumns } from "../../../components/HeaderColumn";
 import ProductForm from "./ProductForm";
 
 export default function ProductsManagement() {

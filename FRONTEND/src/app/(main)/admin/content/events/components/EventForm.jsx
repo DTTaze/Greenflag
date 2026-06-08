@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Button,
-  Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Box,
-  Typography,
-  IconButton,
-} from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  Grid,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
+import React, { useEffect, useState } from "react";
 
 export default function EventForm({
   open,
@@ -63,8 +63,8 @@ export default function EventForm({
       if (initialData.images && Array.isArray(initialData.images)) {
         setPreviewUrls(
           initialData.images.map((img) =>
-            typeof img === "string" ? img : URL.createObjectURL(img)
-          )
+            typeof img === "string" ? img : URL.createObjectURL(img),
+          ),
         );
       }
     } else {

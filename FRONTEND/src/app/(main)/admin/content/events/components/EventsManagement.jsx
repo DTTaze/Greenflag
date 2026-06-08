@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from "react";
-import DataTable from "../../../components/DataTable";
-import { eventsColumns } from "../../../components/HeaderColumn";
+import { Box } from "@mui/material";
+import React, { useEffect, useState } from "react";
+
 import {
-  getAllEventsApi,
-  deleteEventApi,
   createEventApi,
+  deleteEventApi,
+  getAllEventsApi,
   updateEventApi,
 } from "@/src/utils/api";
-import { Box } from "@mui/material";
+
+import DataTable from "../../../components/DataTable";
+import { eventsColumns } from "../../../components/HeaderColumn";
 import EventForm from "./EventForm";
 
 export default function EventsManagement() {

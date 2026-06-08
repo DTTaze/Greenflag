@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+
 import { getQRApi } from "../../utils/api";
 
 export default function QRCodeDisplay({ initialText }) {
@@ -21,12 +22,12 @@ export default function QRCodeDisplay({ initialText }) {
   }, [initialText]);
 
   return (
-    <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
+    <div className="flex flex-col items-center rounded-lg bg-gray-50 p-4">
       {qr && (
         <img
           src={qr}
           alt="QR Code"
-          className="w-64 h-64 object-contain border-2 border-gray-200 rounded-lg shadow-md"
+          className="h-64 w-64 rounded-lg border-2 border-gray-200 object-contain shadow-md"
         />
       )}
     </div>

@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from "react";
 import { X } from "lucide-react";
+import React, { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 
 export default function TaskSubmissionModal({
@@ -33,7 +33,7 @@ export default function TaskSubmissionModal({
     try {
       // Then handle task completion with the number of files
       const prevProgress = task.progress_count || 0;
-      const numOfProgress =  Math.min(files.length, task.total - prevProgress);
+      const numOfProgress = Math.min(files.length, task.total - prevProgress);
       await handleTaskCompletion(userID, task.id, numOfProgress);
       toast.success("Nhiệm vụ đã được cập nhật!");
       onClose();
@@ -46,11 +46,11 @@ export default function TaskSubmissionModal({
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-white/40 backdrop-blur-sm z-50 p-4">
-      <div className="bg-green-50 p-6 rounded-2xl shadow-2xl w-full max-w-lg sm:max-w-xl md:max-w-2xl border border-green-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/40 p-4 backdrop-blur-sm">
+      <div className="w-full max-w-lg rounded-2xl border border-green-200 bg-green-50 p-6 shadow-2xl sm:max-w-xl md:max-w-2xl">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl sm:text-3xl font-bold text-green-800">
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-green-800 sm:text-3xl">
             Thông tin nhiệm vụ
           </h2>
           <button
@@ -62,7 +62,7 @@ export default function TaskSubmissionModal({
         </div>
 
         {/* Nhiệm vụ chi tiết */}
-        <div className="space-y-2 text-[1.1rem] sm:text-lg text-green-700">
+        <div className="space-y-2 text-[1.1rem] text-green-700 sm:text-lg">
           <p>
             <strong>Nhiệm vụ:</strong> {task.title}
           </p>
@@ -80,7 +80,7 @@ export default function TaskSubmissionModal({
 
         {/* Upload ảnh */}
         <div className="mt-6">
-          <label className="block text-base font-medium text-green-800 mb-3">
+          <label className="mb-3 block text-base font-medium text-green-800">
             Tải lên bằng chứng (ảnh):
           </label>
           <input
@@ -88,13 +88,12 @@ export default function TaskSubmissionModal({
             accept="image/*"
             multiple
             onChange={handleFileChange}
-            className="block w-full text-base text-green-700 bg-white border border-green-300 rounded-xl px-4 py-2 cursor-pointer
-            file:mr-4 file:py-2 file:px-5 file:rounded-full file:border-0 file:bg-green-100 file:text-green-700 hover:file:bg-green-200 transition"
+            className="block w-full cursor-pointer rounded-xl border border-green-300 bg-white px-4 py-2 text-base text-green-700 transition file:mr-4 file:rounded-full file:border-0 file:bg-green-100 file:px-5 file:py-2 file:text-green-700 hover:file:bg-green-200"
           />
 
           {/* Info về file đã chọn */}
           {files.length > 0 && (
-            <div className="mt-3 space-y-1 text-green-600 text-sm sm:text-base">
+            <div className="mt-3 space-y-1 text-sm text-green-600 sm:text-base">
               <p>📸 Đã chọn {files.length} ảnh.</p>
               <p>
                 Tiến độ tăng thêm:{" "}
@@ -107,9 +106,9 @@ export default function TaskSubmissionModal({
         </div>
 
         {/* Nút xác nhận */}
-        <div className="flex justify-end mt-8">
+        <div className="mt-8 flex justify-end">
           <button
-            className="bg-green-600 text-white px-6 py-3 rounded-full text-base sm:text-lg font-semibold hover:bg-green-700 transition duration-200 disabled:opacity-50"
+            className="rounded-full bg-green-600 px-6 py-3 text-base font-semibold text-white transition duration-200 hover:bg-green-700 disabled:opacity-50 sm:text-lg"
             onClick={handleSubmit}
             disabled={files.length === 0}
           >

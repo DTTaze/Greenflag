@@ -1,5 +1,5 @@
+import { Box, Card, CardContent, Grid, Typography } from "@mui/material";
 import React from "react";
-import { Box, Typography, Grid, Card, CardContent } from "@mui/material";
 
 export default function HowItWorks() {
   const steps = [

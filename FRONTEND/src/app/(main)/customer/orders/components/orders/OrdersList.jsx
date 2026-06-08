@@ -1,6 +1,14 @@
-import React, { useState } from "react";
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
+  Button,
+  Chip,
+  IconButton,
+  InputAdornment,
+  Menu,
+  MenuItem,
   Paper,
   Table,
   TableBody,
@@ -9,30 +17,22 @@ import {
   TableHead,
   TableRow,
   TableSortLabel,
-  Chip,
-  Button,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
+  TextField,
+  Tooltip,
   Typography,
   useMediaQuery,
-  Tooltip,
-  IconButton,
-  TextField,
-  InputAdornment,
-  Menu,
-  MenuItem,
 } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ReceiptIcon from "@mui/icons-material/Receipt";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CancelIcon from "@mui/icons-material/Cancel";
-import EditIcon from "@mui/icons-material/Edit";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import FilterListIcon from "@mui/icons-material/FilterList";
-import SearchIcon from "@mui/icons-material/Search";
-import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import {
+  ChevronDown,
+  Copy,
+  ListFilter,
+  Pencil,
+  Receipt,
+  Search,
+  Truck,
+} from "lucide-react";
+import React, { useState } from "react";
+
 import { getStatusColor } from "@/src/utils/orderUtils";
 
 // Helper function to format currency
@@ -103,7 +103,7 @@ const OrdersList = ({
       (order) =>
         order.orderCode?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         order.receiverName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.receiverPhone?.toLowerCase().includes(searchTerm.toLowerCase())
+        order.receiverPhone?.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   }
 
@@ -161,7 +161,7 @@ const OrdersList = ({
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon />
+                  <Search size={20} />
                 </InputAdornment>
               ),
             }}
@@ -191,7 +191,7 @@ const OrdersList = ({
                         onClick={(e) => handleFilterClick(e, "orderCode")}
                         sx={{ ml: 1 }}
                       >
-                        <FilterListIcon fontSize="small" />
+                        <ListFilter size={16} />
                       </IconButton>
                     )}
                   </TableCell>
@@ -218,7 +218,7 @@ const OrdersList = ({
                         onClick={(e) => handleFilterClick(e, "receiverName")}
                         sx={{ ml: 1 }}
                       >
-                        <FilterListIcon fontSize="small" />
+                        <ListFilter size={16} />
                       </IconButton>
                     )}
                   </TableCell>
@@ -285,7 +285,7 @@ const OrdersList = ({
                         size="small"
                         icon={
                           order.status === "In Progress" ? (
-                            <LocalShippingIcon fontSize="small" />
+                            <Truck size={16} />
                           ) : undefined
                         }
                       />
@@ -294,7 +294,7 @@ const OrdersList = ({
                     <TableCell>{formatCurrency(order.shippingFee)}</TableCell>
                     <TableCell>
                       <Box sx={{ display: "flex", gap: 1 }}>
-                        {order.status === "rejected" &&
+                        {order.status === "rejected" && (
                           <Button
                             size="small"
                             variant="outlined"
@@ -310,9 +310,9 @@ const OrdersList = ({
                               },
                             }}
                           >
-                            <ReceiptIcon fontSize="small" />
+                            <Receipt size={16} />
                           </Button>
-                        }
+                        )}
 
                         {order.status === "accepted" && handleCreateBasedOn && (
                           <Tooltip title="Create new order based on this one">
@@ -331,7 +331,7 @@ const OrdersList = ({
                                 },
                               }}
                             >
-                              <ContentCopyIcon fontSize="small" />
+                              <Copy size={16} />
                             </Button>
                           </Tooltip>
                         )}
@@ -352,7 +352,7 @@ const OrdersList = ({
                               },
                             }}
                           >
-                            <EditIcon fontSize="small" />
+                            <Pencil size={16} />
                           </Button>
                         )}
                       </Box>
@@ -388,7 +388,7 @@ const OrdersList = ({
               }}
             >
               <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
+                expandIcon={<ChevronDown size={20} />}
                 aria-controls={`order-${order.id}-content`}
                 id={`order-${order.id}-header`}
               >

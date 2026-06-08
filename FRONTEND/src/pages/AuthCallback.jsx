@@ -1,8 +1,9 @@
-import { useEffect, useRef, useContext } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+
+import Loader from "../components/ui/Loader";
 import { AuthContext } from "../contexts/auth.context";
 import { getUserApi } from "../utils/api";
-import Loader from "../components/ui/Loader";
 
 const AuthCallback = () => {
   const navigate = useNavigate();

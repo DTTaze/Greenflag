@@ -1,21 +1,21 @@
-import React from "react";
-import {
-  TableContainer,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Paper,
-  Typography,
-  Button,
-  IconButton,
-  Chip,
-  Box,
-} from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import {
+  Box,
+  Button,
+  Chip,
+  IconButton,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
+import React from "react";
 
 const ItemTable = ({ items, onEdit, onDelete, onAdd }) => {
   const getStatusColor = (status) => {
@@ -88,16 +88,17 @@ const ItemTable = ({ items, onEdit, onDelete, onAdd }) => {
                     color={getStatusColor(item.status)}
                   />
                 </TableCell>
-                
+
                 <TableCell align="right">
-                {item.status === "available" && 
-                  <IconButton
-                    size="small"
-                    onClick={() => onEdit(item)}
-                    sx={{ color: "var(--primary-green)" }}
-                  >
-                    <EditIcon fontSize="small" />
-                  </IconButton>}
+                  {item.status === "available" && (
+                    <IconButton
+                      size="small"
+                      onClick={() => onEdit(item)}
+                      sx={{ color: "var(--primary-green)" }}
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                  )}
                   <IconButton
                     size="small"
                     onClick={() => onDelete(item.id)}

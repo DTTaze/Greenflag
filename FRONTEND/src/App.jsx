@@ -1,16 +1,16 @@
-import { useState, useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
+import { io } from "socket.io-client";
+
+import Loader from "./components/ui/Loader";
+import { VITE_BACKEND_URL } from "./config/env.js";
 import { AuthContext } from "./contexts/auth.context";
+import { SocketProvider } from "./contexts/socket.context";
 import UserHeader from "./layouts/Header";
 import { getUserApi } from "./utils/api";
-import Loader from "./components/ui/Loader";
-import { io } from "socket.io-client";
-import { SocketProvider } from "./contexts/socket.context";
-
-import { VITE_BACKEND_URL } from "./config/env.js";
 
 const socket = io(VITE_BACKEND_URL, {
-  withCredentials: true, 
+  withCredentials: true,
 });
 
 function App() {
@@ -20,7 +20,7 @@ function App() {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        const res = await getUserApi(); 
+        const res = await getUserApi();
         if (res && res.status === 200) {
           setAuth({
             isAuthenticated: true,

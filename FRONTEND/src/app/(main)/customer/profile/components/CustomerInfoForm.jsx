@@ -1,5 +1,6 @@
+import { Mail, Phone, User, UserCheck } from "lucide-react";
 import React from "react";
-import { User, Mail, Phone, UserCheck } from "lucide-react";
+
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 
@@ -8,19 +9,24 @@ export default function CustomerInfoForm({
   handleChange,
   handleSubmit,
   editMode,
-  loading
+  loading,
 }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Full Name */}
         <div className="space-y-2">
-          <Label htmlFor="full_name" className="text-sm font-semibold text-slate-700">
+          <Label
+            htmlFor="full_name"
+            className="text-sm font-semibold text-slate-700"
+          >
             Full Name
           </Label>
           <div className="relative">
-            <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <User className={`w-4 h-4 ${editMode ? 'text-emerald-500' : 'text-slate-400'}`} />
+            <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <User
+                className={`h-4 w-4 ${editMode ? "text-emerald-500" : "text-slate-400"}`}
+              />
             </span>
             <Input
               id="full_name"
@@ -30,19 +36,24 @@ export default function CustomerInfoForm({
               onChange={handleChange}
               disabled={!editMode}
               required
-              className="pl-10 h-10 bg-slate-50/50 focus:bg-white border-slate-200 focus:border-emerald-500"
+              className="h-10 border-slate-200 bg-slate-50/50 pl-10 focus:border-emerald-500 focus:bg-white"
             />
           </div>
         </div>
 
         {/* Username */}
         <div className="space-y-2">
-          <Label htmlFor="username" className="text-sm font-semibold text-slate-700">
+          <Label
+            htmlFor="username"
+            className="text-sm font-semibold text-slate-700"
+          >
             Username
           </Label>
           <div className="relative">
-            <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <UserCheck className={`w-4 h-4 ${editMode ? 'text-emerald-500' : 'text-slate-400'}`} />
+            <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <UserCheck
+                className={`h-4 w-4 ${editMode ? "text-emerald-500" : "text-slate-400"}`}
+              />
             </span>
             <Input
               id="username"
@@ -52,19 +63,24 @@ export default function CustomerInfoForm({
               onChange={handleChange}
               disabled={!editMode}
               required
-              className="pl-10 h-10 bg-slate-50/50 focus:bg-white border-slate-200 focus:border-emerald-500"
+              className="h-10 border-slate-200 bg-slate-50/50 pl-10 focus:border-emerald-500 focus:bg-white"
             />
           </div>
         </div>
 
         {/* Email */}
         <div className="space-y-2">
-          <Label htmlFor="email" className="text-sm font-semibold text-slate-700">
+          <Label
+            htmlFor="email"
+            className="text-sm font-semibold text-slate-700"
+          >
             Email Address
           </Label>
           <div className="relative">
-            <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Mail className={`w-4 h-4 ${editMode ? 'text-emerald-500' : 'text-slate-400'}`} />
+            <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <Mail
+                className={`h-4 w-4 ${editMode ? "text-emerald-500" : "text-slate-400"}`}
+              />
             </span>
             <Input
               id="email"
@@ -74,19 +90,24 @@ export default function CustomerInfoForm({
               onChange={handleChange}
               disabled={!editMode}
               required
-              className="pl-10 h-10 bg-slate-50/50 focus:bg-white border-slate-200 focus:border-emerald-500"
+              className="h-10 border-slate-200 bg-slate-50/50 pl-10 focus:border-emerald-500 focus:bg-white"
             />
           </div>
         </div>
 
         {/* Phone Number */}
         <div className="space-y-2">
-          <Label htmlFor="phone_number" className="text-sm font-semibold text-slate-700">
+          <Label
+            htmlFor="phone_number"
+            className="text-sm font-semibold text-slate-700"
+          >
             Phone Number
           </Label>
           <div className="relative">
-            <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Phone className={`w-4 h-4 ${editMode ? 'text-emerald-500' : 'text-slate-400'}`} />
+            <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <Phone
+                className={`h-4 w-4 ${editMode ? "text-emerald-500" : "text-slate-400"}`}
+              />
             </span>
             <Input
               id="phone_number"
@@ -95,7 +116,7 @@ export default function CustomerInfoForm({
               value={formData.phone_number}
               onChange={handleChange}
               disabled={!editMode}
-              className="pl-10 h-10 bg-slate-50/50 focus:bg-white border-slate-200 focus:border-emerald-500"
+              className="h-10 border-slate-200 bg-slate-50/50 pl-10 focus:border-emerald-500 focus:bg-white"
             />
           </div>
         </div>

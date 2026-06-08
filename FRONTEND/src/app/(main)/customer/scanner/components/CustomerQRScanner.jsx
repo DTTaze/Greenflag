@@ -1,29 +1,31 @@
-import React, { useState, useEffect } from "react";
 import {
-  Box,
-  Typography,
-  Button,
-  Paper,
-  Grid,
   Alert,
+  Box,
+  Button,
+  Grid,
+  Paper,
   Snackbar,
-  Tabs,
   Tab,
+  Tabs,
+  Typography,
 } from "@mui/material";
+import { UserPlus } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import { injectQRScannerStyles } from "./QRScannerStyles";
-import EventSelector, { getEventNameById } from "./EventSelector";
-import QRScanner from "./QRScanner";
-import ScannedUsersList from "./ScannedUsersList";
-import HowItWorks from "./HowItWorks";
-import ManualAddDialog from "./ManualAddDialog";
+
 import {
-  getUserByIDPublicApi,
-  getEventUserByEventIdApi,
   CheckInUserByUserIdApi,
   CheckOutUserByUserIdApi,
+  getEventUserByEventIdApi,
+  getUserByIDPublicApi,
 } from "@/src/utils/api";
+
+import EventSelector, { getEventNameById } from "./EventSelector";
+import HowItWorks from "./HowItWorks";
+import ManualAddDialog from "./ManualAddDialog";
+import QRScanner from "./QRScanner";
+import { injectQRScannerStyles } from "./QRScannerStyles";
+import ScannedUsersList from "./ScannedUsersList";
 
 export default function CustomerQRScanner() {
   const userInfo = useOutletContext();
@@ -67,7 +69,7 @@ export default function CustomerQRScanner() {
               }.jpg`,
             scannedAt: user.joined_at || new Date().toISOString(),
             eventId: selectedEvent,
-            eventTitle: user.Event.title
+            eventTitle: user.Event.title,
           }));
           setScannedUsers(users);
         } catch (error) {
@@ -107,7 +109,7 @@ export default function CustomerQRScanner() {
       const userData = userResponse.data;
       console.log(
         "userdata.id after response in CustomerQRScanner: ",
-        userData.id
+        userData.id,
       );
 
       // Check in user
@@ -130,15 +132,15 @@ export default function CustomerQRScanner() {
           }.jpg`,
         scannedAt: user.joined_at || new Date().toISOString(),
         eventId: selectedEvent,
-        eventTitle: user.Event.title
+        eventTitle: user.Event.title,
       }));
       setScannedUsers(updatedUsers);
 
       setSuccessMessage(
         `Đã thêm ${userData.full_name} vào sự kiện: ${getEventNameById(
           selectedEvent,
-          events
-        )}`
+          events,
+        )}`,
       );
       setShowSuccess(true);
     } catch (error) {
@@ -172,8 +174,8 @@ export default function CustomerQRScanner() {
       setSuccessMessage(
         `${manualUser.name} đã được thêm vào sự kiện: ${getEventNameById(
           selectedEvent,
-          events
-        )}`
+          events,
+        )}`,
       );
       setShowSuccess(true);
     } catch (error) {
@@ -213,7 +215,7 @@ export default function CustomerQRScanner() {
       const userData = userResponse.data;
       console.log(
         "userdata.id after response in CustomerQRScanner: ",
-        userData.id
+        userData.id,
       );
 
       // Check out user
@@ -236,15 +238,15 @@ export default function CustomerQRScanner() {
           }.jpg`,
         scannedAt: user.joined_at || new Date().toISOString(),
         eventId: selectedEvent,
-        eventTitle: user.Event.title
+        eventTitle: user.Event.title,
       }));
       setScannedUsers(updatedUsers);
 
       setSuccessMessage(
         `Đã check out ${userData.full_name} khỏi sự kiện: ${getEventNameById(
           selectedEvent,
-          events
-        )}`
+          events,
+        )}`,
       );
       setShowSuccess(true);
     } catch (error) {
@@ -351,7 +353,7 @@ export default function CustomerQRScanner() {
               >
                 <Button
                   className="customer-button-secondary"
-                  startIcon={<PersonAddIcon />}
+                  startIcon={<UserPlus size={20} />}
                   onClick={() => setManualAddOpen(true)}
                 >
                   Add Manually

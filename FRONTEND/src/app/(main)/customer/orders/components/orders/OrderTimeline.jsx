@@ -1,6 +1,6 @@
+import { Box, Step, StepLabel, Stepper, Typography } from "@mui/material";
+import { History } from "lucide-react";
 import React from "react";
-import { Box, Typography, Stepper, Step, StepLabel } from "@mui/material";
-import TimelineIcon from "@mui/icons-material/Timeline";
 
 const OrderTimeline = ({ timeline }) => {
   if (!timeline || timeline.length === 0) {
@@ -22,8 +22,11 @@ const OrderTimeline = ({ timeline }) => {
           alignItems: "center",
         }}
       >
-        <TimelineIcon sx={{ mr: 1, color: "var(--primary-green)" }} /> Order
-        Timeline
+        <History
+          style={{ marginRight: 8, color: "var(--primary-green)" }}
+          size={20}
+        />{" "}
+        Order Timeline
       </Typography>
       <Box sx={{ maxHeight: "400px", overflow: "auto", pr: 1 }}>
         <Stepper orientation="vertical" sx={{ mt: 2 }}>

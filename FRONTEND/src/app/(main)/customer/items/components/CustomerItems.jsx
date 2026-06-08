@@ -1,22 +1,24 @@
-import React, { useState, useEffect } from "react";
+import AddIcon from "@mui/icons-material/Add";
 import {
+  Alert,
   Box,
   Button,
-  Typography,
   CircularProgress,
-  Alert,
+  Typography,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
+import React, { useEffect, useState } from "react";
+
+import {
+  deleteItemOfCustomerApi,
+  getItemByIdUserApi,
+  getUserApi,
+  updateItemOfCustomerApi,
+  upLoadItemApi,
+} from "@/src/utils/api";
+
+import ItemDialog from "./ItemDialog";
 import ItemFilters from "./ItemFilters";
 import ItemTable from "./ItemTable";
-import ItemDialog from "./ItemDialog";
-import {
-  getItemByIdUserApi,
-  upLoadItemApi,
-  updateItemOfCustomerApi,
-  deleteItemOfCustomerApi,
-  getUserApi,
-} from "@/src/utils/api";
 
 const CustomerItems = () => {
   const [userInfo, setUserInfo] = useState(null);
@@ -85,7 +87,7 @@ const CustomerItems = () => {
       result = result.filter(
         (item) =>
           item.name.toLowerCase().includes(searchLower) ||
-          item.description?.toLowerCase().includes(searchLower)
+          item.description?.toLowerCase().includes(searchLower),
       );
     }
 
@@ -145,7 +147,7 @@ const CustomerItems = () => {
         const response = await updateItemOfCustomerApi(
           selectedItem.id,
           formData,
-          images
+          images,
         );
         if (response.data) {
           await fetchItems(); // Refresh the items list after update

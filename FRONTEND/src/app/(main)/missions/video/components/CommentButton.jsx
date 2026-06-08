@@ -1,10 +1,11 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+
 import Comment_icon from "@/src/assets/images/Comment";
 
 const CommentButton = ({ comments }) => {
   const [showComments, setShowComments] = useState(false);
 
-  const modalRef = useRef(null); 
+  const modalRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -24,25 +25,27 @@ const CommentButton = ({ comments }) => {
 
   return (
     <>
-      <button className={`backdrop-blur-md p-3 rounded-full transition-colors flex flex-col items-center gap-1 ${
-                showComments
-                  ? "bg-blue-500/20 text-blue-400 hover:bg-blue-500/30"
-                  : "bg-white/10 hover:bg-white/20 text-white"
-              }`} onClick={() => setShowComments(true)}>
+      <button
+        className={`flex flex-col items-center gap-1 rounded-full p-3 backdrop-blur-md transition-colors ${
+          showComments
+            ? "bg-blue-500/20 text-blue-400 hover:bg-blue-500/30"
+            : "bg-white/10 text-white hover:bg-white/20"
+        }`}
+        onClick={() => setShowComments(true)}
+      >
         <Comment_icon />
-        <div className="text-white text-sm mt-1">{comments}</div>
+        <div className="mt-1 text-sm text-white">{comments}</div>
       </button>
-        
 
       {showComments && (
         <div
-          className="fixed inset-0 bg-black/50 flex justify-center items-end"
+          className="fixed inset-0 flex items-end justify-center bg-black/50"
           onClick={() => setShowComments(false)} // Click vào nền để đóng
         >
           {/* Ngăn sự kiện onClick lan ra ngoài */}
           <div
             ref={modalRef}
-            className="bg-white text-black p-5 w-full max-w-md rounded-t-lg"
+            className="w-full max-w-md rounded-t-lg bg-white p-5 text-black"
             onClick={(e) => e.stopPropagation()} // Chặn sự kiện từ modal
           >
             <div className="comments">

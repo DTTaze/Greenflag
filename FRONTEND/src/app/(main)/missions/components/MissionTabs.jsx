@@ -6,20 +6,20 @@ import React from "react";
  */
 const MissionTabs = ({ selectedTab, setSelectedTab }) => {
   return (
-    <div className="bg-white rounded-t-xl border border-gray-200 p-1 shadow-sm">
+    <div className="rounded-t-xl border border-gray-200 bg-white p-1 shadow-sm">
       <div className="flex">
         <button
-          className={`tab flex-1 py-3 text-center rounded-lg font-medium transition-all duration-200 ${
+          className={`tab flex-1 rounded-lg py-3 text-center font-medium transition-all duration-200 ${
             selectedTab === "daily"
               ? "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 shadow-sm"
               : "text-gray-600 hover:bg-gray-50"
           }`}
           onClick={() => setSelectedTab("daily")}
         >
-          <div className="flex justify-center items-center">
+          <div className="flex items-center justify-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 mr-1.5"
+              className="mr-1.5 h-4 w-4"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -35,17 +35,17 @@ const MissionTabs = ({ selectedTab, setSelectedTab }) => {
           </div>
         </button>
         <button
-          className={`tab flex-1 py-3 text-center rounded-lg font-medium transition-all duration-200 ${
+          className={`tab flex-1 rounded-lg py-3 text-center font-medium transition-all duration-200 ${
             selectedTab === "other"
               ? "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 shadow-sm"
               : "text-gray-600 hover:bg-gray-50"
           }`}
           onClick={() => setSelectedTab("other")}
         >
-          <div className="flex justify-center items-center">
+          <div className="flex items-center justify-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 mr-1.5"
+              className="mr-1.5 h-4 w-4"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -61,17 +61,17 @@ const MissionTabs = ({ selectedTab, setSelectedTab }) => {
           </div>
         </button>
         <button
-          className={`tab flex-1 py-3 text-center rounded-lg font-medium transition-all duration-200 ${
+          className={`tab flex-1 rounded-lg py-3 text-center font-medium transition-all duration-200 ${
             selectedTab === "completed"
               ? "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 shadow-sm"
               : "text-gray-600 hover:bg-gray-50"
           }`}
           onClick={() => setSelectedTab("completed")}
         >
-          <div className="flex justify-center items-center">
+          <div className="flex items-center justify-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 mr-1.5"
+              className="mr-1.5 h-4 w-4"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"

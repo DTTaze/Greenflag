@@ -1,20 +1,16 @@
-import React from "react";
 import {
+  Avatar,
   Box,
-  Typography,
+  Chip,
+  IconButton,
   List,
   ListItem,
-  ListItemText,
   ListItemAvatar,
-  Avatar,
-  IconButton,
-  Chip,
+  ListItemText,
+  Typography,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EventIcon from "@mui/icons-material/Event";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
-import { getEventNameById } from "./EventSelector";
+import { Calendar, ShieldCheck, Trash2, UserPlus } from "lucide-react";
+import React from "react";
 
 export default function ScannedUsersList({ scannedUsers, onRemoveUser }) {
   return (
@@ -24,7 +20,10 @@ export default function ScannedUsersList({ scannedUsers, onRemoveUser }) {
         gutterBottom
         sx={{ display: "flex", alignItems: "center" }}
       >
-        <VerifiedUserIcon sx={{ mr: 1, color: "var(--primary-green)" }} />
+        <ShieldCheck
+          style={{ marginRight: 8, color: "var(--primary-green)" }}
+          size={24}
+        />
         Recently Scanned Users
       </Typography>
 
@@ -46,7 +45,7 @@ export default function ScannedUsersList({ scannedUsers, onRemoveUser }) {
                   aria-label="delete"
                   onClick={() => onRemoveUser(user.id)}
                 >
-                  <DeleteIcon />
+                  <Trash2 size={20} />
                 </IconButton>
               }
               sx={{
@@ -79,7 +78,7 @@ export default function ScannedUsersList({ scannedUsers, onRemoveUser }) {
                     >
                       <Chip
                         size="small"
-                        icon={<EventIcon style={{ fontSize: 14 }} />}
+                        icon={<Calendar style={{ width: 14, height: 14 }} />}
                         label={user.eventTitle}
                         sx={{ height: 24, fontSize: "0.75rem" }}
                       />
@@ -104,8 +103,13 @@ export default function ScannedUsersList({ scannedUsers, onRemoveUser }) {
             flex: 1,
           }}
         >
-          <PersonAddIcon
-            sx={{ fontSize: 40, color: "var(--text-light)", mb: 1 }}
+          <UserPlus
+            style={{
+              width: 40,
+              height: 40,
+              color: "var(--text-light)",
+              marginBottom: 8,
+            }}
           />
           <Typography variant="body1" color="text.secondary">
             No users scanned yet

@@ -1,10 +1,11 @@
-import { useContext, useState, useRef, useEffect } from "react";
-import { AuthContext } from "@/src/contexts/auth.context.jsx";
+import { useContext, useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
+
+import { AuthContext } from "@/src/contexts/auth.context.jsx";
 import {
-  uploadUserAvatarApi,
-  updateUserAvatarApi,
   getUserAvatarByIdApi,
+  updateUserAvatarApi,
+  uploadUserAvatarApi,
 } from "@/src/utils/api.js";
 
 function MenuItem({ text, path, hasSubmenu, isOpen, onClick, children }) {
@@ -12,29 +13,34 @@ function MenuItem({ text, path, hasSubmenu, isOpen, onClick, children }) {
     <div>
       {hasSubmenu ? (
         <div
-          className="flex items-center p-2 rounded-lg hover:bg-gray-100 cursor-pointer"
+          className="flex cursor-pointer items-center rounded-lg p-2 hover:bg-gray-100"
           onClick={onClick}
         >
-          <span className="text-sm text-gray-700 flex-1">{text}</span>
+          <span className="flex-1 text-sm text-gray-700">{text}</span>
           <svg
-            className={`w-4 h-4 transform ${isOpen ? "rotate-90" : ""}`}
+            className={`h-4 w-4 transform ${isOpen ? "rotate-90" : ""}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M9 5l7 7-7 7"
+            />
           </svg>
         </div>
       ) : (
         <NavLink
           to={path}
           className={({ isActive }) =>
-            `flex items-center p-2 rounded-lg hover:bg-gray-100 ${
+            `flex items-center rounded-lg p-2 hover:bg-gray-100 ${
               isActive ? "bg-blue-200 font-semibold" : ""
             }`
           }
         >
-          <span className="text-sm text-gray-700 flex-1">{text}</span>
+          <span className="flex-1 text-sm text-gray-700">{text}</span>
         </NavLink>
       )}
       {hasSubmenu && isOpen && <div className="ml-4 space-y-2">{children}</div>}
@@ -47,7 +53,7 @@ function SubMenuItem({ text, path }) {
     <NavLink
       to={path}
       className={({ isActive }) =>
-        `flex items-center p-2 rounded-lg hover:bg-gray-100 ${
+        `flex items-center rounded-lg p-2 hover:bg-gray-100 ${
           isActive ? "bg-blue-200 font-semibold" : ""
         }`
       }
@@ -93,8 +99,8 @@ function ProfileCard() {
   const avatarUrl = avatar
     ? avatar
     : user?.avatar_url
-    ? `${user.avatar_url}?t=${Date.now()}`
-    : "/src/assets/images/default-avatar.jpg";
+      ? `${user.avatar_url}?t=${Date.now()}`
+      : "/src/assets/images/default-avatar.jpg";
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
@@ -135,13 +141,13 @@ function ProfileCard() {
   ];
 
   return (
-    <div className="max-w-sm mx-auto p-4 bg-white rounded-lg shadow-md">
+    <div className="mx-auto max-w-sm rounded-lg bg-white p-4 shadow-md">
       <div className="flex flex-wrap items-center space-x-4 sm:space-x-6">
-        <div className="relative flex h-20 w-20 sm:h-16 sm:w-16 shrink-0">
+        <div className="relative flex h-20 w-20 shrink-0 sm:h-16 sm:w-16">
           <img
             key={avatarUrl}
             alt="Avatar"
-            className={`h-full w-full rounded-lg object-cover cursor-pointer ${
+            className={`h-full w-full cursor-pointer rounded-lg object-cover ${
               loading ? "opacity-50" : "opacity-100"
             }`}
             src={avatarUrl}
@@ -155,8 +161,10 @@ function ProfileCard() {
             onChange={handleFileChange}
           />
         </div>
-        <div className="flex flex-col flex-1 break-words">
-          <h2 className="text-base font-semibold">{user?.full_name || "null"}</h2>
+        <div className="flex flex-1 flex-col break-words">
+          <h2 className="text-base font-semibold">
+            {user?.full_name || "null"}
+          </h2>
           <p className="text-xs text-gray-600">
             {user?.email || "No email available"}
           </p>
@@ -171,7 +179,11 @@ function ProfileCard() {
             path={item.path}
             hasSubmenu={item.hasSubmenu}
             isOpen={item.hasSubmenu && isAccountMenuOpen}
-            onClick={item.hasSubmenu ? () => setIsAccountMenuOpen(!isAccountMenuOpen) : null}
+            onClick={
+              item.hasSubmenu
+                ? () => setIsAccountMenuOpen(!isAccountMenuOpen)
+                : null
+            }
           >
             {item.subItems?.map((subItem) => (
               <SubMenuItem

@@ -1,37 +1,29 @@
-import React from "react";
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Typography,
+  Avatar,
   Box,
-  Grid,
   Button,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
+  Grid,
+  IconButton,
+  Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  Stack,
-  Avatar,
-  IconButton,
-  useTheme,
+  Typography,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CancelIcon from "@mui/icons-material/Cancel";
-import LocalShippingIcon from "@mui/icons-material/LocalShipping";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import InventoryIcon from "@mui/icons-material/Inventory";
-import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
-import CloseIcon from "@mui/icons-material/Close";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import { CheckCircle, Copy, MapPin, Truck, X, XCircle } from "lucide-react";
+import React from "react";
 
 const OrderDetailsDialog = ({
   open,
@@ -80,7 +72,7 @@ const OrderDetailsDialog = ({
             boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
           }}
         >
-          <Icon fontSize="small" />
+          <Icon size={16} />
         </Avatar>
         {!isLast && (
           <Box
@@ -264,7 +256,7 @@ const OrderDetailsDialog = ({
           aria-label="close"
           size="small"
         >
-          <CloseIcon />
+          <X size={20} />
         </IconButton>
       </DialogTitle>
 
@@ -302,10 +294,10 @@ const OrderDetailsDialog = ({
                           order.status === "pending"
                             ? "warning"
                             : order.status === "accepted"
-                            ? "success"
-                            : order.status === "rejected"
-                            ? "error"
-                            : "default"
+                              ? "success"
+                              : order.status === "rejected"
+                                ? "error"
+                                : "default"
                         }
                         size="small"
                         sx={{ fontWeight: 500 }}
@@ -411,15 +403,15 @@ const OrderDetailsDialog = ({
                           order.status === "ready_to_pick"
                             ? "info"
                             : order.data?.status === "picking" ||
-                              order.status === "picking"
-                            ? "warning"
-                            : order.data?.status === "delivered" ||
-                              order.status === "delivered"
-                            ? "success"
-                            : order.data?.status === "cancel" ||
-                              order.status === "cancel"
-                            ? "error"
-                            : "default"
+                                order.status === "picking"
+                              ? "warning"
+                              : order.data?.status === "delivered" ||
+                                  order.status === "delivered"
+                                ? "success"
+                                : order.data?.status === "cancel" ||
+                                    order.status === "cancel"
+                                  ? "error"
+                                  : "default"
                         }
                         size="small"
                         sx={{ fontWeight: 500 }}
@@ -428,13 +420,13 @@ const OrderDetailsDialog = ({
                     <InfoRow
                       label="Created Date"
                       value={formatDate(
-                        order.data?.created_date || order.created_at
+                        order.data?.created_date || order.created_at,
                       )}
                     />
                     <InfoRow
                       label="Last Updated"
                       value={formatDate(
-                        order.data?.updated_date || order.updated_at
+                        order.data?.updated_date || order.updated_at,
                       )}
                     />
                   </Grid>
@@ -458,13 +450,13 @@ const OrderDetailsDialog = ({
                     <InfoRow
                       label="COD Amount"
                       value={formatCurrency(
-                        order.data?.cod_amount || order.cod_amount
+                        order.data?.cod_amount || order.cod_amount,
                       )}
                     />
                     <InfoRow
                       label="Insurance Value"
                       value={formatCurrency(
-                        order.data?.insurance_value || order.insurance_value
+                        order.data?.insurance_value || order.insurance_value,
                       )}
                     />
                   </Grid>
@@ -523,7 +515,7 @@ const OrderDetailsDialog = ({
                           key={index}
                           date={event.time}
                           status={event.status}
-                          icon={LocalShippingIcon}
+                          icon={Truck}
                           isLast={index === order.timeline.length - 1}
                         />
                       ))}
@@ -542,7 +534,7 @@ const OrderDetailsDialog = ({
                           key={index}
                           date={location.time}
                           status={`${location.location} - ${location.status}`}
-                          icon={LocationOnIcon}
+                          icon={MapPin}
                           isLast={index === order.locationHistory.length - 1}
                         />
                       ))}
@@ -569,7 +561,7 @@ const OrderDetailsDialog = ({
             <Button
               onClick={() => handleConfirmOrder(order.id)}
               className="customer-button"
-              startIcon={<CheckCircleIcon />}
+              startIcon={<CheckCircle size={20} />}
               sx={{
                 fontWeight: 500,
                 boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
@@ -581,7 +573,7 @@ const OrderDetailsDialog = ({
               onClick={() => handleCancelOrder(order.id)}
               color="error"
               variant="contained"
-              startIcon={<CancelIcon />}
+              startIcon={<XCircle size={20} />}
               sx={{
                 fontWeight: 500,
                 boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
@@ -591,12 +583,12 @@ const OrderDetailsDialog = ({
             </Button>
           </>
         )}
-        
+
         {order.status === "accepted" && handleCreateBasedOn && (
           <Button
             onClick={handleCopy}
             variant="outlined"
-            startIcon={<ContentCopyIcon />}
+            startIcon={<Copy size={20} />}
             sx={{
               borderColor: "var(--primary-green)",
               color: "var(--primary-green)",

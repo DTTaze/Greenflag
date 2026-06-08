@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import { Box, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
@@ -10,7 +9,6 @@ import { transactionsColumns } from "../../components/HeaderColumn";
 export default function TransactionsManagement() {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -20,11 +18,9 @@ export default function TransactionsManagement() {
         if (res.success) {
           setTransactions(res.data);
         } else {
-          setError(res.error);
           console.log(res.error);
         }
       } catch (e) {
-        setError(e);
         console.log(e);
       } finally {
         setLoading(false);

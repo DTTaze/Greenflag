@@ -49,7 +49,15 @@ export default tseslint.config(
       "react-hooks/exhaustive-deps": "off",
 
       // Other custom rules from the user's config
-      "no-unused-vars": "warn", // Note: @typescript-eslint/no-unused-vars is often preferred in TS projects
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          ignoreRestSiblings: true,
+        },
+      ],
       "prefer-const": "off",
       "@typescript-eslint/no-explicit-any": "warn",
 

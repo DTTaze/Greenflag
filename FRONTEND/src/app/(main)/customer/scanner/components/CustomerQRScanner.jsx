@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
-/* eslint-disable max-lines */
 import {
   Alert,
   Box,
@@ -13,7 +11,6 @@ import {
 } from "@mui/material";
 import { UserPlus } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { useOutletContext } from "react-router-dom";
 
 import {
   CheckInUserByUserIdApi,
@@ -30,11 +27,9 @@ import { injectQRScannerStyles } from "./QRScannerStyles";
 import ScannedUsersList from "./ScannedUsersList";
 
 export default function CustomerQRScanner() {
-  const userInfo = useOutletContext();
   const [selectedEvent, setSelectedEvent] = useState("");
   const [scanning, setScanning] = useState(false);
   const [checkoutScanning, setCheckoutScanning] = useState(false);
-  const [result, setResult] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
@@ -42,10 +37,6 @@ export default function CustomerQRScanner() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [manualAddOpen, setManualAddOpen] = useState(false);
-  const [manualUser, setManualUser] = useState({
-    name: "",
-    email: "",
-  });
   const [events, setEvents] = useState([]);
   const [activeTab, setActiveTab] = useState(0);
 
@@ -100,28 +91,32 @@ export default function CustomerQRScanner() {
     setLoading(false);
   };
 
-  const handleScanResult = async (public_id) => {
+  const handleGenericScan = async (public_id, isCheckout) => {
+    const setLoad = isCheckout ? setCheckoutLoading : setLoading;
+    const setScan = isCheckout ? setCheckoutScanning : setScanning;
     try {
-      setLoading(true);
-      console.log("Scanned QR code result: ", public_id);
+      setLoad(true);
+      console.log(
+        `Scanned QR code for ${isCheckout ? "checkout" : "checkin"}: `,
+        public_id,
+      );
 
-      // Get user data
       const userResponse = await getUserByIDPublicApi(public_id);
-
       const userData = userResponse.data;
       console.log(
         "userdata.id after response in CustomerQRScanner: ",
         userData.id,
       );
 
-      // Check in user
-      await CheckInUserByUserIdApi(userData.id, selectedEvent);
+      if (isCheckout) {
+        await CheckOutUserByUserIdApi(userData.id, selectedEvent);
+      } else {
+        await CheckInUserByUserIdApi(userData.id, selectedEvent);
+      }
 
-      setResult(userData.full_name);
-      setScanning(false);
-      setLoading(false);
+      setScan(false);
+      setLoad(false);
 
-      // Refresh scanned users list
       const updatedResponse = await getEventUserByEventIdApi(selectedEvent);
       const updatedUsers = updatedResponse.data.map((user) => ({
         id: user.user_id,
@@ -138,53 +133,29 @@ export default function CustomerQRScanner() {
       }));
       setScannedUsers(updatedUsers);
 
+      const eventName = getEventNameById(selectedEvent, events);
       setSuccessMessage(
-        `Đã thêm ${userData.full_name} vào sự kiện: ${getEventNameById(
-          selectedEvent,
-          events,
-        )}`,
+        isCheckout
+          ? `Đã check out ${userData.full_name} khỏi sự kiện: ${eventName}`
+          : `Đã thêm ${userData.full_name} vào sự kiện: ${eventName}`,
       );
       setShowSuccess(true);
     } catch (error) {
-      console.error("Error during scan process:", error);
-      setError("Failed to process scan");
-      setLoading(false);
-      setScanning(false);
-    }
-  };
-
-  const handleManualInputChange = (event) => {
-    setManualUser({
-      ...manualUser,
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  const handleManualAdd = async () => {
-    if (!selectedEvent) {
-      setSuccessMessage("Please select an event first");
-      setShowSuccess(true);
-      setManualAddOpen(false);
-      return;
-    }
-
-    try {
-      // Here you would need to implement the manual add API call
-      // For now, we'll just show a message
-      setManualAddOpen(false);
-      setManualUser({ name: "", email: "" });
-      setSuccessMessage(
-        `${manualUser.name} đã được thêm vào sự kiện: ${getEventNameById(
-          selectedEvent,
-          events,
-        )}`,
+      console.error(
+        `Error during ${isCheckout ? "checkout " : ""}scan process:`,
+        error,
       );
-      setShowSuccess(true);
-    } catch (error) {
-      console.error("Error adding user manually:", error);
-      setError("Failed to add user manually");
+      setError(
+        isCheckout
+          ? "Failed to process checkout scan"
+          : "Failed to process scan",
+      );
+      setLoad(false);
+      setScan(false);
     }
   };
+
+  const handleScanResult = (public_id) => handleGenericScan(public_id, false);
 
   const handleRemoveUser = async (userId) => {
     try {
@@ -207,57 +178,8 @@ export default function CustomerQRScanner() {
     setCheckoutLoading(false);
   };
 
-  const handleCheckoutScanResult = async (public_id) => {
-    try {
-      setCheckoutLoading(true);
-      console.log("Scanned QR code for checkout: ", public_id);
-
-      // Get user data
-      const userResponse = await getUserByIDPublicApi(public_id);
-      const userData = userResponse.data;
-      console.log(
-        "userdata.id after response in CustomerQRScanner: ",
-        userData.id,
-      );
-
-      // Check out user
-      await CheckOutUserByUserIdApi(userData.id, selectedEvent);
-
-      setResult(userData.full_name);
-      setCheckoutScanning(false);
-      setCheckoutLoading(false);
-
-      // Refresh scanned users list
-      const updatedResponse = await getEventUserByEventIdApi(selectedEvent);
-      const updatedUsers = updatedResponse.data.map((user) => ({
-        id: user.user_id,
-        name: user.User.full_name,
-        email: user.User.email,
-        avatar:
-          user.User.avatar_url ||
-          `https://mui.com/static/images/avatar/${
-            Math.floor(Math.random() * 8) + 1
-          }.jpg`,
-        scannedAt: user.joined_at || new Date().toISOString(),
-        eventId: selectedEvent,
-        eventTitle: user.Event.title,
-      }));
-      setScannedUsers(updatedUsers);
-
-      setSuccessMessage(
-        `Đã check out ${userData.full_name} khỏi sự kiện: ${getEventNameById(
-          selectedEvent,
-          events,
-        )}`,
-      );
-      setShowSuccess(true);
-    } catch (error) {
-      console.error("Error during checkout scan process:", error);
-      setError("Failed to process checkout scan");
-      setCheckoutLoading(false);
-      setCheckoutScanning(false);
-    }
-  };
+  const handleCheckoutScanResult = (public_id) =>
+    handleGenericScan(public_id, true);
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -303,35 +225,23 @@ export default function CustomerQRScanner() {
                 <Tab label="Check Out" />
               </Tabs>
 
-              {activeTab === 0 ? (
-                <>
-                  <Typography variant="h6" gutterBottom>
-                    Check In User
-                  </Typography>
-                  <QRScanner
-                    scanning={scanning}
-                    loading={loading}
-                    onStartScan={handleStartScan}
-                    onStopScan={handleStopScan}
-                    onScanResult={handleScanResult}
-                    disabled={!selectedEvent}
-                  />
-                </>
-              ) : (
-                <>
-                  <Typography variant="h6" gutterBottom>
-                    Check Out User
-                  </Typography>
-                  <QRScanner
-                    scanning={checkoutScanning}
-                    loading={checkoutLoading}
-                    onStartScan={handleCheckoutStartScan}
-                    onStopScan={handleCheckoutStopScan}
-                    onScanResult={handleCheckoutScanResult}
-                    disabled={!selectedEvent}
-                  />
-                </>
-              )}
+              <Typography variant="h6" gutterBottom>
+                {activeTab === 0 ? "Check In User" : "Check Out User"}
+              </Typography>
+              <QRScanner
+                scanning={activeTab === 0 ? scanning : checkoutScanning}
+                loading={activeTab === 0 ? loading : checkoutLoading}
+                onStartScan={
+                  activeTab === 0 ? handleStartScan : handleCheckoutStartScan
+                }
+                onStopScan={
+                  activeTab === 0 ? handleStopScan : handleCheckoutStopScan
+                }
+                onScanResult={
+                  activeTab === 0 ? handleScanResult : handleCheckoutScanResult
+                }
+                disabled={!selectedEvent}
+              />
 
               {!selectedEvent && (
                 <Alert severity="info" sx={{ mt: 2 }}>
@@ -390,10 +300,13 @@ export default function CustomerQRScanner() {
       <ManualAddDialog
         open={manualAddOpen}
         onClose={() => setManualAddOpen(false)}
-        manualUser={manualUser}
-        onManualInputChange={handleManualInputChange}
-        onManualAdd={handleManualAdd}
         selectedEvent={selectedEvent}
+        events={events}
+        onSuccess={(msg) => {
+          setSuccessMessage(msg);
+          setShowSuccess(true);
+        }}
+        onError={setError}
       />
 
       <Snackbar

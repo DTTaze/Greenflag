@@ -1,9 +1,7 @@
-/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import { Box, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 import {
-  cancelShippingOrderApi,
   getAllShippingOrdersApi,
   updateShippingOrderApi,
 } from "@/src/utils/api";
@@ -16,8 +14,8 @@ export default function OrdersManagement() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
-  const [editData, setEditData] = useState(null);
-  const [formMode, setFormMode] = useState("edit");
+  const editData = null;
+  const formMode = "edit";
 
   useEffect(() => {
     const fetchData = async () => {

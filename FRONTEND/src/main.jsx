@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import "./index.css";
 
 import { StrictMode } from "react";
@@ -27,7 +26,6 @@ import CustomerItems from "./components/customer/CustomerItems/index.jsx";
 import CustomerOrders from "./components/customer/CustomerOrders.jsx";
 import CustomerProfile from "./components/customer/CustomerProfile.jsx";
 import CustomerQRScanner from "./components/customer/CustomerQRScanner/CustomerQRScanner.jsx";
-import CustomerRewards from "./components/customer/CustomerRewards.jsx";
 import CustomerUsers from "./components/customer/CustomerUsers/CustomerUsers.jsx";
 import AllItemsTab from "./components/features/exchangemarket/AllItemsTab.jsx";
 import RedeemTab from "./components/features/exchangemarket/RedeemTab.jsx";

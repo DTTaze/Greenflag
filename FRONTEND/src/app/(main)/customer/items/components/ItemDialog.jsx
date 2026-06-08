@@ -1,9 +1,5 @@
-/* eslint-disable max-lines */
 import CloseIcon from "@mui/icons-material/Close";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import DeleteIcon from "@mui/icons-material/Delete";
 import {
-  Box,
   Button,
   CircularProgress,
   Dialog,
@@ -17,40 +13,32 @@ import {
   MenuItem,
   Select,
   TextField,
-  Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
+import MultiImageUpload from "@/src/components/common/MultiImageUpload";
+
+const INITIAL_FORM_STATE = {
+  name: "",
+  price: "",
+  stock: "",
+  description: "",
+  status: "",
+  purchase_limit_per_day: 1,
+  weight: "",
+  length: "",
+  width: "",
+  height: "",
+};
+
 const ItemDialog = ({ open, onClose, onSave, item, isSubmitting }) => {
-  const [formData, setFormData] = useState({
-    name: "",
-    price: "",
-    stock: "",
-    description: "",
-    status: "",
-    purchase_limit_per_day: 1,
-    weight: "",
-    length: "",
-    width: "",
-    height: "",
-  });
+  const [formData, setFormData] = useState(INITIAL_FORM_STATE);
   const [images, setImages] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
   const [errors, setErrors] = useState({});
 
   const resetForm = () => {
-    setFormData({
-      name: "",
-      price: "",
-      stock: "",
-      description: "",
-      status: "",
-      purchase_limit_per_day: 1,
-      weight: "",
-      length: "",
-      width: "",
-      height: "",
-    });
+    setFormData(INITIAL_FORM_STATE);
     setImages([]);
     setPreviewImages([]);
     setErrors({});
@@ -91,58 +79,44 @@ const ItemDialog = ({ open, onClose, onSave, item, isSubmitting }) => {
     }
   };
 
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    if (files.length + images.length > 5) {
-      alert("You can only upload up to 5 images");
-      return;
-    }
-
+  const handleImagesSelected = (files) => {
     setImages((prev) => [...prev, ...files]);
-
-    // Create preview URLs
     const newPreviewUrls = files.map((file) => URL.createObjectURL(file));
     setPreviewImages((prev) => [...prev, ...newPreviewUrls]);
   };
 
-  const removeImage = (index) => {
+  const handleRemoveImage = (index) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
     setPreviewImages((prev) => {
       const newPreviews = [...prev];
-      URL.revokeObjectURL(newPreviews[index]);
+      if (newPreviews[index]?.startsWith("blob:")) {
+        URL.revokeObjectURL(newPreviews[index]);
+      }
       return newPreviews.filter((_, i) => i !== index);
     });
   };
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    }
-    if (!formData.price || formData.price <= 0) {
+    if (!formData.name.trim()) newErrors.name = "Name is required";
+    if (!formData.price || formData.price <= 0)
       newErrors.price = "Price must be greater than 0";
-    }
-    if (!formData.stock || formData.stock < 0) {
+    if (!formData.stock || formData.stock < 0)
       newErrors.stock = "Stock must be 0 or greater";
-    }
     if (
       !formData.purchase_limit_per_day ||
       formData.purchase_limit_per_day < 1
     ) {
       newErrors.purchase_limit_per_day = "Daily limit must be at least 1";
     }
-    if (!formData.weight || formData.weight <= 0) {
+    if (!formData.weight || formData.weight <= 0)
       newErrors.weight = "Weight must be greater than 0";
-    }
-    if (!formData.length || formData.length <= 0) {
+    if (!formData.length || formData.length <= 0)
       newErrors.length = "Length must be greater than 0";
-    }
-    if (!formData.width || formData.width <= 0) {
+    if (!formData.width || formData.width <= 0)
       newErrors.width = "Width must be greater than 0";
-    }
-    if (!formData.height || formData.height <= 0) {
+    if (!formData.height || formData.height <= 0)
       newErrors.height = "Height must be greater than 0";
-    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -310,63 +284,11 @@ const ItemDialog = ({ open, onClose, onSave, item, isSubmitting }) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="subtitle1" gutterBottom>
-                Images (up to 5)
-              </Typography>
-              <Button
-                component="label"
-                variant="outlined"
-                startIcon={<CloudUploadIcon />}
-                sx={{ mb: 2 }}
-              >
-                Upload Images
-                <input
-                  type="file"
-                  hidden
-                  multiple
-                  accept="image/*"
-                  onChange={handleImageChange}
-                />
-              </Button>
-              <Grid container spacing={2}>
-                {previewImages.map((url, index) => (
-                  <Grid item key={index}>
-                    <Box
-                      sx={{
-                        position: "relative",
-                        width: 100,
-                        height: 100,
-                      }}
-                    >
-                      <img
-                        src={url}
-                        alt={`Preview ${index + 1}`}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                          borderRadius: 4,
-                        }}
-                      />
-                      <IconButton
-                        size="small"
-                        onClick={() => removeImage(index)}
-                        sx={{
-                          position: "absolute",
-                          top: -8,
-                          right: -8,
-                          bgcolor: "background.paper",
-                          "&:hover": { bgcolor: "background.paper" },
-                        }}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Box>
-                  </Grid>
-                ))}
-              </Grid>
-            </Box>
+            <MultiImageUpload
+              previewImages={previewImages}
+              onImageChange={handleImagesSelected}
+              onRemoveImage={handleRemoveImage}
+            />
           </Grid>
         </Grid>
       </DialogContent>

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -11,7 +10,6 @@ import {
   Badge,
   Box,
   Breadcrumbs,
-  Button,
   CircularProgress,
   IconButton,
   Link,
@@ -44,7 +42,7 @@ export default function CustomerAppBar({
   const [notificationAnchor, setNotificationAnchor] = React.useState(null);
   const [loggingOut, setLoggingOut] = React.useState(false);
   const { notify } = useNotification();
-  const { auth, setAuth } = React.useContext(AuthContext);
+  const { setAuth } = React.useContext(AuthContext);
 
   const handleProfileClick = (event) => {
     setAnchorEl(event.currentTarget);

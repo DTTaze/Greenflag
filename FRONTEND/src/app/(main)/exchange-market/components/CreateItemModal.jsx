@@ -1,6 +1,7 @@
-/* eslint-disable max-lines */
-import { Coins, Upload, X } from "lucide-react";
+import { Coins, X } from "lucide-react";
 import { useEffect, useState } from "react";
+
+import ImageUpload from "./ImageUpload";
 
 export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
   const [formData, setFormData] = useState({
@@ -53,17 +54,6 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
       setErrors((prev) => ({
         ...prev,
         [name]: null,
-      }));
-    }
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setFormData((prev) => ({
-        ...prev,
-        image: imageUrl,
       }));
     }
   };
@@ -127,55 +117,15 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
         </div>
 
         <form onSubmit={handleSubmit}>
-          {/* Image upload */}
-          <div className="mb-5">
-            <label className="mb-1 block text-sm font-medium text-gray-700">
-              Hình ảnh sản phẩm
-            </label>
-            <div className="flex items-center gap-4">
-              {formData.image ? (
-                <div className="relative h-24 w-24 overflow-hidden rounded-lg border border-gray-200">
-                  <img
-                    src={formData.image}
-                    alt="Preview"
-                    className="h-full w-full object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setFormData((prev) => ({ ...prev, image: "" }))
-                    }
-                    className="bg-opacity-50 absolute top-1 right-1 rounded-full bg-black p-1 text-white"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </div>
-              ) : (
-                <div className="flex h-24 w-24 flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 text-gray-400">
-                  <Upload className="mb-1 h-6 w-6" />
-                  <span className="text-xs">Tải ảnh</span>
-                </div>
-              )}
-              <div className="flex-grow">
-                <input
-                  type="file"
-                  id="image-upload"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="hidden"
-                />
-                <label
-                  htmlFor="image-upload"
-                  className="inline-block cursor-pointer rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
-                >
-                  Chọn ảnh
-                </label>
-                <p className="mt-1 text-xs text-gray-500">
-                  PNG, JPG lên tới 5MB
-                </p>
-              </div>
-            </div>
-          </div>
+          <ImageUpload
+            image={formData.image}
+            onImageChange={(imageUrl) =>
+              setFormData((prev) => ({ ...prev, image: imageUrl }))
+            }
+            onRemoveImage={() =>
+              setFormData((prev) => ({ ...prev, image: "" }))
+            }
+          />
 
           {/* Basic Information */}
           <div className="mb-5 grid grid-cols-1 gap-4 md:grid-cols-2">

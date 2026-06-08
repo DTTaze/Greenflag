@@ -45,8 +45,10 @@ export default function MainLayout({
     initializeAuth();
   }, [setAuth]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const SocketProviderCast = SocketProvider as any;
+  const SocketProviderCast = SocketProvider as React.ComponentType<{
+    value: unknown;
+    children?: React.ReactNode;
+  }>;
 
   return (
     <SocketProviderCast value={socket}>

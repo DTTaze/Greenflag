@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import "../styles/components/HomepageSection.css";
 
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
@@ -73,7 +72,7 @@ function Section({ imagePath, H2Text, PText, ButtonText, path, reverse }) {
   const sectionRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
   const navigate = useNavigate();
-  const { auth, setAuth } = useContext(AuthContext);
+  const { auth } = useContext(AuthContext);
 
   useEffect(() => {
     const observer = new IntersectionObserver(

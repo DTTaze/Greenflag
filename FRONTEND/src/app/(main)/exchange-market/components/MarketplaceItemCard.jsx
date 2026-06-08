@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import {
   CheckCircle,
   ClipboardEdit,
@@ -54,7 +53,6 @@ const MarketplaceItemCard = ({
   item,
   onEdit,
   onDelete,
-  onPurchase,
   viewMode = "all_items",
   fetchItems,
 }) => {

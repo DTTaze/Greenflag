@@ -1,15 +1,12 @@
-/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import { useContext, useEffect, useMemo } from "react";
 
 import {
   getCategoryDisplayName,
-  marketplaceCategories,
   MarketplaceContext,
   statusColors,
   statusConfig,
 } from "../layout";
 import MarketEmptyState from "./MarketEmptyState";
-import MarketFilterButtons from "./MarketFilterButtons";
 import MarketItemList from "./MarketItemList";
 import MarketSearchBar from "./MarketSearchBar";
 
@@ -21,7 +18,6 @@ function RedeemTab({ fetchItems }) {
     marketListView,
     setMarketListView,
     marketCategory,
-    setMarketCategory,
     handlePurchase,
   } = useContext(MarketplaceContext);
 

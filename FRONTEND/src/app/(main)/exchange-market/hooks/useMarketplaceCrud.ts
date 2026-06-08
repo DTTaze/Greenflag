@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useCallback, useState } from "react";
@@ -10,27 +9,51 @@ import {
   updateProductApi,
 } from "@/src/utils/api";
 
+export interface MarketplaceItem {
+  id: number;
+  name: string;
+  description?: string;
+  price: number;
+  stock: number;
+  status: string;
+  weight?: number;
+  length?: number;
+  width?: number;
+  height?: number;
+  category?: string;
+  image?: string;
+  product_status?: string;
+  postStatus?: string;
+  createdAt?: string;
+  canPurchase?: boolean;
+}
+
 export function useMarketplaceCrud({
   auth,
   setError,
   fetchRedeemItems,
   setMyItems,
 }: {
-  auth: any;
+  auth: {
+    user?: { id: number; username: string; coins?: { amount: number } } | null;
+    isAuthenticated: boolean;
+  };
   setError: React.Dispatch<React.SetStateAction<string | null>>;
   fetchRedeemItems: () => Promise<void>;
-  setMyItems: React.SetStateAction<any> | any;
+  setMyItems: React.Dispatch<React.SetStateAction<MarketplaceItem[]>>;
 }) {
-  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [selectedItem, setSelectedItem] = useState<MarketplaceItem | null>(
+    null,
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [itemToEdit, setItemToEdit] = useState<any>(null);
+  const [itemToEdit, setItemToEdit] = useState<MarketplaceItem | null>(null);
   const [transactionStatus, setTransactionStatus] = useState<string | null>(
     null,
   );
 
   const handlePurchase = useCallback(
-    (item: any) => {
+    (item: MarketplaceItem) => {
       const userCoins = auth.user?.coins?.amount || 0;
       if (!item) {
         setError("Mặt hàng không hợp lệ");
@@ -52,7 +75,10 @@ export function useMarketplaceCrud({
   );
 
   const confirmPurchase = useCallback(
-    async (quantity: number, shippingInfo: any) => {
+    async (
+      quantity: number,
+      shippingInfo: { receiver_information_id: number },
+    ) => {
       if (!selectedItem) {
         setError("Không có sản phẩm được chọn");
         setIsModalOpen(false);
@@ -99,9 +125,10 @@ export function useMarketplaceCrud({
         } else {
           throw new Error("Không nhận được mã giao dịch");
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         setTransactionStatus("failed");
-        setError(`Giao dịch thất bại: ${error.message || "Vui lòng thử lại"}`);
+        const err = error as { message?: string };
+        setError(`Giao dịch thất bại: ${err.message || "Vui lòng thử lại"}`);
         console.error("Lỗi khi xử lý giao dịch:", error);
         setIsModalOpen(false);
         setSelectedItem(null);
@@ -122,7 +149,7 @@ export function useMarketplaceCrud({
     setShowCreateModal(true);
   };
 
-  const handleEditItem = (item: any) => {
+  const handleEditItem = (item: MarketplaceItem) => {
     if (!item || !item.id) {
       console.error("Invalid item or item ID:", item);
       alert("Không thể sửa sản phẩm do thiếu thông tin!");
@@ -133,7 +160,7 @@ export function useMarketplaceCrud({
     setShowCreateModal(true);
   };
 
-  const handleDeleteItem = async (itemId: any) => {
+  const handleDeleteItem = async (itemId: number) => {
     if (!itemId) {
       console.error("Invalid item ID:", itemId);
       alert("Không thể xóa sản phẩm do thiếu thông tin!");
@@ -142,20 +169,24 @@ export function useMarketplaceCrud({
     try {
       const response = await deleteProductApi(itemId);
       if (response?.data) {
-        setMyItems((prev: any[]) => prev.filter((item) => item.id !== itemId));
+        setMyItems((prev) => prev.filter((item) => item.id !== itemId));
         setSelectedItem(null);
         setItemToEdit(null);
         alert("Sản phẩm đã được xóa thành công!");
       } else {
         alert("Xóa sản phẩm thất bại!");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { message?: string };
       console.error("Lỗi khi xóa sản phẩm:", error);
-      alert(error.message || "Có lỗi xảy ra khi xóa sản phẩm");
+      alert(err.message || "Có lỗi xảy ra khi xóa sản phẩm");
     }
   };
 
-  const handleSubmitItem = async (formData: any, isEditing: boolean) => {
+  const handleSubmitItem = async (
+    formData: any,
+    isEditing: boolean,
+  ) => {
     try {
       const { images, ...productData } = formData;
       if (
@@ -179,12 +210,12 @@ export function useMarketplaceCrud({
 
       const formDataToSend = new FormData();
       Object.keys(productData).forEach((key) => {
-        formDataToSend.append(key, productData[key]);
+        formDataToSend.append(key, String(productData[key]));
       });
 
       if (images && images.length > 0) {
         images.forEach((image: any) => {
-          formDataToSend.append("images", image);
+          formDataToSend.append("images", image as Blob | string);
         });
       }
 
@@ -213,7 +244,7 @@ export function useMarketplaceCrud({
             height: response.data.height,
           };
 
-          setMyItems((prev: any[]) =>
+          setMyItems((prev) =>
             prev.map((item) =>
               item.id === itemToEdit.id ? updatedProduct : item,
             ),
@@ -240,7 +271,10 @@ export function useMarketplaceCrud({
             width: response.data.width,
             height: response.data.height,
           };
-          setMyItems((prev: any[]) => [...prev, newItem]);
+          setMyItems((prev) => [
+            ...prev,
+            newItem as unknown as MarketplaceItem,
+          ]);
           alert("Thêm sản phẩm mới thành công!");
         } else {
           alert("Thêm sản phẩm thất bại!");
@@ -249,9 +283,10 @@ export function useMarketplaceCrud({
       setShowCreateModal(false);
       setItemToEdit(null);
       setSelectedItem(null);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { message?: string };
       console.error("Lỗi khi xử lý sản phẩm:", error);
-      alert(error.message || "Có lỗi xảy ra khi xử lý sản phẩm");
+      alert(err.message || "Có lỗi xảy ra khi xử lý sản phẩm");
     }
   };
 

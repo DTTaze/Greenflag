@@ -1,6 +1,5 @@
-/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import { X } from "lucide-react";
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
 
 export default function TaskSubmissionModal({
@@ -18,10 +17,6 @@ export default function TaskSubmissionModal({
   const handleFileChange = (e) => {
     const newFiles = Array.from(e.target.files);
     setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-  };
-
-  const handleRemoveFile = (index) => {
-    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async () => {
@@ -111,9 +106,9 @@ export default function TaskSubmissionModal({
           <button
             className="rounded-full bg-green-600 px-6 py-3 text-base font-semibold text-white transition duration-200 hover:bg-green-700 disabled:opacity-50 sm:text-lg"
             onClick={handleSubmit}
-            disabled={files.length === 0}
+            disabled={files.length === 0 || isSubmitting}
           >
-            Xác nhận
+            {isSubmitting ? "Đang gửi..." : "Xác nhận"}
           </button>
         </div>
       </div>

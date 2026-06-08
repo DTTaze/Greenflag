@@ -1,6 +1,3 @@
-/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
-import { motion } from "framer-motion";
-
 export default function ItemCardSkeleton() {
   return (
     <div className="group relative flex h-full flex-col justify-between overflow-hidden rounded-xl border border-gray-200 bg-white">

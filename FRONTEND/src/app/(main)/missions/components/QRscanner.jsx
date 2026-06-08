@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
 
 export default function QRscanner({ onScan, onError, style }) {
@@ -52,7 +51,7 @@ export default function QRscanner({ onScan, onError, style }) {
     let scanCount = 0;
     const MAX_ERRORS_BEFORE_LOG = 30;
 
-    const handleSuccess = (decodedText, decodedResult) => {
+    const handleSuccess = (decodedText) => {
       console.log("QR Code detected:", decodedText);
       setMessage("Đã quét thành công!");
       setIsScanning(true);

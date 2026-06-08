@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 const getEnv = (key, defaultValue = "") => {
   // Try Next.js env configuration
   if (typeof process !== "undefined" && process.env && process.env[key]) {
@@ -13,7 +12,7 @@ const getEnv = (key, defaultValue = "") => {
     ) {
       return import.meta.env[key];
     }
-  } catch (e) {
+  } catch {
     // Ignore error in non-supported environments
   }
   return defaultValue;

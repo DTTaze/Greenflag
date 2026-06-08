@@ -1,6 +1,4 @@
-/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import {
-  Box,
   Button,
   DialogActions,
   DialogContent,

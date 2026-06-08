@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import React from "react";
 
 import imgSrc from "@/src/assets/images/seedling-solid.svg";
@@ -14,7 +13,6 @@ const TasksList = ({
   tasks,
   loading,
   completingTask,
-  handleTaskCompletion,
   handleTaskSelect,
   currentPage,
   totalPages,

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import { motion } from "framer-motion";
 import { Coins, Leaf } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -7,7 +6,6 @@ import { socket } from "@/src/config/socket";
 
 export default function ItemCard({ item, onPurchase }) {
   const [currentStock, setCurrentStock] = useState(item.stock);
-  const [currentStatus, setCurrentStatus] = useState(item.status);
 
   useEffect(() => {
     // Join the item's room when component mounts
@@ -18,7 +16,6 @@ export default function ItemCard({ item, onPurchase }) {
       if (data.itemId === item.id) {
         console.log("Stock update received:", data);
         setCurrentStock(data.stock);
-        setCurrentStatus(data.status);
       }
     });
 

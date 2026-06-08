@@ -1,9 +1,5 @@
-/* eslint-disable max-lines */
 import CloseIcon from "@mui/icons-material/Close";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import DeleteIcon from "@mui/icons-material/Delete";
 import {
-  Box,
   Button,
   Dialog,
   DialogActions,
@@ -16,9 +12,10 @@ import {
   MenuItem,
   Select,
   TextField,
-  Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
+
+import MultiImageUpload from "@/src/components/common/MultiImageUpload";
 
 const EventDialog = ({ open, onClose, onSave, event }) => {
   const [formData, setFormData] = useState({
@@ -96,25 +93,16 @@ const EventDialog = ({ open, onClose, onSave, event }) => {
     }
   };
 
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    if (files.length + previewImages.length > 5) {
-      alert("You can only upload up to 5 images");
-      return;
-    }
-
+  const handleImagesSelected = (files) => {
     setImages((prev) => [...prev, ...files]);
-
-    // Create preview URLs
     const newPreviewUrls = files.map((file) => URL.createObjectURL(file));
     setPreviewImages((prev) => [...prev, ...newPreviewUrls]);
   };
 
-  const removeImage = (index) => {
+  const handleRemoveImage = (index) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
     setPreviewImages((prev) => {
       const newPreviews = [...prev];
-      // Only revoke URL if it's a blob URL (from new uploads)
       if (newPreviews[index]?.startsWith("blob:")) {
         URL.revokeObjectURL(newPreviews[index]);
       }
@@ -124,27 +112,19 @@ const EventDialog = ({ open, onClose, onSave, event }) => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.title.trim()) {
-      newErrors.title = "Title is required";
-    }
-    if (!formData.location.trim()) {
-      newErrors.location = "Location is required";
-    }
+    if (!formData.title.trim()) newErrors.title = "Title is required";
+    if (!formData.location.trim()) newErrors.location = "Location is required";
     if (!formData.capacity || formData.capacity < 1) {
       newErrors.capacity = "Capacity must be at least 1";
     }
-    if (!formData.start_time) {
-      newErrors.start_time = "Start time is required";
-    }
-    if (!formData.end_time) {
-      newErrors.end_time = "End time is required";
-    }
-    if (formData.start_time && formData.end_time) {
-      const start = new Date(formData.start_time);
-      const end = new Date(formData.end_time);
-      if (end <= start) {
-        newErrors.end_time = "End time must be after start time";
-      }
+    if (!formData.start_time) newErrors.start_time = "Start time is required";
+    if (!formData.end_time) newErrors.end_time = "End time is required";
+    if (
+      formData.start_time &&
+      formData.end_time &&
+      new Date(formData.end_time) <= new Date(formData.start_time)
+    ) {
+      newErrors.end_time = "End time must be after start time";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -302,63 +282,11 @@ const EventDialog = ({ open, onClose, onSave, event }) => {
             </FormControl>
           </Grid>
           <Grid item xs={12}>
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="subtitle1" gutterBottom>
-                Images (up to 5)
-              </Typography>
-              <Button
-                component="label"
-                variant="outlined"
-                startIcon={<CloudUploadIcon />}
-                sx={{ mb: 2 }}
-              >
-                Upload Images
-                <input
-                  type="file"
-                  hidden
-                  multiple
-                  accept="image/*"
-                  onChange={handleImageChange}
-                />
-              </Button>
-              <Grid container spacing={2}>
-                {previewImages.map((url, index) => (
-                  <Grid item key={index}>
-                    <Box
-                      sx={{
-                        position: "relative",
-                        width: 100,
-                        height: 100,
-                      }}
-                    >
-                      <img
-                        src={url}
-                        alt={`Preview ${index + 1}`}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                          borderRadius: 4,
-                        }}
-                      />
-                      <IconButton
-                        size="small"
-                        onClick={() => removeImage(index)}
-                        sx={{
-                          position: "absolute",
-                          top: -8,
-                          right: -8,
-                          bgcolor: "background.paper",
-                          "&:hover": { bgcolor: "background.paper" },
-                        }}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Box>
-                  </Grid>
-                ))}
-              </Grid>
-            </Box>
+            <MultiImageUpload
+              previewImages={previewImages}
+              onImageChange={handleImagesSelected}
+              onRemoveImage={handleRemoveImage}
+            />
           </Grid>
         </Grid>
       </DialogContent>

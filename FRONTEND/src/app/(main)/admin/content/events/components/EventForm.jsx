@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
@@ -38,7 +37,6 @@ export default function EventForm({
     images: [],
   });
 
-  const [selectedFiles, setSelectedFiles] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
 
   useEffect(() => {
@@ -80,7 +78,6 @@ export default function EventForm({
         status: "active",
         images: [],
       });
-      setSelectedFiles([]);
       setPreviewUrls([]);
     }
   }, [initialData, mode]);
@@ -95,8 +92,6 @@ export default function EventForm({
 
   const handleFileSelect = (e) => {
     const files = Array.from(e.target.files);
-    setSelectedFiles((prev) => [...prev, ...files]);
-
     // Create preview URLs for new files
     const newPreviewUrls = files.map((file) => URL.createObjectURL(file));
     setPreviewUrls((prev) => [...prev, ...newPreviewUrls]);
@@ -108,7 +103,6 @@ export default function EventForm({
   };
 
   const handleRemoveImage = (index) => {
-    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
     setPreviewUrls((prev) => prev.filter((_, i) => i !== index));
     setFormData((prev) => ({
       ...prev,

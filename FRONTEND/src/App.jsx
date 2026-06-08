@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import { useContext, useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { io } from "socket.io-client";
@@ -30,7 +29,7 @@ function App() {
         } else {
           setAuth({ isAuthenticated: false, user: null });
         }
-      } catch (err) {
+      } catch {
         setAuth({ isAuthenticated: false, user: null });
       } finally {
         setAppLoading(false);

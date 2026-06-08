@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
-import { CalendarIcon, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
+import { CalendarIcon, MapPin } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -14,7 +13,6 @@ const EventList = ({ userInfo }) => {
   const [eventUser, setEventUser] = useState([]);
   const [hotEvents, setHotEvents] = useState([]);
   const [nowEvents, setNowEvents] = useState([]);
-  const [events, setEvents] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,7 +37,6 @@ const EventList = ({ userInfo }) => {
         // Fetch all events
         const allEventsResponse = await getAllEventsApi();
         const allEvents = allEventsResponse.data;
-        setEvents(allEvents);
 
         // Filter hot events
         const hotEventResponse = allEvents.filter((event) => {

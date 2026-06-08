@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useContext } from "react";
@@ -36,7 +35,7 @@ function ExchangeMarketContent({ children }: { children: React.ReactNode }) {
     isModalOpen,
     handleCloseModal,
     confirmPurchase,
-  } = useContext(MarketplaceContext);
+  } = useContext(MarketplaceContext)!;
 
   if (loading) {
     return (
@@ -73,14 +72,24 @@ function ExchangeMarketContent({ children }: { children: React.ReactNode }) {
 
           {selectedItem &&
             isModalOpen &&
-            React.createElement(PurchaseModal as any, {
-              isOpen: isModalOpen,
-              onClose: handleCloseModal,
-              item: selectedItem,
-              userCoins: auth.user?.coins?.amount || 0,
-              onConfirm: confirmPurchase,
-              transactionStatus: transactionStatus,
-            })}
+            React.createElement(
+              PurchaseModal as React.ComponentType<{
+                isOpen: boolean;
+                onClose: () => void;
+                item: unknown;
+                userCoins: number;
+                onConfirm: (quantity: number, shippingInfo: unknown) => void;
+                transactionStatus?: string | null;
+              }>,
+              {
+                isOpen: isModalOpen,
+                onClose: handleCloseModal,
+                item: selectedItem,
+                userCoins: auth.user?.coins?.amount || 0,
+                onConfirm: confirmPurchase,
+                transactionStatus: transactionStatus,
+              },
+            )}
         </div>
       </main>
     </div>

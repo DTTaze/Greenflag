@@ -1,13 +1,3 @@
-/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
-import {
-  CheckCircle,
-  ClipboardEdit,
-  Clock,
-  EyeOff,
-  FileWarning,
-  Filter,
-} from "lucide-react";
-
 function MarketFilterButtons({
   marketView,
   marketCategory,

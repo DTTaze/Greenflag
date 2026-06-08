@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import { useContext, useEffect, useMemo } from "react";
 
 import {
@@ -25,9 +24,7 @@ function UserItemsTab({ fetchItems }) {
     marketStatusFilter,
     setMarketStatusFilter,
     showCreateModal,
-    setShowCreateModal,
     itemToEdit,
-    setItemToEdit,
     handleAddItem,
     handleEditItem,
     handleDeleteItem,

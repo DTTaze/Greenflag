@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import React from "react";
 
 import imgScr from "@/src/assets/images/seedling-solid.svg";
@@ -26,7 +25,7 @@ const TaskCard = React.memo(
     const progress_count = task.progress_count || 0;
     console.log("progress_count in TaskCard", task.progress_count);
 
-    const handleTaskAccepted = (acceptedTask) => {
+    const handleTaskAccepted = () => {
       // Update the task's isUserTask status
       task.isUserTask = true;
     };

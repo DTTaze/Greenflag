@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { getAllTaskCompletedById, getUserApi } from "@/src/utils/api";
@@ -11,7 +10,7 @@ function MissionCompleted() {
 
   const fetchUserCompletedTasks = useCallback(async () => {
     try {
-      const { data: user } = await getUserApi();
+      await getUserApi();
       const { data: tasks } = await getAllTaskCompletedById();
       setUserCompletedTasks(
         tasks.map(({ id, title, coins, created_at }) => ({

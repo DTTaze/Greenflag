@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import { Box, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
@@ -16,7 +15,6 @@ import UserForm from "./UserForm";
 export default function UsersManagement() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
   const [editData, setEditData] = useState(null);
   const [formMode, setFormMode] = useState("add");
@@ -29,11 +27,9 @@ export default function UsersManagement() {
         if (res.success) {
           setUsers(res.data);
         } else {
-          setError(res.error);
           console.log(res.error);
         }
       } catch (e) {
-        setError(e);
         console.log(e);
       } finally {
         setLoading(false);

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -63,7 +62,48 @@ export const getCategoryDisplayName = (key: string) => {
   return categories[key] || "Không xác định";
 };
 
-export const MarketplaceContext = createContext<any>(null);
+export interface MarketplaceContextType {
+  loading: boolean;
+  error: string | null;
+  setError: React.Dispatch<React.SetStateAction<string | null>>;
+  transactionStatus: string | null;
+  selectedItem: any;
+  isModalOpen: boolean;
+  items: any[];
+  allItems: any[];
+  myItems: any[];
+  fetchRedeemItems: () => Promise<void>;
+  fetchMyItems: () => Promise<void>;
+  fetchAllItems: () => Promise<void>;
+  searchQuery: string;
+  setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
+  sortOption: string;
+  setSortOption: React.Dispatch<React.SetStateAction<string>>;
+  isFilterOpen: boolean;
+  setIsFilterOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  marketListView: string;
+  setMarketListView: React.Dispatch<React.SetStateAction<string>>;
+  marketCategory: string;
+  setMarketCategory: React.Dispatch<React.SetStateAction<string>>;
+  marketStatusFilter: string;
+  setMarketStatusFilter: React.Dispatch<React.SetStateAction<string>>;
+  marketSearchText: string;
+  setMarketSearchText: React.Dispatch<React.SetStateAction<string>>;
+  showCreateModal: boolean;
+  itemToEdit: any;
+  handlePurchase: (item: any) => void;
+  confirmPurchase: (quantity: number, shippingInfo: any) => Promise<void>;
+  handleCloseModal: () => void;
+  handleAddItem: () => void;
+  handleEditItem: (item: any) => void;
+  handleDeleteItem: (id: number) => Promise<void>;
+  handleSubmitItem: (formData: any, isEditing: boolean) => Promise<void>;
+  handleCancelForm: () => void;
+}
+
+export const MarketplaceContext = createContext<MarketplaceContextType | null>(
+  null,
+);
 
 export function MarketplaceProvider({
   children,

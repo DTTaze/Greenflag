@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
@@ -11,21 +10,43 @@ import {
   getUserApi,
 } from "@/src/utils/api";
 
+import { MarketplaceItem } from "./useMarketplaceCrud";
+
+interface RawProductData {
+  id: number;
+  name: string;
+  description?: string;
+  price: number;
+  category?: string;
+  status?: string;
+  post_status?: string;
+  product_status?: string;
+  created_at: string;
+  images: string[];
+  stock?: number;
+  creator?: { username?: string };
+  purchase_limit_per_day?: number;
+  weight?: number;
+  length?: number;
+  width?: number;
+  height?: number;
+}
+
 export function useMarketplaceData(userId?: string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [items, setItems] = useState<any[]>([]);
-  const [allItems, setAllItems] = useState<any[]>([]);
-  const [myItems, setMyItems] = useState<any[]>([]);
+  const [items, setItems] = useState<MarketplaceItem[]>([]);
+  const [allItems, setAllItems] = useState<MarketplaceItem[]>([]);
+  const [myItems, setMyItems] = useState<MarketplaceItem[]>([]);
 
   useEffect(() => {
     async function initialize() {
       try {
-        const userResponse = (await getUserApi()) as any;
+        const userResponse = (await getUserApi()) as any as { success: boolean };
         if (!userResponse.success) {
           throw new Error("Không thể tải dữ liệu người dùng");
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         setError("Lỗi khi tải dữ liệu người dùng");
         console.error(err);
       } finally {
@@ -39,7 +60,8 @@ export function useMarketplaceData(userId?: string) {
     try {
       const itemsResponse = await getAllItemsApi();
       if (itemsResponse?.data) {
-        const mappedItems = itemsResponse.data.map((item: any) => ({
+        const rawItems = itemsResponse.data as RawProductData[];
+        const mappedItems = rawItems.map((item) => ({
           id: item.id,
           name: item.name,
           description: item.description,
@@ -58,23 +80,26 @@ export function useMarketplaceData(userId?: string) {
           width: item.width,
           height: item.height,
         }));
-        setItems(mappedItems);
+        setItems(mappedItems as unknown as MarketplaceItem[]);
 
         // Join socket room for real-time updates
-        itemsResponse.data.forEach((item: any) => {
+        rawItems.forEach((item) => {
           socket.emit("join-item-room", item.id);
         });
 
         // Listen for stock updates
-        socket.on("stock-update", (data: any) => {
-          setItems((prevItems) =>
-            prevItems.map((prevItem) =>
-              prevItem.id === data.itemId
-                ? { ...prevItem, stock: data.stock, postStatus: data.status }
-                : prevItem,
-            ),
-          );
-        });
+        socket.on(
+          "stock-update",
+          (data: { itemId: number; stock: number; status: string }) => {
+            setItems((prevItems) =>
+              prevItems.map((prevItem) =>
+                prevItem.id === data.itemId
+                  ? { ...prevItem, stock: data.stock, postStatus: data.status }
+                  : prevItem,
+              ),
+            );
+          },
+        );
       }
     } catch (error) {
       console.error("Lỗi khi lấy sản phẩm cho tab đổi quà:", error);
@@ -87,7 +112,8 @@ export function useMarketplaceData(userId?: string) {
     try {
       const productResponse = await getProductByIdUser(userId);
       if (productResponse?.data) {
-        const mappedMyItems = productResponse.data.map((item: any) => ({
+        const rawItems = productResponse.data as RawProductData[];
+        const mappedMyItems = rawItems.map((item) => ({
           id: item.id,
           name: item.name,
           description: item.description,
@@ -106,7 +132,7 @@ export function useMarketplaceData(userId?: string) {
           width: item.width,
           height: item.height,
         }));
-        setMyItems(mappedMyItems);
+        setMyItems(mappedMyItems as unknown as MarketplaceItem[]);
       }
     } catch (error) {
       console.error("Lỗi khi lấy sản phẩm của người dùng:", error);
@@ -118,7 +144,8 @@ export function useMarketplaceData(userId?: string) {
     try {
       const allProductsResponse = await getAllAvailableProductsApi();
       if (allProductsResponse?.data) {
-        const mappedAllItems = allProductsResponse.data.map((item: any) => ({
+        const rawItems = allProductsResponse.data as RawProductData[];
+        const mappedAllItems = rawItems.map((item) => ({
           id: item.id,
           name: item.name,
           description: item.description,
@@ -137,7 +164,7 @@ export function useMarketplaceData(userId?: string) {
           width: item.width,
           height: item.height,
         }));
-        setAllItems(mappedAllItems);
+        setAllItems(mappedAllItems as unknown as MarketplaceItem[]);
       }
     } catch (error) {
       console.error("Lỗi khi lấy tất cả sản phẩm:", error);

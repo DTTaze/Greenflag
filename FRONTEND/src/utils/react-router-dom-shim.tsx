@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import NextLink from "next/link";
@@ -10,13 +9,16 @@ import {
 import React, { createContext, useContext, useEffect } from "react";
 
 // Context to simulate react-router's Outlet context
-const OutletContext = createContext<any>(null);
+const OutletContext = createContext<unknown>(null);
 
 // 1. useNavigate shim
 export const useNavigate = () => {
   const router = useRouter();
 
-  return (to: any, options?: { replace?: boolean; state?: any }) => {
+  return (
+    to: string | number,
+    options?: { replace?: boolean; state?: unknown },
+  ) => {
     if (typeof to === "number") {
       if (to === -1) {
         router.back();
@@ -44,13 +46,15 @@ export const useLocation = () => {
     pathname,
     search,
     hash: "",
-    state: null,
+    state: null as unknown,
   };
 };
 
 // 3. useSearchParams shim
-// eslint-disable-next-line no-unused-vars
-export const useSearchParams = (): [URLSearchParams, (params: any) => void] => {
+export const useSearchParams = (): [
+  URLSearchParams,
+  (params: URLSearchParams | string | Record<string, string>) => void,
+] => {
   const searchParams = useNextSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -59,8 +63,10 @@ export const useSearchParams = (): [URLSearchParams, (params: any) => void] => {
     searchParams ? searchParams.toString() : "",
   );
 
-  const setSearchParams = (params: any) => {
-    const nextParams = new URLSearchParams(params);
+  const setSearchParams = (
+    params: URLSearchParams | string | Record<string, string>,
+  ) => {
+    const nextParams = new URLSearchParams(params as Record<string, string>);
     router.push(`${pathname}?${nextParams.toString()}`);
   };
 
@@ -68,38 +74,44 @@ export const useSearchParams = (): [URLSearchParams, (params: any) => void] => {
 };
 
 // 4. Link shim
-export const Link = React.forwardRef<HTMLAnchorElement, any>(
-  ({ to, children, ...props }, ref) => {
-    return (
-      <NextLink ref={ref} href={to || "/"} {...props}>
-        {children}
-      </NextLink>
-    );
-  },
-);
+export const Link = React.forwardRef<
+  HTMLAnchorElement,
+  React.ComponentPropsWithoutRef<typeof NextLink> & { to?: string }
+>(({ to, children, href, ...props }, ref) => {
+  return (
+    <NextLink ref={ref} href={to || href || "/"} {...props}>
+      {children}
+    </NextLink>
+  );
+});
 Link.displayName = "Link";
 
 // 5. NavLink shim
-export const NavLink = React.forwardRef<HTMLAnchorElement, any>(
-  ({ to, className, children, ...props }, ref) => {
-    const pathname = usePathname() || "/";
-    const isActive = pathname === to || pathname.startsWith(to + "/");
+export const NavLink = React.forwardRef<
+  HTMLAnchorElement,
+  Omit<React.ComponentPropsWithoutRef<typeof NextLink>, "className"> & {
+    to?: string;
+    className?: string | ((props: { isActive: boolean }) => string);
+  }
+>(({ to, className, children, href, ...props }, ref) => {
+  const pathname = usePathname() || "/";
+  const isActive =
+    pathname === to || (to !== "/" && pathname.startsWith(to + "/"));
 
-    const computedClassName =
-      typeof className === "function" ? className({ isActive }) : className;
+  const computedClassName =
+    typeof className === "function" ? className({ isActive }) : className;
 
-    return (
-      <NextLink
-        ref={ref}
-        href={to || "/"}
-        className={computedClassName}
-        {...props}
-      >
-        {children}
-      </NextLink>
-    );
-  },
-);
+  return (
+    <NextLink
+      ref={ref}
+      href={to || href || "/"}
+      className={computedClassName}
+      {...props}
+    >
+      {children}
+    </NextLink>
+  );
+});
 NavLink.displayName = "NavLink";
 
 // 6. Outlet shim
@@ -107,7 +119,7 @@ export const Outlet = ({
   context,
   children,
 }: {
-  context?: any;
+  context?: unknown;
   children?: React.ReactNode;
 }) => {
   return (
@@ -116,8 +128,8 @@ export const Outlet = ({
 };
 
 // 7. useOutletContext shim
-export const useOutletContext = <T = any,>(): T => {
-  return useContext(OutletContext);
+export const useOutletContext = <T = unknown,>(): T => {
+  return useContext(OutletContext) as T;
 };
 
 // 8. Navigate shim
@@ -127,7 +139,7 @@ export const Navigate = ({
 }: {
   to: string;
   replace?: boolean;
-  state?: any;
+  state?: unknown;
 }) => {
   const router = useRouter();
 

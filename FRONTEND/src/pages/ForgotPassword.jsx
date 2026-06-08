@@ -89,7 +89,7 @@ const ForgotPassword = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 error={errors.email}
               />
-              <Button text="Gửi link đặt lại" />
+              <Button type="submit" text="Gửi link đặt lại" />
             </form>
           ) : (
             <div className="text-center">
@@ -120,7 +120,7 @@ const ForgotPassword = () => {
             onChange={(e) => setConfirmPassword(e.target.value)}
             error={errors.confirmPassword}
           />
-          <Button text="Đổi mật khẩu" />
+          <Button type="submit" text="Đổi mật khẩu" />
         </form>
       )}
 

@@ -177,6 +177,7 @@ services:
     environment:
       NODE_ENV: development
       CHOKIDAR_USEPOLLING: true
+      VITE_BACKEND_URL: http://backend:6060
     ports:
       - "5173:5173"
     depends_on:

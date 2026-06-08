@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 
 # Cài đặt dependencies
-RUN npm install
+RUN npm install --legacy-peer-deps
 # Copy toàn bộ source code vào container
 COPY . .
 

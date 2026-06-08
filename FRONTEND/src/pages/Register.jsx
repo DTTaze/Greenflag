@@ -66,6 +66,7 @@ function RegisterPage() {
           {...register("password")}
         />
         <Button
+          type="submit"
           text={loading ? "Đang đăng ký..." : "Đăng ký"}
           disabled={loading}
           className="h-11 w-full"

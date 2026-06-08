@@ -15,9 +15,13 @@ const registerUserDto = z.object({
   role_id: z.coerce.number().int().positive("Role ID phải là số nguyên dương").optional(),
 });
 
-const loginUserDto = registerUserDto.pick({
-  email: true,
-  password: true,
+const loginUserDto = z.object({
+  email: z.string().email("Email không hợp lệ").optional(),
+  username: z.string().min(2, "Username phải có ít nhất 2 ký tự").optional(),
+  password: z.string().min(1, "Mật khẩu không được để trống"),
+}).refine((data) => data.email || data.username, {
+  message: "Vui lòng cung cấp email hoặc username",
+  path: ["email"],
 });
 
 const forgotPasswordDto = z.object({

@@ -41,6 +41,7 @@ const LoginPage = () => {
         />
 
         <Button
+          type="submit"
           text="Đăng nhập"
           disabled={isLoginDisabled}
           width="100%"

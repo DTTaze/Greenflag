@@ -1,23 +1,23 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
-import React, { useState } from "react";
 import {
-  LayoutDashboard,
-  Users,
-  ShieldCheck,
-  ClipboardList,
-  Gift,
-  ShoppingCart,
   Calendar,
+  ClipboardList,
   Coins,
-  Truck,
+  Gift,
+  LayoutDashboard,
   ListPlus,
-  Settings,
   LogOut,
   Menu,
+  Settings,
+  ShieldCheck,
+  ShoppingCart,
+  Truck,
+  Users,
   X,
 } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import React, { useState } from "react";
 
 export default function TemporaryDrawer({ userInfo }) {
   const [open, setOpen] = useState(false);
@@ -70,6 +70,11 @@ export default function TemporaryDrawer({ userInfo }) {
           icon: <Calendar size={20} />,
           path: "/admin/content/events",
         },
+        {
+          text: "Bài đăng cộng đồng",
+          icon: <Users size={20} />,
+          path: "/admin/content/community",
+        },
       ],
     },
     {
@@ -109,7 +114,7 @@ export default function TemporaryDrawer({ userInfo }) {
       {/* Menu Button */}
       <button
         onClick={toggleDrawer(true)}
-        className="flex items-center justify-center p-2 rounded-md hover:bg-gray-100 text-emerald-600 focus:outline-none transition-colors duration-200"
+        className="flex items-center justify-center rounded-md p-2 text-emerald-600 transition-colors duration-200 hover:bg-gray-100 focus:outline-none"
         aria-label="Open navigation menu"
       >
         <Menu size={24} />
@@ -125,18 +130,18 @@ export default function TemporaryDrawer({ userInfo }) {
 
       {/* Drawer Content */}
       <div
-        className={`fixed top-0 left-0 z-50 h-full w-[280px] bg-white shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 left-0 z-50 flex h-full w-[280px] transform flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-emerald-50/30">
-          <span className="font-semibold text-lg text-emerald-700">
+        <div className="flex items-center justify-between border-b border-gray-100 bg-emerald-50/30 p-4">
+          <span className="text-lg font-semibold text-emerald-700">
             Green Flag Admin
           </span>
           <button
             onClick={toggleDrawer(false)}
-            className="p-1 rounded-full hover:bg-gray-200 text-gray-500 transition-colors"
+            className="rounded-full p-1 text-gray-500 transition-colors hover:bg-gray-200"
           >
             <X size={18} />
           </button>
@@ -144,23 +149,25 @@ export default function TemporaryDrawer({ userInfo }) {
 
         {/* User Info Section */}
         {userInfo && (
-          <div className="p-4 flex items-center gap-3 border-b border-gray-100 bg-gray-50/50">
+          <div className="flex items-center gap-3 border-b border-gray-100 bg-gray-50/50 p-4">
             {userInfo.avatar_url ? (
               <img
-                className="w-10 h-10 rounded-full border border-emerald-100 object-cover"
+                className="h-10 w-10 rounded-full border border-emerald-100 object-cover"
                 src={userInfo.avatar_url}
                 alt={userInfo.username || "Admin avatar"}
               />
             ) : (
-              <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-base">
-                {userInfo.username ? userInfo.username.charAt(0).toUpperCase() : "A"}
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-600 text-base font-bold text-white">
+                {userInfo.username
+                  ? userInfo.username.charAt(0).toUpperCase()
+                  : "A"}
               </div>
             )}
             <div className="overflow-hidden">
-              <div className="font-semibold text-sm text-gray-800 truncate">
+              <div className="truncate text-sm font-semibold text-gray-800">
                 {userInfo.full_name || userInfo.username}
               </div>
-              <div className="text-xs text-gray-500 truncate">
+              <div className="truncate text-xs text-gray-500">
                 {userInfo.email}
               </div>
             </div>
@@ -181,9 +188,9 @@ export default function TemporaryDrawer({ userInfo }) {
                     <li key={item.text}>
                       <button
                         onClick={() => handleNavigation(item)}
-                        className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${
+                        className={`flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 ${
                           selected
-                            ? "bg-emerald-50 text-emerald-700 font-semibold"
+                            ? "bg-emerald-50 font-semibold text-emerald-700"
                             : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                         }`}
                       >
@@ -205,12 +212,12 @@ export default function TemporaryDrawer({ userInfo }) {
         </div>
 
         {/* Footer Actions */}
-        <div className="border-t border-gray-100 p-3 bg-gray-50/40">
-          <button className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:bg-gray-100 hover:text-gray-950 rounded-lg text-sm transition-colors duration-150">
+        <div className="border-t border-gray-100 bg-gray-50/40 p-3">
+          <button className="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-sm text-gray-600 transition-colors duration-150 hover:bg-gray-100 hover:text-gray-950">
             <Settings size={18} className="text-gray-400" />
             <span>Cài đặt</span>
           </button>
-          <button className="w-full flex items-center gap-3 px-4 py-2.5 text-red-600 hover:bg-red-50 rounded-lg text-sm transition-colors duration-150 mt-1">
+          <button className="mt-1 flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-sm text-red-600 transition-colors duration-150 hover:bg-red-50">
             <LogOut size={18} />
             <span>Đăng xuất</span>
           </button>

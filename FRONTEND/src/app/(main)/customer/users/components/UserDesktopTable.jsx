@@ -1,7 +1,9 @@
-import React from "react";
 import { Coins, UserMinus } from "lucide-react";
+import React from "react";
+
 import { Button } from "@/src/components/ui/button";
 import getAmount from "@/src/utils/getAmount";
+
 import { getStatusColor, getStatusLabel } from "./userListHelpers";
 
 export default function UserDesktopTable({
@@ -13,7 +15,7 @@ export default function UserDesktopTable({
   onRowsPerPageChange,
 }) {
   const totalPages = Math.ceil(users.length / rowsPerPage);
-  
+
   const getBadgeClass = (status) => {
     const color = getStatusColor(status);
     switch (color) {
@@ -30,21 +32,33 @@ export default function UserDesktopTable({
 
   const paginatedUsers = users.slice(
     page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
+    page * rowsPerPage + rowsPerPage,
   );
 
   return (
     <div className="w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
       <div className="w-full overflow-x-auto">
         <table className="w-full border-collapse text-left text-sm text-gray-500">
-          <thead className="bg-gray-50 text-xs font-semibold uppercase text-gray-700 border-b border-gray-200">
+          <thead className="border-b border-gray-200 bg-gray-50 text-xs font-semibold text-gray-700 uppercase">
             <tr>
-              <th scope="col" className="px-6 py-4">User</th>
-              <th scope="col" className="px-6 py-4">Event</th>
-              <th scope="col" className="px-6 py-4">Status</th>
-              <th scope="col" className="px-6 py-4">Progress</th>
-              <th scope="col" className="px-6 py-4">Coins</th>
-              <th scope="col" className="px-6 py-4 text-center">Actions</th>
+              <th scope="col" className="px-6 py-4">
+                User
+              </th>
+              <th scope="col" className="px-6 py-4">
+                Event
+              </th>
+              <th scope="col" className="px-6 py-4">
+                Status
+              </th>
+              <th scope="col" className="px-6 py-4">
+                Progress
+              </th>
+              <th scope="col" className="px-6 py-4">
+                Coins
+              </th>
+              <th scope="col" className="px-6 py-4 text-center">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 border-t border-gray-200">
@@ -53,18 +67,18 @@ export default function UserDesktopTable({
                 {user.events.map((event, index) => (
                   <tr
                     key={`${user.id}-${event.id}`}
-                    className="hover:bg-gray-50 transition-colors"
+                    className="transition-colors hover:bg-gray-50"
                   >
                     {index === 0 && (
                       <td
                         rowSpan={user.events.length}
-                        className="px-6 py-4 font-medium text-gray-900 align-top"
+                        className="px-6 py-4 align-top font-medium text-gray-900"
                       >
                         <div className="flex items-center gap-3">
                           <img
                             src={user.avatar}
                             alt={user.full_name}
-                            className="h-10 w-10 rounded-full object-cover border border-gray-100"
+                            className="h-10 w-10 rounded-full border border-gray-100 object-cover"
                           />
                           <div>
                             <div className="font-semibold text-gray-800">
@@ -79,15 +93,17 @@ export default function UserDesktopTable({
                     )}
                     <td className="px-6 py-4 text-gray-700">{event.title}</td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${getBadgeClass(event.status)}`}>
+                      <span
+                        className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${getBadgeClass(event.status)}`}
+                      >
                         {getStatusLabel(event.status)}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-2 max-w-[200px]">
-                        <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
+                      <div className="flex max-w-[200px] items-center gap-2">
+                        <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
                           <div
-                            className="h-full bg-emerald-500 rounded-full transition-all duration-300"
+                            className="h-full rounded-full bg-emerald-500 transition-all duration-300"
                             style={{ width: `${event.completion_rate}%` }}
                           />
                         </div>
@@ -99,14 +115,16 @@ export default function UserDesktopTable({
                     <td className="px-6 py-4 text-gray-700">
                       <div className="flex items-center gap-1">
                         <Coins className="text-amber-500" size={18} />
-                        <span className="font-medium">{getAmount(user.coins)}</span>
+                        <span className="font-medium">
+                          {getAmount(user.coins)}
+                        </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-center">
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                        className="text-red-500 hover:bg-red-50 hover:text-red-700"
                         title="Remove from event"
                         onClick={() =>
                           onRemoveUser(user, event.id, event.eventUser)
@@ -163,7 +181,7 @@ export default function UserDesktopTable({
               <select
                 value={rowsPerPage}
                 onChange={onRowsPerPageChange}
-                className="ml-2 rounded border border-gray-200 p-1 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                className="ml-2 rounded border border-gray-200 bg-white p-1 text-sm focus:ring-1 focus:ring-emerald-500 focus:outline-none"
               >
                 {[5, 10, 25].map((option) => (
                   <option key={option} value={option}>
@@ -173,7 +191,11 @@ export default function UserDesktopTable({
               </select>
             </span>
             <span className="text-sm text-gray-600">
-              Showing <span className="font-semibold">{users.length === 0 ? 0 : page * rowsPerPage + 1}</span> to{" "}
+              Showing{" "}
+              <span className="font-semibold">
+                {users.length === 0 ? 0 : page * rowsPerPage + 1}
+              </span>{" "}
+              to{" "}
               <span className="font-semibold">
                 {Math.min((page + 1) * rowsPerPage, users.length)}
               </span>{" "}

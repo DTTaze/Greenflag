@@ -1,45 +1,43 @@
 "use client";
 
-import React from "react";
 import { Calendar, ShieldCheck, Trash2, UserPlus } from "lucide-react";
+import React from "react";
 
 export default function ScannedUsersList({ scannedUsers = [], onRemoveUser }) {
   return (
-    <div className="flex flex-col h-full">
-      <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2 mb-4">
+    <div className="flex h-full flex-col">
+      <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-gray-900">
         <ShieldCheck className="text-emerald-600" size={22} />
         <span>Recently Scanned Users</span>
       </h3>
 
       {scannedUsers.length > 0 ? (
-        <div className="bg-white border border-gray-100 rounded-xl divide-y divide-gray-100 max-h-[400px] overflow-y-auto shadow-sm">
+        <div className="max-h-[400px] divide-y divide-gray-100 overflow-y-auto rounded-xl border border-gray-100 bg-white shadow-sm">
           {scannedUsers.map((user) => (
             <div
               key={user.id}
-              className="flex items-center justify-between p-4 hover:bg-gray-50/50 transition-colors"
+              className="flex items-center justify-between p-4 transition-colors hover:bg-gray-50/50"
             >
               <div className="flex items-center gap-3">
                 {user.avatar ? (
                   <img
                     src={user.avatar}
                     alt={user.name}
-                    className="w-10 h-10 rounded-full object-cover border border-gray-100"
+                    className="h-10 w-10 rounded-full border border-gray-100 object-cover"
                   />
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-600 text-sm font-bold text-white">
                     {user.name ? user.name.charAt(0).toUpperCase() : "U"}
                   </div>
                 )}
-                
+
                 <div className="flex flex-col">
-                  <span className="font-semibold text-sm text-gray-900">
+                  <span className="text-sm font-semibold text-gray-900">
                     {user.name}
                   </span>
-                  <span className="text-xs text-gray-500">
-                    {user.email}
-                  </span>
-                  <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-100">
+                  <span className="text-xs text-gray-500">{user.email}</span>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                    <span className="inline-flex items-center gap-1 rounded-full border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-800">
                       <Calendar size={10} />
                       <span>{user.eventTitle}</span>
                     </span>
@@ -52,7 +50,7 @@ export default function ScannedUsersList({ scannedUsers = [], onRemoveUser }) {
 
               <button
                 onClick={() => onRemoveUser(user.id)}
-                className="p-1.5 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-rose-50 hover:text-rose-600"
                 title="Xóa người dùng khỏi danh sách quét"
               >
                 <Trash2 size={16} />
@@ -61,10 +59,12 @@ export default function ScannedUsersList({ scannedUsers = [], onRemoveUser }) {
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-16 bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
-          <UserPlus className="w-12 h-12 text-gray-400 mb-2" />
-          <p className="text-sm font-semibold text-gray-700">No users scanned yet</p>
-          <p className="text-xs text-gray-400 mt-0.5">
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 bg-gray-50/50 py-16">
+          <UserPlus className="mb-2 h-12 w-12 text-gray-400" />
+          <p className="text-sm font-semibold text-gray-700">
+            No users scanned yet
+          </p>
+          <p className="mt-0.5 text-xs text-gray-400">
             Start scanning or add users manually
           </p>
         </div>

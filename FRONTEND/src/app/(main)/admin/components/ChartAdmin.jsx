@@ -2,13 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  ResponsiveContainer,
-  LineChart,
+  CartesianGrid,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
 } from "recharts";
 
 const chartData = [
@@ -34,7 +34,9 @@ export default function SimpleLineChart() {
   }, []);
 
   if (!mounted) {
-    return <div className="h-[300px] w-full bg-gray-50/50 rounded-lg animate-pulse" />;
+    return (
+      <div className="h-[300px] w-full animate-pulse rounded-lg bg-gray-50/50" />
+    );
   }
 
   return (

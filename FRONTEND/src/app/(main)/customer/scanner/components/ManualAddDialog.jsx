@@ -1,7 +1,9 @@
 "use client";
 
+import { AlertCircle, UserPlus } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { UserPlus, AlertCircle } from "lucide-react";
+
+import { Button } from "@/src/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +13,6 @@ import {
 } from "@/src/components/ui/dialog";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
-import { Button } from "@/src/components/ui/button";
 
 import { getEventNameById } from "./EventSelector";
 
@@ -62,7 +63,7 @@ export default function ManualAddDialog({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent className="sm:max-w-[450px] bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+      <DialogContent className="rounded-xl border border-gray-100 bg-white p-6 shadow-lg sm:max-w-[450px]">
         <DialogHeader className="mb-4">
           <DialogTitle className="text-lg font-bold text-gray-900">
             Add User Manually
@@ -97,10 +98,15 @@ export default function ManualAddDialog({
             </div>
 
             {/* Styled Info Alert Banner */}
-            <div className="flex gap-2.5 items-start bg-emerald-50 border border-emerald-100 text-emerald-800 p-3 rounded-lg text-sm mt-4">
-              <AlertCircle size={18} className="shrink-0 text-emerald-600 mt-0.5" />
+            <div className="mt-4 flex items-start gap-2.5 rounded-lg border border-emerald-100 bg-emerald-50 p-3 text-sm text-emerald-800">
+              <AlertCircle
+                size={18}
+                className="mt-0.5 shrink-0 text-emerald-600"
+              />
               <div>
-                <span className="font-semibold">The user will be added to:</span>{" "}
+                <span className="font-semibold">
+                  The user will be added to:
+                </span>{" "}
                 {selectedEvent
                   ? getEventNameById(selectedEvent, events)
                   : "No event selected"}
@@ -109,13 +115,18 @@ export default function ManualAddDialog({
           </div>
 
           <DialogFooter className="mt-6 border-t pt-4">
-            <Button type="button" variant="outline" onClick={onClose} className="mr-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              className="mr-2"
+            >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={!manualUser.name || !manualUser.email}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1.5"
+              className="flex items-center gap-1.5 bg-emerald-600 text-white hover:bg-emerald-700"
             >
               <UserPlus size={16} />
               <span>Add to Event</span>

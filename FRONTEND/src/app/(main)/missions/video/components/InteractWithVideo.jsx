@@ -3,7 +3,6 @@ import React from "react";
 import CommentButton from "./CommentButton";
 import HeartButton from "./HeartButton";
 import ShareButton from "./ShareButton";
-
 import { useVideoSection } from "./VideoSectionContext";
 
 export default function InteractWithVideo({ video, index }) {

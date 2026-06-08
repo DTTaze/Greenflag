@@ -1,15 +1,8 @@
 "use client";
 
+import { Bell, HelpCircle, Home, LogOut, Menu, User } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useState, useRef, useEffect } from "react";
-import {
-  Menu,
-  Home,
-  Bell,
-  HelpCircle,
-  User,
-  LogOut,
-} from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { useNotification } from "@/src/components/ui/NotificationProvider";
 import { useAuthStore } from "@/src/store/auth/authStore";
@@ -23,11 +16,11 @@ export default function CustomerAppBar({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  
+
   const [profileOpen, setProfileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
-  
+
   const { notify } = useNotification();
   const { dispatch } = useAuthStore();
 
@@ -40,7 +33,10 @@ export default function CustomerAppBar({
       if (profileRef.current && !profileRef.current.contains(event.target)) {
         setProfileOpen(false);
       }
-      if (notificationsRef.current && !notificationsRef.current.contains(event.target)) {
+      if (
+        notificationsRef.current &&
+        !notificationsRef.current.contains(event.target)
+      ) {
         setNotificationsOpen(false);
       }
     }
@@ -84,13 +80,13 @@ export default function CustomerAppBar({
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-100 shadow-sm h-16 flex items-center px-4 justify-between">
+    <header className="fixed top-0 right-0 left-0 z-40 flex h-16 items-center justify-between border-b border-gray-100 bg-white px-4 shadow-sm">
       {/* Left side actions */}
       <div className="flex items-center gap-3">
         {/* Toggle drawer button */}
         <button
           onClick={handleDrawerToggle}
-          className="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50 focus:outline-none transition-colors"
+          className="rounded-lg p-1.5 text-emerald-600 transition-colors hover:bg-emerald-50 focus:outline-none"
           aria-label="Toggle drawer"
         >
           <Menu size={22} />
@@ -99,25 +95,27 @@ export default function CustomerAppBar({
         {/* Home button */}
         <button
           onClick={() => router.push("/")}
-          className="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50 focus:outline-none transition-colors"
+          className="rounded-lg p-1.5 text-emerald-600 transition-colors hover:bg-emerald-50 focus:outline-none"
           title="Go to Homepage"
         >
           <Home size={20} />
         </button>
 
         {/* Breadcrumb / Title */}
-        <div className="hidden sm:flex items-center gap-2 text-sm text-gray-500">
+        <div className="hidden items-center gap-2 text-sm text-gray-500 sm:flex">
           <button
             onClick={() => router.push("/customer")}
-            className="hover:text-emerald-600 font-medium"
+            className="font-medium hover:text-emerald-600"
           >
             Home
           </button>
           <span>/</span>
-          <span className="font-semibold text-emerald-700">{getPageTitle()}</span>
+          <span className="font-semibold text-emerald-700">
+            {getPageTitle()}
+          </span>
         </div>
 
-        <span className="sm:hidden text-sm font-semibold text-emerald-700">
+        <span className="text-sm font-semibold text-emerald-700 sm:hidden">
           {getPageTitle()}
         </span>
       </div>
@@ -128,45 +126,51 @@ export default function CustomerAppBar({
         <div className="relative" ref={notificationsRef}>
           <button
             onClick={() => setNotificationsOpen(!notificationsOpen)}
-            className="relative p-1.5 text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none"
+            className="relative rounded-lg p-1.5 text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900 focus:outline-none"
             aria-label="Notifications"
           >
             <Bell size={20} />
-            <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-emerald-600 text-[10px] text-white flex items-center justify-center font-bold">
+            <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white">
               3
             </span>
           </button>
 
           {notificationsOpen && (
-            <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-100 rounded-xl shadow-lg py-2 z-50">
-              <div className="px-4 py-2 border-b border-gray-50 font-bold text-xs text-gray-400 uppercase tracking-wider">
+            <div className="absolute right-0 z-50 mt-2 w-80 rounded-xl border border-gray-100 bg-white py-2 shadow-lg">
+              <div className="border-b border-gray-50 px-4 py-2 text-xs font-bold tracking-wider text-gray-400 uppercase">
                 Thông báo mới
               </div>
-              <div className="divide-y divide-gray-50 max-h-[300px] overflow-y-auto">
+              <div className="max-h-[300px] divide-y divide-gray-50 overflow-y-auto">
                 <button
                   onClick={() => setNotificationsOpen(false)}
-                  className="w-full text-left px-4 py-3 hover:bg-gray-50 block transition-colors"
+                  className="block w-full px-4 py-3 text-left transition-colors hover:bg-gray-50"
                 >
-                  <div className="font-semibold text-sm text-gray-800">New Event Created</div>
-                  <div className="text-xs text-gray-500 mt-0.5">
+                  <div className="text-sm font-semibold text-gray-800">
+                    New Event Created
+                  </div>
+                  <div className="mt-0.5 text-xs text-gray-500">
                     Tech Conference added to your events
                   </div>
                 </button>
                 <button
                   onClick={() => setNotificationsOpen(false)}
-                  className="w-full text-left px-4 py-3 hover:bg-gray-50 block transition-colors"
+                  className="block w-full px-4 py-3 text-left transition-colors hover:bg-gray-50"
                 >
-                  <div className="font-semibold text-sm text-gray-800">User Evaluation Pending</div>
-                  <div className="text-xs text-gray-500 mt-0.5">
+                  <div className="text-sm font-semibold text-gray-800">
+                    User Evaluation Pending
+                  </div>
+                  <div className="mt-0.5 text-xs text-gray-500">
                     5 users need rating for Eco Clean-up event
                   </div>
                 </button>
                 <button
                   onClick={() => setNotificationsOpen(false)}
-                  className="w-full text-left px-4 py-3 hover:bg-gray-50 block transition-colors"
+                  className="block w-full px-4 py-3 text-left transition-colors hover:bg-gray-50"
                 >
-                  <div className="font-semibold text-sm text-gray-800">Item Stock Alert</div>
-                  <div className="text-xs text-gray-500 mt-0.5">
+                  <div className="text-sm font-semibold text-gray-800">
+                    Item Stock Alert
+                  </div>
+                  <div className="mt-0.5 text-xs text-gray-500">
                     Eco Tote Bags running low (5 remaining)
                   </div>
                 </button>
@@ -177,7 +181,7 @@ export default function CustomerAppBar({
 
         {/* Help button */}
         <button
-          className="p-1.5 text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none"
+          className="rounded-lg p-1.5 text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900 focus:outline-none"
           title="Help"
         >
           <HelpCircle size={20} />
@@ -194,23 +198,25 @@ export default function CustomerAppBar({
               <img
                 src={userInfo.avatar_url}
                 alt={userInfo.full_name || "Profile avatar"}
-                className="w-8 h-8 rounded-full border-2 border-emerald-100 object-cover"
+                className="h-8 w-8 rounded-full border-2 border-emerald-100 object-cover"
               />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm border-2 border-emerald-100">
-                {userInfo?.username ? userInfo.username.charAt(0).toUpperCase() : "U"}
+              <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-emerald-100 bg-emerald-600 text-sm font-bold text-white">
+                {userInfo?.username
+                  ? userInfo.username.charAt(0).toUpperCase()
+                  : "U"}
               </div>
             )}
           </button>
 
           {profileOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-lg py-1.5 z-50">
+            <div className="absolute right-0 z-50 mt-2 w-48 rounded-xl border border-gray-100 bg-white py-1.5 shadow-lg">
               <button
                 onClick={() => {
                   router.push("/customer/profile");
                   setProfileOpen(false);
                 }}
-                className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
               >
                 <User size={16} className="text-gray-400" />
                 <span>Profile</span>
@@ -221,7 +227,7 @@ export default function CustomerAppBar({
                   setProfileOpen(false);
                 }}
                 disabled={loggingOut}
-                className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 transition-colors hover:bg-red-50 disabled:opacity-50"
               >
                 <LogOut size={16} />
                 <span>{loggingOut ? "Logging out..." : "Logout"}</span>

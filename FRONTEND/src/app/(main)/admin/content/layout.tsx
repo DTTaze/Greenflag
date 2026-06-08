@@ -9,7 +9,7 @@ export default function ContentLayout({
 }) {
   return (
     <div className="w-full space-y-4">
-      <h1 className="text-2xl font-bold text-gray-950 p-2">
+      <h1 className="p-2 text-2xl font-bold text-gray-950">
         Content Management
       </h1>
       {children}

@@ -1,5 +1,5 @@
-import React from "react";
 import { MoreVertical, TrendingUp } from "lucide-react";
+import React from "react";
 
 export default function StatCard({
   title,
@@ -11,29 +11,29 @@ export default function StatCard({
 }) {
   return (
     <div
-      className="relative p-5 flex flex-col justify-between h-[150px] rounded-xl shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md"
+      className="relative flex h-[150px] flex-col justify-between rounded-xl border border-gray-100 p-5 shadow-sm transition-all duration-300 hover:shadow-md"
       style={{ backgroundColor: bgColor }}
     >
       {/* Top action button */}
       <div className="absolute top-3 right-3">
-        <button className="p-1 rounded-full text-gray-500 hover:bg-black/5 transition-colors duration-150">
+        <button className="rounded-full p-1 text-gray-500 transition-colors duration-150 hover:bg-black/5">
           <MoreVertical size={16} />
         </button>
       </div>
 
       {/* Main card content */}
       <div className="flex flex-col gap-1">
-        <span className="text-sm font-medium text-gray-600 truncate pr-6">
+        <span className="truncate pr-6 text-sm font-medium text-gray-600">
           {title}
         </span>
-        <span className="text-3xl font-bold text-gray-900 tracking-tight">
+        <span className="text-3xl font-bold tracking-tight text-gray-900">
           {value}
         </span>
       </div>
 
       {/* Trend footer */}
-      <div className="flex items-center text-xs text-gray-500 mt-2">
-        <div className="flex items-center text-emerald-600 font-semibold gap-0.5 mr-2">
+      <div className="mt-2 flex items-center text-xs text-gray-500">
+        <div className="mr-2 flex items-center gap-0.5 font-semibold text-emerald-600">
           <TrendingUp size={14} />
           <span>{trendText}</span>
         </div>
@@ -42,7 +42,7 @@ export default function StatCard({
 
       {/* Background Icon */}
       {IconComponent && (
-        <div className="absolute bottom-3 right-3 opacity-[0.08] text-gray-800 pointer-events-none">
+        <div className="pointer-events-none absolute right-3 bottom-3 text-gray-800 opacity-[0.08]">
           <IconComponent size={64} />
         </div>
       )}

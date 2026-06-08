@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+
+import { Button } from "@/src/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,7 +12,6 @@ import {
 } from "@/src/components/ui/dialog";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
-import { Button } from "@/src/components/ui/button";
 
 export default function PermissionForm({
   open,
@@ -55,7 +56,7 @@ export default function PermissionForm({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
-      <DialogContent className="sm:max-w-[450px] bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+      <DialogContent className="rounded-xl border border-gray-100 bg-white p-6 shadow-lg sm:max-w-[450px]">
         <DialogHeader className="mb-4">
           <DialogTitle className="text-lg font-bold text-gray-900">
             {mode === "add" ? "Add New Permission" : "Edit Permission"}
@@ -101,7 +102,7 @@ export default function PermissionForm({
             <Button
               type="submit"
               variant="default"
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="bg-emerald-600 text-white hover:bg-emerald-700"
             >
               {mode === "add" ? "Create" : "Save Changes"}
             </Button>

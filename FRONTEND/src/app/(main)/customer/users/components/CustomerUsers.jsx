@@ -1,4 +1,13 @@
 import React, { useEffect, useState } from "react";
+
+import { Button } from "@/src/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/src/components/ui/dialog";
 import { useAuthStore } from "@/src/store/auth/authStore";
 import {
   deleteEventUserById,
@@ -6,14 +15,6 @@ import {
   getOwnerEvents,
   getUserAvatarById,
 } from "@/src/utils/api";
-import { Button } from "@/src/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/src/components/ui/dialog";
 
 import UserFilters from "./UserFilters";
 import UserList from "./UserList";
@@ -201,15 +202,15 @@ export default function CustomerUsers() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center p-8">
-        <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+      <div className="flex items-center justify-center p-8">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-4 bg-red-50 border border-red-200 text-red-600 rounded-md">
+      <div className="rounded-md border border-red-200 bg-red-50 p-4 text-red-600">
         {error}
       </div>
     );
@@ -218,7 +219,7 @@ export default function CustomerUsers() {
   return (
     <div className="customer-content-container">
       <div className="customer-section">
-        <div className="flex justify-between items-center flex-wrap gap-4 mb-6">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <h2 className="customer-section-title text-2xl font-semibold text-gray-800">
             Event Participants
           </h2>

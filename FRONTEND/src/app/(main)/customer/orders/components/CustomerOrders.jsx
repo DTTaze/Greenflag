@@ -137,10 +137,10 @@ export default function CustomerOrders() {
     <div>
       {confirmAlertOpen && (
         <div
-          className={`fixed top-20 right-5 z-[9999] px-4 py-3 rounded border shadow-md flex items-center transition-all ${
+          className={`fixed top-20 right-5 z-[9999] flex items-center rounded border px-4 py-3 shadow-md transition-all ${
             alertSeverity === "success"
-              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-              : "bg-amber-50 text-amber-700 border-amber-200"
+              ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+              : "border-amber-200 bg-amber-50 text-amber-700"
           }`}
         >
           {alertMessage}
@@ -155,8 +155,8 @@ export default function CustomerOrders() {
       />
 
       {isLoadingOrders && isLoadingTransactions ? (
-        <div className="flex justify-center items-center h-[200px]">
-          <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="flex h-[200px] items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent"></div>
         </div>
       ) : orders.length === 0 && transactions.length === 0 ? (
         <EmptyOrderState

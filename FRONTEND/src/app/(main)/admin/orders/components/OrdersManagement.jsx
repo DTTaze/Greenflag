@@ -2,10 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 
-import {
-  getAllShippingOrders,
-  updateShippingOrder,
-} from "@/src/utils/api";
+import { getAllShippingOrders, updateShippingOrder } from "@/src/utils/api";
 
 import DataTable from "../../components/DataTable";
 import { ordersColumns } from "../../components/HeaderColumn";
@@ -65,10 +62,8 @@ export default function OrdersManagement() {
   };
 
   return (
-    <div className="p-4 space-y-4">
-      <h1 className="text-2xl font-bold text-gray-950">
-        Orders Management
-      </h1>
+    <div className="space-y-4 p-4">
+      <h1 className="text-2xl font-bold text-gray-950">Orders Management</h1>
       <DataTable
         title="Orders"
         columns={ordersColumns}

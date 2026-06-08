@@ -1,7 +1,7 @@
 import React from "react";
 
 import VideoPlayerCard from "./VideoPlayerCard";
-import { VideoSectionProvider, useVideoSection } from "./VideoSectionContext";
+import { useVideoSection, VideoSectionProvider } from "./VideoSectionContext";
 
 function VideosSectionContent() {
   const { videoData } = useVideoSection();

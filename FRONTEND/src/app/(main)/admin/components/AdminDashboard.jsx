@@ -1,7 +1,7 @@
 "use client";
 
+import { CheckSquare, ShoppingBag, Users } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { Users, ShoppingBag, CheckSquare } from "lucide-react";
 
 import { getAllUsers } from "@/src/utils/api";
 
@@ -42,19 +42,20 @@ export default function AdminDashboard() {
   }, []);
 
   return (
-    <div className="flex-1 p-0 space-y-6">
+    <div className="flex-1 space-y-6 p-0">
       {/* Welcome header */}
       <div className="space-y-1">
         <h1 className="text-2xl font-bold tracking-tight text-gray-950">
           Dashboard
         </h1>
         <p className="text-sm text-gray-500">
-          Welcome to your admin dashboard. Here&apos;s what&apos;s happening today.
+          Welcome to your admin dashboard. Here&apos;s what&apos;s happening
+          today.
         </p>
       </div>
 
       {/* Admin Grid Container */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4">
         <StatCard
           title="Total Users"
           value="1,285"
@@ -92,12 +93,14 @@ export default function AdminDashboard() {
       </div>
 
       {/* Charts and Recent Activities Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {/* Charts */}
-        <div className="md:col-span-2 bg-white border border-gray-100 rounded-xl shadow-sm p-6 space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold text-gray-950">Activity Overview</h3>
-            <button className="px-3 py-1.5 border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium rounded-lg text-sm transition-colors duration-150">
+        <div className="space-y-4 rounded-xl border border-gray-100 bg-white p-6 shadow-sm md:col-span-2">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-gray-950">
+              Activity Overview
+            </h3>
+            <button className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors duration-150 hover:bg-gray-50">
               View Details
             </button>
           </div>
@@ -106,7 +109,10 @@ export default function AdminDashboard() {
 
         {/* Recent Activities */}
         <div className="md:col-span-1">
-          <RecentActivityList recentActivities={recentActivities} loading={loading} />
+          <RecentActivityList
+            recentActivities={recentActivities}
+            loading={loading}
+          />
         </div>
       </div>
     </div>

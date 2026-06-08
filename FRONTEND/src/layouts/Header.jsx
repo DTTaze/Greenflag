@@ -93,11 +93,17 @@ function UserHeader() {
     { key: "", label: "Trang chủ" },
     { key: "missions", label: "Nhiệm vụ" },
     { key: "exchange-market", label: "Trao đổi" },
+    { key: "community", label: "Cộng đồng" },
   ];
 
   // Add customer page link if user has customer role
   if (isAuthenticated && user?.roles?.id === 3) {
     pages.push({ key: "customer", label: "Trang khách hàng" });
+  }
+
+  // Add admin page link if user is admin
+  if (isAuthenticated && user?.roles?.id === 1) {
+    pages.push({ key: "admin", label: "Trang quản trị" });
   }
 
   const avatarUrl =

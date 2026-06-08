@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
+import React, { useEffect, useState } from "react";
+
 import { Button } from "@/src/components/ui/button";
 import {
   deleteCustomerItem,
@@ -160,19 +161,19 @@ const CustomerItems = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-6 text-center max-w-md mx-auto">
+      <div className="mx-auto max-w-md p-6 text-center">
         <p className="text-red-650 font-medium">{error}</p>
         <Button
           onClick={fetchItems}
-          className="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white"
+          className="mt-4 bg-emerald-600 text-white hover:bg-emerald-700"
         >
           Retry
         </Button>
@@ -182,13 +183,11 @@ const CustomerItems = () => {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">
-          My Items
-        </h2>
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-gray-800">My Items</h2>
         <Button
           onClick={handleAddItem}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
+          className="gap-2 bg-emerald-600 text-white hover:bg-emerald-700"
         >
           <Plus size={18} />
           Add Item
@@ -196,9 +195,14 @@ const CustomerItems = () => {
       </div>
 
       {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-650 rounded-md text-sm flex justify-between items-center">
+        <div className="text-red-650 mb-4 flex items-center justify-between rounded-md border border-red-200 bg-red-50 p-4 text-sm">
           <span>{error}</span>
-          <button onClick={() => setError(null)} className="text-red-500 hover:text-red-750 font-bold ml-2">×</button>
+          <button
+            onClick={() => setError(null)}
+            className="hover:text-red-750 ml-2 font-bold text-red-500"
+          >
+            ×
+          </button>
         </div>
       )}
 

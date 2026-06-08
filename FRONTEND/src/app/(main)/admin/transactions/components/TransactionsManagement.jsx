@@ -36,7 +36,9 @@ export default function TransactionsManagement() {
         const res = await deleteTransaction(transaction.id);
         if (res.success) {
           alert("Xóa giao dịch thành công!");
-          setTransactions((prev) => prev.filter((u) => u.id !== transaction.id));
+          setTransactions((prev) =>
+            prev.filter((u) => u.id !== transaction.id),
+          );
         } else {
           alert("Xóa giao dịch thất bại!");
         }
@@ -47,7 +49,7 @@ export default function TransactionsManagement() {
   };
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="space-y-4 p-4">
       <h1 className="text-2xl font-bold text-gray-950">
         Transactions Management
       </h1>

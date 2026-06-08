@@ -1,7 +1,7 @@
 "use client";
 
+import { Trash, Upload } from "lucide-react";
 import React from "react";
-import { Upload, Trash } from "lucide-react";
 
 export default function MultiImageUpload({
   previewImages = [],
@@ -29,17 +29,17 @@ export default function MultiImageUpload({
           {previewImages.map((url, index) => (
             <div
               key={index}
-              className="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-200 shadow-sm"
+              className="relative h-24 w-24 overflow-hidden rounded-lg border border-gray-200 shadow-sm"
             >
               <img
                 src={url}
                 alt={`Preview ${index + 1}`}
-                className="w-full h-full object-cover"
+                className="h-full w-full object-cover"
               />
               <button
                 type="button"
                 onClick={() => onRemoveImage(index)}
-                className="absolute top-1 right-1 p-1 bg-white/95 rounded-full text-rose-600 hover:bg-white transition-colors shadow-sm"
+                className="absolute top-1 right-1 rounded-full bg-white/95 p-1 text-rose-600 shadow-sm transition-colors hover:bg-white"
               >
                 <Trash size={12} />
               </button>
@@ -48,7 +48,7 @@ export default function MultiImageUpload({
         </div>
 
         <div>
-          <label className="inline-flex items-center gap-2 px-4 py-2 border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium rounded-lg text-sm transition-colors cursor-pointer shadow-sm">
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50">
             <Upload size={16} className="text-gray-500" />
             <span>Upload Images</span>
             <input

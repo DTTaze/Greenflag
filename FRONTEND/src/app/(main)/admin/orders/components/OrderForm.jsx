@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+
+import { Button } from "@/src/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,7 +12,6 @@ import {
 } from "@/src/components/ui/dialog";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
-import { Button } from "@/src/components/ui/button";
 
 export default function OrderForm({
   open,
@@ -83,7 +84,7 @@ export default function OrderForm({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
-      <DialogContent className="sm:max-w-[700px] max-h-[85vh] overflow-y-auto bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+      <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-gray-100 bg-white p-6 shadow-lg sm:max-w-[700px]">
         <DialogHeader className="mb-4">
           <DialogTitle className="text-lg font-bold text-gray-900">
             {mode === "add" ? "Thêm đơn hàng mới" : "Chỉnh sửa đơn hàng"}
@@ -93,10 +94,10 @@ export default function OrderForm({
         <form onSubmit={onSubmit} className="space-y-6">
           {/* Section 1: Order Info */}
           <div className="space-y-4">
-            <h4 className="font-semibold text-sm text-emerald-700 border-b pb-1">
+            <h4 className="border-b pb-1 text-sm font-semibold text-emerald-700">
               Thông tin đơn hàng
             </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="order_code">Mã đơn hàng</Label>
                 <Input
@@ -104,7 +105,7 @@ export default function OrderForm({
                   name="order_code"
                   value={formData.order_code}
                   disabled
-                  className="bg-gray-50 border-gray-200"
+                  className="border-gray-200 bg-gray-50"
                 />
               </div>
 
@@ -115,7 +116,7 @@ export default function OrderForm({
                   name="shipping_order_status"
                   value={formData.shipping_order_status}
                   onChange={handleChange}
-                  className="w-full h-8 border border-gray-200 rounded-lg px-2.5 py-1 text-sm bg-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+                  className="h-8 w-full rounded-lg border border-gray-200 bg-transparent px-2.5 py-1 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
                 >
                   <option value="ready_to_pick">Sẵn sàng lấy hàng</option>
                   <option value="picking">Đang lấy hàng</option>
@@ -128,7 +129,7 @@ export default function OrderForm({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="shipping_fee">Phí vận chuyển</Label>
                 <Input
@@ -136,7 +137,7 @@ export default function OrderForm({
                   name="shipping_fee"
                   value={formData.shipping_fee}
                   disabled
-                  className="bg-gray-50 border-gray-200"
+                  className="border-gray-200 bg-gray-50"
                 />
               </div>
               <div className="flex flex-col gap-1.5">
@@ -146,7 +147,7 @@ export default function OrderForm({
                   name="service_fee"
                   value={formData.service_fee}
                   disabled
-                  className="bg-gray-50 border-gray-200"
+                  className="border-gray-200 bg-gray-50"
                 />
               </div>
               <div className="flex flex-col gap-1.5">
@@ -156,7 +157,7 @@ export default function OrderForm({
                   name="insurance_fee"
                   value={formData.insurance_fee}
                   disabled
-                  className="bg-gray-50 border-gray-200"
+                  className="border-gray-200 bg-gray-50"
                 />
               </div>
               <div className="flex flex-col gap-1.5">
@@ -166,7 +167,7 @@ export default function OrderForm({
                   name="total_fee"
                   value={formData.total_fee}
                   disabled
-                  className="bg-gray-50 border-gray-200 font-semibold"
+                  className="border-gray-200 bg-gray-50 font-semibold"
                 />
               </div>
             </div>
@@ -174,10 +175,10 @@ export default function OrderForm({
 
           {/* Section 2: Buyer Info */}
           <div className="space-y-4">
-            <h4 className="font-semibold text-sm text-emerald-700 border-b pb-1">
+            <h4 className="border-b pb-1 text-sm font-semibold text-emerald-700">
               Thông tin người mua
             </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="buyer_name">Tên người mua</Label>
                 <Input
@@ -185,7 +186,7 @@ export default function OrderForm({
                   name="buyer_name"
                   value={formData.buyer_name}
                   disabled
-                  className="bg-gray-50 border-gray-200"
+                  className="border-gray-200 bg-gray-50"
                 />
               </div>
               <div className="flex flex-col gap-1.5">
@@ -195,7 +196,7 @@ export default function OrderForm({
                   name="buyer_phone"
                   value={formData.buyer_phone}
                   disabled
-                  className="bg-gray-50 border-gray-200"
+                  className="border-gray-200 bg-gray-50"
                 />
               </div>
             </div>
@@ -207,17 +208,17 @@ export default function OrderForm({
                 value={formData.buyer_address}
                 disabled
                 rows={2}
-                className="w-full border border-gray-200 rounded-lg p-2.5 text-sm bg-gray-50 cursor-not-allowed resize-none focus:outline-none"
+                className="w-full cursor-not-allowed resize-none rounded-lg border border-gray-200 bg-gray-50 p-2.5 text-sm focus:outline-none"
               />
             </div>
           </div>
 
           {/* Section 3: Seller Info */}
           <div className="space-y-4">
-            <h4 className="font-semibold text-sm text-emerald-700 border-b pb-1">
+            <h4 className="border-b pb-1 text-sm font-semibold text-emerald-700">
               Thông tin người bán
             </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="seller_name">Tên người bán</Label>
                 <Input
@@ -225,7 +226,7 @@ export default function OrderForm({
                   name="seller_name"
                   value={formData.seller_name}
                   disabled
-                  className="bg-gray-50 border-gray-200"
+                  className="border-gray-200 bg-gray-50"
                 />
               </div>
               <div className="flex flex-col gap-1.5">
@@ -235,7 +236,7 @@ export default function OrderForm({
                   name="seller_phone"
                   value={formData.seller_phone}
                   disabled
-                  className="bg-gray-50 border-gray-200"
+                  className="border-gray-200 bg-gray-50"
                 />
               </div>
             </div>
@@ -247,14 +248,14 @@ export default function OrderForm({
                 value={formData.seller_address}
                 disabled
                 rows={2}
-                className="w-full border border-gray-200 rounded-lg p-2.5 text-sm bg-gray-50 cursor-not-allowed resize-none focus:outline-none"
+                className="w-full cursor-not-allowed resize-none rounded-lg border border-gray-200 bg-gray-50 p-2.5 text-sm focus:outline-none"
               />
             </div>
           </div>
 
           {/* Section 4: Notes */}
           <div className="space-y-4">
-            <h4 className="font-semibold text-sm text-emerald-700 border-b pb-1">
+            <h4 className="border-b pb-1 text-sm font-semibold text-emerald-700">
               Ghi chú thêm
             </h4>
             <div className="flex flex-col gap-1.5">
@@ -266,7 +267,7 @@ export default function OrderForm({
                 onChange={handleChange}
                 rows={3}
                 placeholder="Ghi chú đơn hàng cho shipper hoặc hệ thống..."
-                className="w-full border border-gray-200 rounded-lg p-2.5 text-sm bg-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
+                className="w-full resize-none rounded-lg border border-gray-200 bg-transparent p-2.5 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
               />
             </div>
           </div>
@@ -283,7 +284,7 @@ export default function OrderForm({
             <Button
               type="submit"
               variant="default"
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="bg-emerald-600 text-white hover:bg-emerald-700"
             >
               {mode === "add" ? "Thêm" : "Lưu thay đổi"}
             </Button>

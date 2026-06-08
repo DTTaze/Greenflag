@@ -151,6 +151,7 @@ function ProfileCard() {
     },
     { text: "Nhiệm vụ hoàn thành", path: "/user/missions" },
     { text: "Đơn mua", path: "/user/purchase" },
+    { text: "Lịch sử hoạt động & Giao dịch xu", path: "/user/history" },
   ];
 
   return (

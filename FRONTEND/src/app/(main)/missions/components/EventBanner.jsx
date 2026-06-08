@@ -24,9 +24,7 @@ const EventBanner = ({ userInfo }) => {
         }
 
         // Fetch signed events
-        const signedEventsResponse = await getEventSignedByUserId(
-          userInfo.id,
-        );
+        const signedEventsResponse = await getEventSignedByUserId(userInfo.id);
         const signedEventIds =
           signedEventsResponse?.data?.map((event) => event.event_id) || [];
 

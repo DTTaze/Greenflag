@@ -1,9 +1,16 @@
-import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/src/components/ui/dialog";
-import { Button } from "@/src/components/ui/button";
-import { Input } from "@/src/components/ui/input";
+import React, { useEffect, useState } from "react";
+
 import MultiImageUpload from "@/src/components/common/MultiImageUpload";
+import { Button } from "@/src/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/src/components/ui/dialog";
+import { Input } from "@/src/components/ui/input";
 
 const INITIAL_FORM_STATE = {
   name: "",
@@ -121,16 +128,16 @@ const ItemDialog = ({ open, onClose, onSave, item, isSubmitting }) => {
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
-      <DialogContent className="sm:max-w-3xl w-full p-6 max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] w-full overflow-y-auto p-6 sm:max-w-3xl">
         <DialogHeader className="flex flex-row items-center justify-between border-b pb-4">
           <DialogTitle className="text-xl font-bold text-gray-800">
             {item ? "Edit Item" : "Add New Item"}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
+        <div className="grid grid-cols-1 gap-4 py-4 md:grid-cols-2">
           <div className="md:col-span-2">
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
               Name <span className="text-red-500">*</span>
             </label>
             <Input
@@ -141,16 +148,20 @@ const ItemDialog = ({ open, onClose, onSave, item, isSubmitting }) => {
               placeholder="Item Name"
             />
             {errors.name && (
-              <span className="text-xs text-red-500 mt-1 block">{errors.name}</span>
+              <span className="mt-1 block text-xs text-red-500">
+                {errors.name}
+              </span>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
               Price <span className="text-red-500">*</span>
             </label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 select-none">$</span>
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 select-none">
+                $
+              </span>
               <Input
                 name="price"
                 type="number"
@@ -161,12 +172,14 @@ const ItemDialog = ({ open, onClose, onSave, item, isSubmitting }) => {
               />
             </div>
             {errors.price && (
-              <span className="text-xs text-red-500 mt-1 block">{errors.price}</span>
+              <span className="mt-1 block text-xs text-red-500">
+                {errors.price}
+              </span>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
               Stock <span className="text-red-500">*</span>
             </label>
             <Input
@@ -178,12 +191,14 @@ const ItemDialog = ({ open, onClose, onSave, item, isSubmitting }) => {
               placeholder="Available inventory"
             />
             {errors.stock && (
-              <span className="text-xs text-red-500 mt-1 block">{errors.stock}</span>
+              <span className="mt-1 block text-xs text-red-500">
+                {errors.stock}
+              </span>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
               Weight (g) <span className="text-red-500">*</span>
             </label>
             <Input
@@ -195,12 +210,14 @@ const ItemDialog = ({ open, onClose, onSave, item, isSubmitting }) => {
               placeholder="Weight in grams"
             />
             {errors.weight && (
-              <span className="text-xs text-red-500 mt-1 block">{errors.weight}</span>
+              <span className="mt-1 block text-xs text-red-500">
+                {errors.weight}
+              </span>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
               Length (cm) <span className="text-red-500">*</span>
             </label>
             <Input
@@ -212,12 +229,14 @@ const ItemDialog = ({ open, onClose, onSave, item, isSubmitting }) => {
               placeholder="Length in cm"
             />
             {errors.length && (
-              <span className="text-xs text-red-500 mt-1 block">{errors.length}</span>
+              <span className="mt-1 block text-xs text-red-500">
+                {errors.length}
+              </span>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
               Width (cm) <span className="text-red-500">*</span>
             </label>
             <Input
@@ -229,12 +248,14 @@ const ItemDialog = ({ open, onClose, onSave, item, isSubmitting }) => {
               placeholder="Width in cm"
             />
             {errors.width && (
-              <span className="text-xs text-red-500 mt-1 block">{errors.width}</span>
+              <span className="mt-1 block text-xs text-red-500">
+                {errors.width}
+              </span>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
               Height (cm) <span className="text-red-500">*</span>
             </label>
             <Input
@@ -246,12 +267,14 @@ const ItemDialog = ({ open, onClose, onSave, item, isSubmitting }) => {
               placeholder="Height in cm"
             />
             {errors.height && (
-              <span className="text-xs text-red-500 mt-1 block">{errors.height}</span>
+              <span className="mt-1 block text-xs text-red-500">
+                {errors.height}
+              </span>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
               Daily Purchase Limit <span className="text-red-500">*</span>
             </label>
             <Input
@@ -262,19 +285,21 @@ const ItemDialog = ({ open, onClose, onSave, item, isSubmitting }) => {
               className={errors.purchase_limit_per_day ? "border-red-500" : ""}
             />
             {errors.purchase_limit_per_day && (
-              <span className="text-xs text-red-500 mt-1 block">{errors.purchase_limit_per_day}</span>
+              <span className="mt-1 block text-xs text-red-500">
+                {errors.purchase_limit_per_day}
+              </span>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
               Status
             </label>
             <select
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             >
               <option value="available">Available</option>
               <option value="sold_out">Sold Out</option>
@@ -283,7 +308,7 @@ const ItemDialog = ({ open, onClose, onSave, item, isSubmitting }) => {
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
               Description
             </label>
             <textarea
@@ -291,13 +316,13 @@ const ItemDialog = ({ open, onClose, onSave, item, isSubmitting }) => {
               value={formData.description}
               onChange={handleChange}
               rows={4}
-              className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               placeholder="Describe the item..."
             />
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="mb-2 block text-sm font-semibold text-gray-700">
               Item Images
             </label>
             <MultiImageUpload
@@ -308,13 +333,17 @@ const ItemDialog = ({ open, onClose, onSave, item, isSubmitting }) => {
           </div>
         </div>
 
-        <DialogFooter className="border-t pt-4 gap-2 sm:gap-0">
-          <Button variant="outline" onClick={handleClose} disabled={isSubmitting}>
+        <DialogFooter className="gap-2 border-t pt-4 sm:gap-0">
+          <Button
+            variant="outline"
+            onClick={handleClose}
+            disabled={isSubmitting}
+          >
             Cancel
           </Button>
           <Button
             onClick={handleSubmit}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            className="bg-emerald-600 text-white hover:bg-emerald-700"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Saving..." : item ? "Update" : "Create"}

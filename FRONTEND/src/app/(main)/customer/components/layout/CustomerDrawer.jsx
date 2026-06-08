@@ -1,17 +1,17 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
-import React from "react";
 import {
-  LayoutDashboard,
   Calendar,
+  LayoutDashboard,
   Package,
-  Users,
   ScanQrCode,
-  User,
   ShoppingCart,
+  User,
+  Users,
   X,
 } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import React from "react";
 
 const menuItems = [
   {
@@ -79,49 +79,51 @@ export default function CustomerDrawer({
 
       {/* Sliding Drawer Container */}
       <div
-        className={`fixed top-0 left-0 h-full bg-white border-r border-gray-100 shadow-xl flex flex-col z-50 transform transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 left-0 z-50 flex h-full transform flex-col border-r border-gray-100 bg-white shadow-xl transition-transform duration-300 ease-in-out ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
         style={{ width: `${drawerWidth}px` }}
       >
         {/* Header/Brand Section */}
-        <div className="h-16 flex items-center justify-between px-4 bg-emerald-600 text-white shadow-sm shrink-0">
-          <span className="font-semibold text-base tracking-wide">
+        <div className="flex h-16 shrink-0 items-center justify-between bg-emerald-600 px-4 text-white shadow-sm">
+          <span className="text-base font-semibold tracking-wide">
             Customer Portal
           </span>
           <button
             onClick={handleDrawerToggle}
-            className="p-1 rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+            className="rounded-full p-1 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
           >
             <X size={18} />
           </button>
         </div>
 
         {/* User profile details header */}
-        <div className="p-4 flex items-center gap-3 bg-emerald-50/20 border-b border-gray-100 shrink-0">
+        <div className="flex shrink-0 items-center gap-3 border-b border-gray-100 bg-emerald-50/20 p-4">
           {userInfo?.avatar_url ? (
             <img
               src={userInfo.avatar_url}
               alt={userInfo.full_name || "Customer avatar"}
-              className="w-10 h-10 rounded-full border border-emerald-100 object-cover"
+              className="h-10 w-10 rounded-full border border-emerald-100 object-cover"
             />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm">
-              {userInfo?.username ? userInfo.username.charAt(0).toUpperCase() : "C"}
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-600 text-sm font-bold text-white">
+              {userInfo?.username
+                ? userInfo.username.charAt(0).toUpperCase()
+                : "C"}
             </div>
           )}
           <div className="overflow-hidden">
-            <div className="font-semibold text-sm text-gray-800 truncate">
+            <div className="truncate text-sm font-semibold text-gray-800">
               {userInfo?.full_name || "Customer"}
             </div>
-            <div className="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-full px-2.5 py-0.5 mt-1 inline-block">
+            <div className="mt-1 inline-block rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
               {getAmount(userInfo?.coins)} Coins
             </div>
           </div>
         </div>
 
         {/* Navigation list */}
-        <nav className="flex-1 overflow-y-auto py-3 px-3 space-y-1">
+        <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-3">
           {menuItems.map((item) => {
             const isActive = pathname === item.path;
 
@@ -132,13 +134,15 @@ export default function CustomerDrawer({
                   router.push(item.path);
                   handleDrawerToggle();
                 }}
-                className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all duration-150 ${
+                className={`flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm transition-all duration-150 ${
                   isActive
-                    ? "bg-emerald-50 text-emerald-700 font-bold border border-emerald-100 shadow-sm"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 border border-transparent"
+                    ? "border border-emerald-100 bg-emerald-50 font-bold text-emerald-700 shadow-sm"
+                    : "border border-transparent text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                 }`}
               >
-                <span className={isActive ? "text-emerald-600" : "text-gray-400"}>
+                <span
+                  className={isActive ? "text-emerald-600" : "text-gray-400"}
+                >
                   {item.icon}
                 </span>
                 <span>{item.text}</span>

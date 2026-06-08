@@ -5,7 +5,10 @@ export const purchaseItem = (
   itemId: string | number,
   data: any,
 ) => {
-  return axios.post(`api/items/purchase/${itemId}`, { user_id: userId, ...data });
+  return axios.post(`api/items/purchase/${itemId}`, {
+    user_id: userId,
+    ...data,
+  });
 };
 
 export const getBuyerTransactionHistory = () => {

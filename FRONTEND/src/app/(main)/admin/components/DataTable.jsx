@@ -1,7 +1,15 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { Eye, Pencil, Trash2, Plus, ChevronLeft, ChevronRight, Search } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  Pencil,
+  Plus,
+  Search,
+  Trash2,
+} from "lucide-react";
+import React, { useMemo, useState } from "react";
 
 export default function DataTable({
   title,
@@ -26,7 +34,7 @@ export default function DataTable({
       columns.some((col) => {
         const val = row[col.field];
         return val != null && String(val).toLowerCase().includes(lowerQuery);
-      })
+      }),
     );
   }, [rows, columns, searchQuery]);
 
@@ -61,7 +69,9 @@ export default function DataTable({
     setSelectedIds(newSelected);
   };
 
-  const isAllSelected = paginatedRows.length > 0 && paginatedRows.every((r) => selectedIds.has(r.id));
+  const isAllSelected =
+    paginatedRows.length > 0 &&
+    paginatedRows.every((r) => selectedIds.has(r.id));
 
   // Render status helper
   const renderStatus = (status) => {
@@ -73,24 +83,27 @@ export default function DataTable({
       Todo: "bg-amber-50 text-amber-700 border-amber-200",
       "In Progress": "bg-sky-50 text-sky-700 border-sky-200",
     };
-    const styleClass = statusColors[status] || "bg-gray-50 text-gray-700 border-gray-200";
+    const styleClass =
+      statusColors[status] || "bg-gray-50 text-gray-700 border-gray-200";
 
     return (
-      <span className={`inline-flex items-center justify-center px-2.5 py-1 text-xs font-semibold rounded-full border ${styleClass}`}>
+      <span
+        className={`inline-flex items-center justify-center rounded-full border px-2.5 py-1 text-xs font-semibold ${styleClass}`}
+      >
         {status}
       </span>
     );
   };
 
   return (
-    <div className="w-full bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+    <div className="mb-6 w-full rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
       {/* Header section */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <h3 className="text-lg font-bold text-gray-900">{title}</h3>
-        <div className="flex items-center gap-3 w-full sm:w-auto">
+        <div className="flex w-full items-center gap-3 sm:w-auto">
           {/* Search Input */}
-          <div className="relative flex-1 sm:flex-none sm:w-64">
-            <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+          <div className="relative flex-1 sm:w-64 sm:flex-none">
+            <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
               <Search size={16} />
             </span>
             <input
@@ -98,7 +111,7 @@ export default function DataTable({
               placeholder="Search records..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+              className="w-full rounded-lg border border-gray-200 py-2 pr-4 pl-9 text-sm transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
             />
           </div>
 
@@ -106,7 +119,7 @@ export default function DataTable({
           {onAdd && (
             <button
               onClick={onAdd}
-              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-sm transition-colors shadow-sm"
+              className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-emerald-700"
             >
               <Plus size={16} />
               <span>Add New</span>
@@ -116,18 +129,18 @@ export default function DataTable({
       </div>
 
       {/* Table grid container */}
-      <div className="relative overflow-x-auto border border-gray-100 rounded-lg">
-        <table className="w-full text-sm text-left text-gray-500 border-collapse">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50/70 border-b border-gray-100">
+      <div className="relative overflow-x-auto rounded-lg border border-gray-100">
+        <table className="w-full border-collapse text-left text-sm text-gray-500">
+          <thead className="border-b border-gray-100 bg-gray-50/70 text-xs text-gray-700 uppercase">
             <tr>
               {/* Checkbox Column */}
-              <th scope="col" className="p-4 w-4">
+              <th scope="col" className="w-4 p-4">
                 <div className="flex items-center">
                   <input
                     type="checkbox"
                     checked={isAllSelected}
                     onChange={handleSelectAll}
-                    className="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500"
+                    className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-emerald-600 focus:ring-emerald-500"
                   />
                 </div>
               </th>
@@ -146,7 +159,10 @@ export default function DataTable({
 
               {/* Actions Column */}
               {(onView || onEdit || onDelete) && (
-                <th scope="col" className="px-6 py-4 font-semibold text-gray-600 text-right w-[150px]">
+                <th
+                  scope="col"
+                  className="w-[150px] px-6 py-4 text-right font-semibold text-gray-600"
+                >
                   Thao tác
                 </th>
               )}
@@ -158,14 +174,19 @@ export default function DataTable({
               <tr>
                 <td colSpan={columns.length + 2} className="py-20 text-center">
                   <div className="flex flex-col items-center justify-center gap-3">
-                    <div className="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
-                    <span className="text-sm text-gray-500">Loading data...</span>
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-600 border-t-transparent"></div>
+                    <span className="text-sm text-gray-500">
+                      Loading data...
+                    </span>
                   </div>
                 </td>
               </tr>
             ) : paginatedRows.length === 0 ? (
               <tr>
-                <td colSpan={columns.length + 2} className="py-16 text-center text-gray-400">
+                <td
+                  colSpan={columns.length + 2}
+                  className="py-16 text-center text-gray-400"
+                >
                   No records found
                 </td>
               </tr>
@@ -175,18 +196,18 @@ export default function DataTable({
                 return (
                   <tr
                     key={row.id || index}
-                    className={`hover:bg-gray-50/50 transition-colors ${
+                    className={`transition-colors hover:bg-gray-50/50 ${
                       isSelected ? "bg-emerald-50/10" : ""
                     }`}
                   >
                     {/* Selection checkbox */}
-                    <td className="p-4 w-4">
+                    <td className="w-4 p-4">
                       <div className="flex items-center">
                         <input
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => handleSelectRow(row.id)}
-                          className="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500"
+                          className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-emerald-600 focus:ring-emerald-500"
                         />
                       </div>
                     </td>
@@ -195,7 +216,10 @@ export default function DataTable({
                     {columns.map((col) => {
                       const value = row[col.field];
                       return (
-                        <td key={col.field} className="px-6 py-4 text-gray-700 max-w-xs truncate">
+                        <td
+                          key={col.field}
+                          className="max-w-xs truncate px-6 py-4 text-gray-700"
+                        >
                           {col.field === "status" ? renderStatus(value) : value}
                         </td>
                       );
@@ -208,7 +232,7 @@ export default function DataTable({
                           {onView && (
                             <button
                               onClick={() => onView(row)}
-                              className="p-1.5 text-sky-600 hover:bg-sky-50 rounded-md transition-colors"
+                              className="rounded-md p-1.5 text-sky-600 transition-colors hover:bg-sky-50"
                               title="Chi tiết"
                             >
                               <Eye size={16} />
@@ -217,7 +241,7 @@ export default function DataTable({
                           {onEdit && (
                             <button
                               onClick={() => onEdit(row)}
-                              className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-md transition-colors"
+                              className="rounded-md p-1.5 text-emerald-600 transition-colors hover:bg-emerald-50"
                               title="Chỉnh sửa"
                             >
                               <Pencil size={16} />
@@ -226,7 +250,7 @@ export default function DataTable({
                           {onDelete && (
                             <button
                               onClick={() => onDelete(row)}
-                              className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-md transition-colors"
+                              className="rounded-md p-1.5 text-rose-600 transition-colors hover:bg-rose-50"
                               title="Xóa"
                             >
                               <Trash2 size={16} />
@@ -245,13 +269,21 @@ export default function DataTable({
 
       {/* Pagination Footer */}
       {!loading && filteredRows.length > 0 && (
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6 text-sm text-gray-500">
+        <div className="mt-6 flex flex-col items-center justify-between gap-4 text-sm text-gray-500 sm:flex-row">
           <div>
-            Showing <span className="font-semibold text-gray-700">{(currentPage - 1) * pageSize + 1}</span> to{" "}
+            Showing{" "}
+            <span className="font-semibold text-gray-700">
+              {(currentPage - 1) * pageSize + 1}
+            </span>{" "}
+            to{" "}
             <span className="font-semibold text-gray-700">
               {Math.min(currentPage * pageSize, filteredRows.length)}
             </span>{" "}
-            of <span className="font-semibold text-gray-700">{filteredRows.length}</span> records
+            of{" "}
+            <span className="font-semibold text-gray-700">
+              {filteredRows.length}
+            </span>{" "}
+            records
           </div>
 
           <div className="flex items-center gap-4">
@@ -263,7 +295,7 @@ export default function DataTable({
                   setPageSize(Number(e.target.value));
                   setCurrentPage(1);
                 }}
-                className="border border-gray-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-emerald-500 text-gray-700"
+                className="rounded-lg border border-gray-200 px-2 py-1 text-gray-700 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
               >
                 {[5, 10, 25, 50].map((size) => (
                   <option key={size} value={size}>
@@ -277,17 +309,17 @@ export default function DataTable({
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(currentPage - 1)}
-                className="p-1.5 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:hover:bg-white transition-colors"
+                className="rounded-lg border border-gray-200 p-1.5 transition-colors hover:bg-gray-50 disabled:opacity-50 disabled:hover:bg-white"
               >
                 <ChevronLeft size={16} />
               </button>
-              <span className="text-gray-700 px-2 font-medium">
+              <span className="px-2 font-medium text-gray-700">
                 Page {currentPage} of {totalPages}
               </span>
               <button
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage(currentPage + 1)}
-                className="p-1.5 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:hover:bg-white transition-colors"
+                className="rounded-lg border border-gray-200 p-1.5 transition-colors hover:bg-gray-50 disabled:opacity-50 disabled:hover:bg-white"
               >
                 <ChevronRight size={16} />
               </button>

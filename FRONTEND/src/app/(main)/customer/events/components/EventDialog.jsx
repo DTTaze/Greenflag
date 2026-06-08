@@ -1,9 +1,16 @@
-import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/src/components/ui/dialog";
-import { Button } from "@/src/components/ui/button";
-import { Input } from "@/src/components/ui/input";
+import React, { useEffect, useState } from "react";
+
 import MultiImageUpload from "@/src/components/common/MultiImageUpload";
+import { Button } from "@/src/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/src/components/ui/dialog";
+import { Input } from "@/src/components/ui/input";
 
 const EventDialog = ({ open, onClose, onSave, event }) => {
   const [formData, setFormData] = useState({
@@ -132,16 +139,16 @@ const EventDialog = ({ open, onClose, onSave, event }) => {
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
-      <DialogContent className="sm:max-w-3xl w-full p-6 max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] w-full overflow-y-auto p-6 sm:max-w-3xl">
         <DialogHeader className="flex flex-row items-center justify-between border-b pb-4">
           <DialogTitle className="text-xl font-bold text-gray-800">
             {event ? "Edit Event" : "Add New Event"}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
+        <div className="grid grid-cols-1 gap-4 py-4 md:grid-cols-2">
           <div className="md:col-span-2">
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
               Title <span className="text-red-500">*</span>
             </label>
             <Input
@@ -152,12 +159,14 @@ const EventDialog = ({ open, onClose, onSave, event }) => {
               placeholder="Event Title"
             />
             {errors.title && (
-              <span className="text-xs text-red-500 mt-1 block">{errors.title}</span>
+              <span className="mt-1 block text-xs text-red-500">
+                {errors.title}
+              </span>
             )}
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
               Description
             </label>
             <textarea
@@ -165,13 +174,13 @@ const EventDialog = ({ open, onClose, onSave, event }) => {
               value={formData.description}
               onChange={handleChange}
               rows={4}
-              className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               placeholder="Describe the event..."
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
               Location <span className="text-red-500">*</span>
             </label>
             <Input
@@ -182,12 +191,14 @@ const EventDialog = ({ open, onClose, onSave, event }) => {
               placeholder="Event Location"
             />
             {errors.location && (
-              <span className="text-xs text-red-500 mt-1 block">{errors.location}</span>
+              <span className="mt-1 block text-xs text-red-500">
+                {errors.location}
+              </span>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
               Capacity <span className="text-red-500">*</span>
             </label>
             <Input
@@ -199,12 +210,14 @@ const EventDialog = ({ open, onClose, onSave, event }) => {
               placeholder="Maximum Participants"
             />
             {errors.capacity && (
-              <span className="text-xs text-red-500 mt-1 block">{errors.capacity}</span>
+              <span className="mt-1 block text-xs text-red-500">
+                {errors.capacity}
+              </span>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
               Start Time <span className="text-red-500">*</span>
             </label>
             <Input
@@ -215,12 +228,14 @@ const EventDialog = ({ open, onClose, onSave, event }) => {
               className={errors.start_time ? "border-red-500" : ""}
             />
             {errors.start_time && (
-              <span className="text-xs text-red-500 mt-1 block">{errors.start_time}</span>
+              <span className="mt-1 block text-xs text-red-500">
+                {errors.start_time}
+              </span>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
               End Time <span className="text-red-500">*</span>
             </label>
             <Input
@@ -231,12 +246,14 @@ const EventDialog = ({ open, onClose, onSave, event }) => {
               className={errors.end_time ? "border-red-500" : ""}
             />
             {errors.end_time && (
-              <span className="text-xs text-red-500 mt-1 block">{errors.end_time}</span>
+              <span className="mt-1 block text-xs text-red-500">
+                {errors.end_time}
+              </span>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
               End Sign Up Time
             </label>
             <Input
@@ -248,7 +265,7 @@ const EventDialog = ({ open, onClose, onSave, event }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
               Coins Reward
             </label>
             <Input
@@ -261,14 +278,14 @@ const EventDialog = ({ open, onClose, onSave, event }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
               Status
             </label>
             <select
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             >
               <option value="upcoming">Upcoming</option>
               <option value="active">Active</option>
@@ -277,7 +294,7 @@ const EventDialog = ({ open, onClose, onSave, event }) => {
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="mb-2 block text-sm font-semibold text-gray-700">
               Event Images
             </label>
             <MultiImageUpload
@@ -288,13 +305,13 @@ const EventDialog = ({ open, onClose, onSave, event }) => {
           </div>
         </div>
 
-        <DialogFooter className="border-t pt-4 gap-2 sm:gap-0">
+        <DialogFooter className="gap-2 border-t pt-4 sm:gap-0">
           <Button variant="outline" onClick={handleClose}>
             Cancel
           </Button>
           <Button
             onClick={handleSubmit}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            className="bg-emerald-600 text-white hover:bg-emerald-700"
           >
             {event ? "Update" : "Create"}
           </Button>

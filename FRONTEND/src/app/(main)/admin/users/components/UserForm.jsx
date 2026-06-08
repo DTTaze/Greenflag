@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+
+import { Button } from "@/src/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,7 +12,6 @@ import {
 } from "@/src/components/ui/dialog";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
-import { Button } from "@/src/components/ui/button";
 
 export default function UserForm({
   open,
@@ -73,7 +74,7 @@ export default function UserForm({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
-      <DialogContent className="sm:max-w-[500px] bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+      <DialogContent className="rounded-xl border border-gray-100 bg-white p-6 shadow-lg sm:max-w-[500px]">
         <DialogHeader className="mb-4">
           <DialogTitle className="text-lg font-bold text-gray-900">
             {mode === "add" ? "Add New User" : "Edit User"}
@@ -154,7 +155,7 @@ export default function UserForm({
                     name="coins"
                     value={formData.coins}
                     disabled
-                    className="bg-gray-50 border-gray-200"
+                    className="border-gray-200 bg-gray-50"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
@@ -164,7 +165,7 @@ export default function UserForm({
                     name="role_name"
                     value={formData.role_name}
                     disabled
-                    className="bg-gray-50 border-gray-200"
+                    className="border-gray-200 bg-gray-50"
                   />
                 </div>
               </div>
@@ -183,7 +184,7 @@ export default function UserForm({
             <Button
               type="submit"
               variant="default"
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="bg-emerald-600 text-white hover:bg-emerald-700"
             >
               {mode === "add" ? "Create" : "Save Changes"}
             </Button>

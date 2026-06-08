@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
+import React, { useEffect, useState } from "react";
+
 import { Button } from "@/src/components/ui/button";
 import {
   createEvent,
@@ -48,7 +49,7 @@ const CustomerEvents = () => {
     // Filter by search term
     if (filters.search) {
       filtered = filtered.filter((event) =>
-        event.title.toLowerCase().includes(filters.search.toLowerCase())
+        event.title.toLowerCase().includes(filters.search.toLowerCase()),
       );
     }
 
@@ -136,21 +137,19 @@ const CustomerEvents = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent"></div>
       </div>
     );
   }
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">
-          Events Management
-        </h2>
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-gray-800">Events Management</h2>
         <Button
           onClick={handleAddEvent}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
+          className="gap-2 bg-emerald-600 text-white hover:bg-emerald-700"
         >
           <Plus size={18} />
           Add Event
@@ -158,7 +157,7 @@ const CustomerEvents = () => {
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-md text-sm">
+        <div className="mb-6 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-600">
           {error}
         </div>
       )}

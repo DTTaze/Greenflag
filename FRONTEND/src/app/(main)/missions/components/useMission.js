@@ -2,14 +2,20 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 
 import {
-  getAllTasksByUserId,
   getAllTasks,
+  getAllTasksByUserId,
   getUser,
   increaseProgressCount,
   receiveCoins,
 } from "@/src/utils/api";
 
-import { fetchTasksHelper, filterTasksByDifficulty } from "./missionHelpers.js";
+import {
+  extractTasksData,
+  fetchTasksHelper,
+  filterTasksByDifficulty,
+  getTaskCategory,
+  mapUserTasksData,
+} from "./missionHelpers.js";
 
 export default function useMission() {
   const [tasks, setTasks] = useState([]);
@@ -27,6 +33,9 @@ export default function useMission() {
   const [otherTasks, setOtherTasks] = useState([]);
   const [dailyDifficultyFilter, setDailyDifficultyFilter] = useState("all");
   const [otherDifficultyFilter, setOtherDifficultyFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [sortByCoins, setSortByCoins] = useState("none");
 
   // Fetch data from backend
   useEffect(() => {
@@ -38,27 +47,10 @@ export default function useMission() {
           getUser(),
         ]);
 
-        let tasksData = [];
-        if (taskResponse?.data) {
-          if (
-            taskResponse.data.success &&
-            Array.isArray(taskResponse.data.data)
-          ) {
-            tasksData = taskResponse.data.data;
-          } else if (Array.isArray(taskResponse.data)) {
-            tasksData = taskResponse.data;
-          } else if (
-            taskResponse.data.data &&
-            !Array.isArray(taskResponse.data.data)
-          ) {
-            if (typeof taskResponse.data.data === "object") {
-              tasksData = Object.values(taskResponse.data.data);
-            }
-          }
-        }
+        const tasksData = extractTasksData(taskResponse);
 
         if (userResponse?.data) {
-          const dataOfUser = {
+          setUserInfo({
             public_id: userResponse.data.public_id,
             id: userResponse.data.id,
             full_name: userResponse.data.full_name || "User",
@@ -66,8 +58,7 @@ export default function useMission() {
             coins: userResponse.data.coins.amount || 0,
             streak: userResponse.data.streak || 0,
             last_completed_task: userResponse.data.last_completed_task,
-          };
-          setUserInfo(dataOfUser);
+          });
         } else {
           setUserInfo({
             id: 0,
@@ -78,32 +69,12 @@ export default function useMission() {
         }
 
         if (tasksData.length > 0) {
-          const processedTasks = tasksData.map((task) => ({
-            id: task.id,
-            title: task.title,
-            description: task.description,
-            total: task.total,
-            coins: task.coins,
-            difficulty: task.difficulty || "easy",
-            createdAt: task.createdAt,
-            updatedAt: task.updatedAt,
-          }));
-
-          setTasks(processedTasks);
-
+          setTasks(tasksData);
           const userTasksData = await getAllTasksByUserId(userResponse.data.id);
-          const processedUserTasksData = userTasksData.data.map((task) => ({
-            id: task.id,
-            task_id: task.task_id,
-            user_id: userResponse.data.id,
-            progress_count: task.progress_count,
-            assigned_at: task.assigned_at,
-            completed_at: task.completed_at,
-            created_at: task.created_at,
-            updated_at: task.updated_at,
-            tasks: task.tasks,
-          }));
-
+          const processedUserTasksData = mapUserTasksData(
+            userTasksData,
+            userResponse.data.id,
+          );
           setUserTasks(processedUserTasksData);
         } else {
           setTasks([]);
@@ -288,14 +259,41 @@ export default function useMission() {
   );
 
   const getFilteredTasks = () => {
+    let list = [];
     if (selectedTab === "daily") {
-      return filterTasksByDifficulty(dailyTasks, dailyDifficultyFilter);
+      list = filterTasksByDifficulty(dailyTasks, dailyDifficultyFilter);
     } else if (selectedTab === "other") {
-      return filterTasksByDifficulty(otherTasks, otherDifficultyFilter);
+      list = filterTasksByDifficulty(otherTasks, otherDifficultyFilter);
     } else if (selectedTab === "completed") {
-      return completedTasks;
+      list = completedTasks;
     }
-    return [];
+
+    // Apply search query filter
+    if (searchQuery.trim() !== "") {
+      const q = searchQuery.toLowerCase();
+      list = list.filter(
+        (task) =>
+          (task.title || "").toLowerCase().includes(q) ||
+          (task.description || "").toLowerCase().includes(q),
+      );
+    }
+
+    // Apply category filter
+    if (categoryFilter !== "all") {
+      list = list.filter((task) => {
+        const cat = getTaskCategory(task.title || "", task.description || "");
+        return cat === categoryFilter;
+      });
+    }
+
+    // Apply sort by coins
+    if (sortByCoins === "asc") {
+      list = [...list].sort((a, b) => (a.coins || 0) - (b.coins || 0));
+    } else if (sortByCoins === "desc") {
+      list = [...list].sort((a, b) => (b.coins || 0) - (a.coins || 0));
+    }
+
+    return list;
   };
 
   return {
@@ -318,6 +316,13 @@ export default function useMission() {
     otherTotalPages,
     completedPages,
     taskPerPage,
+    searchQuery,
+    setSearchQuery,
+    categoryFilter,
+    setCategoryFilter,
+    sortByCoins,
+    setSortByCoins,
+    getTaskCategory,
     setSelectedTab,
     setDailyDifficultyFilter,
     setDailyCurrentPage,

@@ -7,6 +7,7 @@ import Calendar from "./Calendar.jsx";
 import Ranking from "./ChartRank.jsx";
 import EventBanner from "./EventBanner.jsx";
 import EventList from "./EventList.jsx";
+import MissionFilters from "./MissionFilters.jsx";
 import MissionHeader from "./MissionHeader.jsx";
 import MissionSkeleton from "./MissionSkeleton.jsx";
 import MissionTabs from "./MissionTabs.jsx";
@@ -34,6 +35,12 @@ function Mission() {
     otherTotalPages,
     completedPages,
     taskPerPage,
+    searchQuery,
+    setSearchQuery,
+    categoryFilter,
+    setCategoryFilter,
+    sortByCoins,
+    setSortByCoins,
     setSelectedTab,
     setDailyDifficultyFilter,
     setDailyCurrentPage,
@@ -117,45 +124,22 @@ function Mission() {
               setSelectedTab={setSelectedTab}
             />
 
-            {/* Difficulty Filter Buttons */}
-            <div className="border-x border-gray-200 bg-white p-4 shadow-sm">
-              <div className="flex space-x-2">
-                {[
-                  { value: "all", label: "Tất cả" },
-                  { value: "easy", label: "Dễ" },
-                  { value: "medium", label: "Trung bình" },
-                  { value: "hard", label: "Khó" },
-                ].map((diff) => {
-                  const isDaily = selectedTab === "daily";
-                  const activeFilter = isDaily
-                    ? dailyDifficultyFilter
-                    : otherDifficultyFilter;
-                  const setFilter = isDaily
-                    ? setDailyDifficultyFilter
-                    : setOtherDifficultyFilter;
-                  const setPage = isDaily
-                    ? setDailyCurrentPage
-                    : setOtherCurrentPage;
-
-                  return (
-                    <button
-                      key={diff.value}
-                      onClick={() => {
-                        setFilter(diff.value);
-                        setPage(1);
-                      }}
-                      className={`rounded-lg px-4 py-2 text-sm font-medium ${
-                        activeFilter === diff.value
-                          ? "bg-green-100 text-green-800"
-                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                      }`}
-                    >
-                      {diff.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+            {/* Search, Category, Difficulty & Sorting Filters */}
+            <MissionFilters
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              categoryFilter={categoryFilter}
+              setCategoryFilter={setCategoryFilter}
+              sortByCoins={sortByCoins}
+              setSortByCoins={setSortByCoins}
+              selectedTab={selectedTab}
+              dailyDifficultyFilter={dailyDifficultyFilter}
+              setDailyDifficultyFilter={setDailyDifficultyFilter}
+              otherDifficultyFilter={otherDifficultyFilter}
+              setOtherDifficultyFilter={setOtherDifficultyFilter}
+              setDailyCurrentPage={setDailyCurrentPage}
+              setOtherCurrentPage={setOtherCurrentPage}
+            />
 
             {/* Task List */}
             <div className="rounded-b-xl border-x border-b border-gray-200 bg-white p-6 shadow-sm">

@@ -531,20 +531,3 @@ Bảng 3.6: Mô tả dữ liệu bảng customer
 ### **Mở rộng thị trường**
 
 ### **Bảo mật**
-
-**TÀI LIỆU THAM KHẢO**
-
-[1] …
-
-**BẢNG PHÂN CÔNG CÔNG VIỆC CỤ THỂ**
-
-| **Thành Viên / Công việc** | **Thực hiện Báo Cáo** | **Thực hiện Code** |
-| --- | --- | --- |
-| Trần Nguyễn Phi Hùng | - Khảo sát hiện trạng và xác định yêu cầu<br>- Công cụ, ngôn ngữ sử dụng trong bài<br>- Thiết kế giao diện admin<br>- Vẽ các use case User, Category, Book, Customer Registration | * Admin:<br>- Category Management (CRUD)<br>- Book Managment (CRUD)<br>- Authentication - Filter<br>- Handle Exceptions<br>-    Complete Website admin<br>* Customer:<br>- Email Sending<br>- Complete Customer page |
-| Dương Thanh Toàn | - Thiết kế giao diện người dùng<br>- Thiết kế dữ liệu, giao diện customer<br>- Chỉnh sửa cách trình bày trong báo cáo<br>- Vẽ use case Customer, Order, Review | * Admin:<br>- Review Management (CRUD)<br>- Order Management (CRUD)<br>* Customer<br>- Chức năng review bên customer<br>- Xem lịch sử order<br>- Shopping cart chức năng<br>- Chức năng thanh toán |
-| Lê Quang Phú | - Kiểm thử lỗi, chức năng bên admin<br>- Vẽ use case placeOrder, viewOrder, manageProfile, Login/Logout User | * Admin:<br>- User Management (CRUD)<br>* Customer<br>- Tích hợp Paypal<br>- Thiết kế Database cho hệ thống<br>- Đưa ra cấu trúc jpaDAO, genericDAO cho hệ thống |
-| Lê Nhựt Huy | - Kiểm thử lỗi, chức năng bên khách hàng<br>- Vẽ use case list book, view book, shopping cart, Login/Logout Customer | * Admin:<br>- Customer Managment (CRUD)<br>* Customer<br>- Tích hợp đăng nhập bằng google<br>- Xử lý Captcha<br>- Customer registration<br>- Customer profile |
-
-[1]	*Object-oriented and classical software engineering*, 8th ed. New York: McGraw-Hill, 2011, pp. xix, 667 p.
-
-[2]	https://www.codejava.net/

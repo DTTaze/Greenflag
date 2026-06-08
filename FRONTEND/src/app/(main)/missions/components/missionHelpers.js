@@ -8,9 +8,7 @@ export const fetchTasksHelper = async (
 ) => {
   const TasksByTypeName = await getAllTasksByTypeName(typeName);
   const tasksData = await Promise.all(
-    TasksByTypeName.data.map(
-      async (task) => (await getTaskById(task.id)).data,
-    ),
+    TasksByTypeName.data.map(async (task) => (await getTaskById(task.id)).data),
   );
 
   let filteredUserTasks = userTasks;
@@ -64,4 +62,54 @@ export const fetchTasksHelper = async (
 export const filterTasksByDifficulty = (tasksList, difficulty) => {
   if (difficulty === "all") return tasksList;
   return tasksList.filter((task) => task.difficulty === difficulty);
+};
+
+export const getTaskCategory = (title = "", description = "") => {
+  const text = `${title} ${description}`.toLowerCase();
+  if (text.match(/cây|trồng|rừng|hoa|xanh|vườn/)) return "planting";
+  if (text.match(/rác|nhựa|chai|lon|túi|nilon|gom|giấy|phế liệu|pin|sắt/))
+    return "recycling";
+  if (text.match(/điện|nước|tắt|năng lượng|tiết kiệm/)) return "saving";
+  return "other";
+};
+
+export const extractTasksData = (taskResponse) => {
+  let tasksData = [];
+  if (taskResponse?.data) {
+    if (taskResponse.data.success && Array.isArray(taskResponse.data.data)) {
+      tasksData = taskResponse.data.data;
+    } else if (Array.isArray(taskResponse.data)) {
+      tasksData = taskResponse.data;
+    } else if (
+      taskResponse.data.data &&
+      typeof taskResponse.data.data === "object"
+    ) {
+      tasksData = Object.values(taskResponse.data.data);
+    }
+  }
+  return tasksData.map((task) => ({
+    id: task.id,
+    title: task.title,
+    description: task.description,
+    total: task.total,
+    coins: task.coins,
+    difficulty: task.difficulty || "easy",
+    createdAt: task.createdAt,
+    updatedAt: task.updatedAt,
+  }));
+};
+
+export const mapUserTasksData = (userTasksData, userId) => {
+  if (!userTasksData?.data) return [];
+  return userTasksData.data.map((task) => ({
+    id: task.id,
+    task_id: task.task_id,
+    user_id: userId,
+    progress_count: task.progress_count,
+    assigned_at: task.assigned_at,
+    completed_at: task.completed_at,
+    created_at: task.created_at,
+    updated_at: task.updated_at,
+    tasks: task.tasks,
+  }));
 };

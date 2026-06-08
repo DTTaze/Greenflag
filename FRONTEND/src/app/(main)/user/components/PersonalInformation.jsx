@@ -4,10 +4,6 @@ import { Copy, QrCode } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import Button from "@/src/components/ui/button";
-import InputField from "@/src/components/ui/InputField.jsx";
-import { useAuthStore } from "@/src/store/auth/authStore";
-import { getQR, updateUserPublic } from "@/src/utils/api";
-
 import {
   Dialog,
   DialogContent,
@@ -15,6 +11,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/src/components/ui/dialog";
+import InputField from "@/src/components/ui/InputField.jsx";
+import { useAuthStore } from "@/src/store/auth/authStore";
+import { getQR, updateUserPublic } from "@/src/utils/api";
+
 import PersonalInfomationSkeleton from "./PersonalInfomationSkeleton.jsx";
 
 function PersonalInformation() {
@@ -169,7 +169,9 @@ function PersonalInformation() {
   return (
     <div className="rounded-lg bg-white p-4 shadow-md">
       <div className="flex items-center justify-between">
-        <h4 className="text-lg font-semibold text-gray-900">Thông tin cá nhân</h4>
+        <h4 className="text-lg font-semibold text-gray-900">
+          Thông tin cá nhân
+        </h4>
         <div className="flex gap-2">
           <Button
             text="QR Code"
@@ -190,7 +192,7 @@ function PersonalInformation() {
       <hr className="my-2 border-gray-200" />
 
       <form className="space-y-4" onSubmit={handleUpdate}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {inputFields.map(({ id, label }) => (
             <div key={id}>
               <InputField
@@ -200,7 +202,9 @@ function PersonalInformation() {
                 onChange={handleChange}
                 error={errors[id]}
                 disabled={!isEditing}
-                className={isEditing ? "" : "cursor-not-allowed bg-gray-50 text-gray-600"}
+                className={
+                  isEditing ? "" : "cursor-not-allowed bg-gray-50 text-gray-600"
+                }
               />
             </div>
           ))}
@@ -226,8 +230,11 @@ function PersonalInformation() {
       </form>
 
       {/* QR Code Dialog */}
-      <Dialog open={showQrDialog} onOpenChange={(isOpen) => !isOpen && setShowQrDialog(false)}>
-        <DialogContent className="sm:max-w-[400px] bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+      <Dialog
+        open={showQrDialog}
+        onOpenChange={(isOpen) => !isOpen && setShowQrDialog(false)}
+      >
+        <DialogContent className="rounded-xl border border-gray-100 bg-white p-6 shadow-lg sm:max-w-[400px]">
           <DialogHeader className="mb-4">
             <DialogTitle className="text-lg font-bold text-emerald-800">
               Your Personal QR Code
@@ -236,27 +243,28 @@ function PersonalInformation() {
 
           <div className="space-y-4">
             <p className="text-sm text-gray-500">
-              Scan this QR code to quickly access your profile or register for events.
+              Scan this QR code to quickly access your profile or register for
+              events.
             </p>
 
-            <div className="flex flex-col items-center justify-center p-6 border border-dashed border-emerald-200 rounded-xl bg-emerald-50/10 min-h-[220px]">
+            <div className="flex min-h-[220px] flex-col items-center justify-center rounded-xl border border-dashed border-emerald-200 bg-emerald-50/10 p-6">
               {qrCode ? (
                 <div className="flex flex-col items-center">
                   <img
                     src={qrCode}
                     alt="QR Code"
-                    className="max-w-[200px] h-auto rounded-lg shadow-sm"
+                    className="h-auto max-w-[200px] rounded-lg shadow-sm"
                   />
                   <button
                     onClick={() => copyToClipboard(user?.public_id)}
-                    className="mt-4 flex items-center justify-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-semibold text-xs rounded-lg transition-colors border border-emerald-200"
+                    className="mt-4 flex items-center justify-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 transition-colors hover:bg-emerald-100"
                   >
                     <span>Public ID: {user?.public_id}</span>
                     <Copy size={14} />
                   </button>
                 </div>
               ) : (
-                <div className="w-8 h-8 border-4 border-emerald-700 border-t-transparent rounded-full animate-spin" />
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-700 border-t-transparent" />
               )}
             </div>
           </div>
@@ -265,7 +273,7 @@ function PersonalInformation() {
             <Button
               text="Close"
               onClick={() => setShowQrDialog(false)}
-              className="bg-emerald-600 text-white hover:bg-emerald-700 w-full"
+              className="w-full bg-emerald-600 text-white hover:bg-emerald-700"
               padding="15px"
             />
           </DialogFooter>

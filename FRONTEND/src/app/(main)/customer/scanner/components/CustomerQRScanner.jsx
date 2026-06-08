@@ -1,8 +1,9 @@
 "use client";
 
+import { AlertTriangle, Info, UserPlus } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { UserPlus, Info, AlertTriangle } from "lucide-react";
 
+import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 import {
   checkInUser,
   checkOutUser,
@@ -10,7 +11,6 @@ import {
   getUserByIDPublic,
 } from "@/src/utils/api";
 
-import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 import EventSelector, { getEventNameById } from "./EventSelector";
 import HowItWorks from "./HowItWorks";
 import ManualAddDialog from "./ManualAddDialog";
@@ -169,19 +169,19 @@ export default function CustomerQRScanner() {
     <div className="space-y-6">
       <div className="space-y-1">
         <h1 className="text-2xl font-bold text-gray-950">QR Code Scanner</h1>
-        <p className="text-sm text-gray-500 max-w-2xl">
+        <p className="max-w-2xl text-sm text-gray-500">
           Scan QR codes to check in or check out users from events. Select an
           event and start scanning, or add users manually.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+      <div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-12">
         {/* Left Side: Scanner controls */}
-        <div className="md:col-span-7 bg-white border border-gray-100 rounded-xl shadow-sm p-6 flex flex-col justify-between">
+        <div className="flex flex-col justify-between rounded-xl border border-gray-100 bg-white p-6 shadow-sm md:col-span-7">
           <div className="space-y-6">
             {/* Event Selector */}
             <div className="space-y-2">
-              <h4 className="font-semibold text-sm text-gray-900">
+              <h4 className="text-sm font-semibold text-gray-900">
                 1. Select an Event
               </h4>
               <EventSelector
@@ -193,7 +193,7 @@ export default function CustomerQRScanner() {
 
             {/* Choose Action Tabs */}
             <div className="space-y-3">
-              <h4 className="font-semibold text-sm text-gray-900">
+              <h4 className="text-sm font-semibold text-gray-900">
                 2. Choose Action
               </h4>
               <Tabs
@@ -201,16 +201,16 @@ export default function CustomerQRScanner() {
                 onValueChange={setActiveTab}
                 className="w-full"
               >
-                <TabsList className="bg-gray-100 p-1 rounded-lg flex gap-1">
+                <TabsList className="flex gap-1 rounded-lg bg-gray-100 p-1">
                   <TabsTrigger
                     value="0"
-                    className="flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-gray-500 data-[state=active]:bg-white data-[state=active]:text-emerald-700 data-[state=active]:shadow-sm focus:outline-none"
+                    className="flex-1 rounded-md py-1.5 text-xs font-semibold text-gray-500 transition-all focus:outline-none data-[state=active]:bg-white data-[state=active]:text-emerald-700 data-[state=active]:shadow-sm"
                   >
                     Check In
                   </TabsTrigger>
                   <TabsTrigger
                     value="1"
-                    className="flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-gray-500 data-[state=active]:bg-white data-[state=active]:text-emerald-700 data-[state=active]:shadow-sm focus:outline-none"
+                    className="flex-1 rounded-md py-1.5 text-xs font-semibold text-gray-500 transition-all focus:outline-none data-[state=active]:bg-white data-[state=active]:text-emerald-700 data-[state=active]:shadow-sm"
                   >
                     Check Out
                   </TabsTrigger>
@@ -220,7 +220,7 @@ export default function CustomerQRScanner() {
 
             {/* QR Scanner viewport */}
             <div className="space-y-3 pt-2">
-              <h4 className="font-semibold text-sm text-gray-800 text-center">
+              <h4 className="text-center text-sm font-semibold text-gray-800">
                 {activeTab === "0" ? "Check In User" : "Check Out User"}
               </h4>
               <QRScanner
@@ -233,7 +233,9 @@ export default function CustomerQRScanner() {
                   activeTab === "0" ? handleStopScan : handleCheckoutStopScan
                 }
                 onScanResult={
-                  activeTab === "0" ? handleScanResult : handleCheckoutScanResult
+                  activeTab === "0"
+                    ? handleScanResult
+                    : handleCheckoutScanResult
                 }
                 disabled={!selectedEvent}
               />
@@ -241,24 +243,27 @@ export default function CustomerQRScanner() {
 
             {/* Alert banners */}
             {!selectedEvent && (
-              <div className="flex gap-2.5 items-start bg-amber-50 border border-amber-100 text-amber-800 p-3 rounded-lg text-xs">
-                <Info size={16} className="text-amber-600 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2.5 rounded-lg border border-amber-100 bg-amber-50 p-3 text-xs text-amber-800">
+                <Info size={16} className="mt-0.5 shrink-0 text-amber-600" />
                 <span>Please select an event before scanning</span>
               </div>
             )}
 
             {error && (
-              <div className="flex gap-2.5 items-start bg-rose-50 border border-rose-100 text-rose-800 p-3 rounded-lg text-xs">
-                <AlertTriangle size={16} className="text-rose-600 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2.5 rounded-lg border border-rose-100 bg-rose-50 p-3 text-xs text-rose-800">
+                <AlertTriangle
+                  size={16}
+                  className="mt-0.5 shrink-0 text-rose-600"
+                />
                 <span>{error}</span>
               </div>
             )}
           </div>
 
-          <div className="flex justify-center mt-6">
+          <div className="mt-6 flex justify-center">
             <button
               onClick={() => setManualAddOpen(true)}
-              className="flex items-center justify-center gap-2 px-4 py-2 border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium rounded-lg text-sm transition-colors shadow-sm"
+              className="flex items-center justify-center gap-2 rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50"
             >
               <UserPlus size={16} />
               <span>Add Manually</span>
@@ -267,7 +272,7 @@ export default function CustomerQRScanner() {
         </div>
 
         {/* Right Side: Scanned list */}
-        <div className="md:col-span-5 bg-white border border-gray-100 rounded-xl shadow-sm p-6 flex flex-col justify-between">
+        <div className="flex flex-col justify-between rounded-xl border border-gray-100 bg-white p-6 shadow-sm md:col-span-5">
           <ScannedUsersList
             scannedUsers={scannedUsers}
             onRemoveUser={handleRemoveUser}
@@ -291,11 +296,11 @@ export default function CustomerQRScanner() {
 
       {/* Floating success banner toast */}
       {showSuccess && (
-        <div className="fixed bottom-4 left-4 z-50 bg-emerald-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 text-sm transition-all duration-300">
+        <div className="fixed bottom-4 left-4 z-50 flex items-center gap-3 rounded-lg bg-emerald-600 px-4 py-3 text-sm text-white shadow-lg transition-all duration-300">
           <span>{successMessage}</span>
           <button
             onClick={() => setShowSuccess(false)}
-            className="hover:text-emerald-100 font-bold ml-2 text-base"
+            className="ml-2 text-base font-bold hover:text-emerald-100"
           >
             &times;
           </button>

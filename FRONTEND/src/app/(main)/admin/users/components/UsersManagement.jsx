@@ -3,9 +3,9 @@
 import React, { useEffect, useState } from "react";
 
 import {
-  registerUser,
   deleteUser,
   getAllUsers,
+  registerUser,
   updateUser,
 } from "@/src/utils/api";
 
@@ -98,7 +98,7 @@ export default function UsersManagement() {
   };
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="space-y-4 p-4">
       <h1 className="text-2xl font-bold text-gray-950">Users Management</h1>
       <DataTable
         title="Users"

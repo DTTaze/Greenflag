@@ -1,6 +1,7 @@
 "use client";
 
 import "@/src/styles/pages/customer.css";
+
 import React, { useState } from "react";
 
 import ProtectedRoute from "@/src/components/common/ProtectedRoute";
@@ -26,7 +27,7 @@ export default function CustomerLayout({
 
   return (
     <ProtectedRoute requiredRole={["Customer", "Admin"]}>
-      <div className="flex min-h-screen relative bg-gray-50">
+      <div className="relative flex min-h-screen bg-gray-50">
         <CustomerAppBar
           open={open}
           drawerWidth={drawerWidth}
@@ -39,7 +40,7 @@ export default function CustomerLayout({
           handleDrawerToggle={handleDrawerToggle}
           userInfo={userInfo}
         />
-        <main className="flex-1 w-full p-4 sm:p-6 mt-16 relative z-10 overflow-x-hidden">
+        <main className="relative z-10 mt-16 w-full flex-1 overflow-x-hidden p-4 sm:p-6">
           {children}
         </main>
       </div>

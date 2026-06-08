@@ -98,30 +98,30 @@ export default function QRScanner({
   };
 
   return (
-    <div className="flex flex-col items-center w-full max-w-md mx-auto">
-      <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black border border-gray-100 shadow-inner flex items-center justify-center">
+    <div className="mx-auto flex w-full max-w-md flex-col items-center">
+      <div className="relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-xl border border-gray-100 bg-black shadow-inner">
         <video
           ref={videoRef}
-          className={`w-full h-full object-cover ${scanning ? "block" : "hidden"}`}
+          className={`h-full w-full object-cover ${scanning ? "block" : "hidden"}`}
           autoPlay
           muted
           playsInline
         />
-        
+
         {scanning && (
-          <div className="absolute inset-0 pointer-events-none z-10 p-6">
-            <div className="w-full h-full border-2 border-emerald-500/50 rounded-lg relative">
-              <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-emerald-500 -mt-1 -ml-1 rounded-tl" />
-              <div className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-emerald-500 -mt-1 -mr-1 rounded-tr" />
-              <div className="absolute bottom-0 left-0 w-6 h-6 border-b-4 border-l-4 border-emerald-500 -mb-1 -ml-1 rounded-bl" />
-              <div className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-emerald-500 -mb-1 -mr-1 rounded-br" />
+          <div className="pointer-events-none absolute inset-0 z-10 p-6">
+            <div className="relative h-full w-full rounded-lg border-2 border-emerald-500/50">
+              <div className="absolute top-0 left-0 -mt-1 -ml-1 h-6 w-6 rounded-tl border-t-4 border-l-4 border-emerald-500" />
+              <div className="absolute top-0 right-0 -mt-1 -mr-1 h-6 w-6 rounded-tr border-t-4 border-r-4 border-emerald-500" />
+              <div className="absolute bottom-0 left-0 -mb-1 -ml-1 h-6 w-6 rounded-bl border-b-4 border-l-4 border-emerald-500" />
+              <div className="absolute right-0 bottom-0 -mr-1 -mb-1 h-6 w-6 rounded-br border-r-4 border-b-4 border-emerald-500" />
             </div>
           </div>
         )}
 
         {!scanning && !loading && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 text-gray-500">
-            <QrCode className="w-16 h-16 mb-2 text-emerald-600 animate-pulse" />
+            <QrCode className="mb-2 h-16 w-16 animate-pulse text-emerald-600" />
             <span className="text-xs text-gray-400">
               Click &quot;Start Scanning&quot; to open camera
             </span>
@@ -130,17 +130,17 @@ export default function QRScanner({
 
         {loading && !scanning && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
-            <div className="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-600 border-t-transparent" />
           </div>
         )}
       </div>
 
-      <div className="flex justify-center gap-3 mt-4 w-full">
+      <div className="mt-4 flex w-full justify-center gap-3">
         {!scanning ? (
           <button
             onClick={handleStartScan}
             disabled={disabled}
-            className="flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-sm transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <QrCode size={18} />
             <span>Start Scanning</span>
@@ -154,7 +154,7 @@ export default function QRScanner({
                 scanControlsRef.current.stop();
               }
             }}
-            className="flex items-center justify-center gap-2 px-6 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-lg text-sm transition-colors shadow-sm"
+            className="flex items-center justify-center gap-2 rounded-lg bg-rose-600 px-6 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-rose-700"
           >
             <span>Stop Scanning</span>
           </button>

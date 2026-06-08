@@ -45,10 +45,7 @@ export default function useTransactions({
 
   const handleCancelOrder = async (transactionId) => {
     try {
-      const response = await makeTransactionDecision(
-        transactionId,
-        "rejected",
-      );
+      const response = await makeTransactionDecision(transactionId, "rejected");
       if (response && response.data) {
         showAlert("Transaction has been rejected successfully!");
         fetchTransactions();
@@ -61,10 +58,7 @@ export default function useTransactions({
 
   const handleConfirmOrder = async (transactionId) => {
     try {
-      const response = await makeTransactionDecision(
-        transactionId,
-        "accepted",
-      );
+      const response = await makeTransactionDecision(transactionId, "accepted");
       if (response && response.data) {
         showAlert("Transaction has been accepted successfully!");
         fetchTransactions();

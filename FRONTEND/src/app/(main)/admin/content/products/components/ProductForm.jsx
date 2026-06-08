@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+
+import { Button } from "@/src/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,7 +12,6 @@ import {
 } from "@/src/components/ui/dialog";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
-import { Button } from "@/src/components/ui/button";
 
 export default function ProductForm({
   open,
@@ -70,7 +71,7 @@ export default function ProductForm({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
-      <DialogContent className="sm:max-w-[500px] max-h-[85vh] overflow-y-auto bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+      <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-gray-100 bg-white p-6 shadow-lg sm:max-w-[500px]">
         <DialogHeader className="mb-4">
           <DialogTitle className="text-lg font-bold text-gray-900">
             {mode === "add" ? "Add New Product" : "Edit Product"}
@@ -99,7 +100,7 @@ export default function ProductForm({
               onChange={handleChange}
               rows={3}
               placeholder="Mô tả sản phẩm..."
-              className="w-full border border-gray-200 rounded-lg p-2.5 text-sm bg-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
+              className="w-full resize-none rounded-lg border border-gray-200 bg-transparent p-2.5 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
             />
           </div>
 
@@ -124,7 +125,7 @@ export default function ProductForm({
                 value={formData.category}
                 onChange={handleChange}
                 required
-                className="w-full h-8 border border-gray-200 rounded-lg px-2.5 py-1 text-sm bg-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+                className="h-8 w-full rounded-lg border border-gray-200 bg-transparent px-2.5 py-1 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
               >
                 <option value="">Chọn danh mục</option>
                 <option value="recycled">Tái chế</option>
@@ -145,7 +146,7 @@ export default function ProductForm({
                 value={formData.product_status}
                 onChange={handleChange}
                 required
-                className="w-full h-8 border border-gray-200 rounded-lg px-2.5 py-1 text-sm bg-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+                className="h-8 w-full rounded-lg border border-gray-200 bg-transparent px-2.5 py-1 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
               >
                 <option value="">Chọn tình trạng</option>
                 <option value="new">Mới</option>
@@ -160,7 +161,7 @@ export default function ProductForm({
                 value={formData.post_status}
                 onChange={handleChange}
                 required
-                className="w-full h-8 border border-gray-200 rounded-lg px-2.5 py-1 text-sm bg-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+                className="h-8 w-full rounded-lg border border-gray-200 bg-transparent px-2.5 py-1 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
               >
                 <option value="">Chọn trạng thái</option>
                 <option value="public">Công khai</option>
@@ -195,7 +196,7 @@ export default function ProductForm({
             <Button
               type="submit"
               variant="default"
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="bg-emerald-600 text-white hover:bg-emerald-700"
             >
               {mode === "add" ? "Create" : "Save Changes"}
             </Button>

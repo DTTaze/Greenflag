@@ -1,7 +1,9 @@
 "use client";
 
+import { Trash, Upload } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { Upload, Trash } from "lucide-react";
+
+import { Button } from "@/src/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +13,6 @@ import {
 } from "@/src/components/ui/dialog";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
-import { Button } from "@/src/components/ui/button";
 
 export default function EventForm({
   open,
@@ -57,8 +58,8 @@ export default function EventForm({
       if (initialData.images && Array.isArray(initialData.images)) {
         setPreviewUrls(
           initialData.images.map((img) =>
-            typeof img === "string" ? img : URL.createObjectURL(img)
-          )
+            typeof img === "string" ? img : URL.createObjectURL(img),
+          ),
         );
       }
     } else {
@@ -111,7 +112,7 @@ export default function EventForm({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
-      <DialogContent className="sm:max-w-[700px] max-h-[85vh] overflow-y-auto bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+      <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-gray-100 bg-white p-6 shadow-lg sm:max-w-[700px]">
         <DialogHeader className="mb-4">
           <DialogTitle className="text-lg font-bold text-gray-900">
             {mode === "add" ? "Thêm sự kiện mới" : "Chỉnh sửa sự kiện"}
@@ -141,7 +142,7 @@ export default function EventForm({
               required
               rows={4}
               placeholder="Mô tả nội dung, mục tiêu của sự kiện..."
-              className="w-full border border-gray-200 rounded-lg p-2.5 text-sm bg-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
+              className="w-full resize-none rounded-lg border border-gray-200 bg-transparent p-2.5 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
             />
           </div>
 
@@ -157,7 +158,7 @@ export default function EventForm({
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="start_time">Thời gian bắt đầu</Label>
               <Input
@@ -183,7 +184,7 @@ export default function EventForm({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="max_participants">Số người tham gia tối đa</Label>
               <Input
@@ -218,7 +219,7 @@ export default function EventForm({
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="w-full h-8 border border-gray-200 rounded-lg px-2.5 py-1 text-sm bg-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+              className="h-8 w-full rounded-lg border border-gray-200 bg-transparent px-2.5 py-1 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
             >
               <option value="active">Hoạt động</option>
               <option value="inactive">Không hoạt động</option>
@@ -233,17 +234,17 @@ export default function EventForm({
               {previewUrls.map((url, index) => (
                 <div
                   key={index}
-                  className="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-100 shadow-sm"
+                  className="relative h-24 w-24 overflow-hidden rounded-lg border border-gray-100 shadow-sm"
                 >
                   <img
                     src={url}
                     alt={`Preview ${index + 1}`}
-                    className="w-full h-full object-cover"
+                    className="h-full w-full object-cover"
                   />
                   <button
                     type="button"
                     onClick={() => handleRemoveImage(index)}
-                    className="absolute top-1 right-1 p-1 bg-white/95 rounded-full text-rose-600 hover:bg-white transition-colors shadow-sm"
+                    className="absolute top-1 right-1 rounded-full bg-white/95 p-1 text-rose-600 shadow-sm transition-colors hover:bg-white"
                   >
                     <Trash size={12} />
                   </button>
@@ -252,7 +253,7 @@ export default function EventForm({
             </div>
 
             <div className="pt-1">
-              <label className="inline-flex items-center gap-2 px-4 py-2 border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium rounded-lg text-sm transition-colors cursor-pointer shadow-sm">
+              <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50">
                 <Upload size={16} className="text-gray-500" />
                 <span>Tải ảnh lên</span>
                 <input
@@ -278,7 +279,7 @@ export default function EventForm({
             <Button
               type="submit"
               variant="default"
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="bg-emerald-600 text-white hover:bg-emerald-700"
             >
               {mode === "add" ? "Thêm" : "Lưu thay đổi"}
             </Button>

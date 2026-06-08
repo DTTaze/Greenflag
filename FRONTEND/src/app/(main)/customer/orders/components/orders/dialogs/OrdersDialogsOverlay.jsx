@@ -1,4 +1,5 @@
 import React from "react";
+
 import { Dialog, DialogContent } from "@/src/components/ui/dialog";
 import { wasteCategories } from "@/src/data/ordersMockData";
 
@@ -70,13 +71,17 @@ const OrdersDialogsOverlay = ({
       {/* Shipping Accounts Dialog */}
       <Dialog
         open={shippingAccountsDialogOpen}
-        onOpenChange={(isOpen) => !isOpen && setShippingAccountsDialogOpen(false)}
+        onOpenChange={(isOpen) =>
+          !isOpen && setShippingAccountsDialogOpen(false)
+        }
       >
-        <DialogContent className="sm:max-w-3xl w-full p-0 overflow-hidden">
+        <DialogContent className="w-full overflow-hidden p-0 sm:max-w-3xl">
           {isLoadingAccounts ? (
-            <div className="p-8 text-center flex flex-col items-center justify-center">
-              <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-              <p className="mt-4 text-sm text-gray-500 font-medium">Loading shipping accounts...</p>
+            <div className="flex flex-col items-center justify-center p-8 text-center">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent"></div>
+              <p className="mt-4 text-sm font-medium text-gray-500">
+                Loading shipping accounts...
+              </p>
             </div>
           ) : (
             <ShippingAccountsList
@@ -107,7 +112,7 @@ const OrdersDialogsOverlay = ({
           }
         }}
       >
-        <DialogContent className="sm:max-w-lg w-full p-0 overflow-hidden">
+        <DialogContent className="w-full overflow-hidden p-0 sm:max-w-lg">
           <AddShippingAccountForm
             newShippingAccount={newShippingAccount}
             setNewShippingAccount={setNewShippingAccount}
@@ -133,7 +138,7 @@ const OrdersDialogsOverlay = ({
           }
         }}
       >
-        <DialogContent className="sm:max-w-3xl w-full p-0 max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-h-[90vh] w-full overflow-y-auto p-0 sm:max-w-3xl">
           <CreateOrderForm
             newOrder={newOrder}
             setNewOrder={setNewOrder}

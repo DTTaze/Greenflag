@@ -1,6 +1,6 @@
 "use client";
 
-import { Leaf, Truck, Coins, Activity } from "lucide-react";
+import { Activity, Coins, Leaf, Truck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
 
@@ -25,34 +25,34 @@ export default function CustomerDashboard() {
       </div>
 
       {/* Quick Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4">
         {/* Environmental Impact Card */}
-        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-between h-[140px] hover:shadow-md transition-all">
-          <div className="flex items-center gap-2 text-emerald-600 font-medium text-sm">
+        <div className="flex h-[140px] flex-col justify-between rounded-xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:shadow-md">
+          <div className="flex items-center gap-2 text-sm font-medium text-emerald-600">
             <Leaf size={18} />
             <span>Environmental Impact</span>
           </div>
           <div>
             <div className="text-2xl font-bold text-gray-900">1,285 kg</div>
-            <div className="text-xs text-gray-500 mt-1">CO2 Reduced</div>
+            <div className="mt-1 text-xs text-gray-500">CO2 Reduced</div>
           </div>
         </div>
 
         {/* Active Orders Card */}
-        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-between h-[140px] hover:shadow-md transition-all">
-          <div className="flex items-center gap-2 text-blue-600 font-medium text-sm">
+        <div className="flex h-[140px] flex-col justify-between rounded-xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:shadow-md">
+          <div className="flex items-center gap-2 text-sm font-medium text-blue-600">
             <Truck size={18} />
             <span>Active Orders</span>
           </div>
           <div>
             <div className="text-2xl font-bold text-gray-900">3</div>
-            <div className="text-xs text-gray-500 mt-1">In Progress</div>
+            <div className="mt-1 text-xs text-gray-500">In Progress</div>
           </div>
         </div>
 
         {/* Rewards Points Card */}
-        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-between h-[140px] hover:shadow-md transition-all">
-          <div className="flex items-center gap-2 text-amber-500 font-medium text-sm">
+        <div className="flex h-[140px] flex-col justify-between rounded-xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:shadow-md">
+          <div className="flex items-center gap-2 text-sm font-medium text-amber-500">
             <Coins size={18} />
             <span>Eco Coins</span>
           </div>
@@ -60,19 +60,19 @@ export default function CustomerDashboard() {
             <div className="text-2xl font-bold text-gray-900">
               {getAmount(userInfo?.coins)}
             </div>
-            <div className="text-xs text-gray-500 mt-1">Available Coins</div>
+            <div className="mt-1 text-xs text-gray-500">Available Coins</div>
           </div>
         </div>
 
         {/* Impact Timeline Card */}
-        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-between h-[140px] hover:shadow-md transition-all">
-          <div className="flex items-center gap-2 text-sky-500 font-medium text-sm">
+        <div className="flex h-[140px] flex-col justify-between rounded-xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:shadow-md">
+          <div className="flex items-center gap-2 text-sm font-medium text-sky-500">
             <Activity size={18} />
             <span>Impact Timeline</span>
           </div>
           <div>
             <div className="text-2xl font-bold text-gray-900">12</div>
-            <div className="text-xs text-gray-500 mt-1">Completed Projects</div>
+            <div className="mt-1 text-xs text-gray-500">Completed Projects</div>
           </div>
         </div>
       </div>
@@ -83,19 +83,19 @@ export default function CustomerDashboard() {
         <div className="flex flex-wrap gap-3">
           <button
             onClick={() => router.push("/customer/orders")}
-            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-sm transition-colors shadow-sm"
+            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-emerald-700"
           >
             View Orders
           </button>
           <button
             onClick={() => router.push("/customer/rewards")}
-            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-sm transition-colors shadow-sm"
+            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-emerald-700"
           >
             Redeem Coins
           </button>
           <button
             onClick={() => router.push("/customer/profile")}
-            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-sm transition-colors shadow-sm"
+            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-emerald-700"
           >
             Update Profile
           </button>

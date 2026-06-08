@@ -90,7 +90,10 @@ export const createDeliveryOrderFromTransaction = (
   );
 };
 
-export const updateShippingAccount = (accountId: string | number, data: any) => {
+export const updateShippingAccount = (
+  accountId: string | number,
+  data: any,
+) => {
   return axios.put(`api/delivery/accounts/${accountId}`, data);
 };
 
@@ -147,7 +150,10 @@ export const getReceiverInfoByUserId = (userId: string | number) => {
   return axios.get(`api/users/receiver/info/user/${userId}`);
 };
 
-export const updateReceiverInfoById = (receiverInfoId: string | number, data: any) => {
+export const updateReceiverInfoById = (
+  receiverInfoId: string | number,
+  data: any,
+) => {
   return axios.patch(`api/users/receiver/update/${receiverInfoId}`, data);
 };
 

@@ -8,7 +8,9 @@ export const fetchTasksHelper = async (
 ) => {
   const TasksByTypeName = await getAllTasksByTypeName(typeName);
   const tasksData = await Promise.all(
-    TasksByTypeName.data.map(async (task: any) => (await getTaskById(task.id)).data),
+    TasksByTypeName.data.map(
+      async (task: any) => (await getTaskById(task.id)).data,
+    ),
   );
 
   let filteredUserTasks = userTasks;
@@ -59,12 +61,18 @@ export const fetchTasksHelper = async (
   return [...validUserTasks, ...unstartedTasks];
 };
 
-export const filterTasksByDifficulty = (tasksList: any[], difficulty: string) => {
+export const filterTasksByDifficulty = (
+  tasksList: any[],
+  difficulty: string,
+) => {
   if (difficulty === "all") return tasksList;
   return tasksList.filter((task) => task.difficulty === difficulty);
 };
 
-export const getTaskCategory = (title: string = "", description: string = ""): string => {
+export const getTaskCategory = (
+  title: string = "",
+  description: string = "",
+): string => {
   const text = `${title} ${description}`.toLowerCase();
   if (text.match(/cây|trồng|rừng|hoa|xanh|vườn/)) return "planting";
   if (text.match(/rác|nhựa|chai|lon|túi|nilon|gom|giấy|phế liệu|pin|sắt/))

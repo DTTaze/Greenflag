@@ -73,7 +73,7 @@ function PostCard({ post, onLikeUpdate }) {
       {/* Header author details */}
       <div className="flex items-center gap-3 p-4">
         <img
-          src={post.authorAvatar || "/src/assets/images/default-avatar.jpg"}
+          src={post.authorAvatar || "/images/default-avatar.jpg"}
           alt="Avatar"
           className="h-10 w-10 rounded-full border border-gray-100 object-cover"
         />
@@ -153,7 +153,7 @@ function PostCard({ post, onLikeUpdate }) {
           {/* Create comment form */}
           <form onSubmit={handleCommentSubmit} className="flex gap-3">
             <img
-              src={user?.avatar_url || "/src/assets/images/default-avatar.jpg"}
+              src={user?.avatar_url || "/images/default-avatar.jpg"}
               alt="My Avatar"
               className="h-8 w-8 shrink-0 rounded-full object-cover"
             />
@@ -181,10 +181,7 @@ function PostCard({ post, onLikeUpdate }) {
               {post.comments.map((comment) => (
                 <div key={comment.id} className="flex gap-2.5 text-xs">
                   <img
-                    src={
-                      comment.authorAvatar ||
-                      "/src/assets/images/default-avatar.jpg"
-                    }
+                    src={comment.authorAvatar || "/images/default-avatar.jpg"}
                     alt="Commenter Avatar"
                     className="mt-0.5 h-7 w-7 shrink-0 rounded-full object-cover"
                   />

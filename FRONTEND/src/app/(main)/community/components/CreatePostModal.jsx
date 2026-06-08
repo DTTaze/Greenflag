@@ -101,7 +101,7 @@ function CreatePostModal({ isOpen, onClose, onPostCreated }) {
           {/* User info */}
           <div className="flex items-center gap-3">
             <img
-              src={user?.avatar_url || "/src/assets/images/default-avatar.jpg"}
+              src={user?.avatar_url || "/images/default-avatar.jpg"}
               alt="Avatar"
               className="h-10 w-10 rounded-full border border-gray-100 object-cover"
             />

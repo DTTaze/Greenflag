@@ -113,7 +113,7 @@ function ProfileCard() {
     ? avatar
     : user?.avatar_url
       ? `${user.avatar_url}?t=${Date.now()}`
-      : "/src/assets/images/default-avatar.jpg";
+      : "/images/default-avatar.jpg";
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];

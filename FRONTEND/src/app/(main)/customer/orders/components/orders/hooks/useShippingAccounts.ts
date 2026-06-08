@@ -28,7 +28,8 @@ export default function useShippingAccounts(
     useState<boolean>(false);
   const [isEditingShippingAccount, setIsEditingShippingAccount] =
     useState<boolean>(false);
-  const [selectedShippingAccount, setSelectedShippingAccount] = useState<any>(null);
+  const [selectedShippingAccount, setSelectedShippingAccount] =
+    useState<any>(null);
   const [newShippingAccount, setNewShippingAccount] = useState<any>(
     emptyShippingAccountForm,
   );

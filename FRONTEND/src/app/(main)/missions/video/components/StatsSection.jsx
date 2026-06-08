@@ -1,7 +1,6 @@
 import React from "react";
 
-import CoinImg from "@/src/assets/images/Coin";
-import Timer from "@/src/assets/images/Timer";
+import { Coins, Timer } from "lucide-react";
 
 import { useVideoSection } from "./VideoSectionContext";
 
@@ -48,7 +47,7 @@ export default function StatsSection({ video }) {
             className="ease flex cursor-pointer items-center gap-3 rounded-[10px] border-l-3 border-[#f9a826] bg-white p-3 shadow-[0_2px_8px_rgba(0,0,0,0.05)] transition-all duration-300 hover:translate-x-[5px] hover:bg-[#fefaf0] max-[768px]:p-2.5 max-[576px]:min-w-[120px] max-[576px]:flex-1 [&_svg]:h-7 [&_svg]:w-7 [&_svg]:text-[#0b6e4f]"
             onClick={onReceiveCoins}
           >
-            <CoinImg />
+            <Coins />
             <div className="flex flex-1 flex-col">
               <span className="mb-0.5 text-[12px] text-[#666]">EcoCoins</span>
               <span className="text-[18px] font-semibold text-[#333] max-[768px]:text-[16px]">
@@ -153,7 +152,7 @@ export default function StatsSection({ video }) {
               "Watch this eco-friendly video to earn EcoCoins and learn how to make a difference."}
           </p>
           <div className="flex w-fit items-center gap-1.5 rounded-[20px] bg-white px-3 py-2 [&_svg]:h-[18px] [&_svg]:w-[18px]">
-            <CoinImg />
+            <Coins />
             <span>{task?.reward || 3} EcoCoins</span>
           </div>
         </div>

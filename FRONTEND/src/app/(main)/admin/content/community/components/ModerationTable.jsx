@@ -70,9 +70,7 @@ function ModerationTable({
             <TableCell className="px-4 py-3.5">
               <div className="flex items-center gap-2">
                 <img
-                  src={
-                    post.authorAvatar || "/src/assets/images/default-avatar.jpg"
-                  }
+                  src={post.authorAvatar || "/images/default-avatar.jpg"}
                   alt="avatar"
                   className="h-8 w-8 shrink-0 rounded-full border border-gray-100 object-cover"
                 />

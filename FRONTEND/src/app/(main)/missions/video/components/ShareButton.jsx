@@ -1,6 +1,6 @@
 import React from "react";
 
-import Sharing from "@/src/assets/images/Sharing";
+import { Share2 } from "lucide-react";
 
 export default function ShareButton({ onShare, VideoId }) {
   return (
@@ -9,7 +9,7 @@ export default function ShareButton({ onShare, VideoId }) {
         className="flex flex-col items-center gap-1 rounded-full bg-white/10 p-3 text-white backdrop-blur-md transition-colors hover:bg-white/20"
         onClick={() => onShare(VideoId)}
       >
-        <Sharing />
+        <Share2 size={24} color="#ffffff" />
       </button>
     </>
   );

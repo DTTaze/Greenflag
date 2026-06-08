@@ -31,8 +31,10 @@ export default function useMission() {
   const [selectedTab, setSelectedTab] = useState<string>("daily");
   const [dailyTasks, setDailyTasks] = useState<any[]>([]);
   const [otherTasks, setOtherTasks] = useState<any[]>([]);
-  const [dailyDifficultyFilter, setDailyDifficultyFilter] = useState<string>("all");
-  const [otherDifficultyFilter, setOtherDifficultyFilter] = useState<string>("all");
+  const [dailyDifficultyFilter, setDailyDifficultyFilter] =
+    useState<string>("all");
+  const [otherDifficultyFilter, setOtherDifficultyFilter] =
+    useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [sortByCoins, setSortByCoins] = useState<string>("none");
@@ -70,7 +72,9 @@ export default function useMission() {
 
         if (tasksData.length > 0) {
           setTasks(tasksData);
-          const userTasksData: any = await getAllTasksByUserId(userResponse.data.id);
+          const userTasksData: any = await getAllTasksByUserId(
+            userResponse.data.id,
+          );
           const processedUserTasksData = mapUserTasksData(
             userTasksData,
             userResponse.data.id,

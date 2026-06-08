@@ -18,9 +18,7 @@ function ModerationDetail({ selectedPost, formatDate, handleModerate }) {
     <div className="space-y-4 text-xs font-medium text-gray-600">
       <div className="flex items-center gap-3">
         <img
-          src={
-            selectedPost.authorAvatar || "/src/assets/images/default-avatar.jpg"
-          }
+          src={selectedPost.authorAvatar || "/images/default-avatar.jpg"}
           alt="Avatar"
           className="h-10 w-10 rounded-full object-cover"
         />

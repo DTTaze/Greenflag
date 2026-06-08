@@ -88,7 +88,7 @@ function CommunityFeed() {
         <div className="mb-6 rounded-xl border border-gray-100 bg-white p-5 shadow-sm transition-all hover:shadow-md">
           <div className="flex gap-4">
             <img
-              src={user?.avatar_url || "/src/assets/images/default-avatar.jpg"}
+              src={user?.avatar_url || "/images/default-avatar.jpg"}
               alt="Avatar"
               className="h-11 w-11 shrink-0 rounded-full border border-emerald-100 object-cover"
             />

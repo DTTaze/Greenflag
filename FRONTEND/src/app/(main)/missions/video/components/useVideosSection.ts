@@ -183,7 +183,9 @@ export default function useVideosSection() {
 
     const container = document.querySelector(".video-section-container");
     if (container) {
-      container.addEventListener("wheel", handleWheel as any, { passive: false });
+      container.addEventListener("wheel", handleWheel as any, {
+        passive: false,
+      });
     }
 
     return () => {

@@ -31,8 +31,10 @@ export default function useTransactions({
   fetchOrders,
 }: UseTransactionsProps) {
   const [transactions, setTransactions] = useState<any[]>([]);
-  const [isLoadingTransactions, setIsLoadingTransactions] = useState<boolean>(false);
-  const [buyerInfoDialogOpen, setBuyerInfoDialogOpen] = useState<boolean>(false);
+  const [isLoadingTransactions, setIsLoadingTransactions] =
+    useState<boolean>(false);
+  const [buyerInfoDialogOpen, setBuyerInfoDialogOpen] =
+    useState<boolean>(false);
   const [buyerInfo, setBuyerInfo] = useState<any>({
     name: "",
     phone: "",
@@ -57,7 +59,10 @@ export default function useTransactions({
 
   const handleCancelOrder = async (transactionId: any) => {
     try {
-      const response: any = await makeTransactionDecision(transactionId, "rejected");
+      const response: any = await makeTransactionDecision(
+        transactionId,
+        "rejected",
+      );
       if (response && response.data) {
         showAlert("Transaction has been rejected successfully!");
         fetchTransactions();
@@ -70,7 +75,10 @@ export default function useTransactions({
 
   const handleConfirmOrder = async (transactionId: any) => {
     try {
-      const response: any = await makeTransactionDecision(transactionId, "accepted");
+      const response: any = await makeTransactionDecision(
+        transactionId,
+        "accepted",
+      );
       if (response && response.data) {
         showAlert("Transaction has been accepted successfully!");
         fetchTransactions();
@@ -130,7 +138,10 @@ export default function useTransactions({
     setBuyerInfoDialogOpen(true);
   };
 
-  const handleUpdateBuyerInfo = async (ordersList: any[], setOrdersList: React.Dispatch<React.SetStateAction<any[]>>) => {
+  const handleUpdateBuyerInfo = async (
+    ordersList: any[],
+    setOrdersList: React.Dispatch<React.SetStateAction<any[]>>,
+  ) => {
     try {
       if (!selectedOrder) {
         throw new Error("No order selected");

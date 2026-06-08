@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import Heart from "@/src/assets/images/Heart";
+import { Heart } from "lucide-react";
 
 export default function HeartButton({ initialLikes, onLike }) {
   const [heart, setHeart] = useState(false);
@@ -30,7 +30,11 @@ export default function HeartButton({ initialLikes, onLike }) {
       }`}
       onClick={handleLike}
     >
-      <Heart color={heart ? "#FF0000" : "#808080"} />
+      <Heart
+        size={24}
+        fill={heart ? "#FF0000" : "none"}
+        color={heart ? "#FF0000" : "#ffffff"}
+      />
       <div className="mt-1 text-sm text-white">{likes}</div>
     </button>
   );

@@ -39,7 +39,7 @@ const INITIAL_POSTS: CommunityPost[] = [
     id: "post-1",
     authorName: "Lê Trung Kiên",
     authorEmail: "kien.le@student.ptithcm.edu.vn",
-    authorAvatar: "/src/assets/images/default-avatar.jpg",
+    authorAvatar: "/images/default-avatar.jpg",
     content:
       "Sáng nay nhóm mình đã hoàn thành việc nhặt rác nhựa tại công viên Tao Đàn. Thu gom được gần 5kg chai nhựa tái chế! Cố lên cả nhà ơi, vì một hành tinh xanh! 🌲💚",
     image:
@@ -50,7 +50,7 @@ const INITIAL_POSTS: CommunityPost[] = [
       {
         id: "c-1",
         authorName: "Đặng Thành Tài",
-        authorAvatar: "/src/assets/images/default-avatar.jpg",
+        authorAvatar: "/images/default-avatar.jpg",
         content: "Quá tuyệt vời luôn nhóm mình ơi! Ngày mai tiếp tục nhé!",
         createdAt: new Date(Date.now() - 3600000 * 2).toISOString(),
       },
@@ -62,7 +62,7 @@ const INITIAL_POSTS: CommunityPost[] = [
     id: "post-2",
     authorName: "Hoàng Thiên Bảo",
     authorEmail: "bao.hoang@student.ptithcm.edu.vn",
-    authorAvatar: "/src/assets/images/default-avatar.jpg",
+    authorAvatar: "/images/default-avatar.jpg",
     content:
       "Vừa trồng xong 3 chậu sen đá mới mua. Tích tiểu thành đại, phủ xanh ban công nhỏ nhà mình! 🪴🌸",
     image:
@@ -139,7 +139,7 @@ export const createCommunityPost = async (
         id: `post-${Date.now()}`,
         authorName,
         authorEmail,
-        authorAvatar: authorAvatar || "/src/assets/images/default-avatar.jpg",
+        authorAvatar: authorAvatar || "/images/default-avatar.jpg",
         content,
         image,
         likes: 0,
@@ -221,7 +221,7 @@ export const addPostComment = async (
       const newComment: PostComment = {
         id: `comment-${Date.now()}`,
         authorName,
-        authorAvatar: authorAvatar || "/src/assets/images/default-avatar.jpg",
+        authorAvatar: authorAvatar || "/images/default-avatar.jpg",
         content,
         createdAt: new Date().toISOString(),
       };

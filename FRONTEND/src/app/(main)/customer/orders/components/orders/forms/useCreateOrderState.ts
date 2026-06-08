@@ -19,7 +19,8 @@ export default function useCreateOrderState({
   const [pickupOption, setPickupOption] = useState<string>(
     newOrder.pickupOption || "pickup",
   );
-  const [productListDialogOpen, setProductListDialogOpen] = useState<boolean>(false);
+  const [productListDialogOpen, setProductListDialogOpen] =
+    useState<boolean>(false);
   const [formValid, setFormValid] = useState<boolean>(false);
 
   // Hook instances for sender & receiver locations

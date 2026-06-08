@@ -1,158 +1,100 @@
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+"use client";
 
-import { useAuthStore } from "@/src/store/auth/authStore";
+import { Award, Globe, Shield } from "lucide-react";
+import React from "react";
 
-function SectionHero() {
-  const [index, setIndex] = useState(0);
-  const [showText, setShowText] = useState(true);
-
-  const titles = [
-    "Hành động nhỏ, tác động lớn!",
-    "Trồng cây hôm nay, hưởng trái ngọt mai sau!",
-    "Bảo vệ động vật biển, bảo vệ chính chúng ta!",
-  ];
-  const images = [
-    "../src/assets/images/pick-up-trash.jpg",
-    "../src/assets/images/plant-a-tree.jpg",
-    "../src/assets/images/turtle.jpg",
-  ];
-
-  useEffect(() => {
-    const changeSlide = () => {
-      setShowText(false);
-      setTimeout(() => {
-        setIndex((prevIndex) => (prevIndex + 1) % images.length);
-        setShowText(true);
-      }, 500);
-    };
-
-    const interval = setInterval(changeSlide, 3000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const formattedTitle = useMemo(() => {
-    return titles[index].split(",").map((line, i, arr) => (
-      <span key={i}>
-        {line}
-        {i !== arr.length - 1 && ","}
-        {i !== arr.length - 1 && <br />}
-      </span>
-    ));
-  }, [index]);
-
-  return (
-    <section className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden p-4 sm:p-6 lg:flex-row lg:p-12">
-      <header className="flex w-full items-center justify-center px-4 text-center text-lg leading-tight font-bold text-[#059212] sm:text-xl md:text-2xl lg:w-1/2 lg:text-4xl xl:text-5xl">
-        <h1
-          id="heroTitle"
-          className={`transition-opacity duration-500 ${showText ? "opacity-100" : "opacity-0"}`}
-        >
-          {formattedTitle}
-        </h1>
-      </header>
-      <div className="relative flex h-[500px] w-full items-center justify-center sm:h-[250px] md:h-[350px] lg:h-[450px] lg:w-1/2 xl:h-[600px]">
-        {images.map((src, i) => (
-          <img
-            key={i}
-            src={src}
-            alt={`Slide ${i + 1}`}
-            className={`absolute left-1/2 aspect-[16/9] h-full w-full -translate-x-1/2 transform rounded-2xl object-cover transition-opacity duration-700 ${i === index ? "opacity-100" : "opacity-0"}`}
-          />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function Section({ imagePath, H2Text, PText, ButtonText, path, reverse }) {
-  const sectionRef = useRef(null);
-  const [isVisible, setIsVisible] = useState(false);
-  const router = useRouter();
-  const { isAuthenticated } = useAuthStore();
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-          }
-        });
-      },
-      { threshold: 0.1 },
-    );
-
-    observer.observe(sectionRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  return (
-    <section
-      ref={sectionRef}
-      className={`flex min-h-[60vh] w-full flex-col sm:min-h-[80vh] lg:flex-row ${reverse ? "lg:flex-row-reverse" : ""} section items-center justify-center gap-6 p-4 sm:gap-8 sm:p-6 lg:gap-12 lg:p-8`}
-    >
-      <img
-        src={imagePath}
-        alt="ảnh mô tả"
-        className={`h-full transform overflow-hidden transition-transform duration-1000 sm:h-3/5 lg:h-100 ${isVisible ? "translate-x-0" : reverse ? "translate-x-full" : "-translate-x-full"}`}
-      />
-      <header
-        className={`flex w-full transform flex-col justify-center gap-4 text-center transition-transform duration-1000 max-sm:items-center sm:w-4/5 sm:items-center sm:gap-6 lg:w-2/5 lg:text-left ${isVisible ? "translate-x-0" : reverse ? "-translate-x-full" : "translate-x-full"}`}
-      >
-        <h2 className="text-xl font-semibold text-[#1F7D53] sm:text-2xl lg:text-[30px]">
-          {H2Text}
-        </h2>
-        <p className="text-sm text-gray-700 sm:text-base lg:text-[20px]">
-          {PText}
-        </p>
-        <button
-          className="ease w-1/2 cursor-pointer rounded-[50px] border-0 bg-[#65b444] px-[40px] py-[17px] text-[15px] font-bold tracking-[1.5px] uppercase shadow-[0_0_8px_rgba(0,0,0,0.05)] transition-all duration-500 hover:bg-[#059212] hover:tracking-[3px] hover:text-white hover:shadow-[#059212_0px_7px_29px_0px] active:translate-y-[10px] active:bg-[#059212] active:tracking-[3px] active:text-white active:shadow-none active:duration-100"
-          onClick={() => {
-            if (isAuthenticated) {
-              router.push(path);
-              window.scrollTo(0, 0);
-            } else {
-              router.push("/register");
-              window.scrollTo(0, 0);
-            }
-          }}
-        >
-          {ButtonText}
-        </button>
-      </header>
-    </section>
-  );
-}
+import SectionFeatures from "./SectionFeatures";
+import SectionHero from "./SectionHero";
+import SectionHowItWorks from "./SectionHowItWorks";
 
 function HomepageSection() {
   return (
-    <>
+    <div className="bg-white text-zinc-900 transition-colors duration-300 dark:bg-zinc-950 dark:text-zinc-100">
       <SectionHero />
-      <Section
-        imagePath="../src/assets/images/Nhiemvu.png"
-        H2Text="Hoàn thành nhiệm vụ, tích điểm xanh"
-        PText="Chọn nhiệm vụ phù hợp, hoàn thành thử thách xanh và nhận điểm thưởng. Càng nhiều nhiệm vụ hoàn thành, bạn càng đóng góp nhiều hơn cho hành tinh!"
+
+      <SectionHowItWorks />
+
+      {/* Feature 1: Missions */}
+      <SectionFeatures
+        badge="Nhiệm vụ xanh"
+        imagePath="/images/Nhiemvu.png"
+        H2Text="Hoàn thành nhiệm vụ, tích lũy điểm xanh"
+        PText="Khám phá danh sách các hành động thiết thực hằng ngày. Từ việc nhặt rác nhựa, trồng cây xanh, tiết kiệm điện nước đến việc xem video học hỏi kiến thức môi trường. Hoàn thành thử thách để nhận EcoCoins và góp phần xây dựng hành tinh trong lành hơn!"
         path="/missions"
         ButtonText="Khám phá nhiệm vụ"
       />
-      <Section
-        imagePath="../src/assets/images/Cho-trao-doi.png"
-        H2Text="Chợ Trao Đổi - Biến Điểm Thành Hành Động"
-        PText="Dùng điểm tích lũy để đổi lấy những sản phẩm bền vững, giúp bạn tiếp tục duy trì lối sống xanh và bảo vệ hành tinh."
-        path="/market"
+
+      {/* Feature 2: Market */}
+      <SectionFeatures
+        badge="Đổi quà bền vững"
+        imagePath="/images/Cho-trao-doi.png"
+        H2Text="Chợ Trao Đổi - Biến điểm thành hành động thực tế"
+        PText="Nhận phần thưởng xứng đáng cho nỗ lực của bạn. Sử dụng EcoCoins để quy đổi sang các sản phẩm xanh bền vững, ống hút sinh học, túi tự hủy hoặc các voucher xanh hữu ích từ đối tác liên kết của Green Flag."
+        path="/exchange-market"
         ButtonText="Khám phá chợ trao đổi"
         reverse
       />
-      <Section
-        imagePath="../src/assets/images/hand-drawn-people-planting-a-tree.jpg"
-        H2Text="Kết Nối Cộng Đồng - Lan Tỏa Hành Động Xanh"
-        PText="Chia sẻ thành tích, tham gia thử thách cùng bạn bè và truyền cảm hứng đến cộng đồng. Mỗi hành động nhỏ tạo nên một phong trào lớn!"
-        path="/register"
-        ButtonText="Tham gia ngay"
+
+      {/* Feature 3: Community */}
+      <SectionFeatures
+        badge="Mạng xã hội"
+        imagePath="/images/hand-drawn-people-planting-a-tree.jpg"
+        H2Text="Kết nối cộng đồng - Lan tỏa thói quen văn minh"
+        PText="Chia sẻ hình ảnh hoạt động bảo vệ môi trường của bạn lên bảng tin cộng đồng. Thảo luận, tương tác, thả tim và bình luận cổ vũ hành động của mọi người để cùng nhau thắp sáng những thông điệp tích cực nhất!"
+        path="/community"
+        ButtonText="Tham gia cộng đồng ngay"
       />
-    </>
+
+      {/* Trust & Guarantee Section */}
+      <section className="border-t border-zinc-100 bg-zinc-50/30 py-16 dark:border-zinc-900 dark:bg-zinc-950/20">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+            <div className="flex gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
+                <Globe size={22} />
+              </div>
+              <div>
+                <h4 className="text-base font-bold text-zinc-900 dark:text-white">
+                  Tác động toàn cầu
+                </h4>
+                <p className="text-zinc-550 mt-1 text-sm dark:text-zinc-400">
+                  Mọi đóng góp nhỏ của bạn tích tiểu thành đại, giải quyết các
+                  vấn đề biến đổi khí hậu trên thế giới.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
+                <Shield size={22} />
+              </div>
+              <div>
+                <h4 className="text-base font-bold text-zinc-900 dark:text-white">
+                  Minh bạch, bảo mật
+                </h4>
+                <p className="text-zinc-550 mt-1 text-sm dark:text-zinc-400">
+                  Quy trình duyệt nhiệm vụ và giao dịch EcoCoins diễn ra tự động
+                  và rõ ràng qua bảng kiểm duyệt hệ thống.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
+                <Award size={22} />
+              </div>
+              <div>
+                <h4 className="text-base font-bold text-zinc-900 dark:text-white">
+                  Sản phẩm chất lượng
+                </h4>
+                <p className="text-zinc-550 mt-1 text-sm dark:text-zinc-400">
+                  Các phần quà tại Chợ trao đổi được kiểm tra nghiêm ngặt về
+                  nguồn gốc sinh học và chứng nhận thân thiện môi trường.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }
 

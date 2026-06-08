@@ -26,7 +26,8 @@ export default function usePurchaseModal({
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [shippingInfo, setShippingInfo] = useState<any>(null);
   const [shippingFee, setShippingFee] = useState<number>(0);
-  const [isShippingModalOpen, setIsShippingModalOpen] = useState<boolean>(false);
+  const [isShippingModalOpen, setIsShippingModalOpen] =
+    useState<boolean>(false);
   const [isLoadingShipping, setIsLoadingShipping] = useState<boolean>(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
   const shippingModalRef = useRef<HTMLDivElement | null>(null);
@@ -108,7 +109,8 @@ export default function usePurchaseModal({
           const response = await getReceiverInfoByUserId(user.id);
           if (response?.data?.length > 0) {
             const defaultShipping =
-              response.data.find((info: any) => info.is_default) || response.data[0];
+              response.data.find((info: any) => info.is_default) ||
+              response.data[0];
             setShippingInfo(defaultShipping);
             await fetchShippingFee(defaultShipping);
           }

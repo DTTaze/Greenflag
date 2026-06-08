@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import Comment_icon from "@/src/assets/images/Comment";
+import { MessageCircle } from "lucide-react";
 
 const CommentButton = ({ comments }) => {
   const [showComments, setShowComments] = useState(false);
@@ -33,7 +33,7 @@ const CommentButton = ({ comments }) => {
         }`}
         onClick={() => setShowComments(true)}
       >
-        <Comment_icon />
+        <MessageCircle size={24} />
         <div className="mt-1 text-sm text-white">{comments}</div>
       </button>
 

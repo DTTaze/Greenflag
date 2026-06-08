@@ -22,7 +22,8 @@ export default function useCustomerProfile() {
   const [showQrDialog, setShowQrDialog] = useState<boolean>(false);
   const [avatarUploading, setAvatarUploading] = useState<boolean>(false);
   const [transactions, setTransactions] = useState<any[]>([]);
-  const [loadingTransactions, setLoadingTransactions] = useState<boolean>(false);
+  const [loadingTransactions, setLoadingTransactions] =
+    useState<boolean>(false);
   const [userData, setUserData] = useState<any>(null);
   const [loadingUserData, setLoadingUserData] = useState<boolean>(true);
 

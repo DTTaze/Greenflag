@@ -1,4 +1,7 @@
-export const aggregateCoinLogs = (tasksData: any[] = [], transData: any[] = []) => {
+export const aggregateCoinLogs = (
+  tasksData: any[] = [],
+  transData: any[] = [],
+) => {
   const earnedLogs = tasksData
     .filter((t) => t.completed_at)
     .map((t) => ({
@@ -51,7 +54,10 @@ export const aggregateCoinLogs = (tasksData: any[] = [], transData: any[] = []) 
   return combinedCoins;
 };
 
-export const aggregateActivityLogs = (tasksData: any[] = [], eventsData: any[] = []) => {
+export const aggregateActivityLogs = (
+  tasksData: any[] = [],
+  eventsData: any[] = [],
+) => {
   const taskActivities = tasksData.map((t) => ({
     id: `act-task-${t.id}`,
     category: "task",

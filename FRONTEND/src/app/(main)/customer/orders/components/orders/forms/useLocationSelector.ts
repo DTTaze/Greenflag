@@ -16,8 +16,12 @@ export default function useLocationSelector(
   const [districts, setDistricts] = useState<any[]>([]);
   const [wards, setWards] = useState<any[]>([]);
 
-  const [provinceId, setProvinceId] = useState<number | null>(initialProvinceId);
-  const [districtId, setDistrictId] = useState<number | null>(initialDistrictId);
+  const [provinceId, setProvinceId] = useState<number | null>(
+    initialProvinceId,
+  );
+  const [districtId, setDistrictId] = useState<number | null>(
+    initialDistrictId,
+  );
   const [wardCode, setWardCode] = useState<string>(initialWardCode);
 
   const [loadingProvinces, setLoadingProvinces] = useState(false);

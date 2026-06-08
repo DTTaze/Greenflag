@@ -15,9 +15,7 @@ export default function CustomerAvatar({
       ) : (
         <div className="group relative">
           <img
-            src={
-              userInfo?.avatar_url || "/src/assets/images/default-avatar.jpg"
-            }
+            src={userInfo?.avatar_url || "/images/default-avatar.jpg"}
             alt={userInfo?.full_name || "User"}
             className="h-[120px] w-[120px] rounded-full border-4 border-white object-cover shadow-md"
           />

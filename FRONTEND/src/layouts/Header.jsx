@@ -107,8 +107,7 @@ function UserHeader() {
   }
 
   const avatarUrl =
-    (user?.avatar_url || "../src/assets/images/default-avatar.jpg") +
-    `?t=${Date.now()}`;
+    (user?.avatar_url || "/images/default-avatar.jpg") + `?t=${Date.now()}`;
 
   return (
     <header className="relative z-10 flex w-full items-center justify-between bg-white px-5 pt-2">
@@ -118,7 +117,7 @@ function UserHeader() {
         onClick={() => router.push("/")}
       >
         <img
-          src="../src/assets/images/Logo-Greenflag.png"
+          src="/images/Logo-Greenflag.png"
           className="h-10 w-10 md:h-12 md:w-12"
           alt="Logo"
         />

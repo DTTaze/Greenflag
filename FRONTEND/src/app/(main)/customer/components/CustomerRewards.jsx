@@ -9,9 +9,9 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import React from "react";
-import { useOutletContext } from "react-router-dom";
+import React, { useContext } from "react";
 
+import { AuthContext } from "@/src/contexts/auth.context";
 import getAmount from "@/src/utils/getAmount";
 
 // Mock data for rewards
@@ -37,7 +37,8 @@ const mockRewards = [
 ];
 
 export default function CustomerRewards() {
-  const userInfo = useOutletContext();
+  const { auth } = useContext(AuthContext);
+  const userInfo = auth.user;
   return (
     <Box>
       <Box sx={{ mb: 4 }}>

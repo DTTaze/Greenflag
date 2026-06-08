@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useContext } from "react";
-import { Outlet } from "react-router-dom";
 
 import ProtectedRoute from "@/src/components/common/ProtectedRoute.jsx";
 import { AuthContext } from "@/src/contexts/auth.context";
@@ -24,9 +23,7 @@ export default function UserLayout({
           <div className="mt-4 w-[30%]">
             {isLoading ? <ProfileCardSkeleton /> : <ProfileCard />}
           </div>
-          <div className="mt-4 w-[70%]">
-            <Outlet>{children}</Outlet>
-          </div>
+          <div className="mt-4 w-[70%]">{children}</div>
         </div>
       </div>
     </ProtectedRoute>

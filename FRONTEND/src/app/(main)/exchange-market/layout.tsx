@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useContext } from "react";
-import { Outlet } from "react-router-dom";
 
 import { AuthContext } from "@/src/contexts/auth.context";
 
@@ -68,7 +67,7 @@ function ExchangeMarketContent({ children }: { children: React.ReactNode }) {
             </div>
           )}
 
-          <Outlet>{children}</Outlet>
+          {children}
 
           {selectedItem &&
             isModalOpen &&

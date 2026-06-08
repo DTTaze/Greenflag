@@ -1,5 +1,5 @@
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
 
 import Button from "../components/ui/button";
 import InputField from "../components/ui/InputField";
@@ -7,8 +7,8 @@ import { useNotification } from "../components/ui/NotificationProvider";
 import { forgotPasswordApi, resetPasswordApi } from "../utils/api";
 
 const ForgotPassword = () => {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { notify } = useNotification();
   const token = searchParams.get("token");
   const [email, setEmail] = useState("");
@@ -63,7 +63,7 @@ const ForgotPassword = () => {
       const res = await resetPasswordApi(token, newPassword);
       if (res && res.data.email) {
         notify("success", "Mật khẩu đã được thay đổi thành công!");
-        navigate("/login");
+        router.push("/login");
       } else {
         notify("error", "Đổi mật khẩu thất bại, vui lòng thử lại.");
       }
@@ -126,7 +126,7 @@ const ForgotPassword = () => {
 
       <div className="mt-4 text-center">
         <button
-          onClick={() => navigate("/login")}
+          onClick={() => router.push("/login")}
           className="text-blue-600 hover:underline"
         >
           Quay lại đăng nhập

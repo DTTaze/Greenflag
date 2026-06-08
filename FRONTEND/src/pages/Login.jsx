@@ -1,6 +1,7 @@
 import { Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 
 import Button from "../components/ui/button";
 import InputField from "../components/ui/InputField";
@@ -10,7 +11,7 @@ import { AuthContext } from "../contexts/auth.context";
 import { loginUserApi } from "../utils/api";
 
 const LoginPage = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { setAuth } = useContext(AuthContext);
   const { notify } = useNotification();
   const [identifier, setIdentifier] = useState("");
@@ -46,11 +47,11 @@ const LoginPage = () => {
           user: res.data.user,
         });
         if (res.data.user.role_id === 1) {
-          navigate("/admin");
+          router.push("/admin");
         } else if (res.data.user.role_id === 2) {
-          navigate("/");
+          router.push("/");
         } else if (res.data.user.role_id === 3) {
-          navigate("/customer");
+          router.push("/customer");
         } else {
           notify("error", "Đã xảy ra lỗi, vui lòng thử lại sau");
         }
@@ -112,7 +113,10 @@ const LoginPage = () => {
         />
 
         <div className="text-right">
-          <Link to="/forgot_password" className="text-blue-600 hover:underline">
+          <Link
+            href="/forgot_password"
+            className="text-blue-600 hover:underline"
+          >
             Quên mật khẩu?
           </Link>
         </div>
@@ -122,7 +126,7 @@ const LoginPage = () => {
       <SocialLoginIcons />
       <div className="text-center">
         Chưa có tài khoản?{" "}
-        <Link to="/register" className="text-blue-600 hover:underline">
+        <Link href="/register" className="text-blue-600 hover:underline">
           Đăng ký tại đây
         </Link>
       </div>

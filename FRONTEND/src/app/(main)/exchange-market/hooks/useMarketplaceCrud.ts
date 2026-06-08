@@ -183,10 +183,7 @@ export function useMarketplaceCrud({
     }
   };
 
-  const handleSubmitItem = async (
-    formData: any,
-    isEditing: boolean,
-  ) => {
+  const handleSubmitItem = async (formData: any, isEditing: boolean) => {
     try {
       const { images, ...productData } = formData;
       if (

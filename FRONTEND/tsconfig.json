@@ -19,8 +19,7 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"],
-      "react-router-dom": ["./src/utils/react-router-dom-shim.tsx"]
+      "@/*": ["./*"]
     }
   },
   "include": [

@@ -1,5 +1,20 @@
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useContext, useEffect, useRef, useState } from "react";
-import { NavLink } from "react-router-dom";
+
+function NavLink({ to, className, children }) {
+  const pathname = usePathname();
+  const isActive =
+    pathname === to || (to !== "/" && pathname.startsWith(to + "/"));
+  const computedClassName =
+    typeof className === "function" ? className({ isActive }) : className;
+
+  return (
+    <Link href={to} className={computedClassName}>
+      {children}
+    </Link>
+  );
+}
 
 import { AuthContext } from "@/src/contexts/auth.context.jsx";
 import {

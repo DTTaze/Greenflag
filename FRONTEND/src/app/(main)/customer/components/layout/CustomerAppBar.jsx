@@ -21,21 +21,21 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { usePathname, useRouter } from "next/navigation";
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 
 import { useNotification } from "@/src/components/ui/NotificationProvider";
 import { AuthContext } from "@/src/contexts/auth.context";
 import { logoutUserApi } from "@/src/utils/api";
 
 export default function CustomerAppBar({
-  open,
+  _open,
   drawerWidth,
   handleDrawerToggle,
   userInfo,
 }) {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const pathname = usePathname();
+  const router = useRouter();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -84,7 +84,7 @@ export default function CustomerAppBar({
   };
 
   const getPageTitle = () => {
-    const path = location.pathname;
+    const path = pathname;
     if (path === "/customer") return "Dashboard";
     if (path === "/customer/profile") return "Profile";
     if (path === "/customer/orders") return "Orders";
@@ -123,7 +123,7 @@ export default function CustomerAppBar({
           <Tooltip title="Go to Homepage">
             <IconButton
               color="inherit"
-              onClick={() => navigate("/")}
+              onClick={() => router.push("/")}
               sx={{ mr: 2, color: "var(--primary-green)" }}
             >
               <HomeIcon />
@@ -236,7 +236,7 @@ export default function CustomerAppBar({
           >
             <MenuItem
               onClick={() => {
-                navigate("/customer/profile");
+                router.push("/customer/profile");
                 handleClose();
               }}
             >

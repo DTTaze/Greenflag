@@ -3,14 +3,17 @@ import ForestIcon from "@mui/icons-material/Forest";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import TimelineIcon from "@mui/icons-material/Timeline";
 import { Box, Button, Paper, Stack, Typography } from "@mui/material";
+import { useRouter } from "next/navigation";
 import React from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useContext } from "react";
 
+import { AuthContext } from "@/src/contexts/auth.context";
 import getAmount from "@/src/utils/getAmount";
 
 export default function CustomerDashboard() {
-  const userInfo = useOutletContext();
-  const navigate = useNavigate();
+  const { auth } = useContext(AuthContext);
+  const userInfo = auth.user;
+  const router = useRouter();
 
   return (
     <Box sx={{ flexGrow: 1, p: 0 }}>
@@ -102,21 +105,21 @@ export default function CustomerDashboard() {
           <Button
             variant="contained"
             className="customer-button"
-            onClick={() => navigate("/customer/orders")}
+            onClick={() => router.push("/customer/orders")}
           >
             View Orders
           </Button>
           <Button
             variant="contained"
             className="customer-button"
-            onClick={() => navigate("/customer/rewards")}
+            onClick={() => router.push("/customer/rewards")}
           >
             Redeem Coins
           </Button>
           <Button
             variant="contained"
             className="customer-button"
-            onClick={() => navigate("/customer/profile")}
+            onClick={() => router.push("/customer/profile")}
           >
             Update Profile
           </Button>

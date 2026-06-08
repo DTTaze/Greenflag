@@ -3,7 +3,6 @@
 import "@/src/styles/pages/admin.css";
 
 import React, { useContext } from "react";
-import { Outlet } from "react-router-dom";
 
 import ProtectedRoute from "@/src/components/common/ProtectedRoute";
 import { AuthContext } from "@/src/contexts/auth.context";
@@ -44,9 +43,7 @@ export default function AdminLayout({
         </div>
 
         {/* Main content */}
-        <div className="admin-content-container">
-          <Outlet context={userInfo}>{children}</Outlet>
-        </div>
+        <div className="admin-content-container">{children}</div>
       </div>
     </ProtectedRoute>
   );

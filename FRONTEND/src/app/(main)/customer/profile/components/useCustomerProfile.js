@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useContext } from "react";
 
 import { useNotification } from "@/src/components/ui/NotificationProvider";
+import { AuthContext } from "@/src/contexts/auth.context";
 import {
   getBuyerTransactionHistory,
   getQRApi,
@@ -12,7 +13,8 @@ import {
 } from "@/src/utils/api";
 
 export default function useCustomerProfile() {
-  const userInfo = useOutletContext();
+  const { auth } = useContext(AuthContext);
+  const userInfo = auth.user;
   const { notify } = useNotification();
   const [activeTab, setActiveTab] = useState("profile");
   const [editMode, setEditMode] = useState(false);

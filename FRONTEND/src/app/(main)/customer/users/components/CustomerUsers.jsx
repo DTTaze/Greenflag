@@ -9,9 +9,9 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
 
+import { AuthContext } from "@/src/contexts/auth.context";
 import {
   deleteEventUserByIdApi,
   getEventUserByEventIdApi,
@@ -23,7 +23,8 @@ import UserFilters from "./UserFilters";
 import UserList from "./UserList";
 
 export default function CustomerUsers() {
-  const userInfo = useOutletContext();
+  const { auth } = useContext(AuthContext);
+  const userInfo = auth.user;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [events, setEvents] = useState([]);

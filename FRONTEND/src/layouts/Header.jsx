@@ -1,13 +1,13 @@
 import { Coins } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useContext, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 import { useNotification } from "../components/ui/NotificationProvider";
 import { AuthContext } from "../contexts/auth.context";
 import { getUserApi, getUserAvatarByIdApi, logoutUserApi } from "../utils/api";
 
 function UserHeader() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { notify } = useNotification();
   const { auth, setAuth } = useContext(AuthContext);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -84,7 +84,7 @@ function UserHeader() {
       await logoutUserApi();
       setAuth({ isAuthenticated: false, user: null });
       notify("success", "Đăng xuất thành công");
-      navigate("/");
+      router.push("/");
     } catch (error) {
       console.error("Lỗi khi đăng xuất:", error);
       notify("error", "Đã xảy ra lỗi khi đăng xuất. Vui lòng thử lại.");
@@ -111,7 +111,7 @@ function UserHeader() {
       {/* Logo */}
       <div
         className="flex cursor-pointer items-center select-none"
-        onClick={() => navigate("/")}
+        onClick={() => router.push("/")}
       >
         <img
           src="../src/assets/images/Logo-Greenflag.png"
@@ -130,7 +130,7 @@ function UserHeader() {
             <button
               key={key}
               className="cursor-pointer text-lg font-bold hover:text-[#62C370]"
-              onClick={() => navigate(`/${key}`)}
+              onClick={() => router.push(`/${key}`)}
             >
               {label}
             </button>
@@ -166,7 +166,7 @@ function UserHeader() {
               </div>
               <button
                 className="w-full cursor-pointer rounded-lg p-2 text-left font-bold hover:bg-white hover:text-[#62C370]"
-                onClick={() => navigate("/user")}
+                onClick={() => router.push("/user")}
               >
                 Tài khoản của tôi
               </button>
@@ -183,13 +183,13 @@ function UserHeader() {
         <div className="hidden gap-3 md:flex">
           <button
             className="cursor-pointer text-lg font-bold hover:text-[#62C370]"
-            onClick={() => navigate("/register")}
+            onClick={() => router.push("/register")}
           >
             Đăng ký
           </button>
           <button
             className="cursor-pointer text-lg font-bold hover:text-[#62C370]"
-            onClick={() => navigate("/login")}
+            onClick={() => router.push("/login")}
           >
             Đăng nhập
           </button>
@@ -218,7 +218,7 @@ function UserHeader() {
               key={key}
               className="cursor-pointer py-3 text-2xl font-bold hover:text-[#62C370]"
               onClick={() => {
-                navigate(`/${key}`);
+                router.push(`/${key}`);
                 setMenuOpen(false);
               }}
             >
@@ -229,13 +229,13 @@ function UserHeader() {
           <>
             <button
               className="cursor-pointer py-3 text-2xl font-bold hover:text-[#62C370]"
-              onClick={() => navigate("/register")}
+              onClick={() => router.push("/register")}
             >
               Đăng ký
             </button>
             <button
               className="cursor-pointer py-3 text-2xl font-bold hover:text-[#62C370]"
-              onClick={() => navigate("/login")}
+              onClick={() => router.push("/login")}
             >
               Đăng nhập
             </button>
@@ -245,7 +245,7 @@ function UserHeader() {
             <button
               className="cursor-pointer py-3 text-2xl font-bold hover:text-[#62C370]"
               onClick={() => {
-                navigate("/user");
+                router.push("/user");
                 setMenuOpen(false);
               }}
             >

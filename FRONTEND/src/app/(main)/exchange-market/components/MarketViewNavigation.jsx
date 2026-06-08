@@ -1,4 +1,19 @@
-import { NavLink } from "react-router-dom";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+function NavLink({ to, className, children }) {
+  const pathname = usePathname();
+  const isActive =
+    pathname === to || (to !== "/" && pathname.startsWith(to + "/"));
+  const computedClassName =
+    typeof className === "function" ? className({ isActive }) : className;
+
+  return (
+    <Link href={to} className={computedClassName}>
+      {children}
+    </Link>
+  );
+}
 
 function MarketViewNavigation() {
   return (

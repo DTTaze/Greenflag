@@ -1,7 +1,7 @@
 import "../styles/components/HomepageSection.css";
 
+import { useRouter } from "next/navigation";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 import { AuthContext } from "../contexts/auth.context";
 
@@ -71,7 +71,7 @@ function SectionHero() {
 function Section({ imagePath, H2Text, PText, ButtonText, path, reverse }) {
   const sectionRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
   const { auth } = useContext(AuthContext);
 
   useEffect(() => {
@@ -112,10 +112,10 @@ function Section({ imagePath, H2Text, PText, ButtonText, path, reverse }) {
         <button
           onClick={() => {
             if (auth.isAuthenticated) {
-              navigate(path);
+              router.push(path);
               window.scrollTo(0, 0);
             } else {
-              navigate("/register");
+              router.push("/register");
               window.scrollTo(0, 0);
             }
           }}

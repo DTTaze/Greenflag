@@ -18,8 +18,8 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import { usePathname, useRouter } from "next/navigation";
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 
 const menuItems = [
   {
@@ -77,8 +77,8 @@ export default function CustomerDrawer({
   handleDrawerToggle,
   userInfo,
 }) {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const pathname = usePathname();
+  const router = useRouter();
 
   const drawerContent = (
     <div>
@@ -110,7 +110,7 @@ export default function CustomerDrawer({
       <Divider />
       <List sx={{ padding: "8px" }}>
         {menuItems.map((item) => {
-          const isActive = location.pathname === item.path;
+          const isActive = pathname === item.path;
 
           return (
             <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
@@ -118,7 +118,7 @@ export default function CustomerDrawer({
                 <ListItemButton
                   selected={isActive}
                   onClick={() => {
-                    navigate(item.path);
+                    router.push(item.path);
                     handleDrawerToggle();
                   }}
                   sx={{

@@ -1,6 +1,7 @@
 import { Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 
 import SubmitButton from "../components/ui/button";
 import InputField from "../components/ui/InputField";
@@ -23,7 +24,7 @@ function RegisterPage() {
   const { notify } = useNotification();
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const validateField = (name, value) => {
     switch (name) {
@@ -83,7 +84,7 @@ function RegisterPage() {
     try {
       const res = await createUserApi(formData);
       if (res?.status === 200) {
-        navigate("/login");
+        router.push("/login");
         notify("success", "Đăng ký thành công!");
       } else {
         notify(
@@ -176,7 +177,7 @@ function RegisterPage() {
 
       <p className="mt-4 text-center">
         Đã có tài khoản?{" "}
-        <Link to="/login" className="font-medium text-blue-600">
+        <Link href="/login" className="font-medium text-blue-600">
           Đăng nhập
         </Link>
       </p>

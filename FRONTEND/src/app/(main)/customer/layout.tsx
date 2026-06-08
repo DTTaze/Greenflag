@@ -4,7 +4,6 @@ import "@/src/styles/pages/customer.css";
 
 import { Box } from "@mui/material";
 import React, { useContext, useState } from "react";
-import { Outlet } from "react-router-dom";
 
 import ProtectedRoute from "@/src/components/common/ProtectedRoute";
 import { AuthContext } from "@/src/contexts/auth.context";
@@ -60,7 +59,7 @@ export default function CustomerLayout({
             zIndex: 1,
           }}
         >
-          <Outlet context={userInfo}>{children}</Outlet>
+          {children}
         </Box>
       </Box>
     </ProtectedRoute>

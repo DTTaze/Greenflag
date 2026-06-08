@@ -1,9 +1,7 @@
 import axios from "axios";
 
-import { VITE_BACKEND_URL } from "../config/env.js";
-
 const instance = axios.create({
-  baseURL: VITE_BACKEND_URL,
+  baseURL: "",
   withCredentials: true,
 });
 
@@ -52,7 +50,7 @@ instance.interceptors.response.use(
 
       try {
         await axios.post(
-          `${VITE_BACKEND_URL}/api/auth/refresh_token`,
+          "/api/auth/refresh_token",
           {},
           { withCredentials: true },
         );

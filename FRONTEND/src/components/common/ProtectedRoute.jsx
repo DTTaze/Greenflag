@@ -1,5 +1,5 @@
-import { useContext } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { usePathname, useRouter } from "next/navigation";
+import { useContext, useEffect } from "react";
 
 import { AuthContext } from "../../contexts/auth.context";
 
@@ -16,24 +16,40 @@ const getUserRole = (auth) => {
 
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { auth } = useContext(AuthContext);
-  const location = useLocation();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (!auth?.isAuthenticated) {
+      router.replace(`/login?from=${encodeURIComponent(pathname)}`);
+      return;
+    }
+
+    if (requiredRole) {
+      const userRole = getUserRole(auth);
+      const requiredRoles = Array.isArray(requiredRole)
+        ? requiredRole.map((r) => r.toLowerCase())
+        : [requiredRole.toLowerCase()];
+
+      if (!userRole || !requiredRoles.includes(userRole.toLowerCase())) {
+        router.replace("/");
+      }
+    }
+  }, [auth, requiredRole, router, pathname]);
 
   if (!auth?.isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return null;
   }
 
-  if (!requiredRole) {
-    return children;
-  }
+  if (requiredRole) {
+    const userRole = getUserRole(auth);
+    const requiredRoles = Array.isArray(requiredRole)
+      ? requiredRole.map((r) => r.toLowerCase())
+      : [requiredRole.toLowerCase()];
 
-  const userRole = getUserRole(auth);
-
-  const requiredRoles = Array.isArray(requiredRole)
-    ? requiredRole.map((r) => r.toLowerCase())
-    : [requiredRole.toLowerCase()];
-
-  if (!userRole || !requiredRoles.includes(userRole.toLowerCase())) {
-    return <Navigate to="/" replace />;
+    if (!userRole || !requiredRoles.includes(userRole.toLowerCase())) {
+      return null;
+    }
   }
 
   return children;

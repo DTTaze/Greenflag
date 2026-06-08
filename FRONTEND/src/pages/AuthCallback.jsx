@@ -1,12 +1,12 @@
+import { useRouter } from "next/navigation";
 import { useContext, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 
 import Loader from "../components/ui/Loader";
 import { AuthContext } from "../contexts/auth.context";
 import { getUserApi } from "../utils/api";
 
 const AuthCallback = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { setAuth } = useContext(AuthContext);
   const handled = useRef(false);
 
@@ -24,25 +24,25 @@ const AuthCallback = () => {
             if (res.data.avatar_url) {
               localStorage.setItem("user_avatar_url", res.data.avatar_url);
             }
-            navigate("/", { replace: true });
+            router.replace("/");
           } else {
             alert("Login failed!");
-            navigate("/login");
+            router.push("/login");
           }
         } catch (err) {
           console.error("Failed to fetch user info after login:", err);
           alert("Login failed!");
-          navigate("/login");
+          router.push("/login");
         }
       };
 
       fetchUser();
     } else {
       alert("Login failed!");
-      navigate("/login");
+      router.push("/login");
     }
     handled.current = true;
-  }, [navigate, setAuth]);
+  }, [router, setAuth]);
 
   return (
     <div style={styles.spinnerWrapper}>

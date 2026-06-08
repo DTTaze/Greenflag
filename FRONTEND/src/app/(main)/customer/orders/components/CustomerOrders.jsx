@@ -1,6 +1,7 @@
 import { Alert, Box, CircularProgress } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+
+import { AuthContext } from "@/src/contexts/auth.context";
 
 import OrdersDialogsOverlay from "./orders/dialogs/OrdersDialogsOverlay";
 import EmptyOrderState from "./orders/EmptyOrderState";
@@ -12,7 +13,8 @@ import { calculatePoints } from "./orders/ordersHelpers";
 import OrdersTabPanels from "./orders/OrdersTabPanels";
 
 export default function CustomerOrders() {
-  const userInfo = useOutletContext();
+  const { auth } = useContext(AuthContext);
+  const userInfo = auth.user;
 
   const [confirmAlertOpen, setConfirmAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");

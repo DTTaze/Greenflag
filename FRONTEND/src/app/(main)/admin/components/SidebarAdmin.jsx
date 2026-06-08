@@ -23,13 +23,13 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { alpha } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
+import { usePathname, useRouter } from "next/navigation";
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 
 export default function TemporaryDrawer({ userInfo }) {
   const [open, setOpen] = React.useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
+  const pathname = usePathname();
 
   const toggleDrawer = (newOpen) => () => setOpen(newOpen);
 
@@ -107,7 +107,7 @@ export default function TemporaryDrawer({ userInfo }) {
   ];
 
   const handleNavigation = (item) => {
-    navigate(item.path);
+    router.push(item.path);
     setOpen(false);
   };
 
@@ -176,7 +176,7 @@ export default function TemporaryDrawer({ userInfo }) {
           </Typography>
           <List disablePadding>
             {section.items.map((item) => {
-              const selected = location.pathname === item.path;
+              const selected = pathname === item.path;
               return (
                 <ListItem key={item.text} disablePadding>
                   <ListItemButton

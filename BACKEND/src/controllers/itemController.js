@@ -1,4 +1,6 @@
+const { subject } = require("@casl/ability");
 const itemService = require("../services/itemService");
+const ForbiddenError = require("../errors/ForbiddenError");
 
 const handleUploadItem = async (req, res) => {
   const user_id = Number(req.user.id);
@@ -29,12 +31,24 @@ const handleUpdateItem = async (req, res) => {
   const item_id = Number(req.params.id);
   const itemData = req.body;
   const images = req.files;
+
+  const item = await itemService.getItemByIdItem(item_id);
+  if (!req.ability.can("update", subject("Item", item))) {
+    throw new ForbiddenError("Bạn không có quyền chỉnh sửa vật phẩm của người khác");
+  }
+
   const updatedItem = await itemService.updateItem(item_id, itemData, images);
   return res.success("Item updated successfully", updatedItem);
 };
 
 const handleDeleteItem = async (req, res) => {
   const item_id = Number(req.params.id);
+
+  const item = await itemService.getItemByIdItem(item_id);
+  if (!req.ability.can("delete", subject("Item", item))) {
+    throw new ForbiddenError("Bạn không có quyền xóa vật phẩm của người khác");
+  }
+
   const message = await itemService.deleteItem(item_id);
   return res.success("Item deleted successfully", message);
 };
@@ -65,12 +79,24 @@ const handleUpdateItemByPublicId = async (req, res) => {
   const public_id = req.params.public_id;
   const itemData = req.body;
   const images = req.files;
+
+  const item = await itemService.getItemByPublicId(public_id);
+  if (!req.ability.can("update", subject("Item", item))) {
+    throw new ForbiddenError("Bạn không có quyền chỉnh sửa vật phẩm của người khác");
+  }
+
   const updatedItem = await itemService.updateItemByPublicId(public_id, itemData, images);
   return res.success("Item updated successfully", updatedItem);
 };
 
 const handleDeleteItemByPublicId = async (req, res) => {
   const public_id = req.params.public_id;
+
+  const item = await itemService.getItemByPublicId(public_id);
+  if (!req.ability.can("delete", subject("Item", item))) {
+    throw new ForbiddenError("Bạn không có quyền xóa vật phẩm của người khác");
+  }
+
   const message = await itemService.deleteItemByPublicId(public_id);
   return res.success("Item deleted successfully", message);
 };

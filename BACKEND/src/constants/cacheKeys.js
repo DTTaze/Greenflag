@@ -12,6 +12,7 @@ const CACHE_KEYS = {
     USER_AVATAR: (id) => `identity:user:avatar:${id}`,
     AVATARS_ALL: "identity:avatar:all",
     ROLE_BY_ID: (id) => `identity:role:id:${id}`,
+    ROLE_PERMISSIONS: (roleId) => `identity:role:id:${roleId}:permissions`,
     ALL_ROLES: "identity:role:all",
     RANK_BY_ID: (id) => `identity:rank:id:${id}`,
   },

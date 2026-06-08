@@ -43,6 +43,7 @@ const updateRole = async (id, data) => {
   // Invalidate related cache
   await deleteCache(cacheKeyId(id));
   await deleteCache(cacheKeyAll);
+  await deleteCache(CACHE_KEYS.IDENTITY.ROLE_PERMISSIONS(id));
 
   return updatedRole;
 };
@@ -56,6 +57,7 @@ const deleteRole = async (id) => {
   // Invalidate related cache
   await deleteCache(cacheKeyId(id));
   await deleteCache(cacheKeyAll);
+  await deleteCache(CACHE_KEYS.IDENTITY.ROLE_PERMISSIONS(id));
 
   return { message: "Role deleted successfully" };
 };

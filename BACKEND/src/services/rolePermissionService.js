@@ -1,6 +1,8 @@
 const db = require("../models");
 const roleRepo = require("../repositories/roleRepository");
 const permRepo = require("../repositories/permissionRepository");
+const { deleteCache } = require("../utils/cache.js");
+const { CACHE_KEYS } = require("../constants/cacheKeys.js");
 const NotFoundError = require("../errors/NotFoundError.js");
 const BadRequestError = require("../errors/BadRequestError.js");
 
@@ -13,6 +15,8 @@ const assignPermissionToRole = async (role_id, permission_id) => {
     created_at: new Date(),
     updated_at: new Date(),
   });
+
+  await deleteCache(CACHE_KEYS.IDENTITY.ROLE_PERMISSIONS(role_id));
 
   return { message: "Permission assigned to role successfully" };
 };
@@ -78,6 +82,8 @@ const updatePermissionByRole = async (role_id, perm_id, new_permission_id) => {
     throw new BadRequestError("Update failed. No rows affected.");
   }
 
+  await deleteCache(CACHE_KEYS.IDENTITY.ROLE_PERMISSIONS(role_id));
+
   return { message: "Permission updated successfully" };
 };
 
@@ -89,6 +95,8 @@ const removePermissionFromRole = async (role_id, permission_id) => {
   if (!rolePermission) throw new NotFoundError("Permission not found in this role");
 
   await roleRepo.removeRolePermission(role_id, permission_id);
+  await deleteCache(CACHE_KEYS.IDENTITY.ROLE_PERMISSIONS(role_id));
+
   return { message: "Permission removed from role successfully" };
 };
 

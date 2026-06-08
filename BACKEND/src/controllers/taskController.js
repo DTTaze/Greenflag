@@ -1,5 +1,7 @@
+const { subject } = require("@casl/ability");
 const taskService = require("../services/taskService.js");
 const taskSubmitService = require("../services/taskSubmitService.js");
+const ForbiddenError = require("../errors/ForbiddenError");
 
 const handleGetAllTasks = async (req, res) => {
   let result = await taskService.getAllTasks();
@@ -23,6 +25,10 @@ const handleGetTask = async (req, res) => {
 };
 
 const handleUpdateTask = async (req, res) => {
+  const task = await taskService.getTaskById(req.params.id);
+  if (!req.ability.can("update", subject("Task", task))) {
+    throw new ForbiddenError("Bạn không có quyền chỉnh sửa nhiệm vụ của người khác");
+  }
   let result = await taskService.updateTask(req.params.id, req.body);
   return res.success("Update task success", result);
 };
@@ -78,11 +84,19 @@ const handleGetTaskByPublicId = async (req, res) => {
 };
 
 const handleUpdateTaskByPublicId = async (req, res) => {
+  const task = await taskService.getTaskByPublicId(req.params.public_id);
+  if (!req.ability.can("update", subject("Task", task))) {
+    throw new ForbiddenError("Bạn không có quyền chỉnh sửa nhiệm vụ của người khác");
+  }
   let result = await taskService.updateTaskByPublicId(req.params.public_id, req.body);
   return res.success("Update task success", result);
 };
 
 const handleDeleteTaskByPublicId = async (req, res) => {
+  const task = await taskService.getTaskByPublicId(req.params.public_id);
+  if (!req.ability.can("delete", subject("Task", task))) {
+    throw new ForbiddenError("Bạn không có quyền xóa nhiệm vụ của người khác");
+  }
   let result = await taskService.deleteTaskByPublicId(req.params.public_id);
   return res.success("Delete task success", result);
 };

@@ -971,6 +971,13 @@ module.exports = worker;
 - [x] Create centralized queue factory
 - [x] Remove `bullboard.js` (uninstalled and dropped in Phase 2)
 
+### Phase 6.5 — Dynamic RBAC/ABAC
+- [x] Add explicit CASL rule mappings in `src/utils/ability.js` for `ReceiverInformation` and `DeliveryAccount` using `{ user_id: user.id }`.
+- [x] Update `userController.js` to implement ownership checks using `req.ability.can('action', subject('User', user))` on update/delete endpoints.
+- [x] Update `receiverController.js` to implement ownership checks using `req.ability.can('action', subject('ReceiverInformation', receiverInfo))` on update/delete/setDefault endpoints.
+- [x] Update `deliveryAccountController.js` to implement ownership checks using `req.ability.can('action', subject('DeliveryAccount', account))` on update/delete/setDefault endpoints.
+- [x] Verify everything compiles cleanly and run the linter.
+
 ### Phase 7 — Testing (Deferred)
 - [ ] Add Jest + Supertest as dev dependencies
 - [ ] Write integration tests for critical API flows (Login, Create Order, Purchase)
@@ -988,6 +995,9 @@ npm start
 
 # Run existing seed scripts
 npm run seed
+
+# Run the linter to verify formatting and syntax rules
+npm run lint
 ```
 
 ### Manual Verification
@@ -995,8 +1005,7 @@ npm run seed
 - [ ] Test CRUD operations for users, tasks, items, products, events, transactions
 - [ ] Test purchase queue flow (BullMQ)
 - [ ] Test delivery order creation (GHN integration)
-- [ ] Verify Bull Board dashboard at `/api/admin/queues`
-- [ ] Verify Redis caching still works (check hit/miss logs)
+- [ ] Verify dynamic permission checks block unauthorized edits on Task, Item, Transaction, User, ReceiverInfo, and DeliveryAccount.
 
 ## 11. Resolved Open Questions
 
@@ -1011,6 +1020,14 @@ This is a fatal `ReferenceError`. Will fetch the default role using `Role.findBy
 
 ### Q4: `const description` reassignment — ✅ Fix in Phase -1 (Hotfix)
 Change `const description` to `let description` in `taskController.js` L65.
+
+### Q5: Transaction Update Permissions Differentiating Roles (Phase 6.5) — ✅ Resolved
+Instead of generic transaction update permissions, we grant custom business actions depending on user roles:
+- Buyer Rules: `can(['cancel', 'complete'], 'Transaction', { buyer_id: user.id })`
+- Seller Rules: `can(['accept', 'reject', 'ship'], 'Transaction', { seller_id: user.id })`
+
+### Q6: ReceiverInformation & DeliveryAccount Explicit Mapping (Phase 6.5) — ✅ Resolved
+Added explicit CASL rule mappings using `{ user_id: user.id }` for both `ReceiverInformation` and `DeliveryAccount` in `src/utils/ability.js` to support ABAC check in the controller.
 
 ### Additional Decisions (from user feedback)
 - **Repository `transaction` support:** All repository methods will accept `options = {}` to pass through `{ transaction: t }`. Services orchestrate transactions.

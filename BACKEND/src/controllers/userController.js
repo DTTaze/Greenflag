@@ -1,3 +1,4 @@
+const { subject } = require("@casl/ability");
 const userService = require("../services/userService");
 const taskService = require("../services/taskService");
 const transactionService = require("../services/transactionService");
@@ -6,6 +7,7 @@ const {
   clearAuthCookies,
   setAccessTokenCookie,
 } = require("../helpers/cookieHelper");
+const ForbiddenError = require("../errors/ForbiddenError");
 
 const handleGetAllUsers = async (req, res) => {
   const result = await userService.getAllUsers();
@@ -45,6 +47,10 @@ const handleLogoutUser = async (req, res) => {
 };
 
 const handleDeleteUser = async (req, res) => {
+  const user = await userService.getUserByID(Number(req.params.id));
+  if (!req.ability.can("delete", subject("User", user))) {
+    throw new ForbiddenError("Bạn không có quyền xóa người dùng này");
+  }
   const result = await userService.deleteUser(req.params.id);
   return res.success("Delete user success", result);
 };
@@ -55,6 +61,10 @@ const handleGetUser = async (req, res) => {
 };
 
 const handleUpdateUserById = async (req, res) => {
+  const user = await userService.getUserByID(Number(req.params.id));
+  if (!req.ability.can("update", subject("User", user))) {
+    throw new ForbiddenError("Bạn không có quyền cập nhật người dùng này");
+  }
   const result = await userService.updateUserById(req.params.id, req.body);
   return res.success("Update user success", result);
 };
@@ -84,11 +94,19 @@ const handleGetUserByPublicId = async (req, res) => {
 };
 
 const handleUpdateUserByPublicId = async (req, res) => {
+  const user = await userService.getUserByPublicID(req.params.public_id);
+  if (!req.ability.can("update", subject("User", user))) {
+    throw new ForbiddenError("Bạn không có quyền cập nhật người dùng này");
+  }
   const result = await userService.updateUserByPublicID(req.params.public_id, req.body);
   return res.success("Update user success", result);
 };
 
 const handleDeleteUserByPublicId = async (req, res) => {
+  const user = await userService.getUserByPublicID(req.params.public_id);
+  if (!req.ability.can("delete", subject("User", user))) {
+    throw new ForbiddenError("Bạn không có quyền xóa người dùng này");
+  }
   const result = await userService.deleteUserByPublicID(req.params.public_id);
   return res.success("Delete user success", result);
 };

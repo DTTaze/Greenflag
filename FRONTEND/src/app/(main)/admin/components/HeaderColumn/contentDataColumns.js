@@ -127,25 +127,3 @@ export const productColumns = [
     },
   },
 ];
-
-export const videoColumns = [
-  { field: "id", headerName: "ID", width: 70 },
-  { field: "title", headerName: "Title", width: 230 },
-  { field: "duration", headerName: "Duration", width: 120 },
-  { field: "views", headerName: "Views", width: 120 },
-  { field: "url", headerName: "Url", width: 120 },
-  { field: "filename", headerName: "File Name", width: 120 },
-  { field: "user_id", headerName: "User ID", width: 120 },
-  { field: "category", headerName: "Category", width: 150 },
-  { field: "dateUploaded", headerName: "Date Uploaded", width: 150 },
-  { field: "created_at", headerName: "Created At", width: 150 },
-  { field: "updated_at", headerName: "Updated At", width: 150 },
-];
-
-export const avatarColumns = [
-  { field: "id", headerName: "ID", width: 70 },
-  { field: "name", headerName: "Name", width: 200 },
-  { field: "type", headerName: "Type", width: 150 },
-  { field: "usage", headerName: "Usage", width: 120 },
-  { field: "dateCreated", headerName: "Date Created", width: 150 },
-];

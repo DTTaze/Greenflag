@@ -27,7 +27,7 @@ export const statusConfig = {
   draft: { name: "Tin nháp", color: "text-blue-600", Icon: ClipboardEdit },
 };
 
-export const getStatusClass = (status) => {
+const getStatusClass = (status) => {
   const statusClasses = {
     public: "border-emerald-200 bg-emerald-50",
     private: "border-gray-200 bg-gray-50",
@@ -38,7 +38,7 @@ export const getStatusClass = (status) => {
   return statusClasses[status] || statusClasses.draft;
 };
 
-export const getCategoryDisplayName = (key) => {
+const getCategoryDisplayName = (key) => {
   const categories = {
     handicraft: "Đồ thủ công",
     recycled: "Đồ tái chế",

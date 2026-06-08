@@ -1,4 +1,4 @@
-export const qrOverlayStyle = `
+const qrOverlayStyle = `
 .qr-corner-overlay {
   position: absolute;
   inset: 20px;

@@ -60,18 +60,6 @@ export const updatePermission = (id: number | string, data: any) => {
   return axios.put(`api/permissions/${id}`, data);
 };
 
-export const deleteRolePermission = (id: number | string) => {
-  return axios.delete(`api/permissions/${id}`);
-};
-
-export const createRolePermission = (data: any) => {
-  return axios.post("api/permissions/create", data);
-};
-
-export const updateRolePermission = (id: number | string, data: any) => {
-  return axios.put(`api/permissions/${id}`, data);
-};
-
 export const rearrangeRank = () => {
   return axios.post("api/ranks/rearrange");
 };

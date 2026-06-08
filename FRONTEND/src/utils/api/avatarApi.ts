@@ -15,10 +15,6 @@ export const getUserAvatarByIdApi = (user_id: string | number) => {
   return axios.get(`api/avatars/${user_id}`);
 };
 
-export const getAllUserAvatarsApi = () => {
-  return axios.get("api/avatars/");
-};
-
 export const updateUserAvatarApi = (user_id: string | number, file: File) => {
   const formData = new FormData();
   formData.append("avatar", file);
@@ -28,8 +24,4 @@ export const updateUserAvatarApi = (user_id: string | number, file: File) => {
       "Content-Type": "multipart/form-data",
     },
   });
-};
-
-export const deleteUserAvatarApi = (user_id: string | number) => {
-  return axios.delete(`api/avatars/${user_id}`);
 };

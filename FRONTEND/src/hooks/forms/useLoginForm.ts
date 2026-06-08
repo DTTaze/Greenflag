@@ -8,7 +8,7 @@ import { useNotification } from "@/src/components/ui/NotificationProvider";
 import { loginUser } from "@/src/services/auth.service";
 import { useAuthStore } from "@/src/store/auth/authStore";
 
-export const loginSchema = z.object({
+const loginSchema = z.object({
   identifier: z.string().min(1, "Vui lòng nhập email hoặc username."),
   password: z.string().min(1, "Vui lòng nhập mật khẩu."),
 });

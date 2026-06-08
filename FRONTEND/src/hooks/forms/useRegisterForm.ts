@@ -7,7 +7,7 @@ import { z } from "zod";
 import { useNotification } from "@/src/components/ui/NotificationProvider";
 import { registerUser } from "@/src/services/auth.service";
 
-export const registerSchema = z.object({
+const registerSchema = z.object({
   full_name: z
     .string()
     .min(1, "Vui lòng nhập họ tên!")

@@ -64,10 +64,6 @@ export const PreviewOrderWithoutOrderCode = (
   });
 };
 
-export const cancelShippingOrderApi = (order_code: string) => {
-  return axios.post(`api/delivery/carrier/ghn/cancel/${order_code}`);
-};
-
 export const getShippingAccountsByUserApi = () => {
   return axios.get("api/delivery/accounts/user");
 };
@@ -145,10 +141,6 @@ export const getAllWardsByDistrictApi = (
 
 export const createReceiverInfoAPI = (data: any) => {
   return axios.post("api/users/receiver/create", data);
-};
-
-export const getReceiverInfoByIdAPI = (id: string | number) => {
-  return axios.get(`api/users/receiver/info/${id}`);
 };
 
 export const getReceiverInfoByUserIDAPI = (user_id: string | number) => {

@@ -1,4 +1,4 @@
-export function Loader() {
+function Loader() {
   return (
     <div className="animate-spinner-cube relative h-11 w-11 [transform-style:preserve-3d]">
       <div className="absolute h-full w-full [transform:translateZ(-22px)_rotateY(180deg)] border-2 border-[#004dff] bg-[#004dff]/20"></div>

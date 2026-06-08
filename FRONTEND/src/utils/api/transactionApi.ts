@@ -38,7 +38,3 @@ export const deleteTransactionsApi = (id: string | number) => {
 export const getAllTransactionsApi = () => {
   return axios.get("api/transactions");
 };
-
-export const getAdminQueueApi = () => {
-  return axios.get("api/admin/queues");
-};

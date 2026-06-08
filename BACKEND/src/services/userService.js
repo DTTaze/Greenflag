@@ -3,11 +3,7 @@ const bcrypt = require("bcryptjs");
 const { Op } = require("sequelize");
 const db = require("../models/index.js");
 const User = db.User;
-const Task = db.Task;
 const Role = db.Role;
-const TaskUser = db.TaskUser;
-const Item = db.Item;
-const Transaction = db.Transaction;
 const Coin = db.Coin;
 const Rank = db.Rank;
 const salt = bcrypt.genSaltSync(10);
@@ -17,6 +13,7 @@ const rateLimitService = require("./rateLimitService");
 const { getCache, setCache, deleteCache } = require("../utils/cache");
 const { CACHE_KEYS } = require("../constants/cacheKeys");
 const { ASSIGNABLE_ROLES, DEFAULT_ROLE_ID } = require("../constants/roles");
+const { removeSpecialChars } = require("../utils/stringUtils");
 
 const NotFoundError = require("../errors/NotFoundError");
 const BadRequestError = require("../errors/BadRequestError");
@@ -31,13 +28,6 @@ const deleteCacheAll = async (id = null, public_id = null) => {
   if (id) {
     await deleteCache(CACHE_KEYS.IDENTITY.USER_BY_ID(id));
   }
-};
-
-const removeSpecialChars = (str) => {
-  return str
-    .replace(/[^a-zA-Z0-9\u00C0-\u1EF9\s]/g, " ")
-    .trim()
-    .replace(/\s+/g, " ");
 };
 
 const setUserCache = async (user) => {
@@ -180,43 +170,35 @@ const getAllUsers = async () => {
   return users;
 };
 
+const _deleteUserInternal = async (user) => {
+  const t = await db.sequelize.transaction();
+  try {
+    await Rank.destroy({ where: { id: user.rank_id }, transaction: t });
+    await Coin.destroy({ where: { id: user.coins_id }, transaction: t });
+    await User.destroy({ where: { id: user.id }, transaction: t });
+
+    await t.commit();
+
+    await deleteCache(CACHE_KEYS.IDENTITY.USER_BY_ID(user.id));
+    await deleteCache(CACHE_KEYS.IDENTITY.USER_BY_PUBLIC_ID(user.public_id));
+
+    return { message: "User deleted successfully" };
+  } catch (error) {
+    await t.rollback();
+    throw error;
+  }
+};
+
 const deleteUser = async (id) => {
   const user = await User.findOne({ where: { id } });
   if (!user) throw new NotFoundError("User not found");
-
-  await deleteCache(CACHE_KEYS.IDENTITY.USER_BY_ID(id));
-  await deleteCache(CACHE_KEYS.IDENTITY.USER_BY_PUBLIC_ID(user.public_id));
-
-  const rankDestroyed = await Rank.destroy({ where: { id: user.rank_id } });
-  if (rankDestroyed === 0) throw new NotFoundError("Rank not found");
-
-  const coinDestroyed = await Coin.destroy({ where: { id: user.coins_id } });
-  if (coinDestroyed === 0) throw new NotFoundError("Coin not found");
-
-  const userDestroyed = await User.destroy({ where: { id: user.id } });
-  if (userDestroyed === 0) throw new NotFoundError("User not found");
-
-  return { message: "User deleted successfully" };
+  return _deleteUserInternal(user);
 };
 
 const deleteUserByPublicID = async (public_id) => {
-  const user_id = await getCache(CACHE_KEYS.IDENTITY.USER_BY_PUBLIC_ID(public_id));
-  if (user_id) await deleteCache(CACHE_KEYS.IDENTITY.USER_BY_ID(Number(user_id)));
-  await deleteCache(CACHE_KEYS.IDENTITY.USER_BY_PUBLIC_ID(public_id));
-
   const user = await User.findOne({ where: { public_id } });
   if (!user) throw new NotFoundError("User not found");
-
-  const rankDestroyed = await Rank.destroy({ where: { id: user.rank_id } });
-  if (rankDestroyed === 0) throw new NotFoundError("Rank not found");
-
-  const coinDestroyed = await Coin.destroy({ where: { id: user.coins_id } });
-  if (coinDestroyed === 0) throw new NotFoundError("Coin not found");
-
-  const result = await User.destroy({ where: { id: user.id } });
-  if (result === 0) throw new NotFoundError("User not found");
-
-  return { message: "User deleted successfully" };
+  return _deleteUserInternal(user);
 };
 
 const getUserBycacheId = async (id) => {
@@ -451,140 +433,6 @@ const findOrCreateUser = async (profile) => {
   delete newUser.password;
   return newUser;
 };
-
-const getAllTasksById = async (user_id) => {
-  if (!user_id) throw new BadRequestError("User ID is required");
-
-  const cacheKey = CACHE_KEYS.MISSION.TASKS_BY_USER_ID(user_id);
-  const taskUserIds = await getCache(cacheKey);
-  const result = [];
-
-  if (Array.isArray(taskUserIds) && taskUserIds.length > 0) {
-    for (const id of taskUserIds) {
-      let taskUser = await getCache(CACHE_KEYS.MISSION.USER_TASK(id));
-      if (!taskUser) {
-        taskUser = await TaskUser.findOne({
-          where: { id },
-          include: [{ model: Task, as: "tasks", required: true }],
-        });
-        if (taskUser) await setCache(CACHE_KEYS.MISSION.USER_TASK(id), taskUser);
-      }
-      if (taskUser) result.push(taskUser);
-    }
-
-    return result;
-  }
-
-  const taskUsers = await TaskUser.findAll({
-    where: { user_id },
-    include: [{ model: Task, as: "tasks", required: true }],
-  });
-
-  const ids = taskUsers.map((t) => t.id);
-  await setCache(cacheKey, ids);
-  for (const t of taskUsers) {
-    await setCache(CACHE_KEYS.MISSION.USER_TASK(t.id), t);
-  }
-
-  return taskUsers;
-};
-
-const getTaskCompleted = async (user_id) => {
-  try {
-    const allTasksUser = await getAllTasksById(user_id);
-    console.log(`check all tasks user: ${JSON.stringify(allTasksUser, null, 2)}`);
-
-    if (!Array.isArray(allTasksUser) || allTasksUser.length === 0) {
-      console.log(`No tasks found for user_id: ${user_id}`);
-      return [];
-    }
-
-    let completedTasks = [];
-
-    for (const taskUser of allTasksUser) {
-      let task = await getCache(CACHE_KEYS.MISSION.TASK_BY_ID(taskUser.task_id));
-
-      if (!task) {
-        // Nếu không có trong cache thì lấy từ DB và cache lại
-        task = await Task.findOne({ where: { id: taskUser.task_id } });
-
-        if (task) {
-          task = task.toJSON(); // Sequelize instance => plain object
-          await setCache(CACHE_KEYS.MISSION.TASK_BY_ID(taskUser.task_id), task); // Đã stringify trong setCache
-        } else {
-          console.log(`Task not found for task_id: ${taskUser.task_id}`);
-          continue;
-        }
-      }
-
-      // task đã được parse sẵn từ getCache nên không cần JSON.parse
-      console.log(`Task details: ${JSON.stringify(task, null, 2)}`);
-
-      const progress = Number(taskUser.progress_count) || 0;
-      const total = Number(task.total) || 0; // Đảm bảo field đúng
-
-      console.log(`Progress: ${progress}, Total: ${total}`);
-
-      if (progress >= total && total > 0) {
-        completedTasks.push(task);
-      }
-    }
-
-    console.log(`Completed tasks: ${JSON.stringify(completedTasks, null, 2)}`);
-    return completedTasks;
-  } catch (e) {
-    console.error(`Error in getTaskCompleted: ${e.message}`);
-    throw e;
-  }
-};
-
-const getItemByIdUser = async (user_id) => {
-  const cachedTransactionIds = await getCache(CACHE_KEYS.COMMERCE.TRANSACTIONS_BY_USER_ID(user_id));
-  if (cachedTransactionIds) {
-    const transactions = [];
-    for (const transactionId of cachedTransactionIds) {
-      let transaction = await getCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transactionId));
-      if (!transaction) {
-        transaction = await Transaction.findOne({
-          where: { id: transactionId },
-          attributes: ["id", "total_price", "quantity", "status"],
-          include: [
-            {
-              model: Item,
-              attributes: ["id", "name", "description", "price"],
-            },
-          ],
-        });
-        if (transaction)
-          await setCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transactionId), transaction);
-      }
-      if (transaction) transactions.push(transaction);
-    }
-    return transactions;
-  }
-
-  const items = await Transaction.findAll({
-    where: { buyer_id: user_id, status: ["pending", "completed"] },
-    attributes: ["id", "total_price", "quantity", "status"],
-    include: [
-      {
-        model: Item,
-        as: "item",
-        attributes: ["id", "name", "description", "price"],
-      },
-    ],
-  });
-  if (!items || items.length === 0) throw new NotFoundError("User not found");
-
-  const transactionIds = items.map((item) => item.id);
-  await setCache(CACHE_KEYS.COMMERCE.TRANSACTIONS_BY_USER_ID(user_id), transactionIds);
-  for (const item of items) {
-    await setCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(item.id), item);
-  }
-
-  return items;
-};
-
 module.exports = {
   createUser,
   getAllUsers,
@@ -596,8 +444,5 @@ module.exports = {
   updateUserById,
   findOrCreateUser,
   loginUser,
-  getTaskCompleted,
-  getAllTasksById,
-  getItemByIdUser,
   refreshAccessToken,
 };

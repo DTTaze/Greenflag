@@ -943,14 +943,14 @@ module.exports = worker;
 - [x] Thay thế mảng string cứng trong Model bằng cú pháp `...Object.values(CONSTANT_NAME)`
 
 ### Phase 3 — DRY Refactoring
-- [ ] Extract cookie helper and use in `userController.js`
-- [ ] Extract `cacheThrough` helper and apply across all services
-- [ ] Extract `destroyImagesByReference` and apply in item/product/event services
-- [ ] Consolidate `deleteUser`/`deleteUserByPublicID`
-- [ ] Consolidate `getTransactionByBuyerId`/`getTransactionBySellerId`
-- [ ] Consolidate `updateItem`/`updateItemByPublicId`
-- [ ] Move `removeSpecialChars` to `utils/stringUtils.js`
-- [ ] Move task/item functions out of `userService.js`
+- [x] Extract cookie helper and use in `userController.js`
+- [x] Extract `cacheThrough` helper and apply across all services
+- [x] Extract `destroyImagesByReference` and apply in item/product/event services
+- [x] Consolidate `deleteUser`/`deleteUserByPublicID`
+- [x] Consolidate `getTransactionByBuyerId`/`getTransactionBySellerId`
+- [x] Consolidate `updateItem`/`updateItemByPublicId`
+- [x] Move `removeSpecialChars` to `utils/stringUtils.js`
+- [x] Move task/item functions out of `userService.js`
 
 ### Phase 4 — DTO & Validation Layer
 - [ ] Install Zod (`npm install zod`)

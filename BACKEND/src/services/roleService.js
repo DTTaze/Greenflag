@@ -1,7 +1,8 @@
 const db = require("../models/index.js");
 const Role = db.Role;
-const { getCache, setCache, deleteCache } = require("../utils/cache");
+const { deleteCache } = require("../utils/cache");
 const { CACHE_KEYS } = require("../constants/cacheKeys");
+const { cacheThrough } = require("../helpers/cacheHelper");
 const NotFoundError = require("../errors/NotFoundError");
 const BadRequestError = require("../errors/BadRequestError");
 
@@ -17,30 +18,23 @@ const createRole = async (name, description) => {
   // Invalidate cache
   await deleteCache(cacheKeyAll);
 
-  return newRole;
+  return newRole.toJSON();
 };
 
 const getRoleById = async (id) => {
   if (!id) throw new BadRequestError("Role ID is required");
 
-  const key = cacheKeyId(id);
-  const cached = await getCache(key);
-  if (cached) return cached;
-
-  const role = await Role.findByPk(id);
-  if (!role) throw new NotFoundError("Role not found");
-
-  await setCache(key, role);
-  return role;
+  return cacheThrough(cacheKeyId(id), async () => {
+    const role = await Role.findByPk(id, { raw: true, nest: true });
+    if (!role) throw new NotFoundError("Role not found");
+    return role;
+  });
 };
 
 const getAllRoles = async () => {
-  const cached = await getCache(cacheKeyAll);
-  if (cached) return cached;
-
-  const roles = await Role.findAll();
-  await setCache(cacheKeyAll, roles);
-  return roles;
+  return cacheThrough(cacheKeyAll, async () => {
+    return await Role.findAll({ raw: true, nest: true });
+  });
 };
 
 const updateRole = async (id, data) => {
@@ -53,7 +47,7 @@ const updateRole = async (id, data) => {
   await deleteCache(cacheKeyId(id));
   await deleteCache(cacheKeyAll);
 
-  return role;
+  return role.toJSON();
 };
 
 const deleteRole = async (id) => {

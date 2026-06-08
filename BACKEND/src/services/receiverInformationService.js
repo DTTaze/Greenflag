@@ -2,6 +2,7 @@ const db = require("../models/index");
 const ReceiverInformation = db.ReceiverInformation;
 const { getCache, setCache, deleteCache } = require("../utils/cache");
 const { CACHE_KEYS } = require("../constants/cacheKeys");
+const { cacheThrough } = require("../helpers/cacheHelper");
 const NotFoundError = require("../errors/NotFoundError");
 const BadRequestError = require("../errors/BadRequestError");
 
@@ -48,35 +49,27 @@ const createReceiverInfo = async (data) => {
     is_default,
   });
 
-  await setCache(CACHE_KEYS.COMMERCE.RECEIVER_INFO_BY_ID(newReceiverInfo.id), newReceiverInfo);
+  const receiverInfoData = newReceiverInfo.toJSON();
+  await setCache(CACHE_KEYS.COMMERCE.RECEIVER_INFO_BY_ID(receiverInfoData.id), receiverInfoData);
   await deleteCache(CACHE_KEYS.COMMERCE.ALL_RECEIVER_INFO);
 
-  return newReceiverInfo;
+  return receiverInfoData;
 };
 
 // READ
 const getReceiverInfoById = async (id) => {
-  const cacheKey = CACHE_KEYS.COMMERCE.RECEIVER_INFO_BY_ID(id);
-  let receiverInfo = await getCache(cacheKey);
-
-  if (receiverInfo) {
+  return cacheThrough(CACHE_KEYS.COMMERCE.RECEIVER_INFO_BY_ID(id), async () => {
+    const receiverInfo = await ReceiverInformation.findByPk(id, { raw: true, nest: true });
+    if (!receiverInfo) {
+      throw new NotFoundError(`ReceiverInformation ${id} not found`);
+    }
     return receiverInfo;
-  }
-
-  receiverInfo = await ReceiverInformation.findByPk(id);
-  if (receiverInfo) {
-    await setCache(cacheKey, receiverInfo);
-  } else {
-    throw new NotFoundError(`ReceiverInformation ${id} not found`);
-  }
-
-  return receiverInfo;
+  });
 };
 
 const getAllReceiverInfo = async () => {
-  const cachedReceiverIds = await getCache(`receiverInfo:all`);
+  const cachedReceiverIds = await getCache(CACHE_KEYS.COMMERCE.ALL_RECEIVER_INFO);
   if (cachedReceiverIds) {
-    console.log("cachedReceiverIds", cachedReceiverIds);
     const receivers = [];
     for (const receiverId of cachedReceiverIds) {
       const receiver = await getReceiverInfoById(receiverId);
@@ -89,6 +82,7 @@ const getAllReceiverInfo = async () => {
 
   const receiverRecords = await ReceiverInformation.findAll();
   const receiverIds = [];
+  const receiversData = [];
 
   for (const receiver of receiverRecords) {
     const receiverData = receiver.toJSON();
@@ -96,11 +90,12 @@ const getAllReceiverInfo = async () => {
 
     const cacheKey = CACHE_KEYS.COMMERCE.RECEIVER_INFO_BY_ID(receiverData.id);
     await setCache(cacheKey, receiverData);
+    receiversData.push(receiverData);
   }
 
   await setCache(CACHE_KEYS.COMMERCE.ALL_RECEIVER_INFO, receiverIds);
 
-  return receiverRecords;
+  return receiversData;
 };
 
 const getReceiverInfoByUserId = async (user_id) => {

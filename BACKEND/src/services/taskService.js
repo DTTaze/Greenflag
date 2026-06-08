@@ -10,6 +10,7 @@ const coinService = require("./coinService.js");
 const { nanoid } = require("nanoid");
 const { getCache, setCache, deleteCache } = require("../utils/cache.js");
 const { CACHE_KEYS, CACHE_TTL } = require("../constants/cacheKeys.js");
+const { cacheThrough } = require("../helpers/cacheHelper");
 const {
   TASK_DIFFICULTY,
   TASK_VISIBILITY,
@@ -50,27 +51,21 @@ const createTask = async (data, user_id) => {
 };
 
 const getAllTasks = async () => {
-  let tasks = await getCache(CACHE_KEYS.MISSION.ALL_TASKS);
-  if (!tasks) {
+  return cacheThrough(CACHE_KEYS.MISSION.ALL_TASKS, async () => {
     const dbTasks = await Task.findAll({
       include: [{ model: User, attributes: ["id", "username"] }],
     });
-    tasks = dbTasks.map((task) => task.toJSON());
-    await setCache(CACHE_KEYS.MISSION.ALL_TASKS, tasks);
-  }
-  return tasks;
+    return dbTasks.map((task) => task.toJSON());
+  });
 };
 
 const getTaskById = async (id) => {
   if (!id) throw new BadRequestError("Task ID is required");
-  let task = await getCache(CACHE_KEYS.MISSION.TASK_BY_ID(id));
-  if (!task) {
+  return cacheThrough(CACHE_KEYS.MISSION.TASK_BY_ID(id), async () => {
     const dbTask = await Task.findByPk(id);
     if (!dbTask) throw new NotFoundError("Task not found");
-    task = dbTask.toJSON();
-    await setCache(CACHE_KEYS.MISSION.TASK_BY_ID(id), task);
-  }
-  return task;
+    return dbTask.toJSON();
+  });
 };
 
 const updateTask = async (id, data) => {
@@ -268,19 +263,19 @@ const updateDecisionTaskSubmit = async (task_submit_id, decision) => {
 
 const getAllTasksByTypeName = async (type_name) => {
   if (!type_name) throw new BadRequestError("Missing type name");
-  const cacheKey = CACHE_KEYS.MISSION.TASKS_BY_TYPE(type_name);
-  let tasks = await getCache(cacheKey);
-  if (!tasks) {
-    const type = await Type.findOne({ where: { name: type_name } });
-    if (!type) throw new NotFoundError("Type not found");
-    const taskTypes = await TaskType.findAll({
-      where: { type_id: type.id },
-      include: [{ model: Task }],
-    });
-    tasks = taskTypes.map((tt) => tt.Task.toJSON());
-    await setCache(cacheKey, tasks, CACHE_TTL.FIVE_MINUTES);
-  }
-  return tasks;
+  return cacheThrough(
+    CACHE_KEYS.MISSION.TASKS_BY_TYPE(type_name),
+    async () => {
+      const type = await Type.findOne({ where: { name: type_name } });
+      if (!type) throw new NotFoundError("Type not found");
+      const taskTypes = await TaskType.findAll({
+        where: { type_id: type.id },
+        include: [{ model: Task }],
+      });
+      return taskTypes.map((tt) => tt.Task.toJSON());
+    },
+    CACHE_TTL.FIVE_MINUTES,
+  );
 };
 
 const getAllTasksByDifficultyName = async (difficulty_name) => {
@@ -289,31 +284,26 @@ const getAllTasksByDifficultyName = async (difficulty_name) => {
   if (!validDifficulties.includes(difficulty_name)) {
     throw new BadRequestError("Difficulty name must be easy/medium/hard/event");
   }
-  const cacheKey = CACHE_KEYS.MISSION.TASKS_BY_DIFFICULTY(difficulty_name);
-  let tasks = await getCache(cacheKey);
-  if (!tasks) {
-    const dbTasks = await Task.findAll({
-      where: { difficulty: difficulty_name },
-    });
-    tasks = dbTasks.map((task) => task.toJSON());
-    await setCache(cacheKey, tasks, CACHE_TTL.FIVE_MINUTES);
-  }
-  return tasks;
+  return cacheThrough(
+    CACHE_KEYS.MISSION.TASKS_BY_DIFFICULTY(difficulty_name),
+    async () => {
+      const dbTasks = await Task.findAll({
+        where: { difficulty: difficulty_name },
+      });
+      return dbTasks.map((task) => task.toJSON());
+    },
+    CACHE_TTL.FIVE_MINUTES,
+  );
 };
 
 const getTaskByPublicId = async (public_id) => {
   if (!public_id) throw new BadRequestError("Task Public ID is required");
-  const taskId = await getCache(CACHE_KEYS.MISSION.TASK_BY_PUBLIC_ID(public_id));
-  if (taskId) {
-    const task = await getCache(CACHE_KEYS.MISSION.TASK_BY_ID(taskId));
-    if (task) return task;
-  }
-  const dbTask = await Task.findOne({ where: { public_id } });
-  if (!dbTask) throw new NotFoundError("Task not found");
-  const taskData = dbTask.toJSON();
-  await setCache(CACHE_KEYS.MISSION.TASK_BY_ID(dbTask.id), taskData);
-  await setCache(CACHE_KEYS.MISSION.TASK_BY_PUBLIC_ID(public_id), dbTask.id);
-  return taskData;
+  const taskId = await cacheThrough(CACHE_KEYS.MISSION.TASK_BY_PUBLIC_ID(public_id), async () => {
+    const dbTask = await Task.findOne({ where: { public_id } });
+    if (!dbTask) throw new NotFoundError("Task not found");
+    return dbTask.id;
+  });
+  return await getTaskById(taskId);
 };
 
 const updateTaskByPublicId = async (public_id, data) => {
@@ -336,14 +326,14 @@ const getAllTasksStatus = async (status) => {
   if (!validStatuses.includes(status)) {
     throw new BadRequestError("Status must be public/private");
   }
-  const cacheKey = CACHE_KEYS.MISSION.TASKS_BY_STATUS(status);
-  let tasks = await getCache(cacheKey);
-  if (!tasks) {
-    const dbTasks = await Task.findAll({ where: { status } });
-    tasks = dbTasks.map((task) => task.toJSON());
-    await setCache(cacheKey, tasks, CACHE_TTL.FIVE_MINUTES);
-  }
-  return tasks;
+  return cacheThrough(
+    CACHE_KEYS.MISSION.TASKS_BY_STATUS(status),
+    async () => {
+      const dbTasks = await Task.findAll({ where: { status } });
+      return dbTasks.map((task) => task.toJSON());
+    },
+    CACHE_TTL.FIVE_MINUTES,
+  );
 };
 
 const getAllTasksStatusPublic = async () => {
@@ -356,16 +346,16 @@ const getAllTasksStatusPrivate = async () => {
 
 const getAllTasksOfCustomer = async (customer_id) => {
   if (!customer_id) throw new BadRequestError("Customer ID is required");
-  const cacheKey = CACHE_KEYS.MISSION.TASKS_BY_CUSTOMER(customer_id);
-  let tasks = await getCache(cacheKey);
-  if (!tasks) {
-    const dbTasks = await Task.findAll({
-      where: { creator_id: customer_id },
-    });
-    tasks = dbTasks.map((task) => task.toJSON());
-    await setCache(cacheKey, tasks, CACHE_TTL.FIVE_MINUTES);
-  }
-  return tasks;
+  return cacheThrough(
+    CACHE_KEYS.MISSION.TASKS_BY_CUSTOMER(customer_id),
+    async () => {
+      const dbTasks = await Task.findAll({
+        where: { creator_id: customer_id },
+      });
+      return dbTasks.map((task) => task.toJSON());
+    },
+    CACHE_TTL.FIVE_MINUTES,
+  );
 };
 
 const changeTaskStatus = async (task_id, status) => {
@@ -383,6 +373,91 @@ const changeTaskStatus = async (task_id, status) => {
   await setCache(CACHE_KEYS.MISSION.TASK_BY_ID(task_id), taskData);
   await deleteCache(CACHE_KEYS.MISSION.ALL_TASKS);
   return taskData;
+};
+
+const getAllTasksByUserId = async (user_id) => {
+  if (!user_id) throw new BadRequestError("User ID is required");
+
+  const cacheKey = CACHE_KEYS.MISSION.TASKS_BY_USER_ID(user_id);
+  const taskUserIds = await getCache(cacheKey);
+  const result = [];
+
+  if (Array.isArray(taskUserIds) && taskUserIds.length > 0) {
+    for (const id of taskUserIds) {
+      let taskUser = await getCache(CACHE_KEYS.MISSION.USER_TASK(id));
+      if (!taskUser) {
+        taskUser = await TaskUser.findOne({
+          where: { id },
+          include: [{ model: Task, as: "tasks", required: true }],
+        });
+        if (taskUser) {
+          const taskUserData = taskUser.toJSON();
+          await setCache(CACHE_KEYS.MISSION.USER_TASK(id), taskUserData);
+          result.push(taskUserData);
+        }
+      } else {
+        result.push(taskUser);
+      }
+    }
+
+    return result;
+  }
+
+  const taskUsers = await TaskUser.findAll({
+    where: { user_id },
+    include: [{ model: Task, as: "tasks", required: true }],
+  });
+
+  const taskUsersData = taskUsers.map((t) => t.toJSON());
+  const ids = taskUsersData.map((t) => t.id);
+  await setCache(cacheKey, ids);
+  for (const t of taskUsersData) {
+    await setCache(CACHE_KEYS.MISSION.USER_TASK(t.id), t);
+  }
+
+  return taskUsersData;
+};
+
+const getCompletedTasksByUserId = async (user_id) => {
+  const allTasksUser = await getAllTasksByUserId(user_id);
+  console.log(`check all tasks user: ${JSON.stringify(allTasksUser, null, 2)}`);
+
+  if (!Array.isArray(allTasksUser) || allTasksUser.length === 0) {
+    console.log(`No tasks found for user_id: ${user_id}`);
+    return [];
+  }
+
+  let completedTasks = [];
+
+  for (const taskUser of allTasksUser) {
+    let task = await getCache(CACHE_KEYS.MISSION.TASK_BY_ID(taskUser.task_id));
+
+    if (!task) {
+      task = await Task.findOne({ where: { id: taskUser.task_id } });
+
+      if (task) {
+        task = task.toJSON();
+        await setCache(CACHE_KEYS.MISSION.TASK_BY_ID(taskUser.task_id), task);
+      } else {
+        console.log(`Task not found for task_id: ${taskUser.task_id}`);
+        continue;
+      }
+    }
+
+    console.log(`Task details: ${JSON.stringify(task, null, 2)}`);
+
+    const progress = Number(taskUser.progress_count) || 0;
+    const total = Number(task.total) || 0;
+
+    console.log(`Progress: ${progress}, Total: ${total}`);
+
+    if (progress >= total && total > 0) {
+      completedTasks.push(task);
+    }
+  }
+
+  console.log(`Completed tasks: ${JSON.stringify(completedTasks, null, 2)}`);
+  return completedTasks;
 };
 
 module.exports = {
@@ -405,4 +480,6 @@ module.exports = {
   getAllTasksStatusPrivate,
   getAllTasksOfCustomer,
   changeTaskStatus,
+  getAllTasksByUserId,
+  getCompletedTasksByUserId,
 };

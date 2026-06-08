@@ -5,10 +5,10 @@ const User = db.User;
 const Image = db.Image;
 const { uploadImages } = require("../services/imageService");
 const { sequelize } = require("../models");
-const cloudinary = require("cloudinary").v2;
 const { getCache, setCache, deleteCache } = require("../utils/cache");
 const { CACHE_KEYS, CACHE_TTL } = require("../constants/cacheKeys");
 const { PRODUCT_POST_STATUS } = require("../constants/productStatus");
+const { destroyImagesByReference } = require("../helpers/imageHelper");
 const BadRequestError = require("../errors/BadRequestError");
 const NotFoundError = require("../errors/NotFoundError");
 const AppError = require("../errors/AppError");
@@ -305,20 +305,7 @@ const updateProduct = async (product, data, images) => {
   let uploadedImages = [];
   const id = product.id;
   if (images && images.length > 0) {
-    const existingImages = await Image.findAll({
-      where: {
-        reference_id: product.id,
-        reference_type: "product",
-      },
-    });
-
-    for (const image of existingImages) {
-      if (image.url) {
-        const publicId = image.url.split("/").pop().split(".")[0];
-        await cloudinary.uploader.destroy(`images/${publicId}`);
-      }
-      await image.destroy();
-    }
+    await destroyImagesByReference(product.id, "product");
 
     const cacheProduct = await getCache(CACHE_KEYS.COMMERCE.PRODUCT_BY_ID(id));
     if (cacheProduct && cacheProduct.imagesId) {
@@ -374,20 +361,7 @@ const deleteProduct = async (product_id) => {
   const product = await Product.findByPk(product_id);
   if (!product) throw new NotFoundError("Product not found");
 
-  const images = await Image.findAll({
-    where: {
-      reference_id: product_id,
-      reference_type: "product",
-    },
-  });
-
-  for (const image of images) {
-    if (image.url) {
-      const publicId = image.url.split("/").pop().split(".")[0];
-      await cloudinary.uploader.destroy(`images/${publicId}`);
-    }
-    await image.destroy();
-  }
+  const images = await destroyImagesByReference(product_id, "product");
 
   await deleteCache(CACHE_KEYS.COMMERCE.PRODUCT_BY_ID(product_id));
   await deleteCache(CACHE_KEYS.COMMERCE.PRODUCT_BY_PUBLIC_ID(product.public_id));

@@ -1,6 +1,11 @@
 const userService = require("../services/userService");
-const { setAuthCookies, clearAuthCookies } = require("../helpers/cookieHelper");
-const ms = require("ms");
+const taskService = require("../services/taskService");
+const transactionService = require("../services/transactionService");
+const {
+  setAuthCookies,
+  clearAuthCookies,
+  setAccessTokenCookie,
+} = require("../helpers/cookieHelper");
 
 const handleGetAllUsers = async (req, res) => {
   const result = await userService.getAllUsers();
@@ -27,13 +32,7 @@ const handleRefreshAccessToken = async (req, res) => {
   const refreshToken = req.cookies.refresh_token;
   const newAccessToken = userService.refreshAccessToken(refreshToken);
 
-  res.cookie("access_token", newAccessToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    path: "/",
-    maxAge: ms(process.env.JWT_AT_EXPIRE),
-  });
+  setAccessTokenCookie(res, newAccessToken);
 
   return res.success("Access token refreshed", {
     access_token: newAccessToken,
@@ -65,17 +64,17 @@ const handleGetProfile = async (req, res) => {
 };
 
 const handleGetTaskCompleted = async (req, res) => {
-  const result = await userService.getTaskCompleted(req.user.id);
+  const result = await taskService.getCompletedTasksByUserId(req.user.id);
   return res.success("Get task completed success", result);
 };
 
 const handleGetAllTasksById = async (req, res) => {
-  const result = await userService.getAllTasksById(req.user.id);
+  const result = await taskService.getAllTasksByUserId(req.user.id);
   return res.success("Get all task by ID success", result);
 };
 
 const handleGetItemByIdUser = async (req, res) => {
-  const result = await userService.getItemByIdUser(req.params.user_id);
+  const result = await transactionService.getItemsByUserId(req.params.user_id);
   return res.success("Get item by user ID success", result);
 };
 

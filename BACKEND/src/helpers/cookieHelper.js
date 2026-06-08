@@ -18,6 +18,13 @@ const setAuthCookies = (res, { access_token, refresh_token }) => {
   });
 };
 
+const setAccessTokenCookie = (res, access_token) => {
+  res.cookie("access_token", access_token, {
+    ...COOKIE_BASE,
+    maxAge: ms(process.env.JWT_AT_EXPIRE),
+  });
+};
+
 const clearAuthCookies = (res) => {
   res.clearCookie("access_token", COOKIE_BASE);
   res.clearCookie("refresh_token", COOKIE_BASE);
@@ -25,5 +32,6 @@ const clearAuthCookies = (res) => {
 
 module.exports = {
   setAuthCookies,
+  setAccessTokenCookie,
   clearAuthCookies,
 };

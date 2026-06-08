@@ -71,35 +71,38 @@ const createTransaction = async (transactionData) => {
   }
 };
 
-const getTransactionByBuyerId = async (buyer_id) => {
+const getTransactionsByRole = async (userId, role) => {
   try {
-    const buyerCacheKey = CACHE_KEYS.COMMERCE.TRANSACTION_BUYER(buyer_id);
-    const listBuyerTransactioncacheId = await getCache(buyerCacheKey);
-    if (listBuyerTransactioncacheId) {
-      console.log("listBuyerTransactioncacheId", listBuyerTransactioncacheId);
-      const listTransactionId = listBuyerTransactioncacheId;
-      let result = [];
-      for (const transactionId of listTransactionId) {
-        const transactionCacheKey = CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transactionId);
-        const transactionCache = await getCache(transactionCacheKey);
-        if (transactionCache) {
-          result.push(transactionCache);
-        } else {
-          const transaction = await Transaction.findOne({
-            where: { id: transactionId },
-          });
-          if (transaction) {
-            result.push(transaction.toJSON());
-            await setCache(transactionCacheKey, transaction.toJSON());
+    const isBuyer = role === "buyer";
+    const cacheKey = isBuyer
+      ? CACHE_KEYS.COMMERCE.TRANSACTION_BUYER(userId)
+      : CACHE_KEYS.COMMERCE.TRANSACTION_SELLER(userId);
+
+    const cachedTransactionIds = await getCache(cacheKey);
+    if (cachedTransactionIds) {
+      const result = [];
+      for (const transactionId of cachedTransactionIds) {
+        const txCacheKey = CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transactionId);
+        let transaction = await getCache(txCacheKey);
+        if (!transaction) {
+          const dbTx = await Transaction.findOne({ where: { id: transactionId } });
+          if (dbTx) {
+            transaction = dbTx.toJSON();
+            await setCache(txCacheKey, transaction);
           } else {
             throw new NotFoundError("Transaction not found.");
           }
         }
+        if (transaction) {
+          result.push(transaction);
+        }
       }
       return result;
     }
-    const transaction = await Transaction.findAll({
-      where: { buyer_id: buyer_id },
+
+    const filter = isBuyer ? { buyer_id: userId } : { seller_id: userId };
+    const transactions = await Transaction.findAll({
+      where: filter,
       include: [
         {
           model: User,
@@ -117,85 +120,29 @@ const getTransactionByBuyerId = async (buyer_id) => {
         },
       ],
     });
-    if (!transaction) {
+
+    if (!transactions || transactions.length === 0) {
       throw new NotFoundError("Transaction not found.");
     }
-    const transactionIds = transaction.map((item) => item.id);
-    await setCache(buyerCacheKey, transactionIds);
-    for (const newTransaction of transaction) {
-      const transactionData = newTransaction.toJSON();
-      await setCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(newTransaction.id), transactionData);
+
+    const transactionIds = transactions.map((t) => t.id);
+    await setCache(cacheKey, transactionIds);
+    const transactionsData = [];
+    for (const t of transactions) {
+      const tData = t.toJSON();
+      await setCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(t.id), tData);
+      transactionsData.push(tData);
     }
 
-    return transaction.map((t) => t.toJSON());
+    return transactionsData;
   } catch (error) {
     if (error.statusCode) throw error;
-    throw new AppError("Failed to retrieve buyer transactions", 500);
+    throw new AppError(`Failed to retrieve ${role} transactions`, 500);
   }
 };
 
-const getTransactionBySellerId = async (seller_id) => {
-  try {
-    const sellerCacheKey = CACHE_KEYS.COMMERCE.TRANSACTION_SELLER(seller_id);
-    const listSellerTransactionCacheId = await getCache(sellerCacheKey);
-    if (listSellerTransactionCacheId) {
-      console.log("listSellerTransactionCacheId", listSellerTransactionCacheId);
-      const listTransactionId = listSellerTransactionCacheId;
-      let result = [];
-      for (const transactionId of listTransactionId) {
-        const transactionCacheKey = CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transactionId);
-        const transactionCache = await getCache(transactionCacheKey);
-        if (transactionCache) {
-          result.push(transactionCache);
-        } else {
-          const transaction = await Transaction.findOne({
-            where: { id: transactionId },
-          });
-          if (transaction) {
-            result.push(transaction.toJSON());
-            await setCache(transactionCacheKey, transaction.toJSON());
-          } else {
-            throw new NotFoundError("Transaction not found.");
-          }
-        }
-      }
-      return result;
-    }
-    const transaction = await Transaction.findAll({
-      where: { seller_id: seller_id },
-      include: [
-        {
-          model: User,
-          as: "seller",
-          attributes: ["id", "full_name", "username"],
-        },
-        {
-          model: User,
-          as: "buyer",
-          attributes: ["id", "full_name", "username"],
-        },
-        {
-          model: ReceiverInformation,
-          as: "receiver_information",
-        },
-      ],
-    });
-    if (!transaction || transaction.length === 0) {
-      throw new NotFoundError("Transaction not found.");
-    }
-    const transactionIds = transaction.map((item) => item.id);
-    await setCache(sellerCacheKey, transactionIds);
-    for (const newTransaction of transaction) {
-      const transactionData = newTransaction.toJSON();
-      await setCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(newTransaction.id), transactionData);
-    }
-
-    return transaction.map((t) => t.toJSON());
-  } catch (error) {
-    if (error.statusCode) throw error;
-    throw new AppError("Failed to retrieve seller transactions", 500);
-  }
-};
+const getTransactionByBuyerId = (id) => getTransactionsByRole(id, "buyer");
+const getTransactionBySellerId = (id) => getTransactionsByRole(id, "seller");
 
 const getAllTransactions = async () => {
   try {
@@ -437,6 +384,58 @@ const makeDecision = async (transaction_id, decision) => {
   }
 };
 
+const getItemsByUserId = async (user_id) => {
+  const cachedTransactionIds = await getCache(CACHE_KEYS.COMMERCE.TRANSACTIONS_BY_USER_ID(user_id));
+  if (cachedTransactionIds) {
+    const transactions = [];
+    for (const transactionId of cachedTransactionIds) {
+      let transaction = await getCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transactionId));
+      if (!transaction) {
+        transaction = await Transaction.findOne({
+          where: { id: transactionId },
+          attributes: ["id", "total_price", "quantity", "status"],
+          include: [
+            {
+              model: Item,
+              attributes: ["id", "name", "description", "price"],
+            },
+          ],
+        });
+        if (transaction) {
+          const transactionData = transaction.toJSON();
+          await setCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transactionId), transactionData);
+          transactions.push(transactionData);
+        }
+      } else {
+        transactions.push(transaction);
+      }
+    }
+    return transactions;
+  }
+
+  const items = await Transaction.findAll({
+    where: { buyer_id: user_id, status: ["pending", "completed"] },
+    attributes: ["id", "total_price", "quantity", "status"],
+    include: [
+      {
+        model: Item,
+        as: "item",
+        attributes: ["id", "name", "description", "price"],
+      },
+    ],
+  });
+  if (!items || items.length === 0) throw new NotFoundError("User not found");
+
+  const itemsData = items.map((item) => item.toJSON());
+  const transactionIds = itemsData.map((item) => item.id);
+  await setCache(CACHE_KEYS.COMMERCE.TRANSACTIONS_BY_USER_ID(user_id), transactionIds);
+  for (const item of itemsData) {
+    await setCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(item.id), item);
+  }
+
+  return itemsData;
+};
+
 module.exports = {
   createTransaction,
   getTransactionByBuyerId,
@@ -447,4 +446,5 @@ module.exports = {
   getAllTransactionsByStatus,
   getTransactionById,
   cancelTransactionById,
+  getItemsByUserId,
 };

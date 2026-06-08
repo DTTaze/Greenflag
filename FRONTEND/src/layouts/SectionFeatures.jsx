@@ -2,9 +2,9 @@
 
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
+import { useRouter } from "@/src/i18n/navigation";
 import { useAuthStore } from "@/src/store/auth/authStore";
 
 export default function SectionFeatures({
@@ -58,7 +58,7 @@ export default function SectionFeatures({
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="w-full lg:w-1/2"
       >
-        <div className="dark:border-zinc-850 relative overflow-hidden rounded-2xl border border-zinc-100 shadow-xl">
+        <div className="relative overflow-hidden rounded-2xl border border-zinc-100 shadow-xl dark:border-zinc-800">
           <img
             src={imagePath}
             alt="Feature Graphic"

@@ -1,10 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { useNotification } from "@/src/components/ui/NotificationProvider";
+import { useRouter } from "@/src/i18n/navigation";
 import { loginUser } from "@/src/services/auth.service";
 import { useAuthStore } from "@/src/store/auth/authStore";
 

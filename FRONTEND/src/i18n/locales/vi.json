@@ -1,0 +1,76 @@
+{
+  "menu": {
+    "home": "Trang chủ",
+    "missions": "Nhiệm vụ",
+    "exchange": "Trao đổi",
+    "community": "Cộng đồng",
+    "customer": "Khách hàng",
+    "admin": "Quản trị",
+    "login": "Đăng nhập",
+    "register": "Đăng ký",
+    "logout": "Đăng xuất",
+    "profile": "Tài khoản của tôi",
+    "logoutSuccess": "Đăng xuất thành công",
+    "logoutError": "Đã xảy ra lỗi khi đăng xuất. Vui lòng thử lại."
+  },
+  "homepage": {
+    "hero": {
+      "LeafText": "Chung tay vì hành tinh xanh",
+      "TitleStart": "Bảo vệ môi trường",
+      "TitleEnd": "Bắt đầu từ chính bạn",
+      "Title1": "Hành động nhỏ, tác động lớn!",
+      "Title2": "Trồng cây hôm nay, hưởng trái ngọt mai sau!",
+      "Title3": "Bảo vệ động vật biển, bảo vệ chính chúng ta!",
+      "Desc1": "Cùng hàng ngàn người tham gia các thử thách bảo vệ môi trường, tích lũy điểm xanh và tạo nên thay đổi thực sự.",
+      "Desc2": "Mỗi mầm non được vun trồng hôm nay là một bước tiến quan trọng hướng tới bầu không khí trong lành và tương lai bền vững.",
+      "Desc3": "Giữ gìn đại dương sạch rác thải nhựa là bảo vệ đa dạng sinh học và sự sống lâu dài của toàn hành tinh chúng ta.",
+      "ExploreBtn": "Khám phá nhiệm vụ",
+      "JoinBtn": "Tham gia ngay",
+      "MemberText": "Thành viên xanh",
+      "ChallengeText": "Thử thách xanh",
+      "TrashText": "Rác thải thu gom"
+    },
+    "howItWorks": {
+      "Header": "Quy trình tham gia",
+      "Subtitle": "Bắt đầu hành trình sống xanh chỉ với 3 bước",
+      "step1Title": "Đăng ký tài khoản",
+      "step1Desc": "Tham gia cộng đồng Green Flag hoàn toàn miễn phí và bắt đầu thiết lập thói quen sống bền vững.",
+      "step2Title": "Làm nhiệm vụ bảo vệ môi trường",
+      "step2Desc": "Lựa chọn các thử thách hằng ngày như nhặt rác nhựa, trồng cây xanh, xem video kiến thức để tích lũy EcoCoins.",
+      "step3Title": "Đổi quà tặng hấp dẫn",
+      "step3Desc": "Sử dụng số EcoCoins tích lũy tại Chợ trao đổi để sở hữu các sản phẩm thân thiện với môi trường."
+    },
+    "trust": {
+      "globalTitle": "Tác động toàn cầu",
+      "globalDesc": "Mọi đóng góp nhỏ của bạn tích tiểu thành đại, giải quyết các vấn đề biến đổi khí hậu trên thế giới.",
+      "safetyTitle": "Minh bạch, bảo mật",
+      "safetyDesc": "Quy trình duyệt nhiệm vụ và giao dịch EcoCoins diễn ra tự động và rõ ràng qua bảng kiểm duyệt hệ thống.",
+      "qualityTitle": "Sản phẩm chất lượng",
+      "qualityDesc": "Các phần quà tại Chợ trao đổi được kiểm tra nghiêm ngặt về nguồn gốc sinh học và chứng nhận thân thiện môi trường."
+    },
+    "features": {
+      "missionBadge": "Nhiệm vụ xanh",
+      "missionH2": "Hoàn thành nhiệm vụ, tích lũy điểm xanh",
+      "missionP": "Khám phá danh sách các hành động thiết thực hằng ngày. Từ việc nhặt rác nhựa, trồng cây xanh, tiết kiệm điện nước đến việc xem video học hỏi kiến thức môi trường. Hoàn thành thử thách để nhận EcoCoins và góp phần xây dựng hành tinh trong lành hơn!",
+      "missionBtn": "Khám phá nhiệm vụ",
+      "marketBadge": "Đổi quà bền vững",
+      "marketH2": "Chợ Trao Đổi - Biến điểm thành hành động thực tế",
+      "marketP": "Nhận phần thưởng xứng đáng cho nỗ lực của bạn. Sử dụng EcoCoins để quy đổi sang các sản phẩm xanh bền vững, ống hút sinh học, túi tự hủy hoặc các voucher xanh hữu ích từ đối tác liên kết của Green Flag.",
+      "marketBtn": "Khám phá chợ trao đổi",
+      "communityBadge": "Mạng xã hội",
+      "communityH2": "Kết nối cộng đồng - Lan tỏa thói quen văn minh",
+      "communityP": "Chia sẻ hình ảnh hoạt động bảo vệ môi trường của bạn lên bảng tin cộng đồng. Thảo luận, tương tác, thả tim và bình luận cổ vũ hành động của mọi người để cùng nhau thắp sáng những thông điệp tích cực nhất!",
+      "communityBtn": "Tham gia cộng đồng ngay"
+    }
+  },
+  "common": {
+    "language": "Ngôn ngữ",
+    "current": "Hiện tại",
+    "changeLanguage": "Thay đổi ngôn ngữ",
+    "selectLanguage": "Chọn ngôn ngữ",
+    "theme": "Giao diện",
+    "light": "Sáng",
+    "dark": "Tối",
+    "system": "Hệ thống"
+  }
+}

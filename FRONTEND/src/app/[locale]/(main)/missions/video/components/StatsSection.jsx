@@ -1,6 +1,5 @@
-import React from "react";
-
 import { Coins, Timer } from "lucide-react";
+import React from "react";
 
 import { useVideoSection } from "./VideoSectionContext";
 

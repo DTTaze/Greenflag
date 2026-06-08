@@ -2,9 +2,10 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Award, Leaf, Trash2, Users } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
 
+import { useRouter } from "@/src/i18n/navigation";
 import { useAuthStore } from "@/src/store/auth/authStore";
 
 export default function SectionHero() {
@@ -12,17 +13,12 @@ export default function SectionHero() {
   const router = useRouter();
   const { isAuthenticated } = useAuthStore();
 
-  const titles = [
-    "Hành động nhỏ, tác động lớn!",
-    "Trồng cây hôm nay, hưởng trái ngọt mai sau!",
-    "Bảo vệ động vật biển, bảo vệ chính chúng ta!",
-  ];
+  const t = useTranslations("homepage");
+  const tMenu = useTranslations("menu");
 
-  const descriptions = [
-    "Cùng hàng ngàn người tham gia các thử thách bảo vệ môi trường, tích lũy điểm xanh và tạo nên thay đổi thực sự.",
-    "Mỗi mầm non được vun trồng hôm nay là một bước tiến quan trọng hướng tới bầu không khí trong lành và tương lai bền vững.",
-    "Giữ gìn đại dương sạch rác thải nhựa là bảo vệ đa dạng sinh học và sự sống lâu dài của toàn hành tinh chúng ta.",
-  ];
+  const titles = [t("hero.Title1"), t("hero.Title2"), t("hero.Title3")];
+
+  const descriptions = [t("hero.Desc1"), t("hero.Desc2"), t("hero.Desc3")];
 
   const images = [
     "/images/pick-up-trash.jpg",
@@ -47,14 +43,14 @@ export default function SectionHero() {
       <div className="relative z-10 flex w-full flex-col justify-center lg:w-1/2">
         <div className="inline-flex w-fit items-center gap-1.5 rounded-full bg-emerald-100/80 px-3.5 py-1.5 text-xs font-bold tracking-wider text-emerald-800 uppercase dark:bg-emerald-950/50 dark:text-emerald-400">
           <Leaf size={14} className="animate-pulse" />
-          Chung tay vì hành tinh xanh
+          {t("hero.LeafText")}
         </div>
 
         <h1 className="mt-6 text-4xl leading-[1.15] font-extrabold tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl dark:text-white">
-          Bảo vệ môi trường
+          {t("hero.TitleStart")}
           <br />
           <span className="bg-gradient-to-r from-emerald-600 via-green-600 to-teal-500 bg-clip-text text-transparent">
-            Bắt đầu từ chính bạn
+            {t("hero.TitleEnd")}
           </span>
         </h1>
 
@@ -85,9 +81,9 @@ export default function SectionHero() {
                 router.push("/register");
               }
             }}
-            className="group flex cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-to-r from-emerald-600 to-green-600 px-8 py-4 text-base font-bold text-white shadow-lg shadow-emerald-600/15 transition-all duration-300 hover:scale-[1.03] hover:from-emerald-500 hover:to-green-500 hover:shadow-emerald-500/20 active:scale-95"
+            className="group animate-in fade-in-0 flex cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-to-r from-emerald-600 to-green-600 px-8 py-4 text-base font-bold text-white shadow-lg shadow-emerald-600/15 transition-all duration-300 hover:scale-[1.03] hover:from-emerald-500 hover:to-green-500 hover:shadow-emerald-500/20 active:scale-95"
           >
-            {isAuthenticated ? "Khám phá nhiệm vụ" : "Tham gia ngay"}
+            {isAuthenticated ? t("hero.ExploreBtn") : t("hero.JoinBtn")}
             <ArrowRight
               size={18}
               className="transition-transform duration-300 group-hover:translate-x-1"
@@ -98,7 +94,7 @@ export default function SectionHero() {
               onClick={() => router.push("/login")}
               className="dark:hover:bg-zinc-850 flex cursor-pointer items-center justify-center rounded-full border-2 border-zinc-200 bg-white px-8 py-4 text-base font-bold text-zinc-700 transition-all duration-300 hover:border-emerald-600 hover:bg-zinc-50 hover:text-emerald-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-emerald-500"
             >
-              Đăng nhập
+              {tMenu("login")}
             </button>
           )}
         </div>
@@ -111,7 +107,7 @@ export default function SectionHero() {
               10K+
             </span>
             <span className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-              Thành viên xanh
+              {t("hero.MemberText")}
             </span>
           </div>
           <div className="flex flex-col">
@@ -120,7 +116,7 @@ export default function SectionHero() {
               50K+
             </span>
             <span className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-              Thử thách xanh
+              {t("hero.ChallengeText")}
             </span>
           </div>
           <div className="flex flex-col">
@@ -129,7 +125,7 @@ export default function SectionHero() {
               1,200kg
             </span>
             <span className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-              Rác thải thu gom
+              {t("hero.TrashText")}
             </span>
           </div>
         </div>

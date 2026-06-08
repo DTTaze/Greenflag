@@ -1,31 +1,34 @@
 "use client";
 
 import { Compass, Gift, UserPlus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 export default function SectionHowItWorks() {
+  const t = useTranslations("homepage");
+
   const steps = [
     {
       step: "01",
       icon: (
         <UserPlus className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
       ),
-      title: "Đăng ký tài khoản",
-      desc: "Tham gia cộng đồng Green Flag hoàn toàn miễn phí và bắt đầu thiết lập thói quen sống bền vững.",
+      title: t("howItWorks.step1Title"),
+      desc: t("howItWorks.step1Desc"),
     },
     {
       step: "02",
       icon: (
         <Compass className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
       ),
-      title: "Làm nhiệm vụ bảo vệ môi trường",
-      desc: "Lựa chọn các thử thách hằng ngày như nhặt rác nhựa, trồng cây xanh, xem video kiến thức để tích lũy EcoCoins.",
+      title: t("howItWorks.step2Title"),
+      desc: t("howItWorks.step2Desc"),
     },
     {
       step: "03",
       icon: <Gift className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />,
-      title: "Đổi quà tặng hấp dẫn",
-      desc: "Sử dụng số EcoCoins tích lũy tại Chợ trao đổi để sở hữu các sản phẩm thân thiện với môi trường.",
+      title: t("howItWorks.step3Title"),
+      desc: t("howItWorks.step3Desc"),
     },
   ];
 
@@ -34,10 +37,10 @@ export default function SectionHowItWorks() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-sm font-bold tracking-wider text-emerald-600 uppercase dark:text-emerald-400">
-            Quy trình tham gia
+            {t("howItWorks.Header")}
           </h2>
           <p className="mt-3 text-3xl font-extrabold tracking-tight text-zinc-900 sm:text-4xl dark:text-white">
-            Bắt đầu hành trình sống xanh chỉ với 3 bước
+            {t("howItWorks.Subtitle")}
           </p>
         </div>
 

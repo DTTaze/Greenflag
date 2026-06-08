@@ -1,9 +1,14 @@
-import "../index.css";
-import "./globals.css";
+import "../../index.css";
+import "../globals.css";
 
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { notFound } from "next/navigation";
 import Script from "next/script";
+import { hasLocale, NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
+
+import { routing } from "@/src/i18n/routing";
 
 import Providers from "./providers";
 
@@ -22,13 +27,21 @@ export const metadata: Metadata = {
   description: "Protect the environment",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }>) {
+  const { locale } = await params;
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
+  const messages = await getMessages({ locale });
+
   return (
-    <html lang="vi">
+    <html lang={locale} suppressHydrationWarning>
       <head>
         <link
           rel="stylesheet"
@@ -40,7 +53,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers>{children}</Providers>
+        <NextIntlClientProvider messages={messages} locale={locale}>
+          <Providers>{children}</Providers>
+        </NextIntlClientProvider>
         <Script
           src="https://unpkg.com/html5-qrcode"
           strategy="beforeInteractive"

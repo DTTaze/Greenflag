@@ -1,6 +1,7 @@
 "use client";
 
 import { Award, Globe, Shield } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 import SectionFeatures from "./SectionFeatures";
@@ -8,6 +9,8 @@ import SectionHero from "./SectionHero";
 import SectionHowItWorks from "./SectionHowItWorks";
 
 function HomepageSection() {
+  const t = useTranslations("homepage");
+
   return (
     <div className="bg-white text-zinc-900 transition-colors duration-300 dark:bg-zinc-950 dark:text-zinc-100">
       <SectionHero />
@@ -16,33 +19,33 @@ function HomepageSection() {
 
       {/* Feature 1: Missions */}
       <SectionFeatures
-        badge="Nhiệm vụ xanh"
+        badge={t("features.missionBadge")}
         imagePath="/images/Nhiemvu.png"
-        H2Text="Hoàn thành nhiệm vụ, tích lũy điểm xanh"
-        PText="Khám phá danh sách các hành động thiết thực hằng ngày. Từ việc nhặt rác nhựa, trồng cây xanh, tiết kiệm điện nước đến việc xem video học hỏi kiến thức môi trường. Hoàn thành thử thách để nhận EcoCoins và góp phần xây dựng hành tinh trong lành hơn!"
+        H2Text={t("features.missionH2")}
+        PText={t("features.missionP")}
         path="/missions"
-        ButtonText="Khám phá nhiệm vụ"
+        ButtonText={t("features.missionBtn")}
       />
 
       {/* Feature 2: Market */}
       <SectionFeatures
-        badge="Đổi quà bền vững"
+        badge={t("features.marketBadge")}
         imagePath="/images/Cho-trao-doi.png"
-        H2Text="Chợ Trao Đổi - Biến điểm thành hành động thực tế"
-        PText="Nhận phần thưởng xứng đáng cho nỗ lực của bạn. Sử dụng EcoCoins để quy đổi sang các sản phẩm xanh bền vững, ống hút sinh học, túi tự hủy hoặc các voucher xanh hữu ích từ đối tác liên kết của Green Flag."
+        H2Text={t("features.marketH2")}
+        PText={t("features.marketP")}
         path="/exchange-market"
-        ButtonText="Khám phá chợ trao đổi"
+        ButtonText={t("features.marketBtn")}
         reverse
       />
 
       {/* Feature 3: Community */}
       <SectionFeatures
-        badge="Mạng xã hội"
+        badge={t("features.communityBadge")}
         imagePath="/images/hand-drawn-people-planting-a-tree.jpg"
-        H2Text="Kết nối cộng đồng - Lan tỏa thói quen văn minh"
-        PText="Chia sẻ hình ảnh hoạt động bảo vệ môi trường của bạn lên bảng tin cộng đồng. Thảo luận, tương tác, thả tim và bình luận cổ vũ hành động của mọi người để cùng nhau thắp sáng những thông điệp tích cực nhất!"
+        H2Text={t("features.communityH2")}
+        PText={t("features.communityP")}
         path="/community"
-        ButtonText="Tham gia cộng đồng ngay"
+        ButtonText={t("features.communityBtn")}
       />
 
       {/* Trust & Guarantee Section */}
@@ -55,11 +58,10 @@ function HomepageSection() {
               </div>
               <div>
                 <h4 className="text-base font-bold text-zinc-900 dark:text-white">
-                  Tác động toàn cầu
+                  {t("trust.globalTitle")}
                 </h4>
-                <p className="text-zinc-550 mt-1 text-sm dark:text-zinc-400">
-                  Mọi đóng góp nhỏ của bạn tích tiểu thành đại, giải quyết các
-                  vấn đề biến đổi khí hậu trên thế giới.
+                <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                  {t("trust.globalDesc")}
                 </p>
               </div>
             </div>
@@ -69,11 +71,10 @@ function HomepageSection() {
               </div>
               <div>
                 <h4 className="text-base font-bold text-zinc-900 dark:text-white">
-                  Minh bạch, bảo mật
+                  {t("trust.safetyTitle")}
                 </h4>
-                <p className="text-zinc-550 mt-1 text-sm dark:text-zinc-400">
-                  Quy trình duyệt nhiệm vụ và giao dịch EcoCoins diễn ra tự động
-                  và rõ ràng qua bảng kiểm duyệt hệ thống.
+                <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                  {t("trust.safetyDesc")}
                 </p>
               </div>
             </div>
@@ -83,11 +84,10 @@ function HomepageSection() {
               </div>
               <div>
                 <h4 className="text-base font-bold text-zinc-900 dark:text-white">
-                  Sản phẩm chất lượng
+                  {t("trust.qualityTitle")}
                 </h4>
-                <p className="text-zinc-550 mt-1 text-sm dark:text-zinc-400">
-                  Các phần quà tại Chợ trao đổi được kiểm tra nghiêm ngặt về
-                  nguồn gốc sinh học và chứng nhận thân thiện môi trường.
+                <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                  {t("trust.qualityDesc")}
                 </p>
               </div>
             </div>

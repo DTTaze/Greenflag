@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
-
 import { Heart } from "lucide-react";
+import React, { useEffect, useState } from "react";
 
 export default function HeartButton({ initialLikes, onLike }) {
   const [heart, setHeart] = useState(false);

@@ -1,5 +1,7 @@
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+
+import { useRouter } from "@/src/i18n/navigation";
 
 import Button from "../components/ui/button";
 import InputField from "../components/ui/InputField";

@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-
 import { MessageCircle } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 const CommentButton = ({ comments }) => {
   const [showComments, setShowComments] = useState(false);

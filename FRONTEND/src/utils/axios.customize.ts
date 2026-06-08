@@ -10,7 +10,7 @@ interface CustomRequestConfig extends InternalAxiosRequestConfig {
 }
 
 const instance = axios.create({
-  baseURL: "",
+  baseURL: "/",
   withCredentials: true,
 });
 

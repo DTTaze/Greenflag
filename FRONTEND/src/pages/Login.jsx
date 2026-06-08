@@ -1,8 +1,8 @@
 import { Eye, EyeOff } from "lucide-react";
-import Link from "next/link";
 import { useState } from "react";
 
 import { useLoginForm } from "@/src/hooks/forms/useLoginForm";
+import { Link } from "@/src/i18n/navigation";
 
 import Button from "../components/ui/button";
 import InputField from "../components/ui/InputField";

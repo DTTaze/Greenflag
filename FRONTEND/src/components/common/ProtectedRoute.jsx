@@ -1,6 +1,6 @@
-import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
+import { usePathname, useRouter } from "@/src/i18n/navigation";
 import { useAuthStore } from "@/src/store/auth/authStore";
 
 const roleMap = {

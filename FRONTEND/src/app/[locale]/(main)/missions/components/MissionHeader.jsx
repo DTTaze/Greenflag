@@ -1,7 +1,7 @@
 import { Sparkles } from "lucide-react";
 import React from "react";
 
-import CoinBalance from "@/src/app/(main)/exchange-market/components/CoinBalance";
+import CoinBalance from "@/src/app/[locale]/(main)/exchange-market/components/CoinBalance";
 
 /**
  * Header component for the mission page

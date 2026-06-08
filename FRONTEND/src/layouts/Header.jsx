@@ -7,23 +7,26 @@ import {
   Target,
   Users,
 } from "lucide-react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
+import { Link, usePathname, useRouter } from "@/src/i18n/navigation";
 import { useAuthStore } from "@/src/store/auth/authStore";
 
 import { useNotification } from "../components/ui/NotificationProvider";
 import { getUser, getUserAvatarById, logoutUser } from "../utils/api";
 import CoinsBadge from "./CoinsBadge";
+import LocaleSwitcher from "./LocaleSwitcher";
 import MobileMenu from "./MobileMenu";
 import ProfileDropdown from "./ProfileDropdown";
+import ThemeSwitcher from "./ThemeSwitcher";
 
 function UserHeader() {
   const router = useRouter();
   const pathname = usePathname();
   const { notify } = useNotification();
   const { isAuthenticated, user, dispatch } = useAuthStore();
+  const t = useTranslations("menu");
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -83,27 +86,27 @@ function UserHeader() {
     try {
       await logoutUser();
       dispatch({ type: "LOGOUT" });
-      notify("success", "Đăng xuất thành công");
+      notify("success", t("logoutSuccess"));
       router.push("/");
     } catch (error) {
       console.error("Lỗi khi đăng xuất:", error);
-      notify("error", "Đã xảy ra lỗi khi đăng xuất. Vui lòng thử lại.");
+      notify("error", t("logoutError"));
     }
   };
 
   const pages = [
-    { key: "", label: "Trang chủ", icon: Home },
-    { key: "missions", label: "Nhiệm vụ", icon: Target },
-    { key: "exchange-market", label: "Trao đổi", icon: ArrowLeftRight },
-    { key: "community", label: "Cộng đồng", icon: Users },
+    { key: "", label: t("home"), icon: Home },
+    { key: "missions", label: t("missions"), icon: Target },
+    { key: "exchange-market", label: t("exchange"), icon: ArrowLeftRight },
+    { key: "community", label: t("community"), icon: Users },
   ];
 
   if (isAuthenticated && user?.roles?.id === 3) {
-    pages.push({ key: "customer", label: "Khách hàng", icon: ShoppingBag });
+    pages.push({ key: "customer", label: t("customer"), icon: ShoppingBag });
   }
 
   if (isAuthenticated && user?.roles?.id === 1) {
-    pages.push({ key: "admin", label: "Quản trị", icon: LayoutDashboard });
+    pages.push({ key: "admin", label: t("admin"), icon: LayoutDashboard });
   }
 
   const avatarUrl =
@@ -113,8 +116,8 @@ function UserHeader() {
     <header
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${
         scrolled
-          ? "border-b border-gray-100/80 bg-white/85 shadow-sm backdrop-blur-md"
-          : "border-b border-transparent bg-white"
+          ? "border-b border-gray-100/80 bg-white/85 shadow-sm backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-950/85"
+          : "border-b border-transparent bg-white dark:bg-zinc-950"
       }`}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -129,7 +132,7 @@ function UserHeader() {
               className="h-9 w-9 object-contain md:h-11 md:w-11"
               alt="Green Flag Logo"
             />
-            <span className="text-xl font-extrabold tracking-tight text-[#0B6E4F] md:text-2xl">
+            <span className="text-xl font-extrabold tracking-tight text-[#0B6E4F] md:text-2xl dark:text-emerald-500">
               Green Flag
             </span>
           </Link>
@@ -148,18 +151,18 @@ function UserHeader() {
                     href={`/${key}`}
                     className={`relative flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-semibold transition-colors duration-200 ${
                       isActive
-                        ? "text-[#0B6E4F]"
-                        : "text-gray-600 hover:bg-gray-50 hover:text-[#0B6E4F]"
+                        ? "text-[#0B6E4F] dark:text-emerald-400"
+                        : "dark:text-zinc-350 text-gray-600 hover:bg-gray-50 hover:text-[#0B6E4F] dark:hover:bg-zinc-900 dark:hover:text-emerald-400"
                     }`}
                   >
                     <Icon
-                      className={`h-4.5 w-4.5 ${isActive ? "text-[#0B6E4F]" : "text-gray-400"}`}
+                      className={`h-4.5 w-4.5 ${isActive ? "text-[#0B6E4F] dark:text-emerald-400" : "dark:text-zinc-550 text-gray-400"}`}
                     />
                     <span>{label}</span>
                     {isActive && (
                       <motion.span
                         layoutId="activeNavigationUnderline"
-                        className="absolute right-0 bottom-[-14px] left-0 h-0.75 rounded-full bg-[#0B6E4F]"
+                        className="absolute right-0 bottom-[-14px] left-0 h-0.75 rounded-full bg-[#0B6E4F] dark:bg-emerald-500"
                         transition={{
                           type: "spring",
                           stiffness: 350,
@@ -174,9 +177,12 @@ function UserHeader() {
           )}
 
           {/* User Status / Auth Buttons */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <ThemeSwitcher />
+            <LocaleSwitcher />
+
             {isAuthenticated ? (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <CoinsBadge amount={user?.coins?.amount} />
                 <ProfileDropdown
                   user={user}
@@ -185,18 +191,18 @@ function UserHeader() {
                 />
               </div>
             ) : (
-              <div className="hidden items-center gap-3 md:flex">
+              <div className="hidden items-center gap-2 sm:gap-3 md:flex">
                 <Link
                   href="/login"
-                  className="px-4 py-2 text-sm font-bold text-gray-700 transition-colors hover:text-[#0B6E4F]"
+                  className="px-4 py-2 text-sm font-bold text-gray-700 transition-colors hover:text-[#0B6E4F] dark:text-zinc-300 dark:hover:text-emerald-400"
                 >
-                  Đăng nhập
+                  {t("login")}
                 </Link>
                 <Link
                   href="/register"
-                  className="rounded-lg bg-[#0B6E4F] px-4 py-2 text-sm font-bold text-white shadow-xs transition-colors duration-200 hover:bg-[#0B6E4F]/90 active:scale-95"
+                  className="rounded-lg bg-[#0B6E4F] px-4 py-2 text-sm font-bold text-white shadow-xs transition-colors duration-200 hover:bg-[#0B6E4F]/90 active:scale-95 dark:bg-emerald-600 dark:hover:bg-emerald-500"
                 >
-                  Đăng ký
+                  {t("register")}
                 </Link>
               </div>
             )}

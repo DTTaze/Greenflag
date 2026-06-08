@@ -1,0 +1,76 @@
+{
+  "menu": {
+    "home": "Home",
+    "missions": "Missions",
+    "exchange": "Market",
+    "community": "Community",
+    "customer": "Customer",
+    "admin": "Admin",
+    "login": "Log In",
+    "register": "Sign Up",
+    "logout": "Log Out",
+    "profile": "My Profile",
+    "logoutSuccess": "Logged out successfully",
+    "logoutError": "An error occurred during logout. Please try again."
+  },
+  "homepage": {
+    "hero": {
+      "LeafText": "Join hands for a green planet",
+      "TitleStart": "Protecting the environment",
+      "TitleEnd": "Starts with you",
+      "Title1": "Small actions, big impact!",
+      "Title2": "Plant trees today, enjoy the harvest tomorrow!",
+      "Title3": "Protect marine life, protect ourselves!",
+      "Desc1": "Join thousands of people participating in environmental challenges, earning green points, and creating real change.",
+      "Desc2": "Each sapling planted today is a significant step toward clean air and a sustainable future.",
+      "Desc3": "Keeping oceans free of plastic waste protects biodiversity and the long-term survival of our entire planet.",
+      "ExploreBtn": "Explore missions",
+      "JoinBtn": "Join now",
+      "MemberText": "Green members",
+      "ChallengeText": "Green challenges",
+      "TrashText": "Trash collected"
+    },
+    "howItWorks": {
+      "Header": "How it works",
+      "Subtitle": "Start your green lifestyle in just 3 steps",
+      "step1Title": "Register an account",
+      "step1Desc": "Join the Green Flag community for free and start building sustainable living habits.",
+      "step2Title": "Do environmental tasks",
+      "step2Desc": "Choose daily challenges like picking up plastic trash, planting trees, watching educational videos to earn EcoCoins.",
+      "step3Title": "Exchange for attractive gifts",
+      "step3Desc": "Use your accumulated EcoCoins in the exchange market to get eco-friendly products."
+    },
+    "trust": {
+      "globalTitle": "Global Impact",
+      "globalDesc": "Every small contribution adds up, addressing global climate change issues.",
+      "safetyTitle": "Transparent & Secure",
+      "safetyDesc": "Mission approval and EcoCoin transactions happen automatically and transparently via the system audit board.",
+      "qualityTitle": "Quality Products",
+      "qualityDesc": "Gifts in the exchange market are strictly checked for organic origin and eco-friendly certification."
+    },
+    "features": {
+      "missionBadge": "Green Missions",
+      "missionH2": "Complete missions, accumulate green points",
+      "missionP": "Discover a list of practical daily actions. From picking up plastic, planting trees, saving water/electricity to watching educational videos. Complete challenges to receive EcoCoins and help build a cleaner planet!",
+      "missionBtn": "Explore missions",
+      "marketBadge": "Sustainable Rewards",
+      "marketH2": "Exchange Market - Turn points into real action",
+      "marketP": "Receive worthy rewards for your efforts. Use EcoCoins to redeem sustainable green products, biodegradable straws, compostable bags, or useful green vouchers from Green Flag's partners.",
+      "marketBtn": "Explore market",
+      "communityBadge": "Social Network",
+      "communityH2": "Connect Community - Spread civilized habits",
+      "communityP": "Share photos of your environmental activities on the community feed. Discuss, interact, like, and comment to cheer everyone's actions to light up the most positive messages together!",
+      "communityBtn": "Join the community now"
+    }
+  },
+  "common": {
+    "language": "Language",
+    "current": "Current",
+    "changeLanguage": "Change language",
+    "selectLanguage": "Select language",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  }
+}

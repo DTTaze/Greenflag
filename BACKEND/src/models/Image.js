@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const { IMAGE_REFERENCE_TYPES } = require("../constants/imageTypes");
 
 module.exports = (sequelize, DataTypes) => {
   class Image extends Model {
@@ -21,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       reference_type: {
-        type: DataTypes.ENUM("avatar", "taskSubmit", "item", "product", "event"),
+        type: DataTypes.ENUM(...Object.values(IMAGE_REFERENCE_TYPES)),
         allowNull: false,
       },
     },

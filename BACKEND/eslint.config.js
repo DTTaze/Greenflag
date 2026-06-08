@@ -20,6 +20,7 @@ module.exports = [
         // Node environment globals
         process: "readonly",
         __dirname: "readonly",
+        __filename: "readonly",
         module: "readonly",
         require: "readonly",
         exports: "readonly",

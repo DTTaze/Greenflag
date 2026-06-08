@@ -431,6 +431,51 @@ const QUEUE_NAMES = Object.freeze({
 module.exports = { QUEUE_NAMES };
 ```
 
+### 4.9 Magic Strings trong Sequelize Models — DataTypes.ENUM
+
+**Violation:** Hiện tại các Model đang định nghĩa các giá trị Enum trực tiếp bằng chuỗi cứng (ví dụ: `carrier`, `status`). Điều này gây khó khăn khi tái sử dụng logic trong Zod DTOs và Services, dẫn đến nguy cơ sai lệch dữ liệu nếu có sự thay đổi.
+
+**Ví dụ:** DeliveryOrder Model
+
+```javascript
+// ❌ BEFORE — src/models/deliveryOrder.js
+carrier: {
+  type: DataTypes.ENUM("ghn", "ghtk", "grab"),
+  allowNull: false,
+  defaultValue: "ghn",
+}
+```
+
+```javascript
+// ✅ AFTER — Trích xuất thành Constant dùng chung cho cả Model và DTO
+
+// --- src/constants/carriers.js ---
+const CARRIER_TYPES = Object.freeze({
+  GHN: "ghn",
+  GHTK: "ghtk",
+  GRAB: "grab",
+});
+module.exports = { CARRIER_TYPES };
+
+// --- src/models/deliveryOrder.js ---
+const { CARRIER_TYPES } = require("../constants/carriers");
+
+carrier: {
+  // Rải object values thành array cho Sequelize
+  type: DataTypes.ENUM(...Object.values(CARRIER_TYPES)),
+  allowNull: false,
+  defaultValue: CARRIER_TYPES.GHN,
+}
+
+// --- Tái sử dụng trong src/dtos/deliveryDto.js ---
+const { z } = require("zod");
+const { CARRIER_TYPES } = require("../constants/carriers");
+
+const createDeliveryDto = z.object({
+  carrier: z.enum(Object.values(CARRIER_TYPES)),
+});
+```
+
 ---
 
 ## 5. Pillar 3 — DRY Violations & Duplicated Logic
@@ -806,17 +851,16 @@ All 429 responses use raw `res.status(429).json(...)` with a different response 
 
 ## 8. Pillar 6 — Background Jobs & Cron
 
-### 8.1 Current State
+### 8.1 Current State & Refactoring Direction
 
 - Queues: `src/queues/purchaseQueue.js`, `src/queues/orderSyncQueue.js`
 - Workers: `src/workers/purchaseWorker.js`, `src/workers/orderSyncWorker.js`
 - Cron: `src/cron/syncGHNOrdersCron.js`
-- Bull Board: `src/services/bullboard.js`
 
-**Issues:**
-1. Queue name strings are duplicated between queue definitions and workers.
-2. Redis connection config is imported independently in each file.
-3. `bullboard.js` lives in `services/` but is infrastructure.
+**Refactoring Direction:**
+1. Chỉ tập trung vào `bullmq` và `redis`.
+2. Gỡ bỏ hoàn toàn bảng điều khiển UI (Bull Board) để tinh gọn server, giảm bề mặt tấn công (attack surface) và bớt dependency thừa.
+3. Đồng bộ hóa việc nhập kết nối Redis và loại bỏ chuỗi cứng trùng lặp tên Queue.
 
 ### 8.2 Proposed Centralized Architecture
 
@@ -875,6 +919,14 @@ module.exports = worker;
 - [x] Create `src/middlewares/errorHandler.js`
 - [x] Create `src/middlewares/validate.js`
 
+### Phase 0.2 — Clean up Dependencies (Gỡ bỏ Bull Board)
+- [x] Chạy lệnh gỡ bỏ các thư viện Bull Board:
+  ```bash
+  npm uninstall @bull-board/api @bull-board/express @bull-board/ui
+  ```
+- [x] Xóa file `src/services/bullboard.js` (nếu còn)
+- [x] Xóa route `/api/admin/queues` gắn với Bull Board trong file `server.js` hoặc `routes/index.js`
+
 ### Phase 1 — Error Handling & Response Standardization
 - [x] Add `require("express-async-errors")` at top of `server.js`
 - [x] Register `errorHandler` as last middleware in `server.js`
@@ -883,9 +935,12 @@ module.exports = worker;
 - [x] Fix `deliveryOrderController.js`, `checkPermission.js`, `rateLimit.js` to use `res.success/res.error`
 
 ### Phase 2 — Constants & Enums
-- [ ] Replace all magic strings in services with constants
-- [ ] Replace all magic numbers (TTL, salt, etc.) with named constants
-- [ ] Replace queue name strings with `QUEUE_NAMES`
+- [x] Replace all magic strings in services with constants
+- [x] Replace all magic numbers (TTL, salt, etc.) with named constants
+- [x] Replace queue name strings with `QUEUE_NAMES`
+- [x] Quét toàn bộ thư mục `src/models/`, tìm các field có type là `DataTypes.ENUM`
+- [x] Tạo file Enum tương ứng trong `src/constants/` (vd: carriers.js, taskVisibility.js)
+- [x] Thay thế mảng string cứng trong Model bằng cú pháp `...Object.values(CONSTANT_NAME)`
 
 ### Phase 3 — DRY Refactoring
 - [ ] Extract cookie helper and use in `userController.js`

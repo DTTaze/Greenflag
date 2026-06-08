@@ -1,5 +1,6 @@
 const { Worker } = require("bullmq");
 const db = require("../models/index");
+const { QUEUE_NAMES } = require("../constants/queueNames");
 const { sequelize } = db;
 const Item = db.Item;
 const User = db.User;
@@ -15,7 +16,7 @@ require("dotenv").config();
 const publisher = new Redis(redis);
 
 const worker = new Worker(
-  "purchase",
+  QUEUE_NAMES.PURCHASE,
   async (job) => {
     const { receiver_information_id, user_id, item_id, quantity, name } = job.data;
 

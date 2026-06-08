@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const { RECEIVER_ACCOUNT_TYPE } = require("../constants/receiverType");
 
 module.exports = (sequelize, DataTypes) => {
   class ReceiverInformation extends Model {
@@ -56,9 +57,9 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       account_type: {
-        type: DataTypes.ENUM("home", "office"),
+        type: DataTypes.ENUM(...Object.values(RECEIVER_ACCOUNT_TYPE)),
         allowNull: false,
-        defaultValue: "home",
+        defaultValue: RECEIVER_ACCOUNT_TYPE.HOME,
       },
       is_default: {
         type: DataTypes.BOOLEAN,

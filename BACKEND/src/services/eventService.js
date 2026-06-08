@@ -8,6 +8,7 @@ const { uploadImages, deleteImages } = require("./imageService");
 const cloudinary = require("../config/cloudinary");
 const { getCache, setCache, deleteCache } = require("../utils/cache");
 const { CACHE_KEYS } = require("../constants/cacheKeys");
+const { EVENT_STATUS } = require("../constants/eventStatus");
 const { getImageById } = require("./imageService");
 const { getUserByID } = require("./userService");
 const { get } = require("../routes/eventRoutes");
@@ -439,7 +440,7 @@ const updateEvent = async (event_id, Data, images) => {
     }
 
     if (status) {
-      const validStatuses = ["upcoming", "ongoing", "finished"];
+      const validStatuses = Object.values(EVENT_STATUS);
       if (!validStatuses.includes(status)) {
         throw new BadRequestError("Invalid status value");
       }

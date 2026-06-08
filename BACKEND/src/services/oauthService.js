@@ -6,6 +6,7 @@ const Role = db.Role;
 const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(10);
 const { redisClient } = require("../config/configRedis");
+const { CACHE_TTL } = require("../constants/cacheKeys");
 const NotFoundError = require("../errors/NotFoundError");
 const BadRequestError = require("../errors/BadRequestError");
 
@@ -84,7 +85,7 @@ const sendResetEmail = async (Email) => {
 const resetPassword = async (token, newPassword) => {
   const decoded = jwt.verify(token, process.env.JWT_AT_SECRET);
   const email = decoded.email;
-  const emailcache = await redisClient.get(`reset:email:${email}`, "EX", 60 * 60);
+  const emailcache = await redisClient.get(`reset:email:${email}`, "EX", CACHE_TTL.ONE_HOUR);
   const time_to_live = await redisClient.ttl(`reset:email:${email}`);
   if (emailcache) {
     console.log(`Email can be reseted only after ${time_to_live}`);
@@ -103,7 +104,7 @@ const resetPassword = async (token, newPassword) => {
     password: hashedPassword,
   });
 
-  await redisClient.set(`reset:email:${email}`, email, "EX", 60 * 60);
+  await redisClient.set(`reset:email:${email}`, email, "EX", CACHE_TTL.ONE_HOUR);
   return { email };
 };
 

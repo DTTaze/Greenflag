@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const { DELIVERY_ORDER_STATUS } = require("../constants/deliveryStatus");
 
 module.exports = (sequelize, DataTypes) => {
   class DeliveryOrder extends Model {
@@ -56,32 +57,9 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       status: {
-        type: DataTypes.ENUM(
-          "ready_to_pick", // Chờ lấy hàng
-          "picking", // Đang lấy hàng
-          "money_collect_picking", // Đang tương tác với người gửi
-          "picked", // Lấy hàng thành công
-          "storing", // Nhập kho
-          "transporting", // Đang trung chuyển
-          "sorting", // Đang phân loại
-          "delivering", // Đang giao hàng
-          "delivered", // Giao hàng thành công
-          "money_collect_delivering", // Đang tương tác với người nhận
-          "delivery_fail", // Giao hàng không thành công
-          "waiting_to_return", // Chờ xác nhận giao lại
-          "return", // Chuyển hoàn
-          "return_transporting", // Đang trung chuyển hàng hoàn
-          "return_sorting", // Đang phân loại hàng hoàn
-          "returning", // Đang hoàn hàng
-          "return_fail", // Hoàn hàng không thành công
-          "returned", // Hoàn hàng thành công
-          "cancel", // Đơn huỷ
-          "exception", // Hàng ngoại lệ
-          "lost", // Hàng thất lạc
-          "damage", // Hàng hư hỏng
-        ),
+        type: DataTypes.ENUM(...Object.values(DELIVERY_ORDER_STATUS)),
         allowNull: false,
-        defaultValue: "ready_to_pick",
+        defaultValue: DELIVERY_ORDER_STATUS.READY_TO_PICK,
       },
       to_name: {
         type: DataTypes.STRING,

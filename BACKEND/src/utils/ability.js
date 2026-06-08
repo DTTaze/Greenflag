@@ -46,6 +46,6 @@ export const defineAbilitiesFor = async (user) => {
 
     return build();
   } catch (error) {
-    throw new Error(`Error defining permissions: ${error.message}`);
+    throw new Error(`Error defining permissions: ${error.message}`, { cause: error });
   }
 };

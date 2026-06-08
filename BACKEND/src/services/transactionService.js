@@ -1,6 +1,8 @@
 const db = require("../models/index.js");
 const { getCache, setCache, deleteCache } = require("../utils/cache");
 const { CACHE_KEYS } = require("../constants/cacheKeys");
+const { TRANSACTION_STATUS } = require("../constants/transactionStatus");
+const { ITEM_STATUS } = require("../constants/itemStatus");
 const Transaction = db.Transaction;
 const ReceiverInformation = db.ReceiverInformation;
 const Item = db.Item;
@@ -36,7 +38,7 @@ const createTransaction = async (transactionData) => {
     const finalQuantity = isNaN(parsedQuantity) || parsedQuantity <= 0 ? 1 : parsedQuantity;
 
     // Nếu `status` không hợp lệ, mặc định là "pending"
-    const finalStatus = status?.trim() ? status : "pending";
+    const finalStatus = status?.trim() ? status : TRANSACTION_STATUS.PENDING;
 
     const item = await Item.findOne({ where: { id: parsedItemId } });
     if (!item) {
@@ -249,17 +251,17 @@ const cancelTransactionById = async (id) => {
     if (!transaction) {
       throw new NotFoundError("Transaction not found");
     }
-    if (transaction.status === "cancelled") {
+    if (transaction.status === TRANSACTION_STATUS.CANCELLED) {
       throw new BadRequestError("Transaction is already cancelled");
     }
-    if (transaction.status === "accepted") {
+    if (transaction.status === TRANSACTION_STATUS.ACCEPTED) {
       throw new BadRequestError("Cannot cancel accepted transaction");
     }
     if (!transaction.item_snapshot || typeof transaction.item_snapshot.price !== "number") {
       throw new BadRequestError("Invalid transaction price");
     }
 
-    transaction.status = "cancelled";
+    transaction.status = TRANSACTION_STATUS.CANCELLED;
     await transaction.save({ transaction: t });
     await deleteCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(id));
 
@@ -279,7 +281,7 @@ const cancelTransactionById = async (id) => {
     const originalStatus = item.status;
 
     item.stock += transaction.quantity;
-    item.status = item.stock > 0 ? "available" : "sold_out";
+    item.status = item.stock > 0 ? ITEM_STATUS.AVAILABLE : ITEM_STATUS.SOLD_OUT;
 
     if (originalStock !== item.stock || originalStatus !== item.status) {
       emitStockUpdate(item.id, item.stock, {
@@ -362,7 +364,13 @@ const makeDecision = async (transaction_id, decision) => {
   if (!transaction_id || !decision) {
     throw new BadRequestError("Missing parameters");
   }
-  if (!["accepted", "rejected", "pending"].includes(decision)) {
+  if (
+    ![
+      TRANSACTION_STATUS.ACCEPTED,
+      TRANSACTION_STATUS.REJECTED,
+      TRANSACTION_STATUS.PENDING,
+    ].includes(decision)
+  ) {
     throw new BadRequestError("Wrong new status to make decision");
   }
 
@@ -377,7 +385,10 @@ const makeDecision = async (transaction_id, decision) => {
     if (transaction.status === decision) {
       throw new BadRequestError("Transaction is already in this status");
     }
-    if (transaction.status === "accepted" && decision === "pending") {
+    if (
+      transaction.status === TRANSACTION_STATUS.ACCEPTED &&
+      decision === TRANSACTION_STATUS.PENDING
+    ) {
       throw new BadRequestError("Cannot revert accepted transaction to pending");
     }
     if (!transaction.item_snapshot || typeof transaction.item_snapshot.price !== "number") {
@@ -392,7 +403,7 @@ const makeDecision = async (transaction_id, decision) => {
       transaction: t,
     });
 
-    if (decision === "rejected") {
+    if (decision === TRANSACTION_STATUS.REJECTED) {
       const data = await getUserByID(transaction.buyer_id);
       if (!data || !data.coins.id) {
         throw new BadRequestError("Invalid user or coin_id");
@@ -403,7 +414,7 @@ const makeDecision = async (transaction_id, decision) => {
       const originalStock = item.stock;
       const originalStatus = item.status;
       item.stock += transaction.dataValues.quantity;
-      item.status = item.stock > 0 ? "available" : "sold_out";
+      item.status = item.stock > 0 ? ITEM_STATUS.AVAILABLE : ITEM_STATUS.SOLD_OUT;
       if (originalStock !== item.stock || originalStatus !== item.status) {
         emitStockUpdate(item.id, item.stock, {
           name: item.name,

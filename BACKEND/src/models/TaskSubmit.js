@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const { TASK_SUBMIT_STATUS } = require("../constants/taskStatus");
 
 module.exports = (sequelize, DataTypes) => {
   class TaskSubmit extends Model {
@@ -37,8 +38,8 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       status: {
-        type: DataTypes.ENUM("pending", "approved", "rejected"),
-        defaultValue: "pending",
+        type: DataTypes.ENUM(...Object.values(TASK_SUBMIT_STATUS)),
+        defaultValue: TASK_SUBMIT_STATUS.PENDING,
       },
       submitted_at: {
         type: DataTypes.DATE,

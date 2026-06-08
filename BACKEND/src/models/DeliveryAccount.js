@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const { CARRIER_TYPES } = require("../constants/carriers");
 
 module.exports = (sequelize, DataTypes) => {
   class DeliveryAccount extends Model {
@@ -35,9 +36,9 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       carrier: {
-        type: DataTypes.ENUM("ghn", "ghtk", "grab"),
+        type: DataTypes.ENUM(...Object.values(CARRIER_TYPES)),
         allowNull: false,
-        defaultValue: "ghn",
+        defaultValue: CARRIER_TYPES.GHN,
       },
       token: {
         type: DataTypes.TEXT,

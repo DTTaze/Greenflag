@@ -75,4 +75,11 @@ const CACHE_KEYS = {
   },
 };
 
-module.exports = { CACHE_KEYS };
+const CACHE_TTL = Object.freeze({
+  DEFAULT: 60 * 60, // 1 hour
+  ONE_HOUR: 60 * 60, // 1 hour
+  FIVE_MINUTES: 300, // 5 minutes
+  ONE_DAY: 60 * 60 * 24, // 24 hours
+});
+
+module.exports = { CACHE_KEYS, CACHE_TTL };

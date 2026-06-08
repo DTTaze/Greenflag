@@ -6,7 +6,9 @@ const Transaction = db.Transaction;
 const ReceiverInformation = db.ReceiverInformation;
 const User = db.User;
 const { getCache, setCache, deleteCache } = require("../utils/cache");
-const { CACHE_KEYS } = require("../constants/cacheKeys");
+const { CACHE_KEYS, CACHE_TTL } = require("../constants/cacheKeys");
+const { DELIVERY_ORDER_STATUS } = require("../constants/deliveryStatus");
+const { TRANSACTION_STATUS } = require("../constants/transactionStatus");
 const BadRequestError = require("../errors/BadRequestError");
 const NotFoundError = require("../errors/NotFoundError");
 const AppError = require("../errors/AppError");
@@ -160,7 +162,7 @@ const createDeliveryOrderFromTransaction = async (
     if (!transaction) {
       throw new NotFoundError("Transaction not found");
     }
-    if (transaction.status !== "accepted") {
+    if (transaction.status !== TRANSACTION_STATUS.ACCEPTED) {
       throw new BadRequestError("Transaction was not accepted");
     }
     if (!transaction.receiver_information) {
@@ -270,7 +272,7 @@ const cancelDeliveryOrder = async (order_code, token, shop_id, seller_id) => {
       { headers: buildHeaders(token, shop_id) },
     );
 
-    await DeliveryOrder.update({ status: "cancel" }, { where: { order_code } });
+    await DeliveryOrder.update({ status: DELIVERY_ORDER_STATUS.CANCEL }, { where: { order_code } });
 
     if (seller_id) {
       await deleteCache(CACHE_KEYS.COMMERCE.DELIVERY_ORDERS_BY_SELLER_ID(seller_id));
@@ -330,7 +332,7 @@ const getDeliveryOrdersBySeller = async (seller_id) => {
       where: { seller_id: seller_id },
     });
 
-    await setCache(cacheKey, orders, 60 * 60);
+    await setCache(cacheKey, orders, CACHE_TTL.ONE_HOUR);
     return orders;
   } catch (err) {
     console.error("DB Error (getOrdersBySeller):", err);
@@ -352,7 +354,7 @@ const getDeliveryOrdersByBuyer = async (buyer_id) => {
       where: { buyer_id: buyer_id },
     });
 
-    await setCache(cacheKey, orders, 60 * 60);
+    await setCache(cacheKey, orders, CACHE_TTL.ONE_HOUR);
     return orders;
   } catch (err) {
     console.error("DB Error (getOrdersByBuyer):", err);

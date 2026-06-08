@@ -11,6 +11,7 @@ const cloudinary = require("cloudinary").v2;
 const { emitStockUpdate } = require("./socketService");
 const { getCache, setCache, deleteCache } = require("../utils/cache");
 const { CACHE_KEYS } = require("../constants/cacheKeys");
+const { ITEM_STATUS } = require("../constants/itemStatus");
 const BadRequestError = require("../errors/BadRequestError");
 const NotFoundError = require("../errors/NotFoundError");
 const AppError = require("../errors/AppError");
@@ -165,111 +166,63 @@ const getItemByIdUser = async (user_id) => {
 };
 
 const updateItem = async (id, data, images) => {
-  try {
-    let {
-      name,
-      price,
-      stock,
-      description,
-      status,
-      purchase_limit_per_day,
-      weight,
-      length,
-      width,
-      height,
-    } = data;
-    let item = await Item.findByPk(id);
-    if (!item) {
-      throw new NotFoundError("Item not found");
-    }
-
-    const originalStock = item.stock;
-    const originalStatus = item.status;
-
-    if (name) item.name = name;
-    if (purchase_limit_per_day !== undefined) {
-      item.purchase_limit_per_day = purchase_limit_per_day;
-    }
-    if (status) item.status = status;
-    if (description) item.description = description;
-    if (price !== undefined) item.price = price;
-
-    if (stock !== undefined) {
-      if (stock < 0) {
-        throw new BadRequestError("Stock cannot be negative");
-      }
-      item.stock = stock;
-    }
-    if (weight !== undefined) item.weight = weight;
-    if (length !== undefined) item.length = length;
-    if (width !== undefined) item.width = width;
-    if (height !== undefined) item.height = height;
-    // Nếu có thay đổi về stock hoặc status, emit sự kiện
-    if (originalStock !== item.stock || originalStatus !== item.status) {
-      emitStockUpdate(id, item.stock, {
-        name: item.name,
-        price: item.price,
-        status: item.status,
-      });
-    }
-
-    let uploadedImages = [];
-
-    if (images && images.length > 0) {
-      const existingImages = await Image.findAll({
-        where: {
-          reference_id: id,
-          reference_type: "item",
-        },
-      });
-      for (const image of existingImages) {
-        if (image.url) {
-          const publicId = image.url.split("/").pop().split(".")[0];
-          await cloudinary.uploader.destroy(`images/${publicId}`);
-        }
-        await image.destroy();
-      }
-
-      uploadedImages = await uploadImages(images, id, "item");
-      if (!uploadedImages || uploadedImages.length === 0) {
-        throw new AppError("Failed to upload images", 500);
-      }
-    }
-
-    await item.save();
-
-    //cache
-    await deleteCache(cacheItemId(item.id));
-    await deleteCache(cacheItemUserId(item.creator_id));
-    await deleteCache(cacheItemAll);
-
-    return {
-      ...item.toJSON(),
-      images: uploadedImages.map((image) => image.url),
-    };
-  } catch (e) {
-    throw e;
+  let {
+    name,
+    price,
+    stock,
+    description,
+    status,
+    purchase_limit_per_day,
+    weight,
+    length,
+    width,
+    height,
+  } = data;
+  let item = await Item.findByPk(id);
+  if (!item) {
+    throw new NotFoundError("Item not found");
   }
-};
 
-const deleteItem = async (item_id) => {
-  try {
-    if (!item_id) {
-      throw new BadRequestError("Item ID is required");
-    }
-    const item = await Item.findByPk(item_id);
-    if (!item) {
-      throw new NotFoundError("Item not found");
-    }
+  const originalStock = item.stock;
+  const originalStatus = item.status;
 
-    const images = await Image.findAll({
+  if (name) item.name = name;
+  if (purchase_limit_per_day !== undefined) {
+    item.purchase_limit_per_day = purchase_limit_per_day;
+  }
+  if (status) item.status = status;
+  if (description) item.description = description;
+  if (price !== undefined) item.price = price;
+
+  if (stock !== undefined) {
+    if (stock < 0) {
+      throw new BadRequestError("Stock cannot be negative");
+    }
+    item.stock = stock;
+  }
+  if (weight !== undefined) item.weight = weight;
+  if (length !== undefined) item.length = length;
+  if (width !== undefined) item.width = width;
+  if (height !== undefined) item.height = height;
+  // Nếu có thay đổi về stock hoặc status, emit sự kiện
+  if (originalStock !== item.stock || originalStatus !== item.status) {
+    emitStockUpdate(id, item.stock, {
+      name: item.name,
+      price: item.price,
+      status: item.status,
+    });
+  }
+
+  let uploadedImages = [];
+
+  if (images && images.length > 0) {
+    const existingImages = await Image.findAll({
       where: {
-        reference_id: item_id,
+        reference_id: id,
         reference_type: "item",
       },
     });
-
-    for (const image of images) {
+    for (const image of existingImages) {
       if (image.url) {
         const publicId = image.url.split("/").pop().split(".")[0];
         await cloudinary.uploader.destroy(`images/${publicId}`);
@@ -277,38 +230,74 @@ const deleteItem = async (item_id) => {
       await image.destroy();
     }
 
-    await item.destroy();
-    await deleteCache(cacheItemId(item_id));
-    await deleteCache(cacheItemAll);
-    await deleteCache(cacheItemUserId(item.creator_id));
-    await deleteCache(cacheItemPublicId(item.public_id));
-    return { message: "Item and associated images deleted successfully" };
-  } catch (e) {
-    throw e;
+    uploadedImages = await uploadImages(images, id, "item");
+    if (!uploadedImages || uploadedImages.length === 0) {
+      throw new AppError("Failed to upload images", 500);
+    }
   }
+
+  await item.save();
+
+  //cache
+  await deleteCache(cacheItemId(item.id));
+  await deleteCache(cacheItemUserId(item.creator_id));
+  await deleteCache(cacheItemAll);
+
+  return {
+    ...item.toJSON(),
+    images: uploadedImages.map((image) => image.url),
+  };
+};
+
+const deleteItem = async (item_id) => {
+  if (!item_id) {
+    throw new BadRequestError("Item ID is required");
+  }
+  const item = await Item.findByPk(item_id);
+  if (!item) {
+    throw new NotFoundError("Item not found");
+  }
+
+  const images = await Image.findAll({
+    where: {
+      reference_id: item_id,
+      reference_type: "item",
+    },
+  });
+
+  for (const image of images) {
+    if (image.url) {
+      const publicId = image.url.split("/").pop().split(".")[0];
+      await cloudinary.uploader.destroy(`images/${publicId}`);
+    }
+    await image.destroy();
+  }
+
+  await item.destroy();
+  await deleteCache(cacheItemId(item_id));
+  await deleteCache(cacheItemAll);
+  await deleteCache(cacheItemUserId(item.creator_id));
+  await deleteCache(cacheItemPublicId(item.public_id));
+  return { message: "Item and associated images deleted successfully" };
 };
 
 const purchaseItem = async (user_id, item_id, data) => {
-  try {
-    let { name, quantity, receiver_information_id } = data;
-    if (!user_id || !item_id || quantity <= 0) {
-      throw new BadRequestError("Invalid input data");
-    }
-    if (!data.to_name || !data.to_phone || !data.to_address) {
-      throw new BadRequestError("Missing receiver information");
-    }
-    const result = await purchaseQueue.add("purchase", {
-      receiver_information_id,
-      user_id,
-      item_id,
-      name,
-      quantity,
-    });
-
-    return { message: "Purchase request is in queue", job_id: result.id };
-  } catch (error) {
-    throw error;
+  let { name, quantity, receiver_information_id } = data;
+  if (!user_id || !item_id || quantity <= 0) {
+    throw new BadRequestError("Invalid input data");
   }
+  if (!data.to_name || !data.to_phone || !data.to_address) {
+    throw new BadRequestError("Missing receiver information");
+  }
+  const result = await purchaseQueue.add("purchase", {
+    receiver_information_id,
+    user_id,
+    item_id,
+    name,
+    quantity,
+  });
+
+  return { message: "Purchase request is in queue", job_id: result.id };
 };
 
 const getItemByPublicId = async (public_id) => {
@@ -334,75 +323,67 @@ const getItemByPublicId = async (public_id) => {
 };
 
 const updateItemByPublicId = async (public_id, data, images) => {
-  try {
-    let { name, price, stock, description, weight, length, width, height } = data;
-    let item = await Item.findOne({ where: { public_id } });
-    if (!item) {
-      throw new NotFoundError("Item not found");
-    }
-    if (name) item.name = name;
-    item.status = "pending";
-    if (description) item.description = description;
-    if (price !== undefined) item.price = price;
-
-    if (stock !== undefined) {
-      if (stock < 0) {
-        throw new BadRequestError("Stock cannot be negative");
-      }
-      item.stock = stock;
-    }
-    if (weight !== undefined) item.weight = weight;
-    if (length !== undefined) item.length = length;
-    if (width !== undefined) item.width = width;
-    if (height !== undefined) item.height = height;
-
-    let uploadedImages = [];
-
-    if (images && images.length > 0) {
-      const existingImages = await Image.findAll({
-        where: {
-          reference_id: item.id,
-          reference_type: "item",
-        },
-      });
-      for (const image of existingImages) {
-        if (image.url) {
-          const publicId = image.url.split("/").pop().split(".")[0];
-          await cloudinary.uploader.destroy(`images/${publicId}`);
-        }
-        await image.destroy();
-      }
-
-      uploadedImages = await uploadImages(images, item.id, "item");
-      if (!uploadedImages || uploadedImages.length === 0) {
-        throw new AppError("Failed to upload images", 500);
-      }
-    }
-
-    await item.save();
-    await deleteCache(cacheItemId(item.id));
-    await deleteCache(cacheItemAll);
-    await deleteCache(cacheItemUserId(item.creator_id));
-    return {
-      ...item.toJSON(),
-      images: uploadedImages.map((image) => image.url),
-    };
-  } catch (e) {
-    throw e;
+  let { name, price, stock, description, weight, length, width, height } = data;
+  let item = await Item.findOne({ where: { public_id } });
+  if (!item) {
+    throw new NotFoundError("Item not found");
   }
+  if (name) item.name = name;
+  item.status = ITEM_STATUS.PENDING;
+  if (description) item.description = description;
+  if (price !== undefined) item.price = price;
+
+  if (stock !== undefined) {
+    if (stock < 0) {
+      throw new BadRequestError("Stock cannot be negative");
+    }
+    item.stock = stock;
+  }
+  if (weight !== undefined) item.weight = weight;
+  if (length !== undefined) item.length = length;
+  if (width !== undefined) item.width = width;
+  if (height !== undefined) item.height = height;
+
+  let uploadedImages = [];
+
+  if (images && images.length > 0) {
+    const existingImages = await Image.findAll({
+      where: {
+        reference_id: item.id,
+        reference_type: "item",
+      },
+    });
+    for (const image of existingImages) {
+      if (image.url) {
+        const publicId = image.url.split("/").pop().split(".")[0];
+        await cloudinary.uploader.destroy(`images/${publicId}`);
+      }
+      await image.destroy();
+    }
+
+    uploadedImages = await uploadImages(images, item.id, "item");
+    if (!uploadedImages || uploadedImages.length === 0) {
+      throw new AppError("Failed to upload images", 500);
+    }
+  }
+
+  await item.save();
+  await deleteCache(cacheItemId(item.id));
+  await deleteCache(cacheItemAll);
+  await deleteCache(cacheItemUserId(item.creator_id));
+  return {
+    ...item.toJSON(),
+    images: uploadedImages.map((image) => image.url),
+  };
 };
 
 const deleteItemByPublicId = async (public_id) => {
-  try {
-    const item = await Item.findOne({ where: { public_id } });
-    if (!item) {
-      throw new NotFoundError("Item not found");
-    }
-
-    return await deleteItem(item.id);
-  } catch (e) {
-    throw e;
+  const item = await Item.findOne({ where: { public_id } });
+  if (!item) {
+    throw new NotFoundError("Item not found");
   }
+
+  return await deleteItem(item.id);
 };
 
 module.exports = {

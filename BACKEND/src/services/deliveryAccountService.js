@@ -1,7 +1,7 @@
 const db = require("../models");
 const DeliveryAccount = db.DeliveryAccount;
 const { getCache, setCache, deleteCache } = require("../utils/cache");
-const { CACHE_KEYS } = require("../constants/cacheKeys");
+const { CACHE_KEYS, CACHE_TTL } = require("../constants/cacheKeys");
 const NotFoundError = require("../errors/NotFoundError");
 
 const getAllDeliveryAccounts = async (userId) => {
@@ -15,7 +15,7 @@ const getAllDeliveryAccounts = async (userId) => {
   const accounts = await DeliveryAccount.findAll({
     where: { user_id: userId },
   });
-  await setCache(cacheKey, accounts, 60 * 60);
+  await setCache(cacheKey, accounts, CACHE_TTL.ONE_HOUR);
   return accounts;
 };
 
@@ -30,7 +30,7 @@ const getDeliveryAccountById = async (id) => {
   const account = await DeliveryAccount.findByPk(id);
   if (!account) throw new NotFoundError("Delivery account not found");
 
-  await setCache(cacheKey, account, 60 * 60);
+  await setCache(cacheKey, account, CACHE_TTL.ONE_HOUR);
   return account;
 };
 

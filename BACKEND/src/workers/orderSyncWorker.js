@@ -1,12 +1,13 @@
 // workers/orderSyncWorker.js
 const { Worker } = require("bullmq");
+const { QUEUE_NAMES } = require("../constants/queueNames");
 const db = require("../models");
 const { DeliveryOrder } = db;
 const { redis } = require("../config/configRedis");
 const { getDeliveryOrderInfo } = require("../services/deliveryOrderService");
 
 const worker = new Worker(
-  "orderSync",
+  QUEUE_NAMES.ORDER_SYNC,
   async (job) => {
     const { orderCode, deliveryAccountId } = job.data;
     const apiRes = await getDeliveryOrderInfo(

@@ -16,6 +16,7 @@ const { nanoid } = require("nanoid");
 const rateLimitService = require("./rateLimitService");
 const { getCache, setCache, deleteCache } = require("../utils/cache");
 const { CACHE_KEYS } = require("../constants/cacheKeys");
+const { ASSIGNABLE_ROLES, DEFAULT_ROLE_ID } = require("../constants/roles");
 
 const NotFoundError = require("../errors/NotFoundError");
 const BadRequestError = require("../errors/BadRequestError");
@@ -70,7 +71,7 @@ const createUser = async (data) => {
       if (!roledata) throw new NotFoundError("Role does not exist");
       await setCache(CACHE_KEYS.IDENTITY.ROLE_BY_ID(role_id), roledata);
     }
-    if (!["user", "customer"].includes(roledata.name.toLowerCase())) {
+    if (!ASSIGNABLE_ROLES.includes(roledata.name.toLowerCase())) {
       throw new ForbiddenError("Cannot assign this role");
     }
 
@@ -127,41 +128,37 @@ const createUser = async (data) => {
 };
 
 const loginUser = async (user, email, password, clientIP, userAgent) => {
-  try {
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      await rateLimitService.recordFailedLogin(email, clientIP, userAgent);
-      throw new UnauthorizedError("Invalid password");
-    }
-
-    const payload = {
-      id: user.id,
-      role_id: user.role_id,
-      role_name: user.roles?.name,
-      username: user.username,
-      email: user.email,
-      full_name: user.full_name,
-      phone_number: user.phone_number,
-      address: user.address,
-      coins_id: user.coins_id,
-      last_completed_task: user.last_completed_task,
-      streak: user.streak,
-      avatar_url: user.avatar_url,
-    };
-
-    const access_token = jwt.sign(payload, process.env.JWT_AT_SECRET, {
-      expiresIn: process.env.JWT_AT_EXPIRE,
-    });
-    const refresh_token = jwt.sign(payload, process.env.JWT_RF_SECRET, {
-      expiresIn: process.env.JWT_RF_EXPIRE,
-    });
-
-    await rateLimitService.resetLoginAttempts(email, clientIP, userAgent);
-
-    return { access_token, refresh_token, user: payload };
-  } catch (e) {
-    throw e;
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    await rateLimitService.recordFailedLogin(email, clientIP, userAgent);
+    throw new UnauthorizedError("Invalid password");
   }
+
+  const payload = {
+    id: user.id,
+    role_id: user.role_id,
+    role_name: user.roles?.name,
+    username: user.username,
+    email: user.email,
+    full_name: user.full_name,
+    phone_number: user.phone_number,
+    address: user.address,
+    coins_id: user.coins_id,
+    last_completed_task: user.last_completed_task,
+    streak: user.streak,
+    avatar_url: user.avatar_url,
+  };
+
+  const access_token = jwt.sign(payload, process.env.JWT_AT_SECRET, {
+    expiresIn: process.env.JWT_AT_EXPIRE,
+  });
+  const refresh_token = jwt.sign(payload, process.env.JWT_RF_SECRET, {
+    expiresIn: process.env.JWT_RF_EXPIRE,
+  });
+
+  await rateLimitService.resetLoginAttempts(email, clientIP, userAgent);
+
+  return { access_token, refresh_token, user: payload };
 };
 
 const refreshAccessToken = (refreshToken) => {
@@ -173,369 +170,323 @@ const refreshAccessToken = (refreshToken) => {
 };
 
 const getAllUsers = async () => {
-  try {
-    const users = await User.findAll({
-      attributes: { exclude: ["password"] },
-      include: [
-        { model: Role, as: "roles", attributes: ["id", "name"] },
-        { model: Coin, as: "coins", attributes: ["id", "amount"] },
-      ],
-    });
-    return users;
-  } catch (e) {
-    throw e;
-  }
+  const users = await User.findAll({
+    attributes: { exclude: ["password"] },
+    include: [
+      { model: Role, as: "roles", attributes: ["id", "name"] },
+      { model: Coin, as: "coins", attributes: ["id", "amount"] },
+    ],
+  });
+  return users;
 };
 
 const deleteUser = async (id) => {
-  try {
-    const user = await User.findOne({ where: { id } });
-    if (!user) throw new NotFoundError("User not found");
+  const user = await User.findOne({ where: { id } });
+  if (!user) throw new NotFoundError("User not found");
 
-    await deleteCache(CACHE_KEYS.IDENTITY.USER_BY_ID(id));
-    await deleteCache(CACHE_KEYS.IDENTITY.USER_BY_PUBLIC_ID(user.public_id));
+  await deleteCache(CACHE_KEYS.IDENTITY.USER_BY_ID(id));
+  await deleteCache(CACHE_KEYS.IDENTITY.USER_BY_PUBLIC_ID(user.public_id));
 
-    const rankDestroyed = await Rank.destroy({ where: { id: user.rank_id } });
-    if (rankDestroyed === 0) throw new NotFoundError("Rank not found");
+  const rankDestroyed = await Rank.destroy({ where: { id: user.rank_id } });
+  if (rankDestroyed === 0) throw new NotFoundError("Rank not found");
 
-    const coinDestroyed = await Coin.destroy({ where: { id: user.coins_id } });
-    if (coinDestroyed === 0) throw new NotFoundError("Coin not found");
+  const coinDestroyed = await Coin.destroy({ where: { id: user.coins_id } });
+  if (coinDestroyed === 0) throw new NotFoundError("Coin not found");
 
-    const userDestroyed = await User.destroy({ where: { id: user.id } });
-    if (userDestroyed === 0) throw new NotFoundError("User not found");
+  const userDestroyed = await User.destroy({ where: { id: user.id } });
+  if (userDestroyed === 0) throw new NotFoundError("User not found");
 
-    return { message: "User deleted successfully" };
-  } catch (e) {
-    throw e;
-  }
+  return { message: "User deleted successfully" };
 };
 
 const deleteUserByPublicID = async (public_id) => {
-  try {
-    const user_id = await getCache(CACHE_KEYS.IDENTITY.USER_BY_PUBLIC_ID(public_id));
-    if (user_id) await deleteCache(CACHE_KEYS.IDENTITY.USER_BY_ID(Number(user_id)));
-    await deleteCache(CACHE_KEYS.IDENTITY.USER_BY_PUBLIC_ID(public_id));
+  const user_id = await getCache(CACHE_KEYS.IDENTITY.USER_BY_PUBLIC_ID(public_id));
+  if (user_id) await deleteCache(CACHE_KEYS.IDENTITY.USER_BY_ID(Number(user_id)));
+  await deleteCache(CACHE_KEYS.IDENTITY.USER_BY_PUBLIC_ID(public_id));
 
-    const user = await User.findOne({ where: { public_id } });
-    if (!user) throw new NotFoundError("User not found");
+  const user = await User.findOne({ where: { public_id } });
+  if (!user) throw new NotFoundError("User not found");
 
-    const rankDestroyed = await Rank.destroy({ where: { id: user.rank_id } });
-    if (rankDestroyed === 0) throw new NotFoundError("Rank not found");
+  const rankDestroyed = await Rank.destroy({ where: { id: user.rank_id } });
+  if (rankDestroyed === 0) throw new NotFoundError("Rank not found");
 
-    const coinDestroyed = await Coin.destroy({ where: { id: user.coins_id } });
-    if (coinDestroyed === 0) throw new NotFoundError("Coin not found");
+  const coinDestroyed = await Coin.destroy({ where: { id: user.coins_id } });
+  if (coinDestroyed === 0) throw new NotFoundError("Coin not found");
 
-    const result = await User.destroy({ where: { id: user.id } });
-    if (result === 0) throw new NotFoundError("User not found");
+  const result = await User.destroy({ where: { id: user.id } });
+  if (result === 0) throw new NotFoundError("User not found");
 
-    return { message: "User deleted successfully" };
-  } catch (e) {
-    throw e;
-  }
+  return { message: "User deleted successfully" };
 };
 
 const getUserBycacheId = async (id) => {
-  try {
-    const cacheUser = await getCache(CACHE_KEYS.IDENTITY.USER_BY_ID(id));
-    if (!cacheUser) return null;
+  const cacheUser = await getCache(CACHE_KEYS.IDENTITY.USER_BY_ID(id));
+  if (!cacheUser) return null;
 
-    const data_user = cacheUser;
-    console.log("cacheUser:", cacheUser);
+  const data_user = cacheUser;
+  console.log("cacheUser:", cacheUser);
 
-    // Role
-    let dataRole = await getCache(CACHE_KEYS.IDENTITY.ROLE_BY_ID(data_user.role_id));
-    if (!dataRole) {
-      dataRole = await Role.findByPk(data_user.role_id, {
-        attributes: ["id", "name"],
-      });
-      if (dataRole) await setCache(CACHE_KEYS.IDENTITY.ROLE_BY_ID(data_user.role_id), dataRole);
-    }
-    if (!dataRole) throw new NotFoundError(`Role not found for role_id ${data_user.role_id}`);
-
-    // Coin
-    let dataCoin = await getCache(CACHE_KEYS.COMMERCE.COIN_BY_ID(data_user.coin_id));
-    if (!dataCoin) {
-      dataCoin = await Coin.findByPk(data_user.coin_id, {
-        attributes: ["id", "amount"],
-      });
-      if (dataCoin) await setCache(CACHE_KEYS.COMMERCE.COIN_BY_ID(data_user.coin_id), dataCoin);
-    }
-    if (!dataCoin) throw new NotFoundError(`Coin not found for coin_id ${data_user.coin_id}`);
-
-    // Rank
-    let dataRank = await getCache(CACHE_KEYS.IDENTITY.RANK_BY_ID(data_user.rank_id));
-    if (!dataRank) {
-      dataRank = await Rank.findByPk(data_user.rank_id, {
-        attributes: ["id", "amount", "order"],
-      });
-      if (dataRank) await setCache(CACHE_KEYS.IDENTITY.RANK_BY_ID(data_user.rank_id), dataRank);
-    }
-    if (!dataRank) throw new NotFoundError(`Rank not found for rank_id ${data_user.rank_id}`);
-
-    const user = {
-      id: data_user.id,
-      public_id: data_user.public_id,
-      avatar_url: data_user.avatar_url,
-      google_id: data_user.google_id,
-      email: data_user.email,
-      username: data_user.username,
-      full_name: data_user.full_name,
-      phone_number: data_user.phone_number,
-      address: data_user.address,
-      streak: data_user.streak,
-      last_completed_task: data_user.last_completed_task,
-      roles: dataRole,
-      coins: dataCoin,
-      ranks: dataRank,
-    };
-    return user;
-  } catch (e) {
-    console.error("Error in getUserBycacheId:", e);
-    throw e;
+  // Role
+  let dataRole = await getCache(CACHE_KEYS.IDENTITY.ROLE_BY_ID(data_user.role_id));
+  if (!dataRole) {
+    dataRole = await Role.findByPk(data_user.role_id, {
+      attributes: ["id", "name"],
+    });
+    if (dataRole) await setCache(CACHE_KEYS.IDENTITY.ROLE_BY_ID(data_user.role_id), dataRole);
   }
+  if (!dataRole) throw new NotFoundError(`Role not found for role_id ${data_user.role_id}`);
+
+  // Coin
+  let dataCoin = await getCache(CACHE_KEYS.COMMERCE.COIN_BY_ID(data_user.coin_id));
+  if (!dataCoin) {
+    dataCoin = await Coin.findByPk(data_user.coin_id, {
+      attributes: ["id", "amount"],
+    });
+    if (dataCoin) await setCache(CACHE_KEYS.COMMERCE.COIN_BY_ID(data_user.coin_id), dataCoin);
+  }
+  if (!dataCoin) throw new NotFoundError(`Coin not found for coin_id ${data_user.coin_id}`);
+
+  // Rank
+  let dataRank = await getCache(CACHE_KEYS.IDENTITY.RANK_BY_ID(data_user.rank_id));
+  if (!dataRank) {
+    dataRank = await Rank.findByPk(data_user.rank_id, {
+      attributes: ["id", "amount", "order"],
+    });
+    if (dataRank) await setCache(CACHE_KEYS.IDENTITY.RANK_BY_ID(data_user.rank_id), dataRank);
+  }
+  if (!dataRank) throw new NotFoundError(`Rank not found for rank_id ${data_user.rank_id}`);
+
+  const user = {
+    id: data_user.id,
+    public_id: data_user.public_id,
+    avatar_url: data_user.avatar_url,
+    google_id: data_user.google_id,
+    email: data_user.email,
+    username: data_user.username,
+    full_name: data_user.full_name,
+    phone_number: data_user.phone_number,
+    address: data_user.address,
+    streak: data_user.streak,
+    last_completed_task: data_user.last_completed_task,
+    roles: dataRole,
+    coins: dataCoin,
+    ranks: dataRank,
+  };
+  return user;
 };
 
 const getUserByID = async (id) => {
-  try {
-    const cacheUser = await getUserBycacheId(id);
-    if (cacheUser) return cacheUser;
+  const cacheUser = await getUserBycacheId(id);
+  if (cacheUser) return cacheUser;
 
-    const user = await User.findOne({
-      where: { id },
-      attributes: { exclude: ["password"] },
-      include: [
-        { model: Role, as: "roles", attributes: ["id", "name"] },
-        { model: Coin, as: "coins", attributes: ["id", "amount"] },
-        { model: Rank, as: "ranks", attributes: ["id", "amount", "order"] },
-      ],
-    });
-    if (!user) throw new NotFoundError("User not found");
-    delete user.password;
-    const userFormat = {
-      ...user.toJSON(),
-      role_id: user.roles?.id || null,
-      coin_id: user.coins?.id || null,
-      rank_id: user.ranks?.id || null,
-    };
-    delete userFormat.roles;
-    delete userFormat.coins;
-    delete userFormat.ranks;
-    await setUserCache(userFormat);
-    return user;
-  } catch (e) {
-    console.error("Error in getUserByID:", e);
-    throw e;
-  }
+  const user = await User.findOne({
+    where: { id },
+    attributes: { exclude: ["password"] },
+    include: [
+      { model: Role, as: "roles", attributes: ["id", "name"] },
+      { model: Coin, as: "coins", attributes: ["id", "amount"] },
+      { model: Rank, as: "ranks", attributes: ["id", "amount", "order"] },
+    ],
+  });
+  if (!user) throw new NotFoundError("User not found");
+  delete user.password;
+  const userFormat = {
+    ...user.toJSON(),
+    role_id: user.roles?.id || null,
+    coin_id: user.coins?.id || null,
+    rank_id: user.ranks?.id || null,
+  };
+  delete userFormat.roles;
+  delete userFormat.coins;
+  delete userFormat.ranks;
+  await setUserCache(userFormat);
+  return user;
 };
 
 const getUserByPublicID = async (public_id) => {
-  try {
-    const cacheUserPublic = await getCache(CACHE_KEYS.IDENTITY.USER_BY_PUBLIC_ID(public_id));
-    if (cacheUserPublic) {
-      const cacheUser = await getUserBycacheId(Number(cacheUserPublic));
-      if (cacheUser) return cacheUser;
-    }
-
-    const user = await User.findOne({
-      where: { public_id },
-      attributes: { exclude: ["password"] },
-      include: [
-        { model: Role, as: "roles", attributes: ["id", "name"] },
-        { model: Coin, as: "coins", attributes: ["id", "amount"] },
-        { model: Rank, as: "ranks", attributes: ["id", "amount", "order"] },
-      ],
-    });
-    if (!user) throw new NotFoundError("User not found");
-
-    await setUserCache(user);
-    return user;
-  } catch (e) {
-    throw e;
+  const cacheUserPublic = await getCache(CACHE_KEYS.IDENTITY.USER_BY_PUBLIC_ID(public_id));
+  if (cacheUserPublic) {
+    const cacheUser = await getUserBycacheId(Number(cacheUserPublic));
+    if (cacheUser) return cacheUser;
   }
+
+  const user = await User.findOne({
+    where: { public_id },
+    attributes: { exclude: ["password"] },
+    include: [
+      { model: Role, as: "roles", attributes: ["id", "name"] },
+      { model: Coin, as: "coins", attributes: ["id", "amount"] },
+      { model: Rank, as: "ranks", attributes: ["id", "amount", "order"] },
+    ],
+  });
+  if (!user) throw new NotFoundError("User not found");
+
+  await setUserCache(user);
+  return user;
 };
 
 const updateUser = async (user, data) => {
-  try {
-    let { full_name, username, phone_number, email } = data;
+  let { full_name, username, phone_number, email } = data;
 
-    if (username !== undefined) {
-      username = removeSpecialChars(username);
-      user.username = username;
-    }
-
-    if (email !== undefined) {
-      const existingUser = await User.findOne({
-        where: {
-          email,
-          id: { [Op.ne]: user.id },
-        },
-      });
-      if (existingUser) {
-        throw new ConflictError("Email is already used by another user");
-      }
-      user.email = email;
-    }
-
-    if (full_name !== undefined) {
-      full_name = removeSpecialChars(full_name);
-      user.full_name = full_name;
-    }
-
-    if (phone_number !== undefined) {
-      user.phone_number = phone_number;
-    }
-
-    await user.save();
-
-    const user_id = user.id;
-
-    const coindata = await Coin.findOne({ where: { user_id } });
-    if (!coindata) throw new NotFoundError("Coin does not exist");
-
-    const roledata = await Role.findByPk(user.role_id);
-    if (!roledata) throw new NotFoundError("Role does not exist");
-
-    const rankdata = await Rank.findOne({ where: { user_id } });
-    if (!rankdata) throw new NotFoundError("Rank does not exist");
-
-    const updatedUser = {
-      ...user.toJSON(),
-      coins: coindata,
-      roles: roledata,
-      ranks: rankdata,
-    };
-
-    await deleteCacheAll(user.id, user.public_id);
-    return updatedUser;
-  } catch (e) {
-    throw e;
+  if (username !== undefined) {
+    username = removeSpecialChars(username);
+    user.username = username;
   }
+
+  if (email !== undefined) {
+    const existingUser = await User.findOne({
+      where: {
+        email,
+        id: { [Op.ne]: user.id },
+      },
+    });
+    if (existingUser) {
+      throw new ConflictError("Email is already used by another user");
+    }
+    user.email = email;
+  }
+
+  if (full_name !== undefined) {
+    full_name = removeSpecialChars(full_name);
+    user.full_name = full_name;
+  }
+
+  if (phone_number !== undefined) {
+    user.phone_number = phone_number;
+  }
+
+  await user.save();
+
+  const user_id = user.id;
+
+  const coindata = await Coin.findOne({ where: { user_id } });
+  if (!coindata) throw new NotFoundError("Coin does not exist");
+
+  const roledata = await Role.findByPk(user.role_id);
+  if (!roledata) throw new NotFoundError("Role does not exist");
+
+  const rankdata = await Rank.findOne({ where: { user_id } });
+  if (!rankdata) throw new NotFoundError("Rank does not exist");
+
+  const updatedUser = {
+    ...user.toJSON(),
+    coins: coindata,
+    roles: roledata,
+    ranks: rankdata,
+  };
+
+  await deleteCacheAll(user.id, user.public_id);
+  return updatedUser;
 };
 
 const updateUserById = async (id, data) => {
-  try {
-    let user = await User.findOne({ where: { id } });
-    if (!user) throw new NotFoundError("User not found");
-    return await updateUser(user, data);
-  } catch (e) {
-    throw e;
-  }
+  let user = await User.findOne({ where: { id } });
+  if (!user) throw new NotFoundError("User not found");
+  return await updateUser(user, data);
 };
 
 const updateUserByPublicID = async (public_id, data) => {
-  try {
-    const user = await User.findOne({ where: { public_id } });
-    if (!user) throw new NotFoundError("User not found");
-    return await updateUser(user, data);
-  } catch (e) {
-    throw e;
-  }
+  const user = await User.findOne({ where: { public_id } });
+  if (!user) throw new NotFoundError("User not found");
+  return await updateUser(user, data);
 };
 
 const findOrCreateUser = async (profile) => {
-  try {
-    const existingUser = await User.findOne({
-      where: { email: profile.emails[0].value },
-      include: [
-        { model: Role, as: "roles" },
-        { model: Coin, as: "coins" },
-        { model: Rank, as: "ranks" },
-      ],
-    });
+  const existingUser = await User.findOne({
+    where: { email: profile.emails[0].value },
+    include: [
+      { model: Role, as: "roles" },
+      { model: Coin, as: "coins" },
+      { model: Rank, as: "ranks" },
+    ],
+  });
 
-    if (existingUser) {
-      await setUserCache(existingUser);
-      return existingUser;
-    }
-
-    const maxOrderRank = await Rank.findOne({ order: [["order", "DESC"]] });
-    const newOrder = maxOrderRank ? maxOrderRank.order + 1 : 1;
-    const newRank = await Rank.create({
-      amount: 0,
-      order: newOrder,
-      user_id: null,
-    });
-
-    const name = removeSpecialChars(profile.displayName);
-    const newUser = await User.create({
-      role_id: 2,
-      rank_id: newRank.id,
-      public_id: nanoid(),
-      google_id: profile.id,
-      email: profile.emails[0].value,
-      username: name,
-      full_name: name,
-      password: null,
-    });
-
-    await newRank.update({ user_id: newUser.id });
-
-    const newCoin = await Coin.create({
-      amount: 0,
-      user_id: newUser.id,
-    });
-
-    const roledata = await Role.findByPk(2);
-
-    const userWithIncludes = {
-      ...newUser.toJSON(),
-      role_id: 2,
-      coin_id: newCoin.id,
-      rank_id: newRank.id,
-      roles: roledata,
-      coins: newCoin,
-      ranks: newRank,
-    };
-    await deleteCacheAll(newUser.id, newUser.public_id);
-    await setUserCache(userWithIncludes);
-
-    //delete password
-    delete newUser.password;
-    return newUser;
-  } catch (e) {
-    throw e;
+  if (existingUser) {
+    await setUserCache(existingUser);
+    return existingUser;
   }
+
+  const maxOrderRank = await Rank.findOne({ order: [["order", "DESC"]] });
+  const newOrder = maxOrderRank ? maxOrderRank.order + 1 : 1;
+  const newRank = await Rank.create({
+    amount: 0,
+    order: newOrder,
+    user_id: null,
+  });
+
+  const name = removeSpecialChars(profile.displayName);
+  const newUser = await User.create({
+    role_id: DEFAULT_ROLE_ID,
+    rank_id: newRank.id,
+    public_id: nanoid(),
+    google_id: profile.id,
+    email: profile.emails[0].value,
+    username: name,
+    full_name: name,
+    password: null,
+  });
+
+  await newRank.update({ user_id: newUser.id });
+
+  const newCoin = await Coin.create({
+    amount: 0,
+    user_id: newUser.id,
+  });
+
+  const roledata = await Role.findByPk(DEFAULT_ROLE_ID);
+
+  const userWithIncludes = {
+    ...newUser.toJSON(),
+    role_id: DEFAULT_ROLE_ID,
+    coin_id: newCoin.id,
+    rank_id: newRank.id,
+    roles: roledata,
+    coins: newCoin,
+    ranks: newRank,
+  };
+  await deleteCacheAll(newUser.id, newUser.public_id);
+  await setUserCache(userWithIncludes);
+
+  //delete password
+  delete newUser.password;
+  return newUser;
 };
 
 const getAllTasksById = async (user_id) => {
-  try {
-    if (!user_id) throw new BadRequestError("User ID is required");
+  if (!user_id) throw new BadRequestError("User ID is required");
 
-    const cacheKey = CACHE_KEYS.MISSION.TASKS_BY_USER_ID(user_id);
-    const taskUserIds = await getCache(cacheKey);
-    const result = [];
+  const cacheKey = CACHE_KEYS.MISSION.TASKS_BY_USER_ID(user_id);
+  const taskUserIds = await getCache(cacheKey);
+  const result = [];
 
-    if (Array.isArray(taskUserIds) && taskUserIds.length > 0) {
-      for (const id of taskUserIds) {
-        let taskUser = await getCache(CACHE_KEYS.MISSION.USER_TASK(id));
-        if (!taskUser) {
-          taskUser = await TaskUser.findOne({
-            where: { id },
-            include: [{ model: Task, as: "tasks", required: true }],
-          });
-          if (taskUser) await setCache(CACHE_KEYS.MISSION.USER_TASK(id), taskUser);
-        }
-        if (taskUser) result.push(taskUser);
+  if (Array.isArray(taskUserIds) && taskUserIds.length > 0) {
+    for (const id of taskUserIds) {
+      let taskUser = await getCache(CACHE_KEYS.MISSION.USER_TASK(id));
+      if (!taskUser) {
+        taskUser = await TaskUser.findOne({
+          where: { id },
+          include: [{ model: Task, as: "tasks", required: true }],
+        });
+        if (taskUser) await setCache(CACHE_KEYS.MISSION.USER_TASK(id), taskUser);
       }
-
-      return result;
+      if (taskUser) result.push(taskUser);
     }
 
-    const taskUsers = await TaskUser.findAll({
-      where: { user_id },
-      include: [{ model: Task, as: "tasks", required: true }],
-    });
-
-    const ids = taskUsers.map((t) => t.id);
-    await setCache(cacheKey, ids);
-    for (const t of taskUsers) {
-      await setCache(CACHE_KEYS.MISSION.USER_TASK(t.id), t);
-    }
-
-    return taskUsers;
-  } catch (err) {
-    throw err;
+    return result;
   }
+
+  const taskUsers = await TaskUser.findAll({
+    where: { user_id },
+    include: [{ model: Task, as: "tasks", required: true }],
+  });
+
+  const ids = taskUsers.map((t) => t.id);
+  await setCache(cacheKey, ids);
+  for (const t of taskUsers) {
+    await setCache(CACHE_KEYS.MISSION.USER_TASK(t.id), t);
+  }
+
+  return taskUsers;
 };
 
 const getTaskCompleted = async (user_id) => {
@@ -588,56 +539,50 @@ const getTaskCompleted = async (user_id) => {
 };
 
 const getItemByIdUser = async (user_id) => {
-  try {
-    const cachedTransactionIds = await getCache(
-      CACHE_KEYS.COMMERCE.TRANSACTIONS_BY_USER_ID(user_id),
-    );
-    if (cachedTransactionIds) {
-      const transactions = [];
-      for (const transactionId of cachedTransactionIds) {
-        let transaction = await getCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transactionId));
-        if (!transaction) {
-          transaction = await Transaction.findOne({
-            where: { id: transactionId },
-            attributes: ["id", "total_price", "quantity", "status"],
-            include: [
-              {
-                model: Item,
-                attributes: ["id", "name", "description", "price"],
-              },
-            ],
-          });
-          if (transaction)
-            await setCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transactionId), transaction);
-        }
-        if (transaction) transactions.push(transaction);
+  const cachedTransactionIds = await getCache(CACHE_KEYS.COMMERCE.TRANSACTIONS_BY_USER_ID(user_id));
+  if (cachedTransactionIds) {
+    const transactions = [];
+    for (const transactionId of cachedTransactionIds) {
+      let transaction = await getCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transactionId));
+      if (!transaction) {
+        transaction = await Transaction.findOne({
+          where: { id: transactionId },
+          attributes: ["id", "total_price", "quantity", "status"],
+          include: [
+            {
+              model: Item,
+              attributes: ["id", "name", "description", "price"],
+            },
+          ],
+        });
+        if (transaction)
+          await setCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transactionId), transaction);
       }
-      return transactions;
+      if (transaction) transactions.push(transaction);
     }
-
-    const items = await Transaction.findAll({
-      where: { buyer_id: user_id, status: ["pending", "completed"] },
-      attributes: ["id", "total_price", "quantity", "status"],
-      include: [
-        {
-          model: Item,
-          as: "item",
-          attributes: ["id", "name", "description", "price"],
-        },
-      ],
-    });
-    if (!items || items.length === 0) throw new NotFoundError("User not found");
-
-    const transactionIds = items.map((item) => item.id);
-    await setCache(CACHE_KEYS.COMMERCE.TRANSACTIONS_BY_USER_ID(user_id), transactionIds);
-    for (const item of items) {
-      await setCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(item.id), item);
-    }
-
-    return items;
-  } catch (e) {
-    throw e;
+    return transactions;
   }
+
+  const items = await Transaction.findAll({
+    where: { buyer_id: user_id, status: ["pending", "completed"] },
+    attributes: ["id", "total_price", "quantity", "status"],
+    include: [
+      {
+        model: Item,
+        as: "item",
+        attributes: ["id", "name", "description", "price"],
+      },
+    ],
+  });
+  if (!items || items.length === 0) throw new NotFoundError("User not found");
+
+  const transactionIds = items.map((item) => item.id);
+  await setCache(CACHE_KEYS.COMMERCE.TRANSACTIONS_BY_USER_ID(user_id), transactionIds);
+  for (const item of items) {
+    await setCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(item.id), item);
+  }
+
+  return items;
 };
 
 module.exports = {

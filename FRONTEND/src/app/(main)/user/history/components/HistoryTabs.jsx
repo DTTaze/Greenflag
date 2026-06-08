@@ -3,6 +3,15 @@
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import React from "react";
 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/src/components/ui/table";
+
 function HistoryTabs({
   activeTab,
   activityLogs,
@@ -93,74 +102,84 @@ function HistoryTabs({
 
   if (activeTab === "redeem") {
     return (
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse text-left text-xs">
-          <thead>
-            <tr className="border-b border-gray-100 font-semibold text-gray-400">
-              <th className="px-2 py-3">Thời gian</th>
-              <th className="px-2 py-3">Vật phẩm</th>
-              <th className="px-2 py-3">Số lượng</th>
-              <th className="px-2 py-3">Tổng chi phí</th>
-              <th className="px-2 py-3">Trạng thái</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-50 font-medium text-gray-600">
-            {transactions.length > 0 ? (
-              transactions.map((tr) => (
-                <tr
-                  key={tr.id}
-                  className="transition-colors hover:bg-gray-50/50"
-                >
-                  <td className="px-2 py-3 text-[10px] text-gray-400">
-                    {formatDate(new Date(tr.createdAt))}
-                  </td>
-                  <td className="px-2 py-3 font-semibold text-gray-900">
-                    {tr.name || tr.item_snapshot?.name || "Vật phẩm"}
-                  </td>
-                  <td className="px-2 py-3">{tr.quantity || 1}</td>
-                  <td className="px-2 py-3 font-black text-red-600">
-                    -{tr.total_price || 0} xu
-                  </td>
-                  <td className="px-2 py-3">
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                        tr.status === "accepted"
-                          ? "bg-green-100 text-green-800"
-                          : tr.status === "cancelled"
-                            ? "bg-red-100 text-red-800"
-                            : "bg-amber-100 text-amber-800"
-                      }`}
-                    >
-                      {tr.status === "accepted"
-                        ? "Đã nhận"
+      <Table className="text-xs">
+        <TableHeader>
+          <TableRow className="border-b border-gray-100 font-semibold text-gray-400 hover:bg-transparent">
+            <TableHead className="h-auto px-2 py-3 text-gray-400">
+              Thời gian
+            </TableHead>
+            <TableHead className="h-auto px-2 py-3 text-gray-400">
+              Vật phẩm
+            </TableHead>
+            <TableHead className="h-auto px-2 py-3 text-gray-400">
+              Số lượng
+            </TableHead>
+            <TableHead className="h-auto px-2 py-3 text-gray-400">
+              Tổng chi phí
+            </TableHead>
+            <TableHead className="h-auto px-2 py-3 text-gray-400">
+              Trạng thái
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody className="divide-y divide-gray-50 font-medium text-gray-600">
+          {transactions.length > 0 ? (
+            transactions.map((tr) => (
+              <TableRow
+                key={tr.id}
+                className="transition-colors hover:bg-gray-50/50"
+              >
+                <TableCell className="px-2 py-3 text-[10px] text-gray-400">
+                  {formatDate(new Date(tr.createdAt))}
+                </TableCell>
+                <TableCell className="px-2 py-3 font-semibold text-gray-900">
+                  {tr.name || tr.item_snapshot?.name || "Vật phẩm"}
+                </TableCell>
+                <TableCell className="px-2 py-3">{tr.quantity || 1}</TableCell>
+                <TableCell className="px-2 py-3 font-black text-red-600">
+                  -{tr.total_price || 0} xu
+                </TableCell>
+                <TableCell className="px-2 py-3">
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                      tr.status === "accepted"
+                        ? "bg-green-100 text-green-800"
                         : tr.status === "cancelled"
-                          ? "Đã hủy"
-                          : "Đang xử lý"}
-                    </span>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              // Fallback mock item
-              <tr className="transition-colors hover:bg-gray-50/50">
-                <td className="px-2 py-3 text-[10px] text-gray-400">
-                  {formatDate(new Date(Date.now() - 3600000 * 24))}
-                </td>
-                <td className="px-2 py-3 font-semibold text-gray-900">
-                  Voucher giảm giá Shopee 20K
-                </td>
-                <td className="px-2 py-3">1</td>
-                <td className="px-2 py-3 font-black text-red-600">-50 xu</td>
-                <td className="px-2 py-3">
-                  <span className="rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold text-green-800">
-                    Đã giao
+                          ? "bg-red-100 text-red-800"
+                          : "bg-amber-100 text-amber-800"
+                    }`}
+                  >
+                    {tr.status === "accepted"
+                      ? "Đã nhận"
+                      : tr.status === "cancelled"
+                        ? "Đã hủy"
+                        : "Đang xử lý"}
                   </span>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            // Fallback mock item
+            <TableRow className="transition-colors hover:bg-gray-50/50">
+              <TableCell className="px-2 py-3 text-[10px] text-gray-400">
+                {formatDate(new Date(Date.now() - 3600000 * 24))}
+              </TableCell>
+              <TableCell className="px-2 py-3 font-semibold text-gray-900">
+                Voucher giảm giá Shopee 20K
+              </TableCell>
+              <TableCell className="px-2 py-3">1</TableCell>
+              <TableCell className="px-2 py-3 font-black text-red-600">
+                -50 xu
+              </TableCell>
+              <TableCell className="px-2 py-3">
+                <span className="rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold text-green-800">
+                  Đã giao
+                </span>
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
     );
   }
 

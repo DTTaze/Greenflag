@@ -1,4 +1,3 @@
-import { X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
 import MultiImageUpload from "@/src/components/common/MultiImageUpload";
@@ -12,34 +11,26 @@ import {
 } from "@/src/components/ui/dialog";
 import { Input } from "@/src/components/ui/input";
 
+const INITIAL_STATE = {
+  title: "",
+  description: "",
+  location: "",
+  capacity: "",
+  start_time: "",
+  end_time: "",
+  end_sign: "",
+  coins: "",
+  status: "upcoming",
+};
+
 const EventDialog = ({ open, onClose, onSave, event }) => {
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    location: "",
-    capacity: "",
-    start_time: "",
-    end_time: "",
-    end_sign: "",
-    coins: "",
-    status: "upcoming",
-  });
+  const [formData, setFormData] = useState(INITIAL_STATE);
   const [images, setImages] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
   const [errors, setErrors] = useState({});
 
   const resetForm = () => {
-    setFormData({
-      title: "",
-      description: "",
-      location: "",
-      capacity: "",
-      start_time: "",
-      end_time: "",
-      end_sign: "",
-      coins: "",
-      status: "upcoming",
-    });
+    setFormData(INITIAL_STATE);
     setImages([]);
     setPreviewImages([]);
     setErrors({});
@@ -64,11 +55,11 @@ const EventDialog = ({ open, onClose, onSave, event }) => {
         coins: event.coins || "",
         status: event.status || "upcoming",
       });
-      const eventImages = event.images || [];
-      const imageUrls = Array.isArray(eventImages)
-        ? eventImages.map((img) => img.url || img)
-        : [];
-      setPreviewImages(imageUrls);
+      setPreviewImages(
+        Array.isArray(event.images)
+          ? event.images.map((img) => img.url || img)
+          : [],
+      );
     } else {
       resetForm();
     }
@@ -76,31 +67,24 @@ const EventDialog = ({ open, onClose, onSave, event }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: "",
-      }));
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   const handleImagesSelected = (files) => {
     setImages((prev) => [...prev, ...files]);
-    const newPreviewUrls = files.map((file) => URL.createObjectURL(file));
-    setPreviewImages((prev) => [...prev, ...newPreviewUrls]);
+    setPreviewImages((prev) => [
+      ...prev,
+      ...files.map((file) => URL.createObjectURL(file)),
+    ]);
   };
 
   const handleRemoveImage = (index) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
     setPreviewImages((prev) => {
       const newPreviews = [...prev];
-      if (newPreviews[index]?.startsWith("blob:")) {
+      if (newPreviews[index]?.startsWith("blob:"))
         URL.revokeObjectURL(newPreviews[index]);
-      }
       return newPreviews.filter((_, i) => i !== index);
     });
   };
@@ -109,9 +93,8 @@ const EventDialog = ({ open, onClose, onSave, event }) => {
     const newErrors = {};
     if (!formData.title.trim()) newErrors.title = "Title is required";
     if (!formData.location.trim()) newErrors.location = "Location is required";
-    if (!formData.capacity || formData.capacity < 1) {
+    if (!formData.capacity || formData.capacity < 1)
       newErrors.capacity = "Capacity must be at least 1";
-    }
     if (!formData.start_time) newErrors.start_time = "Start time is required";
     if (!formData.end_time) newErrors.end_time = "End time is required";
     if (

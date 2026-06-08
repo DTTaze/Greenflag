@@ -8,7 +8,6 @@ import useOrders from "./orders/hooks/useOrders";
 import useShippingAccounts from "./orders/hooks/useShippingAccounts";
 import useTransactions from "./orders/hooks/useTransactions";
 import OrdersHeader from "./orders/OrdersHeader";
-import { calculatePoints } from "./orders/ordersHelpers";
 import OrdersTabPanels from "./orders/OrdersTabPanels";
 
 export default function CustomerOrders() {
@@ -33,21 +32,8 @@ export default function CustomerOrders() {
   const shippingAccountsState = useShippingAccounts(userInfo?.id, showAlert);
   const {
     shippingAccounts,
-    isLoadingAccounts,
-    shippingAccountsDialogOpen,
     setShippingAccountsDialogOpen,
-    addShippingAccountDialogOpen,
-    setAddShippingAccountDialogOpen,
-    isEditingShippingAccount,
-    newShippingAccount,
-    setNewShippingAccount,
     fetchShippingAccounts,
-    handleAddShippingAccount,
-    handleEditShippingAccount,
-    handleUpdateShippingAccount,
-    handleDeleteShippingAccount,
-    handleSetDefaultShippingAccount,
-    resetShippingAccountForm,
   } = shippingAccountsState;
 
   const hasLinkedShippingAccounts = () => shippingAccounts.length > 0;
@@ -63,26 +49,14 @@ export default function CustomerOrders() {
   });
   const {
     orders,
-    setOrders,
-    isLoadingOrders,
-    createDialogOpen,
     setCreateDialogOpen,
-    isEditingOrder,
-    setIsEditingOrder,
-    isCreatingBasedOn,
     setIsCreatingBasedOn,
-    newOrder,
     setNewOrder,
-    initialOrderPayload,
     fetchOrders,
-    handleCreateOrder,
-    handleUpdateOrder,
+    handleViewOrderDetails,
     handleEditOrder,
     handleCreateBasedOn,
-    handleViewOrderDetails,
-    handleAddItem,
-    handleRemoveItem,
-    handleItemChange,
+    isLoadingOrders,
   } = ordersState;
 
   const transactionsState = useTransactions({
@@ -99,16 +73,11 @@ export default function CustomerOrders() {
   const {
     transactions,
     isLoadingTransactions,
-    buyerInfoDialogOpen,
-    setBuyerInfoDialogOpen,
-    buyerInfo,
-    setBuyerInfo,
     fetchTransactions,
     handleConfirmOrder,
     handleCancelOrder,
     handleViewDetails,
     handleOpenEditBuyerInfo,
-    handleUpdateBuyerInfo,
     handleCreateOrderFromTransaction,
   } = transactionsState;
 

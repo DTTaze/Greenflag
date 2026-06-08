@@ -1,4 +1,3 @@
-import { X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
 import MultiImageUpload from "@/src/components/common/MultiImageUpload";
@@ -60,31 +59,24 @@ const ItemDialog = ({ open, onClose, onSave, item, isSubmitting }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: "",
-      }));
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   const handleImagesSelected = (files) => {
     setImages((prev) => [...prev, ...files]);
-    const newPreviewUrls = files.map((file) => URL.createObjectURL(file));
-    setPreviewImages((prev) => [...prev, ...newPreviewUrls]);
+    setPreviewImages((prev) => [
+      ...prev,
+      ...files.map((file) => URL.createObjectURL(file)),
+    ]);
   };
 
   const handleRemoveImage = (index) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
     setPreviewImages((prev) => {
       const newPreviews = [...prev];
-      if (newPreviews[index]?.startsWith("blob:")) {
+      if (newPreviews[index]?.startsWith("blob:"))
         URL.revokeObjectURL(newPreviews[index]);
-      }
       return newPreviews.filter((_, i) => i !== index);
     });
   };
@@ -125,6 +117,25 @@ const ItemDialog = ({ open, onClose, onSave, item, isSubmitting }) => {
     resetForm();
     onClose();
   };
+
+  const renderField = (name, label, placeholder = "", type = "number") => (
+    <div>
+      <label className="mb-1 block text-sm font-semibold text-gray-700">
+        {label} <span className="text-red-500">*</span>
+      </label>
+      <Input
+        name={name}
+        type={type}
+        value={formData[name]}
+        onChange={handleChange}
+        className={errors[name] ? "border-red-500" : ""}
+        placeholder={placeholder}
+      />
+      {errors[name] && (
+        <span className="mt-1 block text-xs text-red-500">{errors[name]}</span>
+      )}
+    </div>
+  );
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
@@ -178,118 +189,12 @@ const ItemDialog = ({ open, onClose, onSave, item, isSubmitting }) => {
             )}
           </div>
 
-          <div>
-            <label className="mb-1 block text-sm font-semibold text-gray-700">
-              Stock <span className="text-red-500">*</span>
-            </label>
-            <Input
-              name="stock"
-              type="number"
-              value={formData.stock}
-              onChange={handleChange}
-              className={errors.stock ? "border-red-500" : ""}
-              placeholder="Available inventory"
-            />
-            {errors.stock && (
-              <span className="mt-1 block text-xs text-red-500">
-                {errors.stock}
-              </span>
-            )}
-          </div>
-
-          <div>
-            <label className="mb-1 block text-sm font-semibold text-gray-700">
-              Weight (g) <span className="text-red-500">*</span>
-            </label>
-            <Input
-              name="weight"
-              type="number"
-              value={formData.weight}
-              onChange={handleChange}
-              className={errors.weight ? "border-red-500" : ""}
-              placeholder="Weight in grams"
-            />
-            {errors.weight && (
-              <span className="mt-1 block text-xs text-red-500">
-                {errors.weight}
-              </span>
-            )}
-          </div>
-
-          <div>
-            <label className="mb-1 block text-sm font-semibold text-gray-700">
-              Length (cm) <span className="text-red-500">*</span>
-            </label>
-            <Input
-              name="length"
-              type="number"
-              value={formData.length}
-              onChange={handleChange}
-              className={errors.length ? "border-red-500" : ""}
-              placeholder="Length in cm"
-            />
-            {errors.length && (
-              <span className="mt-1 block text-xs text-red-500">
-                {errors.length}
-              </span>
-            )}
-          </div>
-
-          <div>
-            <label className="mb-1 block text-sm font-semibold text-gray-700">
-              Width (cm) <span className="text-red-500">*</span>
-            </label>
-            <Input
-              name="width"
-              type="number"
-              value={formData.width}
-              onChange={handleChange}
-              className={errors.width ? "border-red-500" : ""}
-              placeholder="Width in cm"
-            />
-            {errors.width && (
-              <span className="mt-1 block text-xs text-red-500">
-                {errors.width}
-              </span>
-            )}
-          </div>
-
-          <div>
-            <label className="mb-1 block text-sm font-semibold text-gray-700">
-              Height (cm) <span className="text-red-500">*</span>
-            </label>
-            <Input
-              name="height"
-              type="number"
-              value={formData.height}
-              onChange={handleChange}
-              className={errors.height ? "border-red-500" : ""}
-              placeholder="Height in cm"
-            />
-            {errors.height && (
-              <span className="mt-1 block text-xs text-red-500">
-                {errors.height}
-              </span>
-            )}
-          </div>
-
-          <div>
-            <label className="mb-1 block text-sm font-semibold text-gray-700">
-              Daily Purchase Limit <span className="text-red-500">*</span>
-            </label>
-            <Input
-              name="purchase_limit_per_day"
-              type="number"
-              value={formData.purchase_limit_per_day}
-              onChange={handleChange}
-              className={errors.purchase_limit_per_day ? "border-red-500" : ""}
-            />
-            {errors.purchase_limit_per_day && (
-              <span className="mt-1 block text-xs text-red-500">
-                {errors.purchase_limit_per_day}
-              </span>
-            )}
-          </div>
+          {renderField("stock", "Stock", "Available inventory")}
+          {renderField("weight", "Weight (g)", "Weight in grams")}
+          {renderField("length", "Length (cm)", "Length in cm")}
+          {renderField("width", "Width (cm)", "Width in cm")}
+          {renderField("height", "Height (cm)", "Height in cm")}
+          {renderField("purchase_limit_per_day", "Daily Purchase Limit")}
 
           <div>
             <label className="mb-1 block text-sm font-semibold text-gray-700">

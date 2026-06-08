@@ -10,7 +10,7 @@ import { logoutUser } from "@/src/utils/api";
 
 export default function CustomerAppBar({
   open: _open,
-  drawerWidth,
+  drawerWidth: _drawerWidth,
   handleDrawerToggle,
   userInfo,
 }) {

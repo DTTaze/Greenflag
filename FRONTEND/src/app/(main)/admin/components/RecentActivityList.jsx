@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 
-import Button from "@/src/components/ui/button";
-
 export default function RecentActivityList({ recentActivities = [], loading }) {
   const [showAll, setShowAll] = useState(false);
 

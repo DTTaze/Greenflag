@@ -27,11 +27,7 @@ export default function VideoPlayerCard({ video, index }) {
 
   return (
     <div
-      ref={(el) => {
-        if (containerRefs.current && containerRefs.current[index]) {
-          containerRefs.current[index].current = el;
-        }
-      }}
+      ref={containerRefs.current?.[index]}
       className="relative flex h-screen w-full overflow-hidden bg-white max-[576px]:flex-col"
     >
       {/* Left Sidebar: Stats, Tasks, and User Info */}
@@ -51,11 +47,7 @@ export default function VideoPlayerCard({ video, index }) {
           width="100%"
           height="100%"
           muted={isMuted}
-          ref={(el) => {
-            if (videoRefs.current && videoRefs.current[index]) {
-              videoRefs.current[index].current = el;
-            }
-          }}
+          ref={videoRefs.current?.[index]}
           onReady={() => {
             if (index === 0 && !isInitialized) {
               setPlayingStates(0);

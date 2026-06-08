@@ -1,10 +1,8 @@
-// workers/orderSyncWorker.js
 const { Worker } = require("bullmq");
-const { QUEUE_NAMES } = require("../constants/queueNames");
-const db = require("../models");
-const { DeliveryOrder } = db;
-const { redis } = require("../config/configRedis");
-const { getDeliveryOrderInfo } = require("../services/deliveryOrderService");
+const { QUEUE_NAMES } = require("../../constants/queueNames");
+const { redis } = require("../../config/configRedis");
+const { getDeliveryOrderInfo } = require("../../services/deliveryOrderService");
+const deliveryOrderRepo = require("../../repositories/deliveryOrderRepository");
 
 const worker = new Worker(
   QUEUE_NAMES.ORDER_SYNC,
@@ -16,15 +14,18 @@ const worker = new Worker(
       deliveryAccountId.shop_id,
     );
     console.log("check api res", apiRes);
-    if (apiRes.message != "Success") {
+    if (apiRes.message !== "Success") {
       throw new Error("Failed to fetch GHN order detail");
     }
 
     const data = apiRes.data;
 
-    const existing = await DeliveryOrder.findOne({
-      where: { order_code: orderCode },
-    });
+    const existing = await deliveryOrderRepo.findOne(
+      {
+        where: { order_code: orderCode },
+      },
+      { raw: true, nest: true },
+    );
     if (!existing) return;
     const updatedFields = {
       status: data.status,
@@ -48,7 +49,7 @@ const worker = new Worker(
     }
 
     if (shouldUpdate) {
-      await existing.update(updatedFields);
+      await deliveryOrderRepo.updateByConditions({ order_code: orderCode }, updatedFields);
     }
 
     return { updated: true, orderCode };

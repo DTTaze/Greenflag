@@ -1,8 +1,7 @@
 const cron = require("node-cron");
-const db = require("../models");
-const DeliveryOrder = db.DeliveryOrder;
-const DeliveryAccount = db.DeliveryAccount;
-const orderSyncQueue = require("../queues/orderSyncQueue");
+const db = require("../../models");
+const deliveryOrderRepo = require("../../repositories/deliveryOrderRepository");
+const { orderSyncQueue } = require("../queueFactory");
 
 const ACTIVE_STATUSES = [
   "ready_to_pick",
@@ -26,22 +25,25 @@ const ACTIVE_STATUSES = [
 
 cron.schedule("*/2 * * * *", async () => {
   try {
-    const pendingOrders = await DeliveryOrder.findAll({
-      where: {
-        status: ACTIVE_STATUSES,
-      },
-      include: [
-        {
-          model: DeliveryAccount,
-          as: "delivery_account",
-          attributes: ["shop_id", "token"],
+    const pendingOrders = await deliveryOrderRepo.findAll(
+      {
+        where: {
+          status: ACTIVE_STATUSES,
         },
-      ],
-    });
+        include: [
+          {
+            model: db.DeliveryAccount,
+            as: "delivery_account",
+            attributes: ["shop_id", "token"],
+          },
+        ],
+      },
+      { raw: true, nest: true },
+    );
     for (const order of pendingOrders) {
       await orderSyncQueue.add("syncOrderStatus", {
         orderCode: order.order_code,
-        deliveryAccountId: order.delivery_account.dataValues,
+        deliveryAccountId: order.delivery_account,
       });
     }
 

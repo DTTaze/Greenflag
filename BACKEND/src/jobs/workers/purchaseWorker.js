@@ -1,16 +1,16 @@
 const { Worker } = require("bullmq");
-const db = require("../models/index");
-const { QUEUE_NAMES } = require("../constants/queueNames");
+const db = require("../../models/index");
+const { QUEUE_NAMES } = require("../../constants/queueNames");
 const { sequelize } = db;
-const Item = db.Item;
-const User = db.User;
-const Coin = db.Coin;
-const Transaction = db.Transaction;
-const { redis } = require("../config/configRedis");
+const itemRepo = require("../../repositories/itemRepository");
+const userRepo = require("../../repositories/userRepository");
+const coinRepo = require("../../repositories/coinRepository");
+const transactionRepo = require("../../repositories/transactionRepository");
+const { redis } = require("../../config/configRedis");
 const Redis = require("ioredis");
-const { generateCode } = require("../utils/generateCode");
-const { getCache, setCache, deleteCache } = require("../utils/cache");
-const { CACHE_KEYS } = require("../constants/cacheKeys");
+const { generateCode } = require("../../utils/generateCode");
+const { getCache, setCache, deleteCache } = require("../../utils/cache");
+const { CACHE_KEYS } = require("../../constants/cacheKeys");
 require("dotenv").config();
 
 const publisher = new Redis(redis);
@@ -27,26 +27,33 @@ const worker = new Worker(
     try {
       return await sequelize.transaction(async (t) => {
         const cacheKeyItem = CACHE_KEYS.COMMERCE.ITEM_BY_ID(item_id);
-        let itemData = await getCache(cacheKeyItem);
+        let item = await getCache(cacheKeyItem);
 
-        let item;
-        if (itemData) {
-          item = Item.build(itemData, { isNewRecord: false });
-          item.creator = item.creator || (await item.getCreator({ transaction: t }));
-        } else {
-          item = await Item.findByPk(item_id, {
+        if (!item) {
+          item = await itemRepo.findById(item_id, {
             include: [
               {
-                model: User,
+                model: db.User,
                 as: "creator",
                 attributes: ["id", "full_name", "username"],
               },
             ],
             transaction: t,
             lock: true,
+            raw: true,
+            nest: true,
           });
           if (!item) throw new Error("Item not found");
-          await setCache(cacheKeyItem, item.toJSON(), 300);
+          await setCache(cacheKeyItem, item, 300);
+        }
+
+        if (!item.creator) {
+          item.creator = await userRepo.findById(item.user_id, {
+            attributes: ["id", "full_name", "username"],
+            transaction: t,
+            raw: true,
+            nest: true,
+          });
         }
 
         if (item.status !== "available" || item.stock < quantity) {
@@ -54,43 +61,55 @@ const worker = new Worker(
         }
 
         const cacheKeyUser = CACHE_KEYS.IDENTITY.USER_BY_ID(user_id);
-        let userData = await getCache(cacheKeyUser);
+        let user = await getCache(cacheKeyUser);
 
-        let user;
-        if (userData) {
-          user = User.build(userData, { isNewRecord: false });
-          user.coins = await Coin.findOne({
-            where: { user_id },
-            transaction: t,
-            lock: true,
-          });
-        } else {
-          user = await User.findByPk(user_id, {
+        if (!user) {
+          user = await userRepo.findById(user_id, {
             include: [
               {
-                model: Coin,
+                model: db.Coin,
                 as: "coins",
                 attributes: ["id", "amount"],
               },
             ],
             transaction: t,
             lock: true,
+            raw: true,
+            nest: true,
           });
           if (!user) throw new Error("User not found");
-          await setCache(cacheKeyUser, user.toJSON(), 300);
+          await setCache(cacheKeyUser, user, 300);
+        }
+
+        if (!user.coins) {
+          user.coins = await coinRepo.findOne(
+            {
+              where: { user_id },
+            },
+            {
+              transaction: t,
+              lock: true,
+              raw: true,
+              nest: true,
+            },
+          );
         }
 
         if (!user.coins || user.coins.amount < item.price * quantity) {
           throw new Error("Insufficient balance");
         }
 
-        await user.coins.update(
-          { amount: user.coins.amount - item.price * quantity },
+        await coinRepo.updateById(
+          user.coins.id,
+          {
+            amount: user.coins.amount - item.price * quantity,
+          },
           { transaction: t },
         );
 
         const newStock = item.stock - quantity;
-        await item.update(
+        await itemRepo.updateById(
+          item.id,
           {
             stock: newStock,
             status: newStock === 0 ? "sold_out" : "available",
@@ -111,32 +130,39 @@ const worker = new Worker(
             newStock: newStock,
             name: item.name,
             price: item.price,
-            status: item.status,
+            status: newStock === 0 ? "sold_out" : "available",
           }),
         );
 
         let uniqueCode, exists;
         do {
           uniqueCode = generateCode();
-          exists = await Transaction.findOne({
-            where: { public_id: uniqueCode },
-            transaction: t,
-          });
+          exists = await transactionRepo.findOne(
+            {
+              where: { public_id: uniqueCode },
+            },
+            {
+              transaction: t,
+              raw: true,
+              nest: true,
+            },
+          );
         } while (exists !== null);
 
         const itemSnapshot = {
           public_id: item.public_id,
-          creator: item.creator.dataValues,
+          creator: item.creator,
           name: item.name,
           description: item.description,
           price: item.price,
         };
-        const transaction = await Transaction.create(
+
+        const transaction = await transactionRepo.create(
           {
             public_id: uniqueCode,
             receiver_information_id,
             buyer_id: user.id,
-            seller_id: item.creator.dataValues.id,
+            seller_id: item.creator.id,
             item_id: item.id,
             name,
             item_snapshot: itemSnapshot,
@@ -144,19 +170,15 @@ const worker = new Worker(
             quantity,
             status: "pending",
           },
-          { transaction: t },
+          { transaction: t, raw: true, nest: true },
         );
 
-        await setCache(
-          CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transaction.id),
-          transaction.toJSON(),
-          300,
-        );
+        await setCache(CACHE_KEYS.COMMERCE.TRANSACTION_BY_ID(transaction.id), transaction, 300);
 
         const buyerCacheKey = CACHE_KEYS.COMMERCE.TRANSACTION_BUYER(user.id);
         await deleteCache(buyerCacheKey);
 
-        const sellerCacheKey = CACHE_KEYS.COMMERCE.TRANSACTION_SELLER(item.creator.dataValues.id);
+        const sellerCacheKey = CACHE_KEYS.COMMERCE.TRANSACTION_SELLER(item.creator.id);
         await deleteCache(sellerCacheKey);
 
         await deleteCache(CACHE_KEYS.COMMERCE.COIN_BY_ID(user.coins.id));

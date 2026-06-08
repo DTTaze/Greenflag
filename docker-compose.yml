@@ -106,7 +106,7 @@ services:
       - ./BACKEND:/app
       - /app/node_modules
     working_dir: /app
-    command: ["node", "src/workers/purchaseWorker.js"]
+    command: ["node", "src/jobs/workers/purchaseWorker.js"]
     networks:
       - greenflag_network
 
@@ -134,7 +134,7 @@ services:
       - ./BACKEND:/app
       - /app/node_modules
     working_dir: /app
-    command: ["node", "src/workers/orderSyncWorker.js"]
+    command: ["node", "src/jobs/workers/orderSyncWorker.js"]
     networks:
       - greenflag_network
 
@@ -162,7 +162,7 @@ services:
       - ./BACKEND:/app
       - /app/node_modules
     working_dir: /app
-    command: ["node", "src/cron/syncGHNOrdersCron.js"]
+    command: ["node", "src/jobs/cron/syncGHNOrdersCron.js"]
     networks:
       - greenflag_network
 

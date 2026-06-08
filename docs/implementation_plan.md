@@ -967,9 +967,9 @@ module.exports = worker;
 - [x] Verify all existing `sequelize.transaction()` flows still work correctly
 
 ### Phase 6 — Background Jobs Consolidation
-- [ ] Move queues, workers, cron under `src/jobs/`
-- [ ] Create centralized queue factory
-- [ ] Move `bullboard.js` from `services/` to `config/` or `jobs/`
+- [x] Move queues, workers, cron under `src/jobs/`
+- [x] Create centralized queue factory
+- [x] Remove `bullboard.js` (uninstalled and dropped in Phase 2)
 
 ### Phase 7 — Testing (Deferred)
 - [ ] Add Jest + Supertest as dev dependencies

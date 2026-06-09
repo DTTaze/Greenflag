@@ -75,6 +75,7 @@
   },
   "auth": {
     "loginTitle": "Log In",
+    "email": "Email",
     "emailOrUsername": "Email or Username",
     "password": "Password",
     "forgotPassword": "Forgot password?",
@@ -162,5 +163,14 @@
     "activityHistory": "Activity & Coins History",
     "notLoggedIn": "User not logged in.",
     "noEmail": "No email available"
+  },
+  "footer": {
+    "aboutDesc": "Green Flag is a community platform dedicated to environmental protection. Complete daily green tasks, earn EcoCoins, and exchange them for sustainable products.",
+    "quickLinks": "Quick Links",
+    "contact": "Contact",
+    "allRightsReserved": "© {year} Green Flag. All rights reserved.",
+    "phone": "Phone: +84 (0) 123 456 789",
+    "email": "Email: support@greenflag.vn",
+    "address": "Address: Hanoi, Vietnam"
   }
 }

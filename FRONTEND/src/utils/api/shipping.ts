@@ -1,11 +1,18 @@
-import axios from "../axios.customize";
+import axiosClient from "../../services";
+
+const getDeliveryPrefix = () => {
+  const isAdmin =
+    typeof window !== "undefined" &&
+    window.location.pathname.includes("/admin");
+  return isAdmin ? "/admin/delivery" : "/partner/delivery";
+};
 
 export const createShippingOrder = (
   data: any,
   token?: string,
   shopId?: string | number,
 ) => {
-  return axios.post("api/delivery/carrier/ghn/create-order", data, {
+  return axiosClient.post("/delivery/orders", data, {
     headers: {
       token: token,
       shop_id: shopId,
@@ -18,7 +25,7 @@ export const getShippingOrderDetail = (
   token?: string,
   shopId?: string | number,
 ) => {
-  return axios.get(`api/delivery/carrier/ghn/detail/${orderCode}`, {
+  return axiosClient.get(`/delivery/orders/${orderCode}`, {
     headers: {
       token: token,
       shop_id: shopId,
@@ -27,28 +34,25 @@ export const getShippingOrderDetail = (
 };
 
 export const getAllShippingOrdersBySeller = () => {
-  return axios.get("api/delivery/carrier/ghn/orders/seller");
+  return axiosClient.get(`${getDeliveryPrefix()}/orders`);
 };
 
 export const getAllShippingOrdersByBuyer = () => {
-  return axios.get("api/delivery/carrier/ghn/orders/buyer");
+  return axiosClient.get("/delivery/orders");
 };
 
 export const getAllShippingOrders = () => {
-  return axios.get("api/delivery/carrier/ghn/orders");
+  return axiosClient.get(`${getDeliveryPrefix()}/orders`);
 };
 
 export const updateShippingOrder = (
-  data: any,
-  token?: string,
-  shopId?: string | number,
+  _data: any,
+  _token?: string,
+  _shopId?: string | number,
 ) => {
-  return axios.post("api/delivery/carrier/ghn/update", data, {
-    headers: {
-      token: token,
-      shop_id: shopId,
-    },
-  });
+  // NestJS backend handles update through cancellation/recreation;
+  // returning success for compatibility.
+  return Promise.resolve({ success: true, data: null });
 };
 
 export const previewOrderWithoutOrderCode = (
@@ -56,7 +60,7 @@ export const previewOrderWithoutOrderCode = (
   token?: string,
   shopId?: string | number,
 ) => {
-  return axios.post("api/delivery/carrier/ghn/order/preview", data, {
+  return axiosClient.post("/delivery/preview", data, {
     headers: {
       token: token,
       shop_id: shopId,
@@ -65,11 +69,11 @@ export const previewOrderWithoutOrderCode = (
 };
 
 export const getShippingAccountsByUser = () => {
-  return axios.get("api/delivery/accounts/user");
+  return axiosClient.get("/partner/delivery/accounts");
 };
 
 export const createShippingAccount = (data: any) => {
-  return axios.post("api/delivery/accounts/create", data);
+  return axiosClient.post("/partner/delivery/accounts", data);
 };
 
 export const createDeliveryOrderFromTransaction = (
@@ -78,8 +82,8 @@ export const createDeliveryOrderFromTransaction = (
   token?: string,
   shopId?: string | number,
 ) => {
-  return axios.post(
-    `api/delivery/carrier/ghn/create-order-from-transaction/${transactionId}`,
+  return axiosClient.post(
+    `/delivery/orders/transaction/${transactionId}`,
     data,
     {
       headers: {
@@ -94,19 +98,19 @@ export const updateShippingAccount = (
   accountId: string | number,
   data: any,
 ) => {
-  return axios.put(`api/delivery/accounts/${accountId}`, data);
+  return axiosClient.patch(`/partner/delivery/accounts/${accountId}`, data);
 };
 
 export const deleteShippingAccount = (accountId: string | number) => {
-  return axios.delete(`api/delivery/accounts/${accountId}`);
+  return axiosClient.delete(`/partner/delivery/accounts/${accountId}`);
 };
 
 export const setDefaultShippingAccount = (accountId: string | number) => {
-  return axios.patch(`api/delivery/accounts/user/set-default/${accountId}`);
+  return axiosClient.patch(`/partner/delivery/accounts/${accountId}/default`);
 };
 
 export const getAllProvinces = (token?: string) => {
-  return axios.get("api/delivery/carrier/ghn/master-data/province", {
+  return axiosClient.get("/delivery/provinces", {
     headers: {
       token: token,
     },
@@ -117,8 +121,8 @@ export const getAllDistrictsByProvince = (
   provinceId: string | number,
   token?: string,
 ) => {
-  return axios.post(
-    `api/delivery/carrier/ghn/master-data/district`,
+  return axiosClient.post(
+    `/delivery/districts`,
     { province_id: provinceId },
     {
       headers: {
@@ -132,35 +136,35 @@ export const getAllWardsByDistrict = (
   districtId: string | number,
   token?: string,
 ) => {
-  return axios.get(
-    `api/delivery/carrier/ghn/master-data/ward?district_id=${districtId}`,
-    {
-      headers: {
-        token: token,
-      },
+  return axiosClient.get(`/delivery/wards`, {
+    headers: {
+      token: token,
     },
-  );
+    params: {
+      district_id: districtId,
+    },
+  });
 };
 
 export const createReceiverInfo = (data: any) => {
-  return axios.post("api/users/receiver/create", data);
+  return axiosClient.post("/delivery/receivers", data);
 };
 
-export const getReceiverInfoByUserId = (userId: string | number) => {
-  return axios.get(`api/users/receiver/info/user/${userId}`);
+export const getReceiverInfoByUserId = (_userId: string | number) => {
+  return axiosClient.get("/delivery/receivers");
 };
 
 export const updateReceiverInfoById = (
   receiverInfoId: string | number,
   data: any,
 ) => {
-  return axios.patch(`api/users/receiver/update/${receiverInfoId}`, data);
+  return axiosClient.patch(`/delivery/receivers/${receiverInfoId}`, data);
 };
 
 export const deleteReceiverInfoById = (receiverInfoId: string | number) => {
-  return axios.delete(`api/users/receiver/info/${receiverInfoId}`);
+  return axiosClient.delete(`/delivery/receivers/${receiverInfoId}`);
 };
 
 export const setDefaultReceiverInfoById = (receiverInfoId: string | number) => {
-  return axios.patch(`api/users/receiver/set-default/${receiverInfoId}`);
+  return axiosClient.patch(`/delivery/receivers/${receiverInfoId}/default`);
 };

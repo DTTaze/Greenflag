@@ -1,4 +1,6 @@
+import axiosClient from "@/src/services";
 import axios from "@/src/utils/axios.customize";
+
 import { whoAmI } from "./auth";
 
 export const mapUserToStore = (user: any): any => {
@@ -45,23 +47,23 @@ export const getUser = async () => {
 };
 
 export const getAllUsers = () => {
-  return axios.get("api/users");
+  return axiosClient.get("/admin/users");
 };
 
 export const updateUser = (id: number | string, data: any) => {
-  return axios.put(`api/users/${id}`, data);
+  return axiosClient.put(`/admin/users/${id}`, data);
 };
 
 export const updateUserPublic = (public_id: string, data: any) => {
-  return axios.put(`api/users/public/${public_id}`, data);
+  return axiosClient.put(`/admin/users/${public_id}`, data);
 };
 
 export const getUserByIDPublic = (public_id: string) => {
-  return axios.get(`api/users/public/${public_id}`);
+  return axiosClient.get(`/admin/users/${public_id}`);
 };
 
 export const deleteUser = (id: number | string) => {
-  return axios.delete(`api/users/${id}`);
+  return axiosClient.delete(`/admin/users/${id}`);
 };
 
 export const getAllRoles = () => {
@@ -101,9 +103,9 @@ export const updatePermission = (id: number | string, data: any) => {
 };
 
 export const rearrangeRank = () => {
-  return axios.post("api/ranks/rearrange");
+  return axiosClient.post("/admin/ranks/rearrange");
 };
 
 export const getUserById = (id: number | string) => {
-  return axios.get(`api/users/${id}`);
+  return axiosClient.get(`/admin/users/${id}`);
 };

@@ -1,44 +1,27 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import {
-  createTask,
-  deleteTask,
-  getAllTasks,
-  updateTask,
-} from "@/src/utils/api";
+  useAdminCreateTaskMutation,
+  useAdminDeleteTaskMutation,
+  useAdminTasksQuery,
+  useAdminUpdateTaskMutation,
+} from "@/src/queries/task/useTaskQueries";
 
 import DataTable from "../../../components/DataTable";
 import { taskColumns } from "../../../components/HeaderColumn";
 import TaskForm from "./TaskForm";
 
 export default function TasksManagement() {
-  const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const { data: tasks = [], isLoading: loading } = useAdminTasksQuery();
+  const createTaskMutation = useAdminCreateTaskMutation();
+  const updateTaskMutation = useAdminUpdateTaskMutation();
+  const deleteTaskMutation = useAdminDeleteTaskMutation();
+
   const [formOpen, setFormOpen] = useState(false);
   const [editData, setEditData] = useState(null);
   const [formMode, setFormMode] = useState("add");
-
-  const fetchTasks = async () => {
-    setLoading(true);
-    try {
-      const res = await getAllTasks();
-      if (res.success) {
-        setTasks(res.data);
-      } else {
-        console.log(res.error);
-      }
-    } catch (e) {
-      console.log(e);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchTasks();
-  }, []);
 
   const handleAddTask = () => {
     setFormMode("add");
@@ -55,15 +38,11 @@ export default function TasksManagement() {
   const handleDeleteTask = async (task) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa không?")) {
       try {
-        const res = await deleteTask(task.id);
-        if (res.success) {
-          alert("Xóa nhiệm vụ thành công!");
-          setTasks((prev) => prev.filter((t) => t.id !== task.id));
-        } else {
-          alert("Xóa nhiệm vụ thất bại!");
-        }
+        await deleteTaskMutation.mutateAsync(task.id);
+        alert("Xóa nhiệm vụ thành công!");
       } catch (e) {
-        console.log(e);
+        console.error(e);
+        alert(e.message || "Xóa nhiệm vụ thất bại!");
       }
     }
   };
@@ -71,27 +50,17 @@ export default function TasksManagement() {
   const handleSubmitTask = async (data, mode) => {
     if (mode === "add") {
       try {
-        const result = await createTask(data);
-        if (result.success) {
-          alert("Thêm nhiệm vụ thành công!");
-          fetchTasks();
-        } else {
-          alert("Thêm nhiệm vụ thất bại!");
-        }
+        await createTaskMutation.mutateAsync(data);
+        alert("Thêm nhiệm vụ thành công!");
       } catch (e) {
-        alert(e);
+        alert(e.message || "Thêm nhiệm vụ thất bại!");
       }
     } else if (mode === "edit") {
       try {
-        const result = await updateTask(data.id, data);
-        if (result.success) {
-          alert("Cập nhật nhiệm vụ thành công!");
-          fetchTasks();
-        } else {
-          alert("Cập nhật nhiệm vụ thất bại!");
-        }
+        await updateTaskMutation.mutateAsync({ id: data.id, payload: data });
+        alert("Cập nhật nhiệm vụ thành công!");
       } catch (e) {
-        alert(e);
+        alert(e.message || "Cập nhật nhiệm vụ thất bại!");
       }
     }
     setFormOpen(false);

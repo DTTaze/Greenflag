@@ -35,7 +35,11 @@ export function useMarketplaceCrud({
   setMyItems,
 }: {
   auth: {
-    user?: { id: string | number; username: string; coins?: { amount: number } } | null;
+    user?: {
+      id: string | number;
+      username: string;
+      coins?: { amount: number };
+    } | null;
     isAuthenticated: boolean;
   };
   setError: React.Dispatch<React.SetStateAction<string | null>>;

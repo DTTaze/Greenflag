@@ -38,7 +38,7 @@ export const useRegisterForm = () => {
   const [loading, setLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
-  
+
   // OTP verify states
   const [otpLoading, setOtpLoading] = useState(false);
 
@@ -72,7 +72,10 @@ export const useRegisterForm = () => {
         notify("error", res.message || t("registerFailed"));
       }
     } catch (e: any) {
-      notify("error", e.response?.data?.message || e.message || t("registerFailed"));
+      notify(
+        "error",
+        e.response?.data?.message || e.message || t("registerFailed"),
+      );
     } finally {
       setLoading(false);
     }
@@ -93,13 +96,19 @@ export const useRegisterForm = () => {
       });
 
       if (res && res.success) {
-        notify("success", t("verifySuccess") || "Account verified successfully!");
+        notify(
+          "success",
+          t("verifySuccess") || "Account verified successfully!",
+        );
         router.push("/login");
       } else {
         notify("error", res.message || t("verifyFailed"));
       }
     } catch (e: any) {
-      notify("error", e.response?.data?.message || e.message || t("verifyFailed"));
+      notify(
+        "error",
+        e.response?.data?.message || e.message || t("verifyFailed"),
+      );
     } finally {
       setOtpLoading(false);
     }
@@ -109,12 +118,18 @@ export const useRegisterForm = () => {
     try {
       const res = await resendEmail({ email: registeredEmail });
       if (res && res.success) {
-        notify("success", t("otpResentSuccess") || "OTP code resent successfully!");
+        notify(
+          "success",
+          t("otpResentSuccess") || "OTP code resent successfully!",
+        );
       } else {
         notify("error", res.message || t("otpResendFailed"));
       }
     } catch (e: any) {
-      notify("error", e.response?.data?.message || e.message || t("otpResendFailed"));
+      notify(
+        "error",
+        e.response?.data?.message || e.message || t("otpResendFailed"),
+      );
     }
   };
 

@@ -49,9 +49,12 @@ export const useLoginForm = () => {
       const res = await login(loginData);
       if (res && res.success) {
         notify("success", t("loginSuccess"));
-        
+
         // Save access token to cookie
-        setCookie("access_token", res.data.accessToken, { maxAge: 60 * 60 * 24 * 7, path: "/" }); // 7 days
+        setCookie("access_token", res.data.accessToken, {
+          maxAge: 60 * 60 * 24 * 7,
+          path: "/",
+        }); // 7 days
 
         dispatch({
           type: "LOGIN_SUCCESS",

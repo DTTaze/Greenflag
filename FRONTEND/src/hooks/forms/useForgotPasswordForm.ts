@@ -11,13 +11,19 @@ import { forgotPassword, resetPassword } from "@/src/services/auth";
 
 const getRequestResetSchema = (t: any) =>
   z.object({
-    email: z.string().min(1, t("emailRequiredForgot")).email(t("emailInvalidForgot")),
+    email: z
+      .string()
+      .min(1, t("emailRequiredForgot"))
+      .email(t("emailInvalidForgot")),
   });
 
 const getResetPasswordSchema = (t: any) =>
   z
     .object({
-      email: z.string().min(1, t("emailRequiredForgot")).email(t("emailInvalidForgot")),
+      email: z
+        .string()
+        .min(1, t("emailRequiredForgot"))
+        .email(t("emailInvalidForgot")),
       otpCode: z
         .string()
         .min(6, t("otpInvalid") || "OTP must be exactly 6 characters.")
@@ -104,7 +110,7 @@ export const useForgotPasswordForm = () => {
     } catch (error: any) {
       notify(
         "error",
-        error.response?.data?.message || error.message || t("generalError")
+        error.response?.data?.message || error.message || t("generalError"),
       );
     } finally {
       setLoading(false);
@@ -129,7 +135,9 @@ export const useForgotPasswordForm = () => {
     } catch (error: any) {
       notify(
         "error",
-        error.response?.data?.message || error.message || t("invalidOrExpiredToken")
+        error.response?.data?.message ||
+          error.message ||
+          t("invalidOrExpiredToken"),
       );
     } finally {
       setLoading(false);

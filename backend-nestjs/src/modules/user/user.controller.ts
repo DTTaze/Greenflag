@@ -5,7 +5,6 @@ import {
   ForbiddenException,
   Get,
   Param,
-  Post,
   Put,
   UseGuards,
 } from '@nestjs/common';
@@ -18,12 +17,9 @@ import { Roles } from '@shared/decorators/roles.decorator';
 import { ROLE } from '@shared/enums';
 import { AuthGuard } from '@shared/guards/auth.guard';
 import { RolesGuard } from '@shared/guards/roles.guard';
+import { extractUserPublicInfo } from '@shared/helpers/user.helper';
 
-import {
-  AdminUpdateUserDto,
-  CreateUserDto,
-  UpdateUserProfileDto,
-} from './dtos/user.dto';
+import { AdminUpdateUserDto } from './dtos/user.dto';
 import { UserService } from './services/user.service';
 
 @ApiTags('Users')
@@ -75,10 +71,7 @@ export class UserController {
   @Roles(ROLE.ADMIN)
   async getUser(@Param('id') id: string) {
     const user = await this.userService.getUserByID(id);
-    if (user) {
-      delete user.password;
-    }
-    return user;
+    return extractUserPublicInfo(user);
   }
 
   @Put(':id')

@@ -35,15 +35,14 @@ export class Task extends AuditWithTimezone {
   @Column({ type: 'integer' })
   coins: number;
 
-  @Column({ type: 'enum', enum: TASK_DIFFICULTY })
+  @Column({ type: 'varchar' })
   difficulty: TASK_DIFFICULTY;
 
   @Column({ type: 'integer', default: 1, nullable: true })
   total: number;
 
   @Column({
-    type: 'enum',
-    enum: TASK_VISIBILITY,
+    type: 'varchar',
     default: TASK_VISIBILITY.PUBLIC,
   })
   status: TASK_VISIBILITY;

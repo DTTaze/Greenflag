@@ -92,8 +92,43 @@ We will implement/modify the following additions to the boilerplate:
 
 ### Phase 4: E-Commerce & Shipping Context (`item`, `product`, `transaction`, `delivery`)
 
-- [ ] Define TypeORM entities: `Item`, `Product`, `Transaction`, `DeliveryAccount`, `DeliveryOrder`, `ReceiverInformation`.
-- [ ] Integrate background BullMQ processors for item purchases.
+- [x] **Define TypeORM Entities & Relationships:**
+  - Define `Product` (C2C catalog) with `OneToMany` relationship to `Item` (`onDelete: 'RESTRICT'`).
+  - Define `Item` with size/weight details, `ManyToOne` to `Product`, and `ManyToOne` to `User` (`creator`).
+  - Define `Transaction` with status, snapshots, and `OneToOne` to `DeliveryOrder` (`onDelete: 'CASCADE'`).
+  - Define `DeliveryAccount` mapping seller carrier API credentials using generic JSONB `apiConfig` column.
+  - Define `ReceiverInformation` mapping user delivery addresses (`onDelete: 'CASCADE'`).
+  - Define `DeliveryOrder` mapping carrier responses and tracking (`onDelete: 'CASCADE'`).
+  - Convert all TypeORM entity column types from `enum` to `varchar` for Postgres compatibility and simple schema evolution.
+- [x] **Atomic Purchase with Pessimistic Locking:**
+  - Implement purchase endpoint: `POST /commerce/items/:itemId/purchase`.
+  - Validate parameters (quantity, receiver info).
+  - Wrap database execution in a transaction using `QueryRunner`.
+  - Apply Pessimistic Write Lock (`setLock('pessimistic_write')`) to:
+    - The `Item` record (verify status is `available` and stock >= quantity).
+    - The buyer's `Coin` record (verify balance >= price * quantity).
+  - Perform deductions: subtract quantity from `Item` stock, and subtract `totalPrice` from buyer's `Coin`.
+  - Create the `Transaction` record in `PENDING` status.
+  - Dispatch a background job to `COMMERCE_QUEUE` containing the `transactionId` and purchase details.
+- [x] **Background Processing with BullMQ:**
+  - Set up Redis configuration using ConfigModule.
+  - Register `COMMERCE_QUEUE` using `@nestjs/bullmq` and `bullmq` packages.
+  - Implement `CommerceProcessor` to consume `process-item-purchase` jobs.
+  - Inside processor:
+    - Retrieve transaction, buyer, seller, and receiver information.
+    - Fetch the default `DeliveryAccount` of the seller.
+    - Resolve the active shipping strategy from `ShippingFactoryService`.
+    - Dispatch creation call to carrier strategy using carrier-agnostic `StandardShippingPayload`.
+    - Create a `DeliveryOrder` record in the database using the mapped response data, linked to the `Transaction`.
+    - Update `Transaction` status to `ACCEPTED` (or handle errors by executing a SAGA compensating action that refunds coins, increments stock, and sets transaction to `CANCELLED`).
+- [x] **Shipping Strategy Pattern & Factory (ACL & Encapsulation):**
+  - Implement `IShippingProvider` interface containing generic calculation, creation, cancellation, location queries, and credential validation methods.
+  - Create concrete strategy implementations `GhnShippingStrategy` (handling real axios calls) and `GhtkShippingStrategy` (stub).
+  - Implement `ShippingFactoryService` to dynamically resolve providers based on `CARRIER_TYPE`.
+- [x] **Redis Location Caching & Shift-Left Validation:**
+  - Integrated `@nestjs/cache-manager` and `cache-manager-redis-yet` in `DeliveryModule`.
+  - Cached `getProvinces`, `getDistricts`, and `getWards` calls inside `GhnShippingStrategy` with 24-hour TTL (86400s).
+  - Implemented dynamic credential verification (`validateConfig`) check in strategies (pinging GHN `/v2/shop/all` API) and intercepted `create` and `updateByID` in `DeliveryAccountService` to reject invalid accounts.
 
 ### Phase 5: Event, Media & Utility Context (`event`, `media`, `qr`)
 

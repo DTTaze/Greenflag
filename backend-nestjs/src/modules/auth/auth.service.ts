@@ -278,7 +278,9 @@ export class AuthService {
         ? { email: identifier }
         : { username: identifier };
 
-      const user = await this.userService.findOne(query);
+      const user = await this.userService.findOne(query, {
+        relations: { profile: true },
+      });
 
       if (!user) {
         return generateNotFoundResult(
@@ -315,6 +317,13 @@ export class AuthService {
 
       const accessToken = await this.jwtService.signAsync({
         id: user.id,
+        username: user.username,
+        role: user.role,
+        email: user.email,
+        phoneNumber: user.profile?.phoneNumber || '',
+        streak: user.profile?.streak || 0,
+        lastCompletedTask: user.profile?.lastCompletedTask || null,
+        avatarUrl: user.avatarUrl,
       });
 
       return {
@@ -549,6 +558,7 @@ export class AuthService {
     if (foundUserSocialAccount) {
       const foundUser = await this.userService.findByID(
         foundUserSocialAccount.userId,
+        { relations: { profile: true } },
       );
       if (foundUser && user.avatarUrl && !foundUser.avatarUrl) {
         foundUser.avatarUrl = user.avatarUrl;
@@ -559,7 +569,10 @@ export class AuthService {
       return this.handleLoginBySocialAccount(foundUserSocialAccount);
     }
 
-    const foundUser = await this.userService.findOne({ email: user.email });
+    const foundUser = await this.userService.findOne(
+      { email: user.email },
+      { relations: { profile: true } },
+    );
 
     if (foundUser) {
       if (user.avatarUrl && !foundUser.avatarUrl) {
@@ -580,7 +593,16 @@ export class AuthService {
 
     const newUser = registerSocialAccountResult.data;
 
-    const accessToken = await this.jwtService.signAsync({ id: newUser.id });
+    const accessToken = await this.jwtService.signAsync({
+      id: newUser.id,
+      username: newUser.username,
+      role: newUser.role,
+      email: newUser.email,
+      phoneNumber: newUser.profile?.phoneNumber || '',
+      streak: newUser.profile?.streak || 0,
+      lastCompletedTask: newUser.profile?.lastCompletedTask || null,
+      avatarUrl: newUser.avatarUrl,
+    });
 
     return {
       success: true,
@@ -594,7 +616,9 @@ export class AuthService {
   protected async handleLoginBySocialAccount(
     socialAccount: UserSocialAccount,
   ): Promise<OperationResult> {
-    const foundUser = await this.userService.findByID(socialAccount.userId);
+    const foundUser = await this.userService.findByID(socialAccount.userId, {
+      relations: { profile: true },
+    });
 
     if (!foundUser) {
       return generateNotFoundResult('user not found', ERR_CODE.NOT_FOUND);
@@ -614,6 +638,13 @@ export class AuthService {
 
     const accessToken = await this.jwtService.signAsync({
       id: foundUser.id,
+      username: foundUser.username,
+      role: foundUser.role,
+      email: foundUser.email,
+      phoneNumber: foundUser.profile?.phoneNumber || '',
+      streak: foundUser.profile?.streak || 0,
+      lastCompletedTask: foundUser.profile?.lastCompletedTask || null,
+      avatarUrl: foundUser.avatarUrl,
     });
 
     return {
@@ -654,6 +685,13 @@ export class AuthService {
 
       const accessToken = await this.jwtService.signAsync({
         id: foundUser.id,
+        username: foundUser.username,
+        role: foundUser.role,
+        email: foundUser.email,
+        phoneNumber: foundUser.profile?.phoneNumber || '',
+        streak: foundUser.profile?.streak || 0,
+        lastCompletedTask: foundUser.profile?.lastCompletedTask || null,
+        avatarUrl: foundUser.avatarUrl,
       });
 
       return {

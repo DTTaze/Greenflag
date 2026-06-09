@@ -47,6 +47,22 @@ class AppConfig {
   @IsString()
   @IsOptional()
   redisPassword?: string;
+
+  @IsString()
+  @IsOptional()
+  googleClientId?: string;
+
+  @IsString()
+  @IsOptional()
+  googleClientSecret?: string;
+
+  @IsString()
+  @IsOptional()
+  googleCallbackUrl?: string;
+
+  @IsString()
+  @IsOptional()
+  ghnUrl?: string;
 }
 
 export const appConfig = registerAs(CONFIG_KEY.APP, () => {
@@ -63,6 +79,12 @@ export const appConfig = registerAs(CONFIG_KEY.APP, () => {
     redisHost: process.env.REDIS_HOST || 'localhost',
     redisPort: parseInt(process.env.REDIS_PORT || '6379', 10),
     redisPassword: process.env.REDIS_PASSWORD,
+    googleClientId: process.env.GOOGLE_CLIENT_ID,
+    googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    googleCallbackUrl: process.env.GOOGLE_CALLBACK_URL,
+    ghnUrl:
+      process.env.GHN_URL ||
+      'https://dev-online-gateway.ghn.vn/shiip/public-api',
   };
 
   validateConfig(config, AppConfig);

@@ -5,9 +5,23 @@ export enum ROLE {
 }
 
 export enum ITEM_STATUS {
+  PENDING = 'pending',
   AVAILABLE = 'available',
   SOLD_OUT = 'sold_out',
-  PENDING = 'pending',
+  SOLD = 'sold',
+  HIDDEN = 'hidden',
+  REJECTED = 'rejected',
+}
+
+export enum CARRIER_TYPE {
+  GHN = 'ghn',
+  GHTK = 'ghtk',
+  GRAB = 'grab',
+}
+
+export enum RECEIVER_ACCOUNT_TYPE {
+  HOME = 'home',
+  OFFICE = 'office',
 }
 
 export enum PRODUCT_CATEGORY {
@@ -90,6 +104,7 @@ export enum CONFIG_KEY {
   APP = 'app',
   DATABASE = 'database',
   CLOUDINARY = 'cloudinary',
+  EMAIL = 'email',
 }
 
 export enum SYSTEM_CONFIG_KEY {

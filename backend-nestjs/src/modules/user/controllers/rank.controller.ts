@@ -1,3 +1,5 @@
+import { HttpResponse } from 'mvc-common-toolkit';
+
 import { Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
@@ -16,14 +18,14 @@ export class RankController {
   constructor(private readonly rankService: RankService) {}
 
   @Get(':id')
-  async getRank(@Param('id') id: string) {
+  async getRank(@Param('id') id: string): Promise<HttpResponse> {
     return this.rankService.getRankById(id);
   }
 
   @Post('rearrange')
   @UseGuards(RolesGuard)
   @Roles(ROLE.ADMIN, ROLE.PARTNER)
-  async rearrangeRanks() {
+  async rearrangeRanks(): Promise<HttpResponse> {
     return this.rankService.rearrangeRanks();
   }
 }

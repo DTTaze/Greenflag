@@ -17,10 +17,18 @@ export class HttpResponseInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((response: HttpResponse) => {
         if (response?.httpCode) {
+          const res = ctx.switchToHttp().getResponse();
+          if (res && typeof res.status === 'function') {
+            res.status(response.httpCode);
+          }
           return response;
         }
 
         if (response?.success === false) {
+          const res = ctx.switchToHttp().getResponse();
+          if (res && typeof res.status === 'function' && response?.httpCode) {
+            res.status(response.httpCode);
+          }
           return response;
         }
 

@@ -1,3 +1,5 @@
+import { HttpResponse } from 'mvc-common-toolkit';
+
 import {
   Body,
   Controller,
@@ -40,33 +42,61 @@ export class EventController {
   ) {}
 
   @Get('information/:eventId')
-  async getEventById(@Param('eventId') eventId: string) {
-    return this.eventService.getEventById(eventId);
+  async getEventById(@Param('eventId') eventId: string): Promise<HttpResponse> {
+    const data = await this.eventService.getEventById(eventId);
+    return {
+      success: true,
+      data,
+    };
   }
 
   @Get('informations')
-  async getAllEvents() {
-    return this.eventService.getAllEvents();
+  async getAllEvents(): Promise<HttpResponse> {
+    const data = await this.eventService.getAllEvents();
+    return {
+      success: true,
+      data,
+    };
   }
 
   @Get('signed')
-  async getEventsSignedSelf(@Req() req: any) {
-    return this.eventUserService.getEventsSigned(req.user.id);
+  async getEventsSignedSelf(@Req() req: any): Promise<HttpResponse> {
+    const data = await this.eventUserService.getEventsSigned(req.user.id);
+    return {
+      success: true,
+      data,
+    };
   }
 
   @Get('signed/:userId')
-  async getEventsSigned(@Param('userId') userId: string) {
-    return this.eventUserService.getEventsSigned(userId);
+  async getEventsSigned(
+    @Param('userId') userId: string,
+  ): Promise<HttpResponse> {
+    const data = await this.eventUserService.getEventsSigned(userId);
+    return {
+      success: true,
+      data,
+    };
   }
 
   @Get('creator')
-  async getEventsOfCreator(@Req() req: any) {
-    return this.eventService.getEventsOfCreator(req.user.id);
+  async getEventsOfCreator(@Req() req: any): Promise<HttpResponse> {
+    const data = await this.eventService.getEventsOfCreator(req.user.id);
+    return {
+      success: true,
+      data,
+    };
   }
 
   @Get('user/:eventId')
-  async getEventUsersByEventId(@Param('eventId') eventId: string) {
-    return this.eventUserService.getEventUsersByEventId(eventId);
+  async getEventUsersByEventId(
+    @Param('eventId') eventId: string,
+  ): Promise<HttpResponse> {
+    const data = await this.eventUserService.getEventUsersByEventId(eventId);
+    return {
+      success: true,
+      data,
+    };
   }
 
   @Post('create')
@@ -77,13 +107,26 @@ export class EventController {
     @Body() dto: CreateEventDto,
     @Req() req: any,
     @UploadedFiles() images?: Express.Multer.File[],
-  ) {
-    return this.eventService.createEvent(dto, req.user.id, images);
+  ): Promise<HttpResponse> {
+    const data = await this.eventService.createEvent(dto, req.user.id, images);
+    return {
+      success: true,
+      message: 'Create event success',
+      data,
+    };
   }
 
   @Post('accept/:eventId')
-  async acceptEvent(@Param('eventId') eventId: string, @Req() req: any) {
-    return this.eventUserService.acceptEvent(eventId, req.user.id);
+  async acceptEvent(
+    @Param('eventId') eventId: string,
+    @Req() req: any,
+  ): Promise<HttpResponse> {
+    const data = await this.eventUserService.acceptEvent(eventId, req.user.id);
+    return {
+      success: true,
+      message: 'Accept event success',
+      data,
+    };
   }
 
   @Put('update/:eventId')
@@ -94,44 +137,78 @@ export class EventController {
     @Param('eventId') eventId: string,
     @Body() dto: UpdateEventDto,
     @UploadedFiles() images?: Express.Multer.File[],
-  ) {
-    return this.eventService.updateEvent(eventId, dto, images);
+  ): Promise<HttpResponse> {
+    const data = await this.eventService.updateEvent(eventId, dto, images);
+    return {
+      success: true,
+      message: 'Update event success',
+      data,
+    };
   }
 
   @Put('check_in')
   @Roles(ROLE.ADMIN, ROLE.PARTNER)
   @UseGuards(RolesGuard)
-  async checkIn(@Body() dto: CheckInOutDto) {
-    return this.eventUserService.checkIn(dto.event_id, dto.user_id);
+  async checkIn(@Body() dto: CheckInOutDto): Promise<HttpResponse> {
+    const data = await this.eventUserService.checkIn(dto.event_id, dto.user_id);
+    return {
+      success: true,
+      message: 'Check in success',
+      data,
+    };
   }
 
   @Put('check_out')
   @Roles(ROLE.ADMIN, ROLE.PARTNER)
   @UseGuards(RolesGuard)
-  async checkOut(@Body() dto: CheckInOutDto) {
-    return this.eventUserService.checkOut(dto.event_id, dto.user_id);
+  async checkOut(@Body() dto: CheckInOutDto): Promise<HttpResponse> {
+    const data = await this.eventUserService.checkOut(
+      dto.event_id,
+      dto.user_id,
+    );
+    return {
+      success: true,
+      message: 'Check out success',
+      data,
+    };
   }
 
   @Delete('delete/:eventId')
   @Roles(ROLE.ADMIN)
   @UseGuards(RolesGuard)
-  async deleteEvent(@Param('eventId') eventId: string) {
-    return this.eventService.deleteEvent(eventId);
+  async deleteEvent(@Param('eventId') eventId: string): Promise<HttpResponse> {
+    const data = await this.eventService.deleteEvent(eventId);
+    return {
+      success: true,
+      message: 'Delete event success',
+      data,
+    };
   }
 
   @Delete('user/delete/:eventUserId')
   @Roles(ROLE.ADMIN, ROLE.PARTNER)
   @UseGuards(RolesGuard)
-  async deleteEventUser(@Param('eventUserId') eventUserId: string) {
-    return this.eventUserService.deleteEventUser(eventUserId);
+  async deleteEventUser(
+    @Param('eventUserId') eventUserId: string,
+  ): Promise<HttpResponse> {
+    await this.eventUserService.deleteEventUser(eventUserId);
+    return {
+      success: true,
+      message: 'Delete event user success',
+    };
   }
 
   @Get('qr/:eventId')
-  async generateEventQr(@Param('eventId') eventId: string) {
+  async generateEventQr(
+    @Param('eventId') eventId: string,
+  ): Promise<HttpResponse> {
     const event = await this.eventService.getEventById(eventId);
     const qrDataUrl = await this.qrService.generateDataUrl(
       JSON.stringify({ eventId: event.id, publicId: event.publicId }),
     );
-    return { qrCode: qrDataUrl };
+    return {
+      success: true,
+      data: { qrCode: qrDataUrl },
+    };
   }
 }

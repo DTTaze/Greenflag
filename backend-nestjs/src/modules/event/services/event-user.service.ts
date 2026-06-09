@@ -152,6 +152,6 @@ export class EventUserService extends BaseCRUDService<EventUser> {
     const coin = await this.coinService.findOne({ userId });
     if (!coin) return;
 
-    await this.coinService.updateIncreaseCoin(coin.id, amount);
+    await this.coinService.updateIncreaseCoin(coin.id, { coins: amount });
   }
 }

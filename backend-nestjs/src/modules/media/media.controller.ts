@@ -1,3 +1,5 @@
+import { HttpResponse } from 'mvc-common-toolkit';
+
 import {
   Controller,
   Post,
@@ -41,11 +43,16 @@ export class MediaController {
     },
   })
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+  async uploadFile(
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<HttpResponse> {
     const uploadResult = await this.cloudinaryService.uploadImage(
       file,
       getStorageFolder().MEDIA,
     );
-    return { secureUrl: uploadResult.secure_url };
+    return {
+      success: true,
+      data: { secureUrl: uploadResult.secure_url },
+    };
   }
 }

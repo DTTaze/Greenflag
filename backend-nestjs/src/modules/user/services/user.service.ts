@@ -1,13 +1,8 @@
 import * as bcrypt from 'bcryptjs';
-import { CacheService } from 'mvc-common-toolkit';
+import { CacheService, OperationResult } from 'mvc-common-toolkit';
 import { Repository } from 'typeorm';
 
-import {
-  ConflictException,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CloudinaryService } from '@modules/cloudinary/services/cloudinary.service';
@@ -15,6 +10,11 @@ import { CloudinaryService } from '@modules/cloudinary/services/cloudinary.servi
 import { CACHE_KEYS } from '@shared/cache-key';
 import { INJECTION_TOKEN, getStorageFolder } from '@shared/constants';
 import { ROLE } from '@shared/enums';
+import {
+  generateConflictResult,
+  generateNotFoundResult,
+  generateSuccessResult,
+} from '@shared/helpers/operation-result.helper';
 import { BaseCRUDService } from '@shared/services/base-crud.service';
 
 import {
@@ -85,7 +85,7 @@ export class UserService extends BaseCRUDService<User> {
     return { success: true };
   }
 
-  async createUser(dto: CreateUserDto): Promise<User> {
+  async createUser(dto: CreateUserDto): Promise<OperationResult<User>> {
     const { email, password, username, fullName, role } = dto;
 
     // Check unique email and username
@@ -93,13 +93,13 @@ export class UserService extends BaseCRUDService<User> {
       where: { email },
     });
     if (existingEmail) {
-      throw new ConflictException('Email already exists');
+      return generateConflictResult('Email already exists');
     }
     const existingUsername = await this.userRepository.findOne({
       where: { username },
     });
     if (existingUsername) {
-      throw new ConflictException('Username already exists');
+      return generateConflictResult('Username already exists');
     }
 
     // Hash password
@@ -109,7 +109,7 @@ export class UserService extends BaseCRUDService<User> {
     // Default role is USER if not provided
     const resolvedRole = role || ROLE.USER;
 
-    return this.model.manager.transaction(
+    const savedUser = await this.model.manager.transaction(
       async (transactionalEntityManager) => {
         // 1. Calculate max order for Rank
         const maxRank = await transactionalEntityManager.findOne(Rank, {
@@ -125,11 +125,11 @@ export class UserService extends BaseCRUDService<User> {
           username,
           role: resolvedRole,
         });
-        const savedUser = await transactionalEntityManager.save(User, user);
+        const createdUser = await transactionalEntityManager.save(User, user);
 
         // 3. Create UserProfile
         const profile = transactionalEntityManager.create(UserProfile, {
-          userId: savedUser.id,
+          userId: createdUser.id,
           fullName,
           streak: 0,
         });
@@ -139,20 +139,20 @@ export class UserService extends BaseCRUDService<User> {
         const rank = transactionalEntityManager.create(Rank, {
           amount: 0,
           order: newOrder,
-          userId: savedUser.id,
+          userId: createdUser.id,
         });
         await transactionalEntityManager.save(Rank, rank);
 
         // 5. Create Coin
         const coin = transactionalEntityManager.create(Coin, {
           amount: 0,
-          userId: savedUser.id,
+          userId: createdUser.id,
         });
         await transactionalEntityManager.save(Coin, coin);
 
         // Return the saved user without password
         const resultUser = await transactionalEntityManager.findOne(User, {
-          where: { id: savedUser.id },
+          where: { id: createdUser.id },
           relations: ['profile', 'coin', 'rank'],
         });
 
@@ -162,42 +162,49 @@ export class UserService extends BaseCRUDService<User> {
         return resultUser!;
       },
     );
+
+    return generateSuccessResult(savedUser);
   }
 
   async findOrCreateUser(profile: any): Promise<User> {
     return this.userSocialAccountService.findOrCreateUser(profile);
   }
 
-  async getAllUsers(): Promise<User[]> {
-    return this.userRepository.find({
+  async getAllUsers(): Promise<OperationResult<User[]>> {
+    const users = await this.userRepository.find({
       relations: ['profile', 'coin', 'rank'],
       order: { createdAt: 'DESC' },
     });
+    return generateSuccessResult(users);
   }
 
-  async getUserByID(id: string): Promise<User> {
+  async getUserByID(id: string): Promise<OperationResult<User>> {
     const user = await this.userRepository.findOne({
       where: { id },
       relations: ['profile', 'coin', 'rank'],
     });
     if (!user) {
-      throw new NotFoundException('User not found');
+      return generateNotFoundResult('User not found');
     }
-    return user;
+    return generateSuccessResult(user);
   }
 
   async updateUserById(
     id: string,
     dto: UpdateUserProfileDto | AdminUpdateUserDto,
-  ): Promise<User> {
-    const user = await this.getUserByID(id);
+  ): Promise<OperationResult<User>> {
+    const userResult = await this.getUserByID(id);
+    if (!userResult.success) {
+      return userResult;
+    }
+    const user = userResult.data;
 
     if (dto.email && dto.email !== user.email) {
       const existing = await this.userRepository.findOne({
         where: { email: dto.email },
       });
       if (existing) {
-        throw new ConflictException('Email already exists');
+        return generateConflictResult('Email already exists');
       }
       user.email = dto.email;
     }
@@ -207,7 +214,7 @@ export class UserService extends BaseCRUDService<User> {
         where: { username: dto.username },
       });
       if (existing) {
-        throw new ConflictException('Username already exists');
+        return generateConflictResult('Username already exists');
       }
       user.username = dto.username;
     }
@@ -225,15 +232,19 @@ export class UserService extends BaseCRUDService<User> {
       await this.userProfileService.model.save(user.profile);
     }
 
-    const updatedUser = await this.getUserByID(id);
+    const updatedUserResult = await this.getUserByID(id);
+    if (!updatedUserResult.success) {
+      return updatedUserResult;
+    }
+    const updatedUser = updatedUserResult.data;
     delete updatedUser.password;
-    return updatedUser;
+    return generateSuccessResult(updatedUser);
   }
 
-  async deleteUser(id: string): Promise<void> {
+  async deleteUser(id: string): Promise<OperationResult<void>> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
-      throw new NotFoundException('User not found');
+      return generateNotFoundResult('User not found');
     }
 
     await this.model.manager.transaction(async (transactionalEntityManager) => {
@@ -245,13 +256,19 @@ export class UserService extends BaseCRUDService<User> {
       });
       await transactionalEntityManager.delete(User, { id: user.id });
     });
+
+    return generateSuccessResult(undefined);
   }
 
   async updateUserAvatar(
     userId: string,
     file: Express.Multer.File,
-  ): Promise<User> {
-    const user = await this.getUserByID(userId);
+  ): Promise<OperationResult<User>> {
+    const userResult = await this.getUserByID(userId);
+    if (!userResult.success) {
+      return userResult;
+    }
+    const user = userResult.data;
 
     // Clean up old avatar from Cloudinary if it is not the default one
     if (user.avatarUrl) {
@@ -275,6 +292,6 @@ export class UserService extends BaseCRUDService<User> {
     await this.cacheService.del(CACHE_KEYS.IDENTITY.AVATARS_ALL());
 
     delete updatedUser.password;
-    return updatedUser;
+    return generateSuccessResult(updatedUser);
   }
 }

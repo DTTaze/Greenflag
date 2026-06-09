@@ -1,7 +1,6 @@
 import { HttpResponse } from 'mvc-common-toolkit';
 
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -24,6 +23,7 @@ import {
   mapToDeliveryAccountEntity,
   mapToReceiverInfoEntity,
 } from '@shared/helpers/delivery-mapping.helper';
+import { generateBadRequestResult } from '@shared/helpers/operation-result.helper';
 
 import {
   CreateDeliveryAccountDto,
@@ -251,7 +251,7 @@ export class DeliveryController {
     @Body('province_id') provinceId?: number,
   ): Promise<HttpResponse> {
     if (!provinceId) {
-      throw new BadRequestException('province_id is required');
+      return generateBadRequestResult('province_id is required');
     }
     const provider = this.shippingFactoryService.getProvider(carrier);
     const tempAccount = new DeliveryAccount();
@@ -274,7 +274,7 @@ export class DeliveryController {
     @Query('district_id') districtId?: number,
   ): Promise<HttpResponse> {
     if (!districtId) {
-      throw new BadRequestException('district_id is required');
+      return generateBadRequestResult('district_id is required');
     }
     const provider = this.shippingFactoryService.getProvider(carrier);
     const tempAccount = new DeliveryAccount();

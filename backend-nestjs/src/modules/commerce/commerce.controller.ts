@@ -17,6 +17,10 @@ import { User } from '@modules/user/entities/user.entity';
 import { RequestUser } from '@shared/decorators/request-user.decorator';
 import { TRANSACTION_STATUS } from '@shared/enums';
 import { AuthGuard } from '@shared/guards/auth.guard';
+import {
+  mapToItemEntity,
+  mapToProductEntity,
+} from '@shared/helpers/commerce-mapping.helper';
 
 import { CreateItemDto, PurchaseItemDto, UpdateItemDto } from './dtos/item.dto';
 import { CreateProductDto, UpdateProductDto } from './dtos/product.dto';
@@ -34,38 +38,6 @@ export class CommerceController {
     private readonly itemService: ItemService,
     private readonly transactionService: TransactionService,
   ) {}
-
-  private mapToProductEntity(dto: CreateProductDto | UpdateProductDto) {
-    const entity: any = {};
-    if (dto.name !== undefined) entity.name = dto.name;
-    if (dto.description !== undefined) entity.description = dto.description;
-    if (dto.price !== undefined) entity.price = dto.price;
-    if (dto.category !== undefined) entity.category = dto.category;
-    if ('product_status' in dto && dto.product_status !== undefined) {
-      entity.productStatus = dto.product_status;
-    }
-    if ('post_status' in dto && dto.post_status !== undefined) {
-      entity.postStatus = dto.post_status;
-    }
-    return entity;
-  }
-
-  private mapToItemEntity(dto: CreateItemDto | UpdateItemDto) {
-    const entity: any = {};
-    if (dto.name !== undefined) entity.name = dto.name;
-    if (dto.price !== undefined) entity.price = dto.price;
-    if (dto.stock !== undefined) entity.stock = dto.stock;
-    if (dto.description !== undefined) entity.description = dto.description;
-    if (dto.status !== undefined) entity.status = dto.status;
-    if (dto.weight !== undefined) entity.weight = dto.weight;
-    if (dto.length !== undefined) entity.length = dto.length;
-    if (dto.width !== undefined) entity.width = dto.width;
-    if (dto.height !== undefined) entity.height = dto.height;
-    if (dto.purchase_limit_per_day !== undefined) {
-      entity.purchaseLimitPerDay = dto.purchase_limit_per_day;
-    }
-    return entity;
-  }
 
   // --- Products ---
 
@@ -94,7 +66,7 @@ export class CommerceController {
     @RequestUser() user: User,
     @Body() dto: CreateProductDto,
   ): Promise<HttpResponse> {
-    const mapped = this.mapToProductEntity(dto);
+    const mapped = mapToProductEntity(dto);
     const product = await this.productService.create({
       ...mapped,
       sellerId: user.id,
@@ -111,7 +83,7 @@ export class CommerceController {
     @Param('id') id: string,
     @Body() dto: UpdateProductDto,
   ): Promise<HttpResponse> {
-    const mapped = this.mapToProductEntity(dto);
+    const mapped = mapToProductEntity(dto);
     const product = await this.productService.updateByID(id, mapped);
     return {
       success: true,
@@ -162,7 +134,7 @@ export class CommerceController {
     @RequestUser() user: User,
     @Body() dto: CreateItemDto,
   ): Promise<HttpResponse> {
-    const mapped = this.mapToItemEntity(dto);
+    const mapped = mapToItemEntity(dto);
     const item = await this.itemService.create({
       ...mapped,
       creatorId: user.id,
@@ -179,7 +151,7 @@ export class CommerceController {
     @Param('id') id: string,
     @Body() dto: UpdateItemDto,
   ): Promise<HttpResponse> {
-    const mapped = this.mapToItemEntity(dto);
+    const mapped = mapToItemEntity(dto);
     const item = await this.itemService.updateByID(id, mapped);
     return {
       success: true,

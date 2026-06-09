@@ -1,8 +1,9 @@
+import { HttpResponse } from 'mvc-common-toolkit';
+
 import {
   Body,
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   Param,
   Post,
@@ -19,6 +20,7 @@ import { Roles } from '@shared/decorators/roles.decorator';
 import { ROLE, TASK_DIFFICULTY } from '@shared/enums';
 import { AuthGuard } from '@shared/guards/auth.guard';
 import { RolesGuard } from '@shared/guards/roles.guard';
+import { generateForbiddenResult } from '@shared/helpers/operation-result.helper';
 
 import {
   ChangeTaskStatusDto,
@@ -41,75 +43,137 @@ export class TaskController {
 
   @Get()
   @ApiOperation({ summary: 'Get list of tasks' })
-  async getAllTasks() {
-    return this.taskService.getAllTasks();
+  async getAllTasks(): Promise<HttpResponse> {
+    const data = await this.taskService.getAllTasks();
+    return {
+      success: true,
+      data,
+    };
   }
 
   @Get('customer')
   @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Get all tasks of customer' })
-  async getAllTasksOfCustomer(@RequestUser() reqUser: any) {
-    return this.taskService.getAllTasksOfCustomer(reqUser.id);
+  async getAllTasksOfCustomer(
+    @RequestUser() reqUser: any,
+  ): Promise<HttpResponse> {
+    const data = await this.taskService.getAllTasksOfCustomer(reqUser.id);
+    return {
+      success: true,
+      data,
+    };
   }
 
   @Get('type/:type_name')
   @ApiOperation({ summary: 'Get task by type name' })
-  async getAllTasksByTypeName(@Param('type_name') typeName: string) {
-    return this.taskService.getAllTasksByTypeName(typeName);
+  async getAllTasksByTypeName(
+    @Param('type_name') typeName: string,
+  ): Promise<HttpResponse> {
+    const data = await this.taskService.getAllTasksByTypeName(typeName);
+    return {
+      success: true,
+      data,
+    };
   }
 
   @Get('difficulty/:difficulty_name')
   @ApiOperation({ summary: 'Get task by difficulty name' })
   async getAllTasksByDifficultyName(
     @Param('difficulty_name') difficultyName: TASK_DIFFICULTY,
-  ) {
-    return this.taskService.getAllTasksByDifficultyName(difficultyName);
+  ): Promise<HttpResponse> {
+    const data =
+      await this.taskService.getAllTasksByDifficultyName(difficultyName);
+    return {
+      success: true,
+      data,
+    };
   }
 
   @Get('submit/user/:user_id')
   @ApiOperation({ summary: 'Get task submit by user ID' })
-  async getTaskSubmitByUserId(@Param('user_id') userId: string) {
-    return this.taskSubmitService.getTaskSubmitByUserId(userId);
+  async getTaskSubmitByUserId(
+    @Param('user_id') userId: string,
+  ): Promise<HttpResponse> {
+    const data = await this.taskSubmitService.getTaskSubmitByUserId(userId);
+    return {
+      success: true,
+      data,
+    };
   }
 
   @Get('submit/customer/:customer_id')
   @ApiOperation({ summary: 'Get task submit by customer ID' })
-  async getTaskSubmitByCustomerId(@Param('customer_id') customerId: string) {
-    return this.taskSubmitService.getTaskSubmitByCustomerId(customerId);
+  async getTaskSubmitByCustomerId(
+    @Param('customer_id') customerId: string,
+  ): Promise<HttpResponse> {
+    const data =
+      await this.taskSubmitService.getTaskSubmitByCustomerId(customerId);
+    return {
+      success: true,
+      data,
+    };
   }
 
   @Get('status/public')
   @ApiOperation({ summary: 'Get all tasks status public' })
-  async getAllTasksStatusPublic() {
-    return this.taskService.getAllTasksStatusPublic();
+  async getAllTasksStatusPublic(): Promise<HttpResponse> {
+    const data = await this.taskService.getAllTasksStatusPublic();
+    return {
+      success: true,
+      data,
+    };
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get task by ID' })
-  async getTaskById(@Param('id') id: string) {
-    return this.taskService.getTaskById(id);
+  async getTaskById(@Param('id') id: string): Promise<HttpResponse> {
+    const data = await this.taskService.getTaskById(id);
+    return {
+      success: true,
+      data,
+    };
   }
 
   @Post('upload')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(ROLE.ADMIN, ROLE.PARTNER)
   @ApiOperation({ summary: 'Create a task' })
-  async createTask(@Body() dto: CreateTaskDto, @RequestUser() reqUser: any) {
-    return this.taskService.createTask(dto, reqUser.id);
+  async createTask(
+    @Body() dto: CreateTaskDto,
+    @RequestUser() reqUser: any,
+  ): Promise<HttpResponse> {
+    const data = await this.taskService.createTask(dto, reqUser.id);
+    return {
+      success: true,
+      data,
+    };
   }
 
   @Post('accept/:id')
   @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Accept a task' })
-  async acceptTask(@Param('id') id: string, @RequestUser() reqUser: any) {
-    return this.taskService.acceptTask(id, reqUser.id);
+  async acceptTask(
+    @Param('id') id: string,
+    @RequestUser() reqUser: any,
+  ): Promise<HttpResponse> {
+    const data = await this.taskService.acceptTask(id, reqUser.id);
+    return {
+      success: true,
+      data,
+    };
   }
 
   @Post('progress/increase/:task_user_id')
   @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Increase progress count of a task' })
-  async increaseProgressCount(@Param('task_user_id') taskUserId: string) {
-    return this.taskService.increaseProgressCount(taskUserId);
+  async increaseProgressCount(
+    @Param('task_user_id') taskUserId: string,
+  ): Promise<HttpResponse> {
+    const data = await this.taskService.increaseProgressCount(taskUserId);
+    return {
+      success: true,
+      data,
+    };
   }
 
   @Post('submit/:task_id')
@@ -121,13 +185,17 @@ export class TaskController {
     @Body() dto: SubmitTaskDto,
     @UploadedFiles() files: Express.Multer.File[],
     @RequestUser() reqUser: any,
-  ) {
-    return this.taskService.submitTask(
+  ): Promise<HttpResponse> {
+    const data = await this.taskService.submitTask(
       taskId,
       reqUser.id,
       dto.description || '',
       files,
     );
+    return {
+      success: true,
+      data,
+    };
   }
 
   @Post('status/change/:task_id')
@@ -138,14 +206,18 @@ export class TaskController {
     @Param('task_id') taskId: string,
     @Body() dto: ChangeTaskStatusDto,
     @RequestUser() reqUser: any,
-  ) {
+  ): Promise<HttpResponse> {
     const task = await this.taskService.getTaskById(taskId);
     if (reqUser.role !== ROLE.ADMIN && task.creatorId !== reqUser.id) {
-      throw new ForbiddenException(
+      return generateForbiddenResult(
         'Bạn không có quyền chỉnh sửa nhiệm vụ của người khác',
       );
     }
-    return this.taskService.changeTaskStatus(taskId, dto.status);
+    const data = await this.taskService.changeTaskStatus(taskId, dto.status);
+    return {
+      success: true,
+      data,
+    };
   }
 
   @Put('submit/decision/:id')
@@ -155,8 +227,15 @@ export class TaskController {
   async handleDecisionTaskSubmit(
     @Param('id') id: string,
     @Body() dto: DecisionTaskSubmitDto,
-  ) {
-    return this.taskService.updateDecisionTaskSubmit(id, dto.decision);
+  ): Promise<HttpResponse> {
+    const data = await this.taskService.updateDecisionTaskSubmit(
+      id,
+      dto.decision,
+    );
+    return {
+      success: true,
+      data,
+    };
   }
 
   @Put(':id')
@@ -166,27 +245,37 @@ export class TaskController {
     @Param('id') id: string,
     @Body() dto: UpdateTaskDto,
     @RequestUser() reqUser: any,
-  ) {
+  ): Promise<HttpResponse> {
     const task = await this.taskService.getTaskById(id);
     if (reqUser.role !== ROLE.ADMIN && task.creatorId !== reqUser.id) {
-      throw new ForbiddenException(
+      return generateForbiddenResult(
         'Bạn không có quyền chỉnh sửa nhiệm vụ của người khác',
       );
     }
-    return this.taskService.updateTask(id, dto);
+    const data = await this.taskService.updateTask(id, dto);
+    return {
+      success: true,
+      data,
+    };
   }
 
   @Delete(':id')
   @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Delete a task by ID' })
-  async deleteTask(@Param('id') id: string, @RequestUser() reqUser: any) {
+  async deleteTask(
+    @Param('id') id: string,
+    @RequestUser() reqUser: any,
+  ): Promise<HttpResponse> {
     const task = await this.taskService.getTaskById(id);
     if (reqUser.role !== ROLE.ADMIN && task.creatorId !== reqUser.id) {
-      throw new ForbiddenException(
+      return generateForbiddenResult(
         'Bạn không có quyền xóa nhiệm vụ của người khác',
       );
     }
     await this.taskService.deleteTask(id);
-    return { message: 'Delete task success' };
+    return {
+      success: true,
+      message: 'Delete task success',
+    };
   }
 }

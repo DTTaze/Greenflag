@@ -10,12 +10,18 @@ import {
 
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
+import {
+  SanitizeInput,
+  TrimAndLowercase,
+} from '@shared/decorators/sanitize-input.decorator';
 import { ROLE } from '@shared/enums';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'user@example.com' })
   @IsEmail({}, { message: 'Email không hợp lệ' })
   @IsNotEmpty()
+  @TrimAndLowercase()
+  @SanitizeInput()
   email: string;
 
   @ApiProperty({ example: 'password123' })
@@ -28,12 +34,15 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(2, { message: 'Username phải có ít nhất 2 ký tự' })
+  @TrimAndLowercase()
+  @SanitizeInput()
   username: string;
 
   @ApiProperty({ example: 'John Doe' })
   @IsString()
   @IsNotEmpty()
   @MinLength(2, { message: 'Tên phải có ít nhất 2 ký tự' })
+  @SanitizeInput()
   fullName: string;
 
   @ApiPropertyOptional({ enum: ROLE, example: ROLE.USER })
@@ -47,12 +56,15 @@ export class UpdateUserProfileDto {
   @IsOptional()
   @IsString()
   @MinLength(2, { message: 'Username phải có ít nhất 2 ký tự' })
+  @TrimAndLowercase()
+  @SanitizeInput()
   username?: string;
 
   @ApiPropertyOptional({ example: 'John Doe Updated' })
   @IsOptional()
   @IsString()
   @MinLength(2, { message: 'Tên phải có ít nhất 2 ký tự' })
+  @SanitizeInput()
   fullName?: string;
 
   @ApiPropertyOptional({ example: '0987654321' })
@@ -61,11 +73,14 @@ export class UpdateUserProfileDto {
   @Matches(/(84|0[3|5|7|8|9])+([0-9]{8})\b/, {
     message: 'Số điện thoại không hợp lệ',
   })
+  @SanitizeInput()
   phoneNumber?: string;
 
   @ApiPropertyOptional({ example: 'updated@example.com' })
   @IsOptional()
   @IsEmail({}, { message: 'Email không hợp lệ' })
+  @TrimAndLowercase()
+  @SanitizeInput()
   email?: string;
 }
 

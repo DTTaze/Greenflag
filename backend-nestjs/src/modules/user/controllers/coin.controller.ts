@@ -1,3 +1,5 @@
+import { HttpResponse } from 'mvc-common-toolkit';
+
 import { Body, Controller, Get, Param, Put, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
@@ -17,28 +19,37 @@ export class CoinController {
   constructor(private readonly coinService: CoinService) {}
 
   @Get(':id')
-  async getCoin(@Param('id') id: string) {
+  async getCoin(@Param('id') id: string): Promise<HttpResponse> {
     return this.coinService.getCoin(id);
   }
 
   @Put('update/:id')
   @UseGuards(RolesGuard)
   @Roles(ROLE.ADMIN, ROLE.PARTNER)
-  async updateCoin(@Param('id') id: string, @Body() dto: UpdateCoinDto) {
-    return this.coinService.updateCoin(id, dto.coins);
+  async updateCoin(
+    @Param('id') id: string,
+    @Body() dto: UpdateCoinDto,
+  ): Promise<HttpResponse> {
+    return this.coinService.updateCoin(id, dto);
   }
 
   @Put('increase/:id')
   @UseGuards(RolesGuard)
   @Roles(ROLE.ADMIN, ROLE.PARTNER)
-  async increaseCoin(@Param('id') id: string, @Body() dto: UpdateCoinDto) {
-    return this.coinService.updateIncreaseCoin(id, dto.coins);
+  async increaseCoin(
+    @Param('id') id: string,
+    @Body() dto: UpdateCoinDto,
+  ): Promise<HttpResponse> {
+    return this.coinService.updateIncreaseCoin(id, dto);
   }
 
   @Put('decrease/:id')
   @UseGuards(RolesGuard)
   @Roles(ROLE.ADMIN, ROLE.PARTNER)
-  async decreaseCoin(@Param('id') id: string, @Body() dto: UpdateCoinDto) {
-    return this.coinService.updateDecreaseCoin(id, dto.coins);
+  async decreaseCoin(
+    @Param('id') id: string,
+    @Body() dto: UpdateCoinDto,
+  ): Promise<HttpResponse> {
+    return this.coinService.updateDecreaseCoin(id, dto);
   }
 }

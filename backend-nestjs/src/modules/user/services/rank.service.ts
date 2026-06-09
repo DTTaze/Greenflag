@@ -1,11 +1,19 @@
-import { CacheService, SET_CACHE_POLICY } from 'mvc-common-toolkit';
+import {
+  CacheService,
+  OperationResult,
+  SET_CACHE_POLICY,
+} from 'mvc-common-toolkit';
 import { Repository } from 'typeorm';
 
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CACHE_KEYS } from '@shared/cache-key';
 import { CACHE_TTL, INJECTION_TOKEN } from '@shared/constants';
+import {
+  generateNotFoundResult,
+  generateSuccessResult,
+} from '@shared/helpers/operation-result.helper';
 import { BaseCRUDService } from '@shared/services/base-crud.service';
 
 import { Rank } from '../entities/rank.entity';
@@ -21,26 +29,26 @@ export class RankService extends BaseCRUDService<Rank> {
     super(rankRepository);
   }
 
-  async getRankById(rankId: string): Promise<Rank> {
+  async getRankById(rankId: string): Promise<OperationResult<Rank>> {
     const key = CACHE_KEYS.IDENTITY.RANK_BY_ID(rankId);
     const cached = await this.cacheService.get(key);
     if (cached) {
-      return JSON.parse(cached);
+      return generateSuccessResult(JSON.parse(cached));
     }
 
     const rank = await this.rankRepository.findOne({ where: { id: rankId } });
     if (!rank) {
-      throw new NotFoundException('Rank not found');
+      return generateNotFoundResult('Rank not found');
     }
 
     await this.cacheService.set(key, JSON.stringify(rank), {
       policy: SET_CACHE_POLICY.WITH_TTL,
       value: CACHE_TTL.ONE_HOUR,
     });
-    return rank;
+    return generateSuccessResult(rank);
   }
 
-  async rearrangeRanks(): Promise<Rank[]> {
+  async rearrangeRanks(): Promise<OperationResult<Rank[]>> {
     try {
       const ranks = await this.rankRepository.find({
         order: { amount: 'DESC' },
@@ -60,7 +68,7 @@ export class RankService extends BaseCRUDService<Rank> {
         result.push(updatedRank);
       }
 
-      return result;
+      return generateSuccessResult(result);
     } catch (error) {
       console.error('Error rearranging ranks:', error);
       throw error;

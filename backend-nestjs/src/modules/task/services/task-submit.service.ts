@@ -3,16 +3,24 @@ import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
+import {
+  OperationResult,
+  generateSuccessResult,
+} from '@shared/helpers/operation-result.helper';
+import { BaseCRUDService } from '@shared/services/base-crud.service';
+
 import { TaskSubmit } from '../entities/task-submit.entity';
 
 @Injectable()
-export class TaskSubmitService {
+export class TaskSubmitService extends BaseCRUDService<TaskSubmit> {
   constructor(
     @InjectRepository(TaskSubmit)
     private readonly taskSubmitRepository: Repository<TaskSubmit>,
-  ) {}
+  ) {
+    super(taskSubmitRepository);
+  }
 
-  async getTaskSubmitByUserId(userId: string) {
+  async getTaskSubmitByUserId(userId: string): Promise<OperationResult<any[]>> {
     const submits = await this.taskSubmitRepository.find({
       where: {
         taskUser: {
@@ -23,7 +31,7 @@ export class TaskSubmitService {
       order: { submittedAt: 'DESC' },
     });
 
-    return submits.map((submit) => ({
+    const mapped = submits.map((submit) => ({
       id: submit.id,
       task_user: {
         progress_count: submit.taskUser.progressCount,
@@ -41,9 +49,13 @@ export class TaskSubmitService {
       },
       images: submit.images || [],
     }));
+
+    return generateSuccessResult(mapped);
   }
 
-  async getTaskSubmitByCustomerId(customerId: string) {
+  async getTaskSubmitByCustomerId(
+    customerId: string,
+  ): Promise<OperationResult<any[]>> {
     const submits = await this.taskSubmitRepository.find({
       where: {
         taskUser: {
@@ -56,7 +68,7 @@ export class TaskSubmitService {
       order: { submittedAt: 'DESC' },
     });
 
-    return submits.map((submit) => ({
+    const mapped = submits.map((submit) => ({
       id: submit.id,
       task_user: {
         progress_count: submit.taskUser.progressCount,
@@ -74,5 +86,7 @@ export class TaskSubmitService {
       },
       images: submit.images || [],
     }));
+
+    return generateSuccessResult(mapped);
   }
 }

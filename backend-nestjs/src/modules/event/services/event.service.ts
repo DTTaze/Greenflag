@@ -1,12 +1,18 @@
 import { nanoid } from 'nanoid';
 import { Repository } from 'typeorm';
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CloudinaryService } from '@modules/cloudinary/services/cloudinary.service';
 
-import { getStorageFolder } from '@shared/constants';
+import { ERR_CODE, getStorageFolder } from '@shared/constants';
+import {
+  OperationResult,
+  generateForbiddenResult,
+  generateNotFoundResult,
+  generateSuccessResult,
+} from '@shared/helpers/operation-result.helper';
 import { BaseCRUDService } from '@shared/services/base-crud.service';
 
 import { CreateEventDto, UpdateEventDto } from '../dtos/event.dto';
@@ -22,61 +28,70 @@ export class EventService extends BaseCRUDService<Event> {
     super(eventRepository);
   }
 
-  async getEventById(eventId: string): Promise<any> {
+  async getEventById(eventId: string): Promise<OperationResult<any>> {
     const event = await this.eventRepository.findOne({
       where: { id: eventId },
       relations: ['creator'],
     });
 
     if (!event) {
-      throw new NotFoundException('Event not found');
+      return generateNotFoundResult(
+        'Event not found',
+        ERR_CODE.EVENT_NOT_FOUND,
+      );
     }
 
-    return {
+    const mapped = {
       ...event,
       creator: event.creator
         ? { id: event.creator.id, username: event.creator.username }
         : null,
       images: event.images || [],
     };
+
+    return generateSuccessResult(mapped);
   }
 
-  async getAllEvents(): Promise<any[]> {
+  async getAllEvents(): Promise<OperationResult<any[]>> {
     const events = await this.eventRepository.find({
       relations: ['creator'],
       order: { createdAt: 'DESC' },
     });
 
-    return events.map((event) => ({
+    const mapped = events.map((event) => ({
       ...event,
       creator: event.creator
         ? { id: event.creator.id, username: event.creator.username }
         : null,
       images: event.images || [],
     }));
+
+    return generateSuccessResult(mapped);
   }
 
-  async getEventsOfCreator(creatorId: string): Promise<any[]> {
+  async getEventsOfCreator(creatorId: string): Promise<OperationResult<any[]>> {
     const events = await this.eventRepository.find({
       where: { creatorId },
       relations: ['creator'],
       order: { createdAt: 'DESC' },
     });
 
-    return events.map((event) => ({
+    const mapped = events.map((event) => ({
       ...event,
       creator: event.creator
         ? { id: event.creator.id, username: event.creator.username }
         : null,
       images: event.images || [],
     }));
+
+    return generateSuccessResult(mapped);
   }
 
   async createEvent(
     dto: CreateEventDto,
     creatorId: string,
     images?: Express.Multer.File[],
-  ): Promise<any> {
+  ): Promise<OperationResult<any>> {
     const uploadedImageUrls: string[] = [];
     if (images?.length) {
       for (const file of images) {
@@ -104,22 +119,35 @@ export class EventService extends BaseCRUDService<Event> {
       images: uploadedImageUrls,
     });
 
-    return {
+    const mapped = {
       ...event,
       images: event.images || [],
     };
+
+    return generateSuccessResult(mapped);
   }
 
   async updateEvent(
     eventId: string,
     dto: UpdateEventDto,
     images?: Express.Multer.File[],
-  ): Promise<any> {
+    currentUserId?: string,
+    isAdmin: boolean = false,
+  ): Promise<OperationResult<any>> {
     const event = await this.eventRepository.findOne({
       where: { id: eventId },
     });
     if (!event) {
-      throw new NotFoundException('Event not found');
+      return generateNotFoundResult(
+        'Event not found',
+        ERR_CODE.EVENT_NOT_FOUND,
+      );
+    }
+    if (!isAdmin && currentUserId && event.creatorId !== currentUserId) {
+      return generateForbiddenResult(
+        'Bạn không có quyền chỉnh sửa sự kiện của người khác',
+        ERR_CODE.FORBIDDEN,
+      );
     }
 
     const updateFields: Partial<Event> = {};
@@ -155,11 +183,34 @@ export class EventService extends BaseCRUDService<Event> {
     return this.getEventById(eventId);
   }
 
-  async deleteEvent(eventId: string): Promise<any> {
-    const event = await this.getEventById(eventId);
+  async deleteEvent(
+    eventId: string,
+    currentUserId?: string,
+    isAdmin: boolean = false,
+  ): Promise<OperationResult<any>> {
+    const event = await this.eventRepository.findOne({
+      where: { id: eventId },
+    });
+    if (!event) {
+      return generateNotFoundResult(
+        'Event not found',
+        ERR_CODE.EVENT_NOT_FOUND,
+      );
+    }
+    if (!isAdmin && currentUserId && event.creatorId !== currentUserId) {
+      return generateForbiddenResult(
+        'Bạn không có quyền xóa sự kiện của người khác',
+        ERR_CODE.FORBIDDEN,
+      );
+    }
+    const detailedEventResult = await this.getEventById(eventId);
+    if (!detailedEventResult.success) {
+      return detailedEventResult;
+    }
+    const detailedEvent = detailedEventResult.data;
     await this.deleteEventImages(event);
     await this.eventRepository.delete(eventId);
-    return event;
+    return generateSuccessResult(detailedEvent);
   }
 
   private async deleteEventImages(event: Event): Promise<void> {

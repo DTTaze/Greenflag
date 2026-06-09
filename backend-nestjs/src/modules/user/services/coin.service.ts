@@ -1,16 +1,13 @@
-import {
-  CacheService,
-  OperationResult,
-  SET_CACHE_POLICY,
-} from 'mvc-common-toolkit';
+import { CacheService, SET_CACHE_POLICY } from 'mvc-common-toolkit';
 import { Repository } from 'typeorm';
 
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CACHE_KEYS } from '@shared/cache-key';
-import { CACHE_TTL, INJECTION_TOKEN } from '@shared/constants';
+import { CACHE_TTL, ERR_CODE, INJECTION_TOKEN } from '@shared/constants';
 import {
+  OperationResult,
   generateBadRequestResult,
   generateNotFoundResult,
   generateSuccessResult,
@@ -40,7 +37,7 @@ export class CoinService extends BaseCRUDService<Coin> {
 
     const coin = await this.coinRepository.findOne({ where: { id } });
     if (!coin) {
-      return generateNotFoundResult('Coin not found');
+      return generateNotFoundResult('Coin not found', ERR_CODE.COIN_NOT_FOUND);
     }
 
     await this.cacheService.set(key, JSON.stringify(coin), {
@@ -56,7 +53,7 @@ export class CoinService extends BaseCRUDService<Coin> {
   ): Promise<OperationResult<Coin>> {
     const coin = await this.coinRepository.findOne({ where: { id } });
     if (!coin) {
-      return generateNotFoundResult('Coin not found');
+      return generateNotFoundResult('Coin not found', ERR_CODE.COIN_NOT_FOUND);
     }
 
     coin.amount = dto.coins;
@@ -76,7 +73,7 @@ export class CoinService extends BaseCRUDService<Coin> {
   ): Promise<OperationResult<Coin>> {
     const coin = await this.coinRepository.findOne({ where: { id } });
     if (!coin) {
-      return generateNotFoundResult('Coin not found');
+      return generateNotFoundResult('Coin not found', ERR_CODE.COIN_NOT_FOUND);
     }
 
     coin.amount += dto.coins;
@@ -96,13 +93,14 @@ export class CoinService extends BaseCRUDService<Coin> {
   ): Promise<OperationResult<Coin>> {
     const coin = await this.coinRepository.findOne({ where: { id } });
     if (!coin) {
-      return generateNotFoundResult('Coin not found');
+      return generateNotFoundResult('Coin not found', ERR_CODE.COIN_NOT_FOUND);
     }
 
     const newAmount = coin.amount - dto.coins;
     if (newAmount < 0) {
       return generateBadRequestResult(
         'Coin amount cannot be decreased below 0',
+        ERR_CODE.INSUFFICIENT_BALANCE,
       );
     }
 

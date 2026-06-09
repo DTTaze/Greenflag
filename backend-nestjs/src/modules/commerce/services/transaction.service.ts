@@ -1,15 +1,19 @@
 import { DataSource, In, Repository } from 'typeorm';
 
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Coin } from '@modules/user/entities/coin.entity';
 
+import { ERR_CODE } from '@shared/constants';
 import { ITEM_STATUS, TRANSACTION_STATUS } from '@shared/enums';
+import {
+  OperationResult,
+  generateBadRequestResult,
+  generateForbiddenResult,
+  generateNotFoundResult,
+  generateSuccessResult,
+} from '@shared/helpers/operation-result.helper';
 import { BaseCRUDService } from '@shared/services/base-crud.service';
 import { SocketStubService } from '@shared/services/socket-stub.service';
 
@@ -29,63 +33,96 @@ export class TransactionService extends BaseCRUDService<Transaction> {
 
   public async getTransactionByBuyerId(
     buyerId: string,
-  ): Promise<Transaction[]> {
+  ): Promise<OperationResult<Transaction[]>> {
     return this.findAll(
       { buyerId },
       { relations: { receiverInformation: true, item: true } },
     );
   }
 
-  public async getItemsByUserId(userId: string): Promise<Transaction[]> {
-    return this.transactionRepository.find({
-      where: {
-        buyerId: userId,
-        status: In([TRANSACTION_STATUS.PENDING, TRANSACTION_STATUS.ACCEPTED]),
-      },
-      relations: {
-        item: true,
-      },
-      select: {
-        id: true,
-        totalPrice: true,
-        quantity: true,
-        status: true,
-      },
-    });
+  public async getItemsByUserId(
+    userId: string,
+  ): Promise<OperationResult<Transaction[]>> {
+    try {
+      const list = await this.transactionRepository.find({
+        where: {
+          buyerId: userId,
+          status: In([TRANSACTION_STATUS.PENDING, TRANSACTION_STATUS.ACCEPTED]),
+        },
+        relations: {
+          item: true,
+        },
+        select: {
+          id: true,
+          totalPrice: true,
+          quantity: true,
+          status: true,
+        },
+      });
+      return generateSuccessResult(list);
+    } catch (error) {
+      return OperationResult.fail('find_failed', error.message);
+    }
   }
 
   public async getTransactionBySellerId(
     sellerId: string,
-  ): Promise<Transaction[]> {
+  ): Promise<OperationResult<Transaction[]>> {
     return this.findAll(
       { sellerId },
       { relations: { receiverInformation: true, item: true } },
     );
   }
 
-  public async getTransactionById(id: string): Promise<Transaction> {
-    const tx = await this.findOne(
+  public async getTransactionById(
+    id: string,
+  ): Promise<OperationResult<Transaction>> {
+    const txRes = await this.findOne(
       { id },
       { relations: { receiverInformation: true, item: true } },
     );
-    if (!tx) {
-      throw new NotFoundException('Transaction not found');
+    if (!txRes.success || !txRes.data) {
+      return generateNotFoundResult(
+        'Transaction not found',
+        ERR_CODE.TRANSACTION_NOT_FOUND,
+      );
     }
-    return tx;
+    return txRes;
   }
 
-  public async cancelTransactionById(id: string): Promise<Transaction> {
-    const transaction = await this.findByID(id);
-    if (!transaction) {
-      throw new NotFoundException('Transaction not found');
+  public async cancelTransactionById(
+    id: string,
+    currentUserId?: string,
+    isAdmin: boolean = false,
+  ): Promise<OperationResult<Transaction>> {
+    const transactionRes = await this.findByID(id);
+    if (!transactionRes.success || !transactionRes.data) {
+      return generateNotFoundResult(
+        'Transaction not found',
+        ERR_CODE.TRANSACTION_NOT_FOUND,
+      );
+    }
+    const transaction = transactionRes.data;
+
+    if (!isAdmin && currentUserId && transaction.buyerId !== currentUserId) {
+      return generateForbiddenResult(
+        'Bạn không có quyền hủy giao dịch của người khác',
+        ERR_CODE.FORBIDDEN,
+      );
     }
 
     if (transaction.status === TRANSACTION_STATUS.CANCELLED) {
-      throw new BadRequestException('Transaction is already cancelled');
+      return generateBadRequestResult(
+        'Transaction is already cancelled',
+        ERR_CODE.BAD_REQUEST,
+      );
     }
 
     if (transaction.status === TRANSACTION_STATUS.ACCEPTED) {
-      throw new BadRequestException('Cannot cancel accepted transaction');
+      return generateBadRequestResult(
+        'Cannot cancel accepted transaction',
+        ERR_CODE.BAD_REQUEST,
+      );
     }
 
     return this.refundTransaction(
@@ -98,7 +135,9 @@ export class TransactionService extends BaseCRUDService<Transaction> {
   public async makeDecision(
     id: string,
     decision: TRANSACTION_STATUS,
-  ): Promise<Transaction> {
+    currentUserId?: string,
+    isAdmin: boolean = false,
+  ): Promise<OperationResult<Transaction>> {
     if (
       ![
         TRANSACTION_STATUS.ACCEPTED,
@@ -106,24 +145,42 @@ export class TransactionService extends BaseCRUDService<Transaction> {
         TRANSACTION_STATUS.PENDING,
       ].includes(decision)
     ) {
-      throw new BadRequestException('Invalid decision status');
+      return generateBadRequestResult(
+        'Invalid decision status',
+        ERR_CODE.BAD_REQUEST,
+      );
     }
 
-    const transaction = await this.findByID(id);
-    if (!transaction) {
-      throw new NotFoundException('Transaction not found');
+    const transactionRes = await this.findByID(id);
+    if (!transactionRes.success || !transactionRes.data) {
+      return generateNotFoundResult(
+        'Transaction not found',
+        ERR_CODE.TRANSACTION_NOT_FOUND,
+      );
+    }
+    const transaction = transactionRes.data;
+
+    if (!isAdmin && currentUserId && transaction.sellerId !== currentUserId) {
+      return generateForbiddenResult(
+        'Bạn không có quyền duyệt giao dịch này',
+        ERR_CODE.FORBIDDEN,
+      );
     }
 
     if (transaction.status === decision) {
-      throw new BadRequestException('Transaction is already in this status');
+      return generateBadRequestResult(
+        'Transaction is already in this status',
+        ERR_CODE.BAD_REQUEST,
+      );
     }
 
     if (
       transaction.status === TRANSACTION_STATUS.ACCEPTED &&
       decision === TRANSACTION_STATUS.PENDING
     ) {
-      throw new BadRequestException(
+      return generateBadRequestResult(
         'Cannot revert accepted transaction to pending',
+        ERR_CODE.BAD_REQUEST,
       );
     }
 
@@ -135,8 +192,8 @@ export class TransactionService extends BaseCRUDService<Transaction> {
       );
     }
 
-    const updated = await this.updateByID(id, { status: decision });
-    return updated;
+    const updatedRes = await this.updateByID(id, { status: decision });
+    return updatedRes;
   }
 
   /**
@@ -146,7 +203,7 @@ export class TransactionService extends BaseCRUDService<Transaction> {
     transactionId: string,
     reason: string,
     targetStatus: TRANSACTION_STATUS = TRANSACTION_STATUS.CANCELLED,
-  ): Promise<Transaction> {
+  ): Promise<OperationResult<Transaction>> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -158,7 +215,11 @@ export class TransactionService extends BaseCRUDService<Transaction> {
       });
 
       if (!transaction) {
-        throw new NotFoundException('Transaction not found');
+        await queryRunner.rollbackTransaction();
+        return generateNotFoundResult(
+          'Transaction not found',
+          ERR_CODE.TRANSACTION_NOT_FOUND,
+        );
       }
 
       if (
@@ -166,7 +227,8 @@ export class TransactionService extends BaseCRUDService<Transaction> {
         transaction.status === TRANSACTION_STATUS.REJECTED
       ) {
         // Already refunded
-        return transaction;
+        await queryRunner.rollbackTransaction();
+        return generateSuccessResult(transaction);
       }
 
       // 1. Update transaction status
@@ -208,10 +270,13 @@ export class TransactionService extends BaseCRUDService<Transaction> {
       }
 
       await queryRunner.commitTransaction();
-      return transaction;
+      return generateSuccessResult(transaction);
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      throw error;
+      return OperationResult.fail(
+        ERR_CODE.INTERNAL_SERVER_ERROR,
+        error.message,
+      );
     } finally {
       await queryRunner.release();
     }

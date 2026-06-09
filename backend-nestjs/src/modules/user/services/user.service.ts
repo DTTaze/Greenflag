@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcryptjs';
-import { CacheService, OperationResult } from 'mvc-common-toolkit';
+import { CacheService } from 'mvc-common-toolkit';
 import { Repository } from 'typeorm';
 
 import { Inject, Injectable } from '@nestjs/common';
@@ -8,9 +8,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CloudinaryService } from '@modules/cloudinary/services/cloudinary.service';
 
 import { CACHE_KEYS } from '@shared/cache-key';
-import { INJECTION_TOKEN, getStorageFolder } from '@shared/constants';
+import { ERR_CODE, INJECTION_TOKEN, getStorageFolder } from '@shared/constants';
 import { ROLE } from '@shared/enums';
 import {
+  OperationResult,
   generateConflictResult,
   generateNotFoundResult,
   generateSuccessResult,
@@ -166,7 +167,7 @@ export class UserService extends BaseCRUDService<User> {
     return generateSuccessResult(savedUser);
   }
 
-  async findOrCreateUser(profile: any): Promise<User> {
+  async findOrCreateUser(profile: any): Promise<OperationResult<User>> {
     return this.userSocialAccountService.findOrCreateUser(profile);
   }
 
@@ -184,7 +185,7 @@ export class UserService extends BaseCRUDService<User> {
       relations: ['profile', 'coin', 'rank'],
     });
     if (!user) {
-      return generateNotFoundResult('User not found');
+      return generateNotFoundResult('User not found', ERR_CODE.USER_NOT_FOUND);
     }
     return generateSuccessResult(user);
   }
@@ -244,7 +245,7 @@ export class UserService extends BaseCRUDService<User> {
   async deleteUser(id: string): Promise<OperationResult<void>> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
-      return generateNotFoundResult('User not found');
+      return generateNotFoundResult('User not found', ERR_CODE.USER_NOT_FOUND);
     }
 
     await this.model.manager.transaction(async (transactionalEntityManager) => {

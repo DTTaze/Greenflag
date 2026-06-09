@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { systemConfigCacheKey } from '@shared/cache-key';
 import { CACHE_TTL, INJECTION_TOKEN } from '@shared/constants';
 import { SYSTEM_CONFIG_KEY } from '@shared/enums';
+import { OperationResult } from '@shared/helpers/operation-result.helper';
 import { BaseCRUDService } from '@shared/services/base-crud.service';
 
 import { UpdateSystemConfigDto } from './system-config.dto';
@@ -81,8 +82,8 @@ export class SystemConfigService
     ];
 
     for (const item of defaults) {
-      const exists = await this.findOne({ key: item.key });
-      if (!exists) {
+      const existsRes = await this.findOne({ key: item.key });
+      if (!existsRes.success || !existsRes.data) {
         await this.create({
           key: item.key,
           value: item.value,
@@ -107,8 +108,9 @@ export class SystemConfigService
       );
     }
 
-    const config = await this.findOne({ key });
-    if (config && config.isActive) {
+    const configRes = await this.findOne({ key });
+    if (configRes.success && configRes.data && configRes.data.isActive) {
+      const config = configRes.data;
       try {
         await this.cacheService.set(cacheKey, config.value, {
           policy: SET_CACHE_POLICY.WITH_TTL,
@@ -131,26 +133,35 @@ export class SystemConfigService
     return isNaN(num) ? defaultValue : num;
   }
 
-  override async create(dto: Partial<SystemConfig>): Promise<SystemConfig> {
-    const result = await super.create(dto);
-    if (result && result.key) {
-      try {
-        await this.cacheService.del(systemConfigCacheKey(result.key));
-      } catch (err) {
-        this.logger.warn(
-          `Failed to delete cache for key system_config:${result.key}: ${err.message}`,
-        );
+  override async create(
+    dto: Partial<SystemConfig>,
+  ): Promise<OperationResult<SystemConfig>> {
+    const resultRes = await super.create(dto);
+    if (resultRes.success && resultRes.data) {
+      const result = resultRes.data;
+      if (result.key) {
+        try {
+          await this.cacheService.del(systemConfigCacheKey(result.key));
+        } catch (err) {
+          this.logger.warn(
+            `Failed to delete cache for key system_config:${result.key}: ${err.message}`,
+          );
+        }
       }
     }
-    return result;
+    return resultRes;
   }
 
   override async updateByID(
     id: number | string,
     dto: Partial<SystemConfig>,
-  ): Promise<SystemConfig | null> {
-    const existing = await this.findByID(id);
-    const result = await super.updateByID(id, dto);
+  ): Promise<OperationResult<SystemConfig>> {
+    const existingRes = await this.findByID(id);
+    const existing = existingRes.success ? existingRes.data : null;
+
+    const resultRes = await super.updateByID(id, dto);
+    const result = resultRes.success ? resultRes.data : null;
+
     if (existing && existing.key) {
       try {
         await this.cacheService.del(systemConfigCacheKey(existing.key));
@@ -169,12 +180,16 @@ export class SystemConfigService
         );
       }
     }
-    return result;
+    return resultRes;
   }
 
-  override async deleteByID(entityID: number | string): Promise<void> {
-    const existing = await this.findByID(entityID);
-    await super.deleteByID(entityID);
+  override async deleteByID(
+    entityID: number | string,
+  ): Promise<OperationResult<void>> {
+    const existingRes = await this.findByID(entityID);
+    const existing = existingRes.success ? existingRes.data : null;
+
+    const deleteRes = await super.deleteByID(entityID);
     if (existing && existing.key) {
       try {
         await this.cacheService.del(systemConfigCacheKey(existing.key));
@@ -184,25 +199,25 @@ export class SystemConfigService
         );
       }
     }
+    return deleteRes;
   }
 
   async updateByKey(
     key: string,
     dto: UpdateSystemConfigDto,
-  ): Promise<SystemConfig | null> {
-    const config = await this.findOne({ key });
-    if (!config) {
-      return null;
+  ): Promise<OperationResult<SystemConfig>> {
+    const configRes = await this.findOne({ key });
+    if (!configRes.success || !configRes.data) {
+      return OperationResult.fail('not_found', 'Configuration not found');
     }
-    return this.updateByID(config.id, dto);
+    return this.updateByID(configRes.data.id, dto);
   }
 
-  async deleteByKey(key: string): Promise<boolean> {
-    const config = await this.findOne({ key });
-    if (!config) {
-      return false;
+  async deleteByKey(key: string): Promise<OperationResult<void>> {
+    const configRes = await this.findOne({ key });
+    if (!configRes.success || !configRes.data) {
+      return OperationResult.fail('not_found', 'Configuration not found');
     }
-    await this.deleteByID(config.id);
-    return true;
+    return this.deleteByID(configRes.data.id);
   }
 }

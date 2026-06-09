@@ -1,13 +1,16 @@
 import { HttpModule } from '@nestjs/axios';
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { CommerceModule } from '@modules/commerce/commerce.module';
 import { Transaction } from '@modules/commerce/entities/transaction.entity';
 
+import { AdminDeliveryController } from './admin-delivery.controller';
 import { DeliveryController } from './delivery.controller';
 import { DeliveryAccount } from './entities/delivery-account.entity';
 import { DeliveryOrder } from './entities/delivery-order.entity';
 import { ReceiverInformation } from './entities/receiver-information.entity';
+import { PartnerDeliveryController } from './partner-delivery.controller';
 import { DeliveryAccountService } from './services/delivery-account.service';
 import { DeliveryOrderService } from './services/delivery-order.service';
 import { ReceiverInformationService } from './services/receiver-information.service';
@@ -24,8 +27,13 @@ import { GhtkShippingStrategy } from './strategies/ghtk-shipping.strategy';
       DeliveryOrder,
       Transaction,
     ]),
+    forwardRef(() => CommerceModule),
   ],
-  controllers: [DeliveryController],
+  controllers: [
+    DeliveryController,
+    PartnerDeliveryController,
+    AdminDeliveryController,
+  ],
   providers: [
     GhnShippingStrategy,
     GhtkShippingStrategy,

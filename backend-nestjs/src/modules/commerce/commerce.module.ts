@@ -1,5 +1,5 @@
 import { BullModule } from '@nestjs/bullmq';
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { DeliveryModule } from '@modules/delivery/delivery.module';
@@ -10,10 +10,12 @@ import { Coin } from '@modules/user/entities/coin.entity';
 
 import { QUEUE_NAME } from '@shared/constants';
 
+import { AdminCommerceController } from './admin-commerce.controller';
 import { CommerceController } from './commerce.controller';
 import { Item } from './entities/item.entity';
 import { Product } from './entities/product.entity';
 import { Transaction } from './entities/transaction.entity';
+import { PartnerCommerceController } from './partner-commerce.controller';
 import { CommerceProcessor } from './processors/commerce.processor';
 import { ItemService } from './services/item.service';
 import { ProductService } from './services/product.service';
@@ -33,9 +35,13 @@ import { TransactionService } from './services/transaction.service';
     BullModule.registerQueue({
       name: QUEUE_NAME.COMMERCE,
     }),
-    DeliveryModule,
+    forwardRef(() => DeliveryModule),
   ],
-  controllers: [CommerceController],
+  controllers: [
+    CommerceController,
+    PartnerCommerceController,
+    AdminCommerceController,
+  ],
   providers: [
     ProductService,
     ItemService,

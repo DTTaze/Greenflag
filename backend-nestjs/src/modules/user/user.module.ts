@@ -1,10 +1,13 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { CloudinaryModule } from '@modules/cloudinary/cloudinary.module';
 import { CommerceModule } from '@modules/commerce/commerce.module';
 import { TaskModule } from '@modules/task/task.module';
 
+import { AdminCoinController } from './controllers/admin-coin.controller';
+import { AdminRankController } from './controllers/admin-rank.controller';
+import { AdminUserController } from './controllers/admin-user.controller';
 import { CoinController } from './controllers/coin.controller';
 import { RankController } from './controllers/rank.controller';
 import { UserController } from './controllers/user.controller';
@@ -28,11 +31,18 @@ import { UserService } from './services/user.service';
       UserProfile,
       UserSocialAccount,
     ]),
-    TaskModule,
+    forwardRef(() => TaskModule),
     CloudinaryModule,
     CommerceModule,
   ],
-  controllers: [UserController, CoinController, RankController],
+  controllers: [
+    UserController,
+    CoinController,
+    RankController,
+    AdminUserController,
+    AdminCoinController,
+    AdminRankController,
+  ],
   providers: [
     UserService,
     UserProfileService,

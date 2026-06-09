@@ -2,18 +2,21 @@ import { Queue } from 'bullmq';
 import { DataSource, Repository } from 'typeorm';
 
 import { InjectQueue } from '@nestjs/bullmq';
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { ReceiverInformation } from '@modules/delivery/entities/receiver-information.entity';
 import { Coin } from '@modules/user/entities/coin.entity';
 
-import { JOB_NAME, QUEUE_NAME } from '@shared/constants';
+import { ERR_CODE, JOB_NAME, QUEUE_NAME } from '@shared/constants';
 import { ITEM_STATUS, TRANSACTION_STATUS } from '@shared/enums';
+import {
+  OperationResult,
+  generateBadRequestResult,
+  generateForbiddenResult,
+  generateNotFoundResult,
+  generateSuccessResult,
+} from '@shared/helpers/operation-result.helper';
 import { BaseCRUDService } from '@shared/services/base-crud.service';
 
 import { PurchaseItemDto } from '../dtos/item.dto';
@@ -25,8 +28,6 @@ export class ItemService extends BaseCRUDService<Item> {
   constructor(
     @InjectRepository(Item)
     private readonly itemRepository: Repository<Item>,
-    @InjectRepository(Transaction)
-    private readonly transactionRepository: Repository<Transaction>,
     @InjectQueue(QUEUE_NAME.COMMERCE)
     private readonly commerceQueue: Queue,
     private readonly dataSource: DataSource,
@@ -38,11 +39,14 @@ export class ItemService extends BaseCRUDService<Item> {
     userId: string,
     itemId: string,
     dto: PurchaseItemDto,
-  ): Promise<{ message: string; jobId: string }> {
+  ): Promise<OperationResult<{ message: string; jobId: string }>> {
     const { quantity, name, receiver_information_id } = dto;
 
     if (quantity <= 0) {
-      throw new BadRequestException('Quantity must be greater than 0');
+      return generateBadRequestResult(
+        'Quantity must be greater than 0',
+        ERR_CODE.BAD_REQUEST,
+      );
     }
 
     const queryRunner = this.dataSource.createQueryRunner();
@@ -58,30 +62,50 @@ export class ItemService extends BaseCRUDService<Item> {
       });
 
       if (!item) {
-        throw new NotFoundException('Item not found');
+        await queryRunner.rollbackTransaction();
+        return generateNotFoundResult(
+          'Item not found',
+          ERR_CODE.ITEM_NOT_FOUND,
+        );
       }
 
       if (item.status !== ITEM_STATUS.AVAILABLE) {
-        throw new BadRequestException('Item is not available for purchase');
+        await queryRunner.rollbackTransaction();
+        return generateBadRequestResult(
+          'Item is not available for purchase',
+          ERR_CODE.ITEM_ALREADY_SOLD,
+        );
       }
 
       if (item.stock < quantity) {
-        throw new BadRequestException('Insufficient stock');
+        await queryRunner.rollbackTransaction();
+        return generateBadRequestResult(
+          'Insufficient stock',
+          ERR_CODE.BAD_REQUEST,
+        );
       }
 
       // 2. Lock and retrieve buyer's Coin
       const buyerCoin = await queryRunner.manager.findOne(Coin, {
-        where: { userId },
+        where: { userId: userId },
         lock: { mode: 'pessimistic_write' },
       });
 
       if (!buyerCoin) {
-        throw new NotFoundException("Buyer's coin account not found");
+        await queryRunner.rollbackTransaction();
+        return generateNotFoundResult(
+          "Buyer's coin account not found",
+          ERR_CODE.COIN_NOT_FOUND,
+        );
       }
 
       const totalCost = item.price * quantity;
       if (buyerCoin.amount < totalCost) {
-        throw new BadRequestException('Insufficient balance');
+        await queryRunner.rollbackTransaction();
+        return generateBadRequestResult(
+          'Insufficient balance',
+          ERR_CODE.INSUFFICIENT_BALANCE,
+        );
       }
 
       // 3. Resolve Receiver Information
@@ -94,8 +118,10 @@ export class ItemService extends BaseCRUDService<Item> {
           },
         );
         if (!defaultReceiver) {
-          throw new BadRequestException(
+          await queryRunner.rollbackTransaction();
+          return generateBadRequestResult(
             'Missing receiver information and no default address found',
+            ERR_CODE.BAD_REQUEST,
           );
         }
         receiverInfoId = defaultReceiver.id;
@@ -107,7 +133,11 @@ export class ItemService extends BaseCRUDService<Item> {
           },
         );
         if (!receiverExists) {
-          throw new NotFoundException('Receiver information not found');
+          await queryRunner.rollbackTransaction();
+          return generateNotFoundResult(
+            'Receiver information not found',
+            ERR_CODE.RECEIVER_INFO_NOT_FOUND,
+          );
         }
       }
 
@@ -163,15 +193,64 @@ export class ItemService extends BaseCRUDService<Item> {
         quantity,
       });
 
-      return {
+      return generateSuccessResult({
         message: 'Purchase request is in queue',
-        jobId: job.id,
-      };
+        jobId: job.id as string,
+      });
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      throw error;
+      return OperationResult.fail(
+        ERR_CODE.INTERNAL_SERVER_ERROR,
+        error.message,
+      );
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async updateItem(
+    id: string,
+    dto: Partial<Item>,
+    currentUserId?: string,
+    isAdmin: boolean = false,
+  ): Promise<OperationResult<Item>> {
+    const itemRes = await this.findByID(id);
+    if (!itemRes.success || !itemRes.data) {
+      return generateNotFoundResult('Item not found', ERR_CODE.ITEM_NOT_FOUND);
+    }
+    const item = itemRes.data;
+
+    if (!isAdmin && currentUserId && item.creatorId !== currentUserId) {
+      return generateForbiddenResult(
+        'Bạn không có quyền chỉnh sửa vật phẩm của người khác',
+        ERR_CODE.FORBIDDEN,
+      );
+    }
+    const updateRes = await this.updateByID(id, dto);
+    if (!updateRes.success) {
+      return updateRes;
+    }
+    return this.findByID(id);
+  }
+
+  async deleteItem(
+    id: string,
+    currentUserId?: string,
+    isAdmin: boolean = false,
+  ): Promise<OperationResult<void>> {
+    const itemRes = await this.findByID(id);
+    if (!itemRes.success || !itemRes.data) {
+      return generateNotFoundResult('Item not found', ERR_CODE.ITEM_NOT_FOUND);
+    }
+    const item = itemRes.data;
+
+    if (!isAdmin && currentUserId && item.creatorId !== currentUserId) {
+      return generateForbiddenResult(
+        'Bạn không có quyền xóa vật phẩm của người khác',
+        ERR_CODE.FORBIDDEN,
+      );
+    }
+    await this.deleteByID(id);
+    return generateSuccessResult(undefined);
   }
 }

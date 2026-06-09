@@ -1,24 +1,29 @@
 import { Repository } from 'typeorm';
 
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { Transaction } from '@modules/commerce/entities/transaction.entity';
+import { TransactionService } from '@modules/commerce/services/transaction.service';
 
+import { ERR_CODE } from '@shared/constants';
 import {
   CARRIER_TYPE,
   DELIVERY_ORDER_STATUS,
   TRANSACTION_STATUS,
 } from '@shared/enums';
+import {
+  OperationResult,
+  generateBadRequestResult,
+  generateForbiddenResult,
+  generateNotFoundResult,
+  generateSuccessResult,
+} from '@shared/helpers/operation-result.helper';
 import { BaseCRUDService } from '@shared/services/base-crud.service';
 
 import { DeliveryAccount } from '../entities/delivery-account.entity';
 import { DeliveryOrder } from '../entities/delivery-order.entity';
 import { StandardShippingPayload } from '../interfaces/shipping-provider.interface';
+import { DeliveryAccountService } from './delivery-account.service';
 import { ShippingFactoryService } from './shipping-factory.service';
 
 @Injectable()
@@ -26,10 +31,9 @@ export class DeliveryOrderService extends BaseCRUDService<DeliveryOrder> {
   constructor(
     @InjectRepository(DeliveryOrder)
     private readonly deliveryOrderRepository: Repository<DeliveryOrder>,
-    @InjectRepository(Transaction)
-    private readonly transactionRepository: Repository<Transaction>,
-    @InjectRepository(DeliveryAccount)
-    private readonly deliveryAccountRepository: Repository<DeliveryAccount>,
+    @Inject(forwardRef(() => TransactionService))
+    private readonly transactionService: TransactionService,
+    private readonly deliveryAccountService: DeliveryAccountService,
     private readonly shippingFactoryService: ShippingFactoryService,
   ) {
     super(deliveryOrderRepository);
@@ -41,29 +45,32 @@ export class DeliveryOrderService extends BaseCRUDService<DeliveryOrder> {
     carrier: CARRIER_TYPE = CARRIER_TYPE.GHN,
     token?: string,
     shopId?: string,
-  ): Promise<DeliveryAccount> {
+  ): Promise<OperationResult<DeliveryAccount>> {
     if (deliveryAccountId) {
-      const acc = await this.deliveryAccountRepository.findOne({
-        where: { id: deliveryAccountId },
+      const accRes = await this.deliveryAccountService.findOne({
+        id: deliveryAccountId,
       });
-      if (acc) return acc;
+      if (accRes.success && accRes.data) return accRes;
     }
 
-    const defaultAcc = await this.deliveryAccountRepository.findOne({
-      where: { userId, carrier, isDefault: true },
+    const defaultAccRes = await this.deliveryAccountService.findOne({
+      userId,
+      carrier,
+      isDefault: true,
     });
-    if (defaultAcc) return defaultAcc;
+    if (defaultAccRes.success && defaultAccRes.data) return defaultAccRes;
 
-    const anyAcc = await this.deliveryAccountRepository.findOne({
-      where: { userId, carrier },
+    const anyAccRes = await this.deliveryAccountService.findOne({
+      userId,
+      carrier,
     });
-    if (anyAcc) return anyAcc;
+    if (anyAccRes.success && anyAccRes.data) return anyAccRes;
 
     // Construct a transient/temporary account using headers if available
     const tempAcc = new DeliveryAccount();
     tempAcc.carrier = carrier;
     tempAcc.apiConfig = { token, shopId };
-    return tempAcc;
+    return generateSuccessResult(tempAcc);
   }
 
   public async createDeliveryOrder(
@@ -73,14 +80,21 @@ export class DeliveryOrderService extends BaseCRUDService<DeliveryOrder> {
     sellerId: string,
     deliveryAccountId?: string,
     carrier: CARRIER_TYPE = CARRIER_TYPE.GHN,
-  ): Promise<any> {
-    const account = await this.getDeliveryAccount(
+  ): Promise<OperationResult<any>> {
+    const accountRes = await this.getDeliveryAccount(
       sellerId,
       deliveryAccountId,
       carrier,
       token,
       shopId,
     );
+    if (!accountRes.success || !accountRes.data) {
+      return generateNotFoundResult(
+        'Delivery account not found',
+        ERR_CODE.DELIVERY_ACCOUNT_NOT_FOUND,
+      );
+    }
+    const account = accountRes.data;
     const provider = this.shippingFactoryService.getProvider(account.carrier);
 
     const payload: StandardShippingPayload = {
@@ -110,7 +124,7 @@ export class DeliveryOrderService extends BaseCRUDService<DeliveryOrder> {
     try {
       const response = await provider.createOrder(account, payload);
 
-      const createdOrder = await this.create({
+      const createdOrderRes = await this.create({
         sellerId,
         deliveryAccountId: account.id,
         orderCode: response.orderCode,
@@ -126,9 +140,19 @@ export class DeliveryOrderService extends BaseCRUDService<DeliveryOrder> {
         totalAmount: response.totalFee + payload.codAmount,
       });
 
-      return { response: response.rawResponse, createdOrder };
+      if (!createdOrderRes.success || !createdOrderRes.data) {
+        return OperationResult.fail(
+          createdOrderRes.code || 'create_failed',
+          createdOrderRes.message,
+        );
+      }
+
+      return generateSuccessResult({
+        response: response.rawResponse,
+        createdOrder: createdOrderRes.data,
+      });
     } catch (error) {
-      this.handleError('createOrder', error);
+      return this.handleError('createOrder', error);
     }
   }
 
@@ -140,7 +164,7 @@ export class DeliveryOrderService extends BaseCRUDService<DeliveryOrder> {
     orderData: any,
     deliveryAccountId?: string,
     carrier: CARRIER_TYPE = CARRIER_TYPE.GHN,
-  ): Promise<any> {
+  ): Promise<OperationResult<any>> {
     if (
       !transactionId ||
       !sellerId ||
@@ -148,34 +172,57 @@ export class DeliveryOrderService extends BaseCRUDService<DeliveryOrder> {
       !orderData.required_note ||
       !orderData.weight
     ) {
-      throw new BadRequestException('Missing parameters');
+      return generateBadRequestResult(
+        'Missing parameters',
+        ERR_CODE.BAD_REQUEST,
+      );
     }
     if (orderData.weight <= 0) {
-      throw new BadRequestException('Weight must be positive');
+      return generateBadRequestResult(
+        'Weight must be positive',
+        ERR_CODE.BAD_REQUEST,
+      );
     }
 
-    const transaction = await this.transactionRepository.findOne({
-      where: { id: transactionId },
-      relations: { receiverInformation: true },
-    });
+    const transactionRes = await this.transactionService.findOne(
+      { id: transactionId },
+      { relations: { receiverInformation: true } },
+    );
 
-    if (!transaction) {
-      throw new NotFoundException('Transaction not found');
+    if (!transactionRes.success || !transactionRes.data) {
+      return generateNotFoundResult(
+        'Transaction not found',
+        ERR_CODE.TRANSACTION_NOT_FOUND,
+      );
     }
+    const transaction = transactionRes.data;
     if (transaction.status !== TRANSACTION_STATUS.ACCEPTED) {
-      throw new BadRequestException('Transaction was not accepted');
+      return generateBadRequestResult(
+        'Transaction was not accepted',
+        ERR_CODE.BAD_REQUEST,
+      );
     }
     if (!transaction.receiverInformation) {
-      throw new NotFoundException('Receiver information not found');
+      return generateNotFoundResult(
+        'Receiver information not found',
+        ERR_CODE.RECEIVER_INFO_NOT_FOUND,
+      );
     }
 
-    const account = await this.getDeliveryAccount(
+    const accountRes = await this.getDeliveryAccount(
       sellerId,
       deliveryAccountId,
       carrier,
       token,
       shopId,
     );
+    if (!accountRes.success || !accountRes.data) {
+      return generateNotFoundResult(
+        'Delivery account not found',
+        ERR_CODE.DELIVERY_ACCOUNT_NOT_FOUND,
+      );
+    }
+    const account = accountRes.data;
     const provider = this.shippingFactoryService.getProvider(account.carrier);
 
     const payload: StandardShippingPayload = {
@@ -202,7 +249,7 @@ export class DeliveryOrderService extends BaseCRUDService<DeliveryOrder> {
     try {
       const response = await provider.createOrder(account, payload);
 
-      const createdOrder = await this.create({
+      const createdOrderRes = await this.create({
         transactionId,
         sellerId: transaction.sellerId,
         buyerId: transaction.buyerId,
@@ -221,9 +268,19 @@ export class DeliveryOrderService extends BaseCRUDService<DeliveryOrder> {
         itemSnapshot: transaction.itemSnapshot,
       });
 
-      return { response: response.rawResponse, createdOrder };
+      if (!createdOrderRes.success || !createdOrderRes.data) {
+        return OperationResult.fail(
+          createdOrderRes.code || 'create_failed',
+          createdOrderRes.message,
+        );
+      }
+
+      return generateSuccessResult({
+        response: response.rawResponse,
+        createdOrder: createdOrderRes.data,
+      });
     } catch (error) {
-      this.handleError('createOrderFromTransaction', error);
+      return this.handleError('createOrderFromTransaction', error);
     }
   }
 
@@ -232,9 +289,10 @@ export class DeliveryOrderService extends BaseCRUDService<DeliveryOrder> {
     token: string,
     shopId: string,
     sellerId?: string,
-  ): Promise<any> {
-    throw new BadRequestException(
+  ): Promise<OperationResult<any>> {
+    return generateBadRequestResult(
       'Updating shipping order is not supported. Please cancel and recreate the order.',
+      ERR_CODE.BAD_REQUEST,
     );
   }
 
@@ -242,16 +300,40 @@ export class DeliveryOrderService extends BaseCRUDService<DeliveryOrder> {
     orderCode: string,
     token: string,
     shopId: string,
-    sellerId: string,
+    currentUserId?: string,
+    isAdmin: boolean = false,
     carrier: CARRIER_TYPE = CARRIER_TYPE.GHN,
-  ): Promise<any> {
-    const account = await this.getDeliveryAccount(
+  ): Promise<OperationResult<any>> {
+    const orderRes = await this.findOne({ orderCode });
+    if (!orderRes.success || !orderRes.data) {
+      return generateNotFoundResult(
+        'Delivery order not found',
+        ERR_CODE.DELIVERY_ORDER_NOT_FOUND,
+      );
+    }
+    const order = orderRes.data;
+    if (!isAdmin && currentUserId && order.sellerId !== currentUserId) {
+      return generateForbiddenResult(
+        'Bạn không có quyền hủy đơn giao hàng của người khác',
+        ERR_CODE.FORBIDDEN,
+      );
+    }
+
+    const sellerId = order.sellerId;
+    const accountRes = await this.getDeliveryAccount(
       sellerId,
-      undefined,
+      order.deliveryAccountId || undefined,
       carrier,
       token,
       shopId,
     );
+    if (!accountRes.success || !accountRes.data) {
+      return generateNotFoundResult(
+        'Delivery account not found',
+        ERR_CODE.DELIVERY_ACCOUNT_NOT_FOUND,
+      );
+    }
+    const account = accountRes.data;
     const provider = this.shippingFactoryService.getProvider(account.carrier);
 
     try {
@@ -262,37 +344,38 @@ export class DeliveryOrderService extends BaseCRUDService<DeliveryOrder> {
           { status: DELIVERY_ORDER_STATUS.CANCEL },
         );
       }
-      return { success };
+      return generateSuccessResult({ success });
     } catch (error) {
-      this.handleError('cancelOrder', error);
+      return this.handleError('cancelOrder', error);
     }
   }
 
   public async getDeliveryOrdersBySeller(
     sellerId: string,
-  ): Promise<DeliveryOrder[]> {
+  ): Promise<OperationResult<DeliveryOrder[]>> {
     return this.findAll({ sellerId });
   }
 
   public async getDeliveryOrdersByBuyer(
     buyerId: string,
-  ): Promise<DeliveryOrder[]> {
+  ): Promise<OperationResult<DeliveryOrder[]>> {
     return this.findAll({ buyerId });
   }
 
   public async getAllDeliveryOrdersByStatus(
     status: DELIVERY_ORDER_STATUS,
-  ): Promise<DeliveryOrder[]> {
+  ): Promise<OperationResult<DeliveryOrder[]>> {
     return this.findAll({ status });
   }
 
-  private handleError(action: string, error: any): never {
+  private handleError(action: string, error: any): OperationResult<any> {
     const errData = error.response?.data?.code_message_value || {
       message: error.message || 'Unknown shipping provider error',
     };
     const errorMsg =
       typeof errData === 'object' ? JSON.stringify(errData) : String(errData);
-    throw new BadRequestException(
+    return OperationResult.fail(
+      ERR_CODE.BAD_REQUEST,
       `Shipping Provider Error (${action}): ${errorMsg}`,
     );
   }

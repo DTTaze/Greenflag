@@ -4,6 +4,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { ROLE } from '@shared/enums';
+import {
+  OperationResult,
+  generateSuccessResult,
+} from '@shared/helpers/operation-result.helper';
 import { BaseCRUDService } from '@shared/services/base-crud.service';
 
 import { Coin } from '../entities/coin.entity';
@@ -21,7 +25,7 @@ export class UserSocialAccountService extends BaseCRUDService<UserSocialAccount>
     super(userSocialAccountRepository);
   }
 
-  async findOrCreateUser(profile: any): Promise<User> {
+  async findOrCreateUser(profile: any): Promise<OperationResult<User>> {
     const email = profile.emails[0].value;
     const googleId = profile.id;
     const displayName = profile.displayName;
@@ -45,10 +49,10 @@ export class UserSocialAccountService extends BaseCRUDService<UserSocialAccount>
         });
         await this.model.save(social);
       }
-      return existingUser;
+      return generateSuccessResult(existingUser);
     }
 
-    return this.model.manager.transaction(
+    const savedUser = await this.model.manager.transaction(
       async (transactionalEntityManager) => {
         // 1. Calculate max order for Rank
         const maxRank = await transactionalEntityManager.findOne(Rank, {
@@ -108,5 +112,7 @@ export class UserSocialAccountService extends BaseCRUDService<UserSocialAccount>
         return resultUser!;
       },
     );
+
+    return generateSuccessResult(savedUser);
   }
 }

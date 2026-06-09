@@ -1,15 +1,19 @@
 import { Repository } from 'typeorm';
 
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CoinService } from '@modules/user/services/coin.service';
 import { UserService } from '@modules/user/services/user.service';
 
+import { ERR_CODE } from '@shared/constants';
+import {
+  OperationResult,
+  generateBadRequestResult,
+  generateForbiddenResult,
+  generateNotFoundResult,
+  generateSuccessResult,
+} from '@shared/helpers/operation-result.helper';
 import { BaseCRUDService } from '@shared/services/base-crud.service';
 
 import { EventUser } from '../entities/event-user.entity';
@@ -27,92 +31,160 @@ export class EventUserService extends BaseCRUDService<EventUser> {
     super(eventUserRepository);
   }
 
-  async acceptEvent(eventId: string, userId: string): Promise<EventUser> {
-    const event = await this.eventService.findOne({ id: eventId });
-    if (!event) {
-      throw new NotFoundException('Event not found');
+  async acceptEvent(
+    eventId: string,
+    userId: string,
+  ): Promise<OperationResult<EventUser>> {
+    const eventRes = await this.eventService.findOne({ id: eventId });
+    if (!eventRes.success || !eventRes.data) {
+      return generateNotFoundResult(
+        'Event not found',
+        ERR_CODE.EVENT_NOT_FOUND,
+      );
     }
+    const event = eventRes.data;
 
-    const user = await this.userService.findOne({ id: userId });
-    if (!user) {
-      throw new NotFoundException('User not found');
+    const userRes = await this.userService.findOne({ id: userId });
+    if (!userRes.success || !userRes.data) {
+      return generateNotFoundResult('User not found', ERR_CODE.USER_NOT_FOUND);
     }
 
     const existingRegistration = await this.eventUserRepository.findOne({
       where: { eventId, userId },
     });
     if (existingRegistration) {
-      throw new BadRequestException('User already registered for this event');
+      return generateBadRequestResult(
+        'User already registered for this event',
+        ERR_CODE.EVENT_ALREADY_JOINED,
+      );
     }
 
     const registeredCount = await this.eventUserRepository.count({
       where: { eventId },
     });
     if (registeredCount >= event.capacity) {
-      throw new BadRequestException('Event has reached maximum capacity');
+      return generateBadRequestResult(
+        'Event has reached maximum capacity',
+        ERR_CODE.EVENT_FULL,
+      );
     }
 
-    return this.eventUserRepository.save({ userId, eventId });
+    const created = await this.eventUserRepository.save({ userId, eventId });
+    return generateSuccessResult(created);
   }
 
-  async checkIn(eventId: string, userId: string): Promise<EventUser> {
+  async checkIn(
+    eventId: string,
+    userId: string,
+    currentUserId?: string,
+    isAdmin: boolean = false,
+  ): Promise<OperationResult<EventUser>> {
     if (!eventId || !userId) {
-      throw new BadRequestException('Event ID and User ID are required');
+      return generateBadRequestResult(
+        'Event ID and User ID are required',
+        ERR_CODE.BAD_REQUEST,
+      );
     }
 
-    const user = await this.userService.findOne({ id: userId });
-    if (!user) {
-      throw new NotFoundException('User not found');
+    const userRes = await this.userService.findOne({ id: userId });
+    if (!userRes.success || !userRes.data) {
+      return generateNotFoundResult('User not found', ERR_CODE.USER_NOT_FOUND);
     }
 
-    const event = await this.eventService.findOne({ id: eventId });
-    if (!event) {
-      throw new NotFoundException('Event not found');
+    const eventRes = await this.eventService.findOne({ id: eventId });
+    if (!eventRes.success || !eventRes.data) {
+      return generateNotFoundResult(
+        'Event not found',
+        ERR_CODE.EVENT_NOT_FOUND,
+      );
+    }
+    const event = eventRes.data;
+
+    if (!isAdmin && currentUserId && event.creatorId !== currentUserId) {
+      return generateForbiddenResult(
+        'Bạn không có quyền điểm danh cho sự kiện của người khác',
+        ERR_CODE.FORBIDDEN,
+      );
     }
 
     const eventUser = await this.eventUserRepository.findOne({
       where: { userId, eventId },
     });
     if (!eventUser) {
-      throw new NotFoundException('User not found in this event');
+      return generateNotFoundResult(
+        'User not found in this event',
+        ERR_CODE.EVENT_USER_NOT_FOUND,
+      );
     }
 
     if (eventUser.joinedAt) {
-      throw new BadRequestException('User has already checked in');
+      return generateBadRequestResult(
+        'User has already checked in',
+        ERR_CODE.EVENT_CHECKIN_ALREADY,
+      );
     }
 
     eventUser.joinedAt = new Date();
-    return this.eventUserRepository.save(eventUser);
+    const saved = await this.eventUserRepository.save(eventUser);
+    return generateSuccessResult(saved);
   }
 
-  async checkOut(eventId: string, userId: string): Promise<EventUser> {
+  async checkOut(
+    eventId: string,
+    userId: string,
+    currentUserId?: string,
+    isAdmin: boolean = false,
+  ): Promise<OperationResult<EventUser>> {
     if (!eventId || !userId) {
-      throw new BadRequestException('Event ID and User ID are required');
+      return generateBadRequestResult(
+        'Event ID and User ID are required',
+        ERR_CODE.BAD_REQUEST,
+      );
     }
 
-    const user = await this.userService.findOne({ id: userId });
-    if (!user) {
-      throw new NotFoundException('User not found');
+    const userRes = await this.userService.findOne({ id: userId });
+    if (!userRes.success || !userRes.data) {
+      return generateNotFoundResult('User not found', ERR_CODE.USER_NOT_FOUND);
     }
 
-    const event = await this.eventService.findOne({ id: eventId });
-    if (!event) {
-      throw new NotFoundException('Event not found');
+    const eventRes = await this.eventService.findOne({ id: eventId });
+    if (!eventRes.success || !eventRes.data) {
+      return generateNotFoundResult(
+        'Event not found',
+        ERR_CODE.EVENT_NOT_FOUND,
+      );
+    }
+    const event = eventRes.data;
+
+    if (!isAdmin && currentUserId && event.creatorId !== currentUserId) {
+      return generateForbiddenResult(
+        'Bạn không có quyền điểm danh cho sự kiện của người khác',
+        ERR_CODE.FORBIDDEN,
+      );
     }
 
     const eventUser = await this.eventUserRepository.findOne({
       where: { userId, eventId },
     });
     if (!eventUser) {
-      throw new NotFoundException('User not found in this event');
+      return generateNotFoundResult(
+        'User not found in this event',
+        ERR_CODE.EVENT_USER_NOT_FOUND,
+      );
     }
 
     if (!eventUser.joinedAt) {
-      throw new BadRequestException('User has not checked in yet');
+      return generateBadRequestResult(
+        'User has not checked in yet',
+        ERR_CODE.EVENT_NOT_CHECKED_IN,
+      );
     }
 
     if (eventUser.completedAt) {
-      throw new BadRequestException('User has already checked out');
+      return generateBadRequestResult(
+        'User has already checked out',
+        ERR_CODE.EVENT_CHECKOUT_ALREADY,
+      );
     }
 
     eventUser.completedAt = new Date();
@@ -120,38 +192,78 @@ export class EventUserService extends BaseCRUDService<EventUser> {
 
     await this.rewardCoins(userId, event.coins);
 
-    return eventUser;
+    return generateSuccessResult(eventUser);
   }
 
-  async getEventUsersByEventId(eventId: string): Promise<EventUser[]> {
-    return this.eventUserRepository.find({
+  async getEventUsersByEventId(
+    eventId: string,
+  ): Promise<OperationResult<EventUser[]>> {
+    const list = await this.eventUserRepository.find({
       where: { eventId },
       relations: ['user'],
     });
+    return generateSuccessResult(list);
   }
 
-  async getEventsSigned(userId: string): Promise<EventUser[]> {
-    return this.eventUserRepository.find({
+  async getEventsSigned(userId: string): Promise<OperationResult<EventUser[]>> {
+    const list = await this.eventUserRepository.find({
       where: { userId },
       relations: ['event', 'event.creator'],
     });
+    return generateSuccessResult(list);
   }
 
-  async deleteEventUser(eventUserId: string): Promise<void> {
-    const result = await this.eventUserRepository.delete(eventUserId);
-    if (result.affected === 0) {
-      throw new NotFoundException(
+  async deleteEventUser(
+    eventUserId: string,
+    currentUserId?: string,
+    isAdmin: boolean = false,
+  ): Promise<OperationResult<void>> {
+    const eventUser = await this.eventUserRepository.findOne({
+      where: { id: eventUserId },
+      relations: ['event'],
+    });
+    if (!eventUser) {
+      return generateNotFoundResult(
         `No event user found with id: ${eventUserId}`,
+        ERR_CODE.EVENT_USER_NOT_FOUND,
       );
     }
+    if (
+      !isAdmin &&
+      currentUserId &&
+      eventUser.event?.creatorId !== currentUserId
+    ) {
+      return generateForbiddenResult(
+        'Bạn không có quyền xóa người tham gia khỏi sự kiện của người khác',
+        ERR_CODE.FORBIDDEN,
+      );
+    }
+    await this.eventUserRepository.delete(eventUserId);
+    return generateSuccessResult(undefined);
   }
 
-  private async rewardCoins(userId: string, amount: number): Promise<void> {
-    if (amount <= 0) return;
+  private async rewardCoins(
+    userId: string,
+    amount: number,
+  ): Promise<OperationResult<void>> {
+    if (amount <= 0) return generateSuccessResult(undefined);
 
-    const coin = await this.coinService.findOne({ userId });
-    if (!coin) return;
+    const coinRes = await this.coinService.findOne({ userId });
+    if (!coinRes.success || !coinRes.data) {
+      return generateNotFoundResult('Coin not found', ERR_CODE.COIN_NOT_FOUND);
+    }
 
-    await this.coinService.updateIncreaseCoin(coin.id, { coins: amount });
+    const coin = coinRes.data;
+    const updateRes = await this.coinService.updateIncreaseCoin(coin.id, {
+      coins: amount,
+    });
+    if (!updateRes.success) {
+      return OperationResult.fail(
+        updateRes.code || 'update_failed',
+        updateRes.message,
+      );
+    }
+
+    return generateSuccessResult(undefined);
   }
 }

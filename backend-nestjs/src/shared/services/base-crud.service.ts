@@ -11,9 +11,10 @@ import {
   Repository,
 } from 'typeorm';
 
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { PaginationDTO } from '@shared/common/pagination.dto';
+import { OperationResult } from '@shared/helpers/operation-result.helper';
 import * as queryHelper from '@shared/helpers/query.helper';
 import { RunnerUser } from '@shared/interfaces';
 
@@ -28,127 +29,208 @@ type FindOptions<T> = {
 export abstract class BaseCRUDService<T extends ObjectLiteral> {
   constructor(public model: Repository<T>) {}
 
-  public async create(dto: Partial<T>): Promise<T> {
-    return this.model.save(dto as any);
+  public async create(dto: Partial<T>): Promise<OperationResult<T>> {
+    try {
+      const data = await this.model.save(dto as any);
+      return OperationResult.success(data);
+    } catch (error) {
+      return OperationResult.fail('create_failed', error.message);
+    }
   }
 
   public async findOneOrCreate(
     filter: FindOptionsWhere<T>,
     dto: Partial<T>,
-  ): Promise<T> {
-    const found = await this.findOne(filter);
-    if (found) return found;
-
+  ): Promise<OperationResult<T>> {
+    const foundResult = await this.findOne(filter);
+    if (foundResult.success && foundResult.data) {
+      return foundResult as OperationResult<T>;
+    }
     return this.create(dto);
   }
 
-  public async createWithOpts(dto: Partial<T>, opts: RunnerUser): Promise<T> {
-    const queryBuilder = this.model.createQueryBuilder(opts.alias, opts.runner);
+  public async createWithOpts(
+    dto: Partial<T>,
+    opts: RunnerUser,
+  ): Promise<OperationResult<T>> {
+    try {
+      const queryBuilder = this.model.createQueryBuilder(
+        opts.alias,
+        opts.runner,
+      );
 
-    const insertResult = await queryBuilder
-      .insert()
-      .into(this.model.target)
-      .values(dto as any)
-      .returning('*')
-      .execute();
+      const insertResult = await queryBuilder
+        .insert()
+        .into(this.model.target)
+        .values(dto as any)
+        .returning('*')
+        .execute();
 
-    return insertResult.generatedMaps[0] as T;
+      return OperationResult.success(insertResult.generatedMaps[0] as T);
+    } catch (error) {
+      return OperationResult.fail('create_failed', error.message);
+    }
   }
 
   public async updateByIdWithOpts(
     id: number | string,
     dto: Partial<T>,
     opts: RunnerUser,
-  ): Promise<T> {
-    const queryBuilder = this.model.createQueryBuilder(opts.alias, opts.runner);
+  ): Promise<OperationResult<T>> {
+    try {
+      const queryBuilder = this.model.createQueryBuilder(
+        opts.alias,
+        opts.runner,
+      );
 
-    const updateResult = await queryBuilder
-      .update()
-      .set(dto as any)
-      .whereInIds(id)
-      .returning('*')
-      .execute();
+      const updateResult = await queryBuilder
+        .update()
+        .set(dto as any)
+        .whereInIds(id)
+        .returning('*')
+        .execute();
 
-    return updateResult.generatedMaps[0] as T;
+      return OperationResult.success(updateResult.generatedMaps[0] as T);
+    } catch (error) {
+      return OperationResult.fail('update_failed', error.message);
+    }
   }
 
   public async deleteByIdWithOpts(
     id: number | string,
     opts: RunnerUser & { isSoft?: boolean },
-  ): Promise<void> {
-    const queryBuilder = this.model.createQueryBuilder(opts.alias, opts.runner);
+  ): Promise<OperationResult<void>> {
+    try {
+      const queryBuilder = this.model.createQueryBuilder(
+        opts.alias,
+        opts.runner,
+      );
 
-    const deleteSmt = opts.isSoft
-      ? queryBuilder.softDelete()
-      : queryBuilder.delete();
+      const deleteSmt = opts.isSoft
+        ? queryBuilder.softDelete()
+        : queryBuilder.delete();
 
-    await deleteSmt.whereInIds(id).execute();
+      await deleteSmt.whereInIds(id).execute();
+      return OperationResult.success(undefined);
+    } catch (error) {
+      return OperationResult.fail('delete_failed', error.message);
+    }
   }
 
-  public findByID(
+  public async findByID(
     id: number | string,
     options: Omit<FindOptions<T>, 'sort'> = { withDeleted: false },
-  ): Promise<T | null> {
-    return this.model.findOne({
-      where: { id: id as any, deletedAt: IsNull() } as any,
-      select: options.select,
-      relations: options.relations,
-      withDeleted: options.withDeleted,
-    });
+  ): Promise<OperationResult<T>> {
+    try {
+      const data = await this.model.findOne({
+        where: { id: id as any, deletedAt: IsNull() } as any,
+        select: options.select,
+        relations: options.relations,
+        withDeleted: options.withDeleted,
+      });
+      if (!data) {
+        return OperationResult.fail('not_found', 'Resource not found');
+      }
+      return OperationResult.success(data);
+    } catch (error) {
+      return OperationResult.fail('find_failed', error.message);
+    }
   }
 
-  public findByIdWithOpts(
+  public async findByIdWithOpts(
     id: number | string,
     opts: RunnerUser,
-  ): Promise<T | null> {
-    const queryBuilder = this.model.createQueryBuilder(opts.alias, opts.runner);
-
-    return queryBuilder.where({ id }).getOne();
+  ): Promise<OperationResult<T>> {
+    try {
+      const queryBuilder = this.model.createQueryBuilder(
+        opts.alias,
+        opts.runner,
+      );
+      const data = await queryBuilder.where({ id }).getOne();
+      if (!data) {
+        return OperationResult.fail('not_found', 'Resource not found');
+      }
+      return OperationResult.success(data);
+    } catch (error) {
+      return OperationResult.fail('find_failed', error.message);
+    }
   }
 
-  public count(
+  public async count(
     filter: FindOptionsWhere<T>,
     options: { withDeleted?: boolean } = { withDeleted: false },
-  ): Promise<number> {
-    return this.model.count({
-      withDeleted: options.withDeleted,
-      where: filter,
-    });
+  ): Promise<OperationResult<number>> {
+    try {
+      const data = await this.model.count({
+        withDeleted: options.withDeleted,
+        where: filter,
+      });
+      return OperationResult.success(data);
+    } catch (error) {
+      return OperationResult.fail('count_failed', error.message);
+    }
   }
 
-  public deleteOne(filter: FindOptionsWhere<T>): Promise<DeleteResult> {
-    return this.model.softDelete(filter);
+  public async deleteOne(
+    filter: FindOptionsWhere<T>,
+  ): Promise<OperationResult<DeleteResult>> {
+    try {
+      const data = await this.model.softDelete(filter);
+      return OperationResult.success(data);
+    } catch (error) {
+      return OperationResult.fail('delete_failed', error.message);
+    }
   }
 
-  public findOne(
+  public async findOne(
     filter: FindOptionsWhere<T> | FindOptionsWhere<T>[],
     options: FindOptions<T> = { withDeleted: false },
-  ): Promise<T | null> {
-    return this.model.findOne({
-      where: filter,
-      withDeleted: options.withDeleted,
-      select: options.select,
-      relations: options.relations,
-    });
+  ): Promise<OperationResult<T>> {
+    try {
+      const data = await this.model.findOne({
+        where: filter,
+        withDeleted: options.withDeleted,
+        select: options.select,
+        relations: options.relations,
+      });
+      if (!data) {
+        return OperationResult.fail('not_found', 'Resource not found');
+      }
+      return OperationResult.success(data);
+    } catch (error) {
+      return OperationResult.fail('find_failed', error.message);
+    }
   }
 
-  public async deleteByID(entityID: number | string): Promise<void> {
-    await this.model.softDelete({ id: entityID } as any);
+  public async deleteByID(
+    entityID: number | string,
+  ): Promise<OperationResult<void>> {
+    try {
+      await this.model.softDelete({ id: entityID } as any);
+      return OperationResult.success(undefined);
+    } catch (error) {
+      return OperationResult.fail('delete_failed', error.message);
+    }
   }
 
   public async findAll(
     filter?: FindOptionsWhere<T> | FindOptionsWhere<T>[],
     options: FindOptions<T> = { withDeleted: false },
-  ): Promise<T[]> {
-    const parsedSort = queryHelper.parseSort(options.sort);
+  ): Promise<OperationResult<T[]>> {
+    try {
+      const parsedSort = queryHelper.parseSort(options.sort);
 
-    return this.model.find({
-      order: parsedSort as any,
-      select: options.select,
-      relations: options.relations,
-      withDeleted: options.withDeleted,
-      where: filter,
-    });
+      const data = await this.model.find({
+        order: parsedSort as any,
+        select: options.select,
+        relations: options.relations,
+        withDeleted: options.withDeleted,
+        where: filter,
+      });
+      return OperationResult.success(data);
+    } catch (error) {
+      return OperationResult.fail('find_failed', error.message);
+    }
   }
 
   protected parseLimit(limit: number) {
@@ -163,144 +245,192 @@ export abstract class BaseCRUDService<T extends ObjectLiteral> {
     dto: PaginationDTO,
     filter?: FindOptionsWhere<T> | FindOptionsWhere<T>[],
     options: FindOptions<T> = { withDeleted: false },
-  ): Promise<PaginationResult<T>> {
-    const limit = this.parseLimit(dto.limit);
-    const offset = this.parseOffset(dto.offset);
+  ): Promise<OperationResult<PaginationResult<T>>> {
+    try {
+      const limit = this.parseLimit(dto.limit);
+      const offset = this.parseOffset(dto.offset);
 
-    const [data, totalCount] = await this.model.findAndCount({
-      take: limit,
-      skip: offset,
-      order: queryHelper.parseSort(dto.sort || '-createdAt') as any,
-      select: options.select,
-      relations: options.relations,
-      withDeleted: options.withDeleted,
-      where: filter,
-    });
+      const [data, totalCount] = await this.model.findAndCount({
+        take: limit,
+        skip: offset,
+        order: queryHelper.parseSort(dto.sort || '-createdAt') as any,
+        select: options.select,
+        relations: options.relations,
+        withDeleted: options.withDeleted,
+        where: filter,
+      });
 
-    return { rows: data, total: totalCount, limit, offset };
+      return OperationResult.success({
+        rows: data,
+        total: totalCount,
+        limit,
+        offset,
+      });
+    } catch (error) {
+      return OperationResult.fail('paginate_failed', error.message);
+    }
   }
 
-  /**
-   * Paginate with case-insensitive keyword search across specified columns.
-   */
   public async paginateByKeyword(
     dto: PaginationDTO,
     keywordColumns: (keyof T)[],
     keyword?: string,
     baseFilter?: FindOptionsWhere<T> | FindOptionsWhere<T>[],
     options: FindOptions<T> = { withDeleted: false },
-  ): Promise<PaginationResult<T>> {
-    const limit = this.parseLimit(dto.limit);
-    const offset = this.parseOffset(dto.offset);
-    const order = queryHelper.parseSort(dto.sort || '-createdAt') as any;
+  ): Promise<OperationResult<PaginationResult<T>>> {
+    try {
+      const limit = this.parseLimit(dto.limit);
+      const offset = this.parseOffset(dto.offset);
+      const order = queryHelper.parseSort(dto.sort || '-createdAt') as any;
 
-    const buildWhere = (): FindOptionsWhere<T>[] | FindOptionsWhere<T> => {
-      if (!keyword || !keywordColumns.length) {
-        return baseFilter ?? {};
-      }
+      const buildWhere = (): FindOptionsWhere<T>[] | FindOptionsWhere<T> => {
+        if (!keyword || !keywordColumns.length) {
+          return baseFilter ?? {};
+        }
 
-      if (Array.isArray(baseFilter)) {
-        return baseFilter.flatMap((filter) =>
-          keywordColumns.map((col) => ({
-            ...filter,
-            [col]: ILike(`%${keyword}%`),
-          })),
-        ) as FindOptionsWhere<T>[];
-      }
+        if (Array.isArray(baseFilter)) {
+          return baseFilter.flatMap((filter) =>
+            keywordColumns.map((col) => ({
+              ...filter,
+              [col]: ILike(`%${keyword}%`),
+            })),
+          ) as FindOptionsWhere<T>[];
+        }
 
-      return keywordColumns.map((col) => ({
-        ...baseFilter,
-        [col]: ILike(`%${keyword}%`),
-      })) as FindOptionsWhere<T>[];
-    };
+        return keywordColumns.map((col) => ({
+          ...baseFilter,
+          [col]: ILike(`%${keyword}%`),
+        })) as FindOptionsWhere<T>[];
+      };
 
-    const [data, totalCount] = await this.model.findAndCount({
-      take: limit,
-      skip: offset,
-      order,
-      select: options.select,
-      relations: options.relations,
-      withDeleted: options.withDeleted,
-      where: buildWhere(),
-    });
+      const [data, totalCount] = await this.model.findAndCount({
+        take: limit,
+        skip: offset,
+        order,
+        select: options.select,
+        relations: options.relations,
+        withDeleted: options.withDeleted,
+        where: buildWhere(),
+      });
 
-    return { rows: data, total: totalCount, limit, offset };
+      return OperationResult.success({
+        rows: data,
+        total: totalCount,
+        limit,
+        offset,
+      });
+    } catch (error) {
+      return OperationResult.fail('paginate_failed', error.message);
+    }
   }
 
   public async bulkUpdateByIDs(
     ids: (number | string)[],
     dto: Partial<T>,
-  ): Promise<void> {
-    if (!ids?.length) {
-      throw new InternalServerErrorException('ids list must not be empty');
-    }
+  ): Promise<OperationResult<void>> {
+    try {
+      if (!ids?.length) {
+        return OperationResult.fail(
+          'bad_request',
+          'ids list must not be empty',
+        );
+      }
 
-    await this.model.update(
-      { id: Any(ids) as any, deletedAt: IsNull() } as any,
-      dto as any,
-    );
+      await this.model.update(
+        { id: Any(ids) as any, deletedAt: IsNull() } as any,
+        dto as any,
+      );
+      return OperationResult.success(undefined);
+    } catch (error) {
+      return OperationResult.fail('update_failed', error.message);
+    }
   }
 
   public async bulkUpdate(
     filter: FindOptionsWhere<T>,
     dto: Partial<T>,
-  ): Promise<void> {
-    await this.model.update(filter, dto as any);
+  ): Promise<OperationResult<void>> {
+    try {
+      await this.model.update(filter, dto as any);
+      return OperationResult.success(undefined);
+    } catch (error) {
+      return OperationResult.fail('update_failed', error.message);
+    }
   }
 
   public async updateByID(
     id: number | string,
     dto: Partial<T>,
-  ): Promise<T | null> {
-    if (!id) {
-      throw new InternalServerErrorException('missing id for update');
+  ): Promise<OperationResult<T>> {
+    try {
+      if (!id) {
+        return OperationResult.fail('bad_request', 'missing id for update');
+      }
+
+      await this.model.update(
+        { id: id as any, deletedAt: IsNull() } as any,
+        dto as any,
+      );
+
+      return this.findByID(id);
+    } catch (error) {
+      return OperationResult.fail('update_failed', error.message);
     }
-
-    await this.model.update(
-      { id: id as any, deletedAt: IsNull() } as any,
-      dto as any,
-    );
-
-    return this.findByID(id);
   }
 
-  public async bulkCreate(dto: Partial<T>[]): Promise<T[]> {
-    const insertResult = await this.model.insert(dto as any[]);
-    return this.model.findBy({
-      id: Any(insertResult.identifiers.map((i) => i.id)) as any,
-    } as any);
+  public async bulkCreate(dto: Partial<T>[]): Promise<OperationResult<T[]>> {
+    try {
+      const insertResult = await this.model.insert(dto as any[]);
+      const data = await this.model.findBy({
+        id: Any(insertResult.identifiers.map((i) => i.id)) as any,
+      } as any);
+      return OperationResult.success(data);
+    } catch (error) {
+      return OperationResult.fail('create_failed', error.message);
+    }
   }
 
   public async updateOneWithOpts(
     filter: FindOptionsWhere<T>,
     dto: Partial<T>,
     opts: RunnerUser,
-  ): Promise<T | null> {
-    const queryBuilder = this.model.createQueryBuilder(opts.alias, opts.runner);
+  ): Promise<OperationResult<T>> {
+    try {
+      const queryBuilder = this.model.createQueryBuilder(
+        opts.alias,
+        opts.runner,
+      );
 
-    const updateResult = await queryBuilder
-      .update()
-      .set(dto as any)
-      .where(filter)
-      .returning('*')
-      .execute();
+      const updateResult = await queryBuilder
+        .update()
+        .set(dto as any)
+        .where(filter)
+        .returning('*')
+        .execute();
 
-    return updateResult.generatedMaps[0] as T;
+      return OperationResult.success(updateResult.generatedMaps[0] as T);
+    } catch (error) {
+      return OperationResult.fail('update_failed', error.message);
+    }
   }
 
   public async updateOne(
     filter: FindOptionsWhere<T>,
     dto: Partial<T>,
-  ): Promise<T | null> {
-    if (!filter) {
-      throw new InternalServerErrorException('missing filter for update');
+  ): Promise<OperationResult<T>> {
+    try {
+      if (!filter) {
+        return OperationResult.fail('bad_request', 'missing filter for update');
+      }
+
+      await this.model.update(
+        { ...filter, deletedAt: IsNull() } as any,
+        dto as any,
+      );
+
+      return this.findOne(filter);
+    } catch (error) {
+      return OperationResult.fail('update_failed', error.message);
     }
-
-    await this.model.update(
-      { ...filter, deletedAt: IsNull() } as any,
-      dto as any,
-    );
-
-    return this.findOne(filter);
   }
 }

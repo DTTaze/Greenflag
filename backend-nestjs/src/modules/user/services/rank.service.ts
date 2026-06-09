@@ -1,16 +1,13 @@
-import {
-  CacheService,
-  OperationResult,
-  SET_CACHE_POLICY,
-} from 'mvc-common-toolkit';
+import { CacheService, SET_CACHE_POLICY } from 'mvc-common-toolkit';
 import { Repository } from 'typeorm';
 
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CACHE_KEYS } from '@shared/cache-key';
-import { CACHE_TTL, INJECTION_TOKEN } from '@shared/constants';
+import { CACHE_TTL, ERR_CODE, INJECTION_TOKEN } from '@shared/constants';
 import {
+  OperationResult,
   generateNotFoundResult,
   generateSuccessResult,
 } from '@shared/helpers/operation-result.helper';
@@ -38,7 +35,7 @@ export class RankService extends BaseCRUDService<Rank> {
 
     const rank = await this.rankRepository.findOne({ where: { id: rankId } });
     if (!rank) {
-      return generateNotFoundResult('Rank not found');
+      return generateNotFoundResult('Rank not found', ERR_CODE.RANK_NOT_FOUND);
     }
 
     await this.cacheService.set(key, JSON.stringify(rank), {

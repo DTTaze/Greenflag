@@ -1,25 +1,27 @@
 import { Repository } from 'typeorm';
 
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-  OnModuleInit,
-} from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CloudinaryService } from '@modules/cloudinary/services/cloudinary.service';
-import { Coin } from '@modules/user/entities/coin.entity';
-import { UserProfile } from '@modules/user/entities/user-profile.entity';
 import { User } from '@modules/user/entities/user.entity';
+import { CoinService } from '@modules/user/services/coin.service';
+import { UserProfileService } from '@modules/user/services/user-profile.service';
+import { UserService } from '@modules/user/services/user.service';
 
-import { getStorageFolder } from '@shared/constants';
+import { ERR_CODE, getStorageFolder } from '@shared/constants';
 import {
   TASK_DIFFICULTY,
   TASK_SUBMIT_STATUS,
   TASK_VISIBILITY,
 } from '@shared/enums';
+import {
+  OperationResult,
+  generateBadRequestResult,
+  generateForbiddenResult,
+  generateNotFoundResult,
+  generateSuccessResult,
+} from '@shared/helpers/operation-result.helper';
 import { BaseCRUDService } from '@shared/services/base-crud.service';
 
 import { CreateTaskDto, UpdateTaskDto } from '../dtos/task.dto';
@@ -28,49 +30,50 @@ import { TaskType } from '../entities/task-type.entity';
 import { TaskUser } from '../entities/task-user.entity';
 import { Task } from '../entities/task.entity';
 import { Type } from '../entities/type.entity';
+import { TaskSubmitService } from './task-submit.service';
+import { TaskTypeService } from './task-type.service';
+import { TaskUserService } from './task-user.service';
+import { TypeService } from './type.service';
 
 @Injectable()
 export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
   constructor(
     @InjectRepository(Task)
     private readonly taskRepository: Repository<Task>,
-    @InjectRepository(Type)
-    private readonly typeRepository: Repository<Type>,
-    @InjectRepository(TaskType)
-    private readonly taskTypeRepository: Repository<TaskType>,
-    @InjectRepository(TaskUser)
-    private readonly taskUserRepository: Repository<TaskUser>,
-    @InjectRepository(TaskSubmit)
-    private readonly taskSubmitRepository: Repository<TaskSubmit>,
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-    @InjectRepository(Coin)
-    private readonly coinRepository: Repository<Coin>,
-    @InjectRepository(UserProfile)
-    private readonly userProfileRepository: Repository<UserProfile>,
+    private readonly typeService: TypeService,
+    private readonly taskTypeService: TaskTypeService,
+    private readonly taskUserService: TaskUserService,
+    private readonly taskSubmitService: TaskSubmitService,
+    @Inject(forwardRef(() => UserService))
+    private readonly userService: UserService,
+    @Inject(forwardRef(() => CoinService))
+    private readonly coinService: CoinService,
+    @Inject(forwardRef(() => UserProfileService))
+    private readonly userProfileService: UserProfileService,
     private readonly cloudinaryService: CloudinaryService,
   ) {
     super(taskRepository);
   }
 
   async onModuleInit() {
-    // Check and seed default task types if the table is empty
-    const count = await this.typeRepository.count();
+    const countRes = await this.typeService.count({});
+    const count = countRes.success ? countRes.data : 0;
     if (count === 0) {
-      await this.typeRepository.save([
-        { type: 'daily' },
-        { type: 'weekly' },
-        { type: 'event' },
-        { type: 'others' },
-      ]);
+      await this.typeService.create({ type: 'daily' });
+      await this.typeService.create({ type: 'weekly' });
+      await this.typeService.create({ type: 'event' });
+      await this.typeService.create({ type: 'others' });
     }
   }
 
-  async createTask(dto: CreateTaskDto, creatorId: string): Promise<Task> {
+  async createTask(
+    dto: CreateTaskDto,
+    creatorId: string,
+  ): Promise<OperationResult<Task>> {
     const { title, content, description, coins, difficulty, total, typeIds } =
       dto;
 
-    return this.model.manager.transaction(
+    const savedTask = await this.model.manager.transaction(
       async (transactionalEntityManager) => {
         const task = transactionalEntityManager.create(Task, {
           title,
@@ -83,45 +86,64 @@ export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
           status: TASK_VISIBILITY.PUBLIC,
         });
 
-        const savedTask = await transactionalEntityManager.save(Task, task);
+        const saved = await transactionalEntityManager.save(Task, task);
 
         if (typeIds && typeIds.length > 0) {
           const taskTypes = typeIds.map((typeId) =>
             transactionalEntityManager.create(TaskType, {
-              taskId: savedTask.id,
+              taskId: saved.id,
               typeId,
             }),
           );
           await transactionalEntityManager.save(TaskType, taskTypes);
         }
 
-        return savedTask;
+        return saved;
       },
     );
+
+    return generateSuccessResult(savedTask);
   }
 
-  async getAllTasks(): Promise<Task[]> {
-    return this.taskRepository.find({
+  async getAllTasks(): Promise<OperationResult<Task[]>> {
+    const tasks = await this.taskRepository.find({
       relations: ['creator', 'creator.profile'],
       order: { createdAt: 'DESC' },
     });
+    return generateSuccessResult(tasks);
   }
 
-  async getTaskById(id: string): Promise<Task> {
+  async getTaskById(id: string): Promise<OperationResult<Task>> {
     const task = await this.model.findOne({
       where: { id },
       relations: ['creator', 'creator.profile', 'taskTypes', 'taskTypes.type'],
     });
     if (!task) {
-      throw new NotFoundException('Task not found');
+      return generateNotFoundResult('Task not found', ERR_CODE.TASK_NOT_FOUND);
     }
-    return task;
+    return generateSuccessResult(task);
   }
 
-  async updateTask(id: string, dto: UpdateTaskDto): Promise<Task> {
-    const task = await this.getTaskById(id);
+  async updateTask(
+    id: string,
+    dto: UpdateTaskDto,
+    currentUserId?: string,
+    isAdmin: boolean = false,
+  ): Promise<OperationResult<Task>> {
+    const taskResult = await this.getTaskById(id);
+    if (!taskResult.success) {
+      return taskResult;
+    }
+    const task = taskResult.data;
 
-    return this.model.manager.transaction(
+    if (!isAdmin && currentUserId && task.creatorId !== currentUserId) {
+      return generateForbiddenResult(
+        'Bạn không có quyền chỉnh sửa nhiệm vụ của người khác',
+        ERR_CODE.FORBIDDEN,
+      );
+    }
+
+    const savedTask = await this.model.manager.transaction(
       async (transactionalEntityManager) => {
         const { typeIds, ...updateFields } = dto;
 
@@ -143,45 +165,78 @@ export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
           }
         }
 
-        return this.getTaskById(id);
+        const freshTask = await transactionalEntityManager.findOne(Task, {
+          where: { id },
+          relations: [
+            'creator',
+            'creator.profile',
+            'taskTypes',
+            'taskTypes.type',
+          ],
+        });
+        return freshTask!;
       },
     );
+
+    return generateSuccessResult(savedTask);
   }
 
-  async deleteTask(id: string): Promise<void> {
+  async deleteTask(
+    id: string,
+    currentUserId?: string,
+    isAdmin: boolean = false,
+  ): Promise<OperationResult<void>> {
     const task = await this.taskRepository.findOne({ where: { id } });
     if (!task) {
-      throw new NotFoundException('Task not found');
+      return generateNotFoundResult('Task not found', ERR_CODE.TASK_NOT_FOUND);
+    }
+    if (!isAdmin && currentUserId && task.creatorId !== currentUserId) {
+      return generateForbiddenResult(
+        'Bạn không có quyền xóa nhiệm vụ của người khác',
+        ERR_CODE.FORBIDDEN,
+      );
     }
     await this.taskRepository.softDelete({ id });
+    return generateSuccessResult(undefined);
   }
 
-  async acceptTask(taskId: string, userId: string): Promise<TaskUser> {
+  async acceptTask(
+    taskId: string,
+    userId: string,
+  ): Promise<OperationResult<TaskUser>> {
     const task = await this.taskRepository.findOne({ where: { id: taskId } });
     if (!task) {
-      throw new NotFoundException('Task not found');
+      return generateNotFoundResult('Task not found', ERR_CODE.TASK_NOT_FOUND);
     }
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    if (!user) {
-      throw new NotFoundException('User not found');
+    const userResult = await this.userService.getUserByID(userId);
+    if (!userResult.success) {
+      return generateNotFoundResult('User not found', ERR_CODE.USER_NOT_FOUND);
     }
 
-    const existingTaskUser = await this.taskUserRepository.findOne({
-      where: { userId, taskId },
+    const existingTaskUserRes = await this.taskUserService.findOne({
+      userId,
+      taskId,
     });
 
-    if (existingTaskUser) {
-      return existingTaskUser;
+    if (existingTaskUserRes.success && existingTaskUserRes.data) {
+      return generateSuccessResult(existingTaskUserRes.data);
     }
 
-    const taskUser = this.taskUserRepository.create({
+    const taskUserRes = await this.taskUserService.create({
       userId,
       taskId,
       progressCount: 0,
       assignedAt: new Date(),
     });
 
-    return this.taskUserRepository.save(taskUser);
+    if (!taskUserRes.success || !taskUserRes.data) {
+      return OperationResult.fail(
+        taskUserRes.code || 'create_failed',
+        taskUserRes.message,
+      );
+    }
+
+    return generateSuccessResult(taskUserRes.data);
   }
 
   async submitTask(
@@ -189,11 +244,21 @@ export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
     userId: string,
     description: string,
     files: Express.Multer.File[],
-  ): Promise<{ taskSubmit: TaskSubmit; images: string[] }> {
-    const taskUser = await this.acceptTask(taskId, userId);
+  ): Promise<OperationResult<{ taskSubmit: TaskSubmit; images: string[] }>> {
+    const acceptResult = await this.acceptTask(taskId, userId);
+    if (!acceptResult.success) {
+      return OperationResult.fail(
+        acceptResult.code || ERR_CODE.BAD_REQUEST,
+        acceptResult.message,
+      );
+    }
+    const taskUser = acceptResult.data;
 
     if (!files || files.length === 0) {
-      throw new BadRequestException('No files provided.');
+      return generateBadRequestResult(
+        'No files provided.',
+        ERR_CODE.BAD_REQUEST,
+      );
     }
 
     // Upload to Cloudinary
@@ -208,7 +273,7 @@ export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
       }
     }
 
-    const taskSubmit = this.taskSubmitRepository.create({
+    const taskSubmitRes = await this.taskSubmitService.create({
       taskUserId: taskUser.id,
       description: description || '',
       status: TASK_SUBMIT_STATUS.PENDING,
@@ -216,17 +281,27 @@ export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
       images: imageUrls,
     });
 
-    const savedSubmit = await this.taskSubmitRepository.save(taskSubmit);
+    if (!taskSubmitRes.success || !taskSubmitRes.data) {
+      return OperationResult.fail(
+        taskSubmitRes.code || 'create_failed',
+        taskSubmitRes.message,
+      );
+    }
 
-    return {
-      taskSubmit: savedSubmit,
+    return generateSuccessResult({
+      taskSubmit: taskSubmitRes.data,
       images: imageUrls,
-    };
+    });
   }
 
-  async completeTask(taskUser: TaskUser, user: User): Promise<void> {
+  async completeTask(
+    taskUser: TaskUser,
+    user: User,
+  ): Promise<OperationResult<void>> {
     taskUser.completedAt = new Date();
-    await this.taskUserRepository.save(taskUser);
+    await this.taskUserService.updateByID(taskUser.id, {
+      completedAt: taskUser.completedAt,
+    });
 
     let newStreak = user.profile?.streak || 0;
     if (user.profile?.lastCompletedTask) {
@@ -250,7 +325,10 @@ export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
     if (user.profile) {
       user.profile.streak = newStreak;
       user.profile.lastCompletedTask = new Date();
-      await this.userProfileRepository.save(user.profile);
+      await this.userProfileService.updateByID(user.profile.id, {
+        streak: newStreak,
+        lastCompletedTask: user.profile.lastCompletedTask,
+      });
     }
 
     // Fetch coins configuration from task
@@ -258,132 +336,224 @@ export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
       where: { id: taskUser.taskId },
     });
     if (task) {
-      const coin = await this.coinRepository.findOne({
-        where: { userId: user.id },
-      });
-      if (coin) {
-        coin.amount += task.coins;
-        await this.coinRepository.save(coin);
+      const coinResultRes = await this.coinService.findOne({ userId: user.id });
+      if (coinResultRes.success && coinResultRes.data) {
+        await this.coinService.updateIncreaseCoin(coinResultRes.data.id, {
+          coins: task.coins,
+        });
       }
     }
+
+    return generateSuccessResult(undefined);
   }
 
-  async increaseProgressCount(taskUserId: string): Promise<TaskUser> {
-    const taskUser = await this.taskUserRepository.findOne({
-      where: { id: taskUserId },
-      relations: ['task'],
-    });
+  async increaseProgressCount(
+    taskUserId: string,
+  ): Promise<OperationResult<TaskUser>> {
+    const taskUserRes = await this.taskUserService.findOne(
+      { id: taskUserId },
+      { relations: { task: true } },
+    );
 
-    if (!taskUser) {
-      throw new NotFoundException('Task user not found.');
+    if (!taskUserRes.success || !taskUserRes.data) {
+      return generateNotFoundResult(
+        'Task user not found.',
+        ERR_CODE.TASK_USER_NOT_FOUND,
+      );
     }
+    const taskUser = taskUserRes.data;
     if (!taskUser.task) {
-      throw new NotFoundException('Task not found.');
+      return generateNotFoundResult('Task not found.', ERR_CODE.TASK_NOT_FOUND);
     }
     if (taskUser.progressCount >= taskUser.task.total) {
-      throw new BadRequestException('Task is already completed.');
+      return generateBadRequestResult(
+        'Task is already completed.',
+        ERR_CODE.TASK_COMPLETED,
+      );
     }
 
     taskUser.progressCount += 1;
-    const updated = await this.taskUserRepository.save(taskUser);
+    const updatedRes = await this.taskUserService.updateByID(taskUser.id, {
+      progressCount: taskUser.progressCount,
+    });
+    if (!updatedRes.success || !updatedRes.data) {
+      return OperationResult.fail(
+        updatedRes.code || 'update_failed',
+        updatedRes.message,
+      );
+    }
+    const updated = updatedRes.data;
+    // Restore relation that might have been dropped by updateByID
+    updated.task = taskUser.task;
 
     if (updated.progressCount >= taskUser.task.total) {
-      const user = await this.userRepository.findOne({
-        where: { id: taskUser.userId },
-        relations: ['profile'],
-      });
-      if (!user) {
-        throw new NotFoundException('User not found.');
+      const userResult = await this.userService.getUserByID(taskUser.userId);
+      if (!userResult.success) {
+        return generateNotFoundResult(
+          'User not found.',
+          ERR_CODE.USER_NOT_FOUND,
+        );
       }
+      const user = userResult.data;
       await this.completeTask(updated, user);
     }
 
-    return updated;
+    return generateSuccessResult(updated);
   }
 
   async updateDecisionTaskSubmit(
     taskSubmitId: string,
     decision: TASK_SUBMIT_STATUS,
-  ): Promise<TaskSubmit> {
+    currentUserId?: string,
+    isAdmin: boolean = false,
+  ): Promise<OperationResult<TaskSubmit>> {
     if (
       decision !== TASK_SUBMIT_STATUS.APPROVED &&
       decision !== TASK_SUBMIT_STATUS.REJECTED
     ) {
-      throw new BadRequestException(
+      return generateBadRequestResult(
         "Decision must be either 'approved' or 'rejected'.",
+        ERR_CODE.BAD_REQUEST,
       );
     }
 
-    const taskSubmit = await this.taskSubmitRepository.findOne({
-      where: { id: taskSubmitId },
-      relations: ['taskUser'],
-    });
+    const taskSubmitRes = await this.taskSubmitService.findOne(
+      { id: taskSubmitId },
+      { relations: { taskUser: { task: true } } },
+    );
 
-    if (!taskSubmit) {
-      throw new NotFoundException('Task submit not found.');
+    if (!taskSubmitRes.success || !taskSubmitRes.data) {
+      return generateNotFoundResult(
+        'Task submit not found.',
+        ERR_CODE.TASK_SUBMIT_NOT_FOUND,
+      );
+    }
+    const taskSubmit = taskSubmitRes.data;
+
+    if (
+      !isAdmin &&
+      currentUserId &&
+      taskSubmit.taskUser?.task?.creatorId !== currentUserId
+    ) {
+      return generateForbiddenResult(
+        'Bạn không có quyền duyệt bài nộp của nhiệm vụ người khác',
+        ERR_CODE.FORBIDDEN,
+      );
     }
 
     taskSubmit.status = decision;
-    const updated = await this.taskSubmitRepository.save(taskSubmit);
+    const updatedRes = await this.taskSubmitService.updateByID(taskSubmit.id, {
+      status: decision,
+    });
+    if (!updatedRes.success || !updatedRes.data) {
+      return OperationResult.fail(
+        updatedRes.code || 'update_failed',
+        updatedRes.message,
+      );
+    }
+    const updated = updatedRes.data;
+    // Restore relation
+    updated.taskUser = taskSubmit.taskUser;
 
     if (decision === TASK_SUBMIT_STATUS.APPROVED) {
-      await this.increaseProgressCount(taskSubmit.taskUserId);
+      const progressResult = await this.increaseProgressCount(
+        taskSubmit.taskUserId,
+      );
+      if (!progressResult.success) {
+        return OperationResult.fail(
+          progressResult.code || ERR_CODE.BAD_REQUEST,
+          progressResult.message,
+        );
+      }
     }
 
-    return updated;
+    return generateSuccessResult(updated);
   }
 
-  async getAllTasksByTypeName(typeName: string): Promise<Task[]> {
-    const type = await this.typeRepository.findOne({
-      where: { type: typeName },
-    });
-    if (!type) return [];
+  async getAllTasksByTypeName(
+    typeName: string,
+  ): Promise<OperationResult<Task[]>> {
+    const typeRes = await this.typeService.findOne({ type: typeName });
+    if (!typeRes.success || !typeRes.data) {
+      return generateSuccessResult([]);
+    }
+    const type = typeRes.data;
 
-    const taskTypes = await this.taskTypeRepository.find({
-      where: { typeId: type.id },
-      relations: ['task', 'task.creator', 'task.creator.profile'],
-    });
+    const taskTypesRes = await this.taskTypeService.findAll(
+      { typeId: type.id },
+      { relations: { task: { creator: { profile: true } } } },
+    );
+    if (!taskTypesRes.success || !taskTypesRes.data) {
+      return generateSuccessResult([]);
+    }
+    const taskTypes = taskTypesRes.data;
 
-    return taskTypes.map((tt) => tt.task).filter(Boolean);
+    const tasks = taskTypes.map((tt) => tt.task).filter(Boolean);
+    return generateSuccessResult(tasks);
   }
 
   async getAllTasksByDifficultyName(
     difficultyName: TASK_DIFFICULTY,
-  ): Promise<Task[]> {
-    return this.taskRepository.find({
+  ): Promise<OperationResult<Task[]>> {
+    const tasks = await this.taskRepository.find({
       where: { difficulty: difficultyName },
       relations: ['creator', 'creator.profile'],
     });
+    return generateSuccessResult(tasks);
   }
 
-  async getAllTasksStatusPublic(): Promise<Task[]> {
-    return this.taskRepository.find({
+  async getAllTasksStatusPublic(): Promise<OperationResult<Task[]>> {
+    const tasks = await this.taskRepository.find({
       where: { status: TASK_VISIBILITY.PUBLIC },
       relations: ['creator', 'creator.profile'],
     });
+    return generateSuccessResult(tasks);
   }
 
-  async getAllTasksOfCustomer(customerId: string): Promise<Task[]> {
-    return this.taskRepository.find({
+  async getAllTasksOfCustomer(
+    customerId: string,
+  ): Promise<OperationResult<Task[]>> {
+    const tasks = await this.taskRepository.find({
       where: { creatorId: customerId },
       relations: ['creator', 'creator.profile'],
     });
+    return generateSuccessResult(tasks);
   }
 
   async changeTaskStatus(
     taskId: string,
     status: TASK_VISIBILITY,
-  ): Promise<Task> {
-    const task = await this.getTaskById(taskId);
+    currentUserId?: string,
+    isAdmin: boolean = false,
+  ): Promise<OperationResult<Task>> {
+    const taskResult = await this.getTaskById(taskId);
+    if (!taskResult.success) {
+      return taskResult;
+    }
+    const task = taskResult.data;
+
+    if (!isAdmin && currentUserId && task.creatorId !== currentUserId) {
+      return generateForbiddenResult(
+        'Bạn không có quyền chỉnh sửa trạng thái nhiệm vụ của người khác',
+        ERR_CODE.FORBIDDEN,
+      );
+    }
     task.status = status;
-    return this.taskRepository.save(task);
+    const saved = await this.taskRepository.save(task);
+    return generateSuccessResult(saved);
   }
 
-  async getCompletedTasksByUserId(userId: string): Promise<Task[]> {
-    const taskUsers = await this.taskUserRepository.find({
-      where: { userId },
-      relations: ['task'],
-    });
+  async getCompletedTasksByUserId(
+    userId: string,
+  ): Promise<OperationResult<Task[]>> {
+    const taskUsersRes = await this.taskUserService.findAll(
+      { userId },
+      { relations: { task: true } },
+    );
+    if (!taskUsersRes.success || !taskUsersRes.data) {
+      return generateSuccessResult([]);
+    }
+    const taskUsers = taskUsersRes.data;
 
     const completed: Task[] = [];
     for (const tu of taskUsers) {
@@ -391,13 +561,20 @@ export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
         completed.push(tu.task);
       }
     }
-    return completed;
+    return generateSuccessResult(completed);
   }
 
-  async getAllTasksByUserId(userId: string): Promise<TaskUser[]> {
-    return this.taskUserRepository.find({
-      where: { userId },
-      relations: ['task'],
-    });
+  async getAllTasksByUserId(
+    userId: string,
+  ): Promise<OperationResult<TaskUser[]>> {
+    const taskUsersRes = await this.taskUserService.findAll(
+      { userId },
+      { relations: { task: true } },
+    );
+    if (!taskUsersRes.success || !taskUsersRes.data) {
+      return generateSuccessResult([]);
+    }
+    const taskUsers = taskUsersRes.data;
+    return generateSuccessResult(taskUsers);
   }
 }

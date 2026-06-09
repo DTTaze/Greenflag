@@ -142,19 +142,21 @@ export class UserInvalidAttemptBanInterceptor
           }),
         );
 
-        const user = await this.userService.findByID(userId);
-
-        await Promise.all([
-          this.userService.updateByID(userId, {
-            status: ENTITY_STATUS.SUSPENDED,
-            metadata: {
-              ...user.metadata,
-              reason: 'reached_max_failed_attempts',
-              endpoint: routeIdentifier,
-            },
-          }),
-          this.cacheEngine.del(cacheKey),
-        ]);
+        const userRes = await this.userService.findByID(userId);
+        if (userRes.success && userRes.data) {
+          const user = userRes.data;
+          await Promise.all([
+            this.userService.updateByID(userId, {
+              status: ENTITY_STATUS.SUSPENDED,
+              metadata: {
+                ...user.metadata,
+                reason: 'reached_max_failed_attempts',
+                endpoint: routeIdentifier,
+              },
+            }),
+            this.cacheEngine.del(cacheKey),
+          ]);
+        }
       }
     } catch (error) {
       this.logger.error(error.message, error.stack);

@@ -4,7 +4,6 @@ import {
   CacheService,
   ErrorLog,
   HttpService,
-  OperationResult,
   SET_CACHE_POLICY,
   bcryptHelper,
   stringUtils,
@@ -34,6 +33,7 @@ import {
   VERIFY_OTP_ACTION,
 } from '@shared/enums';
 import {
+  OperationResult,
   generateBadRequestResult,
   generateConflictResult,
   generateForbiddenResult,
@@ -104,12 +104,20 @@ export class AuthService {
 
       const passwordHash = await bcryptHelper.hash(dto.password, 10);
 
-      const user = await this.userService.create({
+      const userRes = await this.userService.create({
         email: dto.email,
         username: dto.username,
         password: passwordHash,
         status: ENTITY_STATUS.INACTIVE,
       });
+
+      if (!userRes.success || !userRes.data) {
+        return OperationResult.fail(
+          userRes.code || 'create_failed',
+          userRes.message,
+        );
+      }
+      const user = userRes.data;
 
       const otpCode = generateOtpCode();
 
@@ -155,14 +163,15 @@ export class AuthService {
     dto: ResendEmailDTO,
   ): Promise<OperationResult> {
     try {
-      const user = await this.userService.findOne({ email: dto.email });
+      const userRes = await this.userService.findOne({ email: dto.email });
 
-      if (!user) {
+      if (!userRes.success || !userRes.data) {
         return generateNotFoundResult(
           'User not found',
           ERR_CODE.USER_NOT_FOUND,
         );
       }
+      const user = userRes.data;
 
       if (user.status !== ENTITY_STATUS.INACTIVE) {
         return generateConflictResult(
@@ -221,14 +230,15 @@ export class AuthService {
         ? { email: identifier }
         : { username: identifier };
 
-      const user = await this.userService.findOne(query);
+      const userRes = await this.userService.findOne(query);
 
-      if (!user) {
+      if (!userRes.success || !userRes.data) {
         return generateNotFoundResult(
           'User not found',
           ERR_CODE.USER_NOT_FOUND,
         );
       }
+      const user = userRes.data;
 
       const cacheKey = otpCacheKey(user.id, dto.action);
       const cachedOtp = await this.cacheService.get(cacheKey);
@@ -278,16 +288,17 @@ export class AuthService {
         ? { email: identifier }
         : { username: identifier };
 
-      const user = await this.userService.findOne(query, {
+      const userRes = await this.userService.findOne(query, {
         relations: { profile: true },
       });
 
-      if (!user) {
+      if (!userRes.success || !userRes.data) {
         return generateNotFoundResult(
           'User not found',
           ERR_CODE.USER_NOT_FOUND,
         );
       }
+      const user = userRes.data;
 
       if (user.status !== ENTITY_STATUS.ACTIVE) {
         return generateForbiddenResult(
@@ -353,11 +364,12 @@ export class AuthService {
     logId: string,
     dto: ForgotPasswordDTO,
   ): Promise<OperationResult> {
-    const user = await this.userService.findOne({ email: dto.email });
+    const userRes = await this.userService.findOne({ email: dto.email });
 
-    if (!user) {
+    if (!userRes.success || !userRes.data) {
       return generateNotFoundResult('User not found', ERR_CODE.USER_NOT_FOUND);
     }
+    const user = userRes.data;
 
     if (user.status !== ENTITY_STATUS.ACTIVE) {
       return generateForbiddenResult(
@@ -418,11 +430,12 @@ export class AuthService {
     logId: string,
     dto: ResetPasswordDTO,
   ): Promise<OperationResult> {
-    const user = await this.userService.findOne({ email: dto.email });
+    const userRes = await this.userService.findOne({ email: dto.email });
 
-    if (!user) {
+    if (!userRes.success || !userRes.data) {
       return generateNotFoundResult('User not found', ERR_CODE.USER_NOT_FOUND);
     }
+    const user = userRes.data;
 
     if (user.status !== ENTITY_STATUS.ACTIVE) {
       return generateForbiddenResult(
@@ -472,14 +485,15 @@ export class AuthService {
     dto: ChangePasswordDTO,
   ): Promise<OperationResult> {
     try {
-      const foundUser = await this.userService.findByID(userId);
+      const foundUserRes = await this.userService.findByID(userId);
 
-      if (!foundUser) {
+      if (!foundUserRes.success || !foundUserRes.data) {
         return generateNotFoundResult(
           'user not found',
           ERR_CODE.USER_NOT_FOUND,
         );
       }
+      const foundUser = foundUserRes.data;
 
       const hasPassword = !!foundUser.password;
 
@@ -550,31 +564,37 @@ export class AuthService {
   public async loginOrCreateSocialAccount(
     user: UserAuthSocialProfile,
   ): Promise<OperationResult> {
-    const foundUserSocialAccount = await this.userSocialAccountService.findOne({
-      provider: user.provider,
-      providerUserId: user.providerUserId,
-    });
+    const foundUserSocialAccountRes =
+      await this.userSocialAccountService.findOne({
+        provider: user.provider,
+        providerUserId: user.providerUserId,
+      });
 
-    if (foundUserSocialAccount) {
-      const foundUser = await this.userService.findByID(
+    if (foundUserSocialAccountRes.success && foundUserSocialAccountRes.data) {
+      const foundUserSocialAccount = foundUserSocialAccountRes.data;
+      const foundUserRes = await this.userService.findByID(
         foundUserSocialAccount.userId,
         { relations: { profile: true } },
       );
-      if (foundUser && user.avatarUrl && !foundUser.avatarUrl) {
-        foundUser.avatarUrl = user.avatarUrl;
-        await this.userService.updateByID(foundUser.id, {
-          avatarUrl: user.avatarUrl,
-        });
+      if (foundUserRes.success && foundUserRes.data) {
+        const foundUser = foundUserRes.data;
+        if (user.avatarUrl && !foundUser.avatarUrl) {
+          foundUser.avatarUrl = user.avatarUrl;
+          await this.userService.updateByID(foundUser.id, {
+            avatarUrl: user.avatarUrl,
+          });
+        }
+        return this.handleLoginBySocialAccount(foundUserSocialAccount);
       }
-      return this.handleLoginBySocialAccount(foundUserSocialAccount);
     }
 
-    const foundUser = await this.userService.findOne(
+    const foundUserRes = await this.userService.findOne(
       { email: user.email },
       { relations: { profile: true } },
     );
 
-    if (foundUser) {
+    if (foundUserRes.success && foundUserRes.data) {
+      const foundUser = foundUserRes.data;
       if (user.avatarUrl && !foundUser.avatarUrl) {
         foundUser.avatarUrl = user.avatarUrl;
         await this.userService.updateByID(foundUser.id, {
@@ -616,13 +636,14 @@ export class AuthService {
   protected async handleLoginBySocialAccount(
     socialAccount: UserSocialAccount,
   ): Promise<OperationResult> {
-    const foundUser = await this.userService.findByID(socialAccount.userId, {
+    const foundUserRes = await this.userService.findByID(socialAccount.userId, {
       relations: { profile: true },
     });
 
-    if (!foundUser) {
+    if (!foundUserRes.success || !foundUserRes.data) {
       return generateNotFoundResult('user not found', ERR_CODE.NOT_FOUND);
     }
+    const foundUser = foundUserRes.data;
 
     if (foundUser.status === ENTITY_STATUS.INACTIVE) {
       foundUser.status = ENTITY_STATUS.ACTIVE;
@@ -673,13 +694,13 @@ export class AuthService {
         return userStatusVerifyResult;
       }
 
-      const createdResult = await this.userSocialAccountService.create({
+      const createdResultRes = await this.userSocialAccountService.create({
         userId: foundUser.id,
         provider: userSocialProfile.provider,
         providerUserId: userSocialProfile.providerUserId,
       });
 
-      if (!createdResult) {
+      if (!createdResultRes.success || !createdResultRes.data) {
         return generateInternalServerResult();
       }
 
@@ -712,7 +733,7 @@ export class AuthService {
   protected async handleRegisterSocialAccount(
     user: UserAuthSocialProfile,
   ): Promise<OperationResult> {
-    const newUser = await this.userService.create({
+    const newUserRes = await this.userService.create({
       email: user.email,
       username: user.email,
       password: null,
@@ -720,11 +741,26 @@ export class AuthService {
       avatarUrl: user.avatarUrl,
     });
 
-    await this.userSocialAccountService.create({
+    if (!newUserRes.success || !newUserRes.data) {
+      return OperationResult.fail(
+        newUserRes.code || 'create_failed',
+        newUserRes.message,
+      );
+    }
+    const newUser = newUserRes.data;
+
+    const createSocialRes = await this.userSocialAccountService.create({
       userId: newUser.id,
       provider: user.provider,
       providerUserId: user.providerUserId,
     });
+
+    if (!createSocialRes.success || !createSocialRes.data) {
+      return OperationResult.fail(
+        createSocialRes.code || 'create_failed',
+        createSocialRes.message,
+      );
+    }
 
     return {
       success: true,

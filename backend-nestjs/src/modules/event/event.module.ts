@@ -4,9 +4,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CloudinaryModule } from '@modules/cloudinary/cloudinary.module';
 import { UserModule } from '@modules/user/user.module';
 
+import { AdminEventController } from './admin-event.controller';
 import { EventUser } from './entities/event-user.entity';
 import { Event } from './entities/event.entity';
 import { EventController } from './event.controller';
+import { PartnerEventController } from './partner-event.controller';
 import { EventUserService } from './services/event-user.service';
 import { EventService } from './services/event.service';
 import { QrService } from './services/qr.service';
@@ -17,7 +19,7 @@ import { QrService } from './services/qr.service';
     CloudinaryModule,
     UserModule,
   ],
-  controllers: [EventController],
+  controllers: [EventController, PartnerEventController, AdminEventController],
   providers: [EventService, EventUserService, QrService],
   exports: [EventService, EventUserService, QrService],
 })

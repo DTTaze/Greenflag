@@ -70,10 +70,24 @@ const updateById = async (id, data, options = {}) => {
   });
 };
 
+/**
+ * Finds a single coin record matching the query criteria.
+ * @param {object} [queryOptions]
+ * @param {object} [options]
+ * @returns {Promise<Coin|null>}
+ */
+const findOne = async (queryOptions = {}, options = {}) => {
+  return Coin.findOne({
+    ...queryOptions,
+    ...options,
+  });
+};
+
 module.exports = {
   findById,
   create,
   update,
   updateById,
   destroy,
+  findOne,
 };

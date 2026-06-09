@@ -44,7 +44,8 @@ const findAll = async (queryOptions = {}, options = {}) => {
  * @returns {Promise<TaskSubmit>}
  */
 const create = async (data, options = {}) => {
-  return TaskSubmit.create(data, options);
+  const instance = await TaskSubmit.create(data, options);
+  return options.raw ? instance.get({ plain: true }) : instance;
 };
 
 /**

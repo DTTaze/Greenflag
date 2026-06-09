@@ -7,7 +7,15 @@ const sequelize = new Sequelize(
   process.env.DB_PASSWORD,
   {
     host: process.env.DB_HOST,
-    dialect: "mysql",
+    port: process.env.DB_PORT || 5432,
+    dialect: "postgres",
+    define: {
+      freezeTableName: true,
+      underscored: true,
+      timestamps: true,
+      createdAt: "created_at",
+      updatedAt: "updated_at",
+    },
   },
 );
 

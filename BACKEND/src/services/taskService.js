@@ -141,6 +141,11 @@ const acceptTask = async (task_id, user_id) => {
   const user = await userRepo.findById(user_id, { raw: true, nest: true });
   if (!user) throw new NotFoundError("User not found");
 
+  const existingTaskUser = await taskRepo.findTaskUser(user_id, task_id, { raw: true, nest: true });
+  if (existingTaskUser) {
+    return existingTaskUser;
+  }
+
   const result = await taskRepo.createTaskUser({ user_id, task_id });
   const resultData = result.get ? result.get({ plain: true }) : result;
 

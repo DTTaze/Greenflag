@@ -86,11 +86,11 @@ export const defineAbilitiesFor = async (user, permissions = null) => {
 
     // 2. Dynamic ABAC ownership permissions mapping
     // Task & TaskSubmit ownership
-    can(["update", "delete"], "Task", { user_id: user.id });
+    can(["update", "delete"], "Task", { creator_id: user.id });
     can(["update", "delete"], "TaskSubmit", { user_id: user.id });
 
     // Item ownership
-    can(["update", "delete"], "Item", { seller_id: user.id });
+    can(["update", "delete"], "Item", { creator_id: user.id });
 
     // Transaction ownership and custom actions
     can("read", "Transaction", { buyer_id: user.id });

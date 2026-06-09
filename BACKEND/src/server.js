@@ -86,27 +86,30 @@ initWebRoutes(app);
 const errorHandler = require("./middlewares/errorHandler");
 app.use(errorHandler);
 
-connection();
-checkRedisConnection();
-
 // Khởi động server
-server.listen(PORT, HOST, () => {
-  console.log(`Redis connecting to: ${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`);
-  console.log(`Server đang chạy tại: http://${HOST}:${PORT}/admin/queues`);
-  console.log(`Server đang chạy tại: http://${HOST}:${PORT}`);
-  console.log(`Đăng nhập bằng Google: http://${HOST}:${PORT}/auth/google`);
-});
+if (process.env.NODE_ENV !== "test") {
+  connection();
+  checkRedisConnection();
+  server.listen(PORT, HOST, () => {
+    console.log(`Redis connecting to: ${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`);
+    console.log(`Server đang chạy tại: http://${HOST}:${PORT}/admin/queues`);
+    console.log(`Server đang chạy tại: http://${HOST}:${PORT}`);
+    console.log(`Đăng nhập bằng Google: http://${HOST}:${PORT}/auth/google`);
+  });
 
-(async () => {
-  try {
-    await sequelize.sync(); // Sync DB
+  (async () => {
     try {
-      execSync("npm run seed", { stdio: "inherit" });
-      console.log("\x1b[32m%s\x1b[0m", "Database seeding completed!");
-    } catch (seedError) {
-      console.error("\x1b[31m%s\x1b[0m", "Seeding failed:", seedError.message);
+      await sequelize.sync(); // Sync DB
+      try {
+        execSync("npm run seed", { stdio: "inherit" });
+        console.log("\x1b[32m%s\x1b[0m", "Database seeding completed!");
+      } catch (seedError) {
+        console.error("\x1b[31m%s\x1b[0m", "Seeding failed:", seedError.message);
+      }
+    } catch (dbError) {
+      console.error("\x1b[31m%s\x1b[0m", "Database sync failed:", dbError.message);
     }
-  } catch (dbError) {
-    console.error("\x1b[31m%s\x1b[0m", "Database sync failed:", dbError.message);
-  }
-})();
+  })();
+}
+
+module.exports = app;

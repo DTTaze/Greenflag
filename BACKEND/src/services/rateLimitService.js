@@ -1,4 +1,3 @@
-const Redis = require("ioredis");
 const { redisClient } = require("../config/configRedis");
 const WINDOW_SECONDS = 15 * 60; // 15 minutes
 

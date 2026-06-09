@@ -44,7 +44,8 @@ const findAll = async (queryOptions = {}, options = {}) => {
  * @returns {Promise<Image>}
  */
 const create = async (data, options = {}) => {
-  return Image.create(data, options);
+  const instance = await Image.create(data, options);
+  return options.raw ? instance.get({ plain: true }) : instance;
 };
 
 /**

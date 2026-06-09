@@ -1,0 +1,62 @@
+import { Upload, X } from "lucide-react";
+import React from "react";
+
+export default function ImageUpload({ image, onImageChange, onRemoveImage }) {
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      onImageChange(imageUrl);
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <label className="text-sm font-semibold text-slate-300">
+        Hình ảnh sản phẩm
+      </label>
+      <div className="flex items-center gap-4 p-4 rounded-xl border border-slate-800 bg-slate-950/20">
+        {image ? (
+          <div className="relative h-20 w-20 overflow-hidden rounded-lg border border-slate-800 shadow-md">
+            <img
+              src={image}
+              alt="Preview"
+              className="h-full w-full object-cover"
+            />
+            <button
+              type="button"
+              onClick={onRemoveImage}
+              className="absolute top-1 right-1 rounded-full bg-black/60 p-1 text-slate-300 hover:text-white hover:bg-black/90 transition-colors"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </div>
+        ) : (
+          <label
+            htmlFor="image-upload"
+            className="flex h-20 w-20 flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-800 text-slate-500 hover:text-emerald-400 hover:border-emerald-500/40 cursor-pointer bg-slate-950/40 transition-all duration-200"
+          >
+            <Upload className="mb-1 h-5 w-5" />
+            <span className="text-[10px] font-medium">Tải ảnh</span>
+          </label>
+        )}
+        <div className="flex-grow space-y-1.5">
+          <input
+            type="file"
+            id="image-upload"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+          <label
+            htmlFor="image-upload"
+            className="inline-block cursor-pointer rounded-lg bg-slate-800 hover:bg-slate-700 px-4 py-2 text-xs font-semibold text-slate-200 transition-all duration-150 border border-slate-700/50"
+          >
+            Chọn ảnh
+          </label>
+          <p className="text-[11px] text-slate-500">Hỗ trợ định dạng PNG, JPG lên tới 5MB</p>
+        </div>
+      </div>
+    </div>
+  );
+}

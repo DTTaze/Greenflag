@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -16,9 +17,15 @@ function RegisterPage() {
   const { register, handleSubmit, errors, loading } = useRegisterForm();
 
   return (
-    <div className="mx-auto mt-10 max-w-md rounded-md border-2 p-4 shadow">
-      <h4 className="mb-4 text-xl font-semibold">{t("registerTitle")}</h4>
-      <hr className="my-2 border-gray-300" />
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="relative rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xl backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-900/70 sm:p-8"
+    >
+      <h2 className="mb-6 text-center text-2xl font-extrabold tracking-tight text-slate-800 dark:text-zinc-100">
+        {t("registerTitle")}
+      </h2>
 
       <form className="space-y-4" onSubmit={handleSubmit}>
         <InputField
@@ -60,7 +67,7 @@ function RegisterPage() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="text-gray-600 hover:text-blue-600"
+              className="text-slate-400 hover:text-emerald-600 transition-colors"
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
@@ -69,27 +76,33 @@ function RegisterPage() {
         />
         <Button
           type="submit"
-          text={loading ? t("registering") : t("registerBtn")}
           disabled={loading}
-          className="h-11 w-full"
-        />
+          className="w-full cursor-pointer rounded-lg bg-[#0B6E4F] py-3 text-sm font-bold text-white transition-all hover:bg-[#0B6E4F]/90 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 dark:bg-emerald-600 dark:hover:bg-emerald-500 h-11"
+        >
+          {loading ? t("registering") : t("registerBtn")}
+        </Button>
       </form>
 
-      <div className="mt-6 flex items-center">
-        <hr className="flex-grow border-t border-gray-300" />
-        <span className="mx-4 font-medium text-gray-500">{t("or")}</span>
-        <hr className="flex-grow border-t border-gray-300" />
+      <div className="my-5 flex items-center gap-3">
+        <div className="h-px flex-1 bg-slate-200 dark:bg-zinc-800/80" />
+        <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-zinc-500">
+          {t("or")}
+        </span>
+        <div className="h-px flex-1 bg-slate-200 dark:bg-zinc-800/80" />
       </div>
 
       <SocialLoginIcons />
 
-      <p className="mt-4 text-center">
+      <div className="mt-6 text-center text-sm font-medium text-slate-500 dark:text-zinc-400">
         {t("alreadyHaveAccount")}{" "}
-        <Link href="/login" className="font-medium text-blue-600">
+        <Link
+          href="/login"
+          className="font-bold text-emerald-600 hover:text-emerald-700 hover:underline dark:text-emerald-400 dark:hover:text-emerald-300"
+        >
           {t("loginTitle")}
         </Link>
-      </p>
-    </div>
+      </div>
+    </motion.div>
   );
 }
 

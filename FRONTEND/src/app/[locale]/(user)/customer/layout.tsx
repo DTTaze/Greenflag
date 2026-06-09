@@ -1,6 +1,6 @@
 "use client";
 
-import "@/src/styles/pages/customer.css";
+import "./styles/index.css";
 
 import React, { useState } from "react";
 

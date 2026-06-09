@@ -1,6 +1,6 @@
 "use client";
 
-import "@/src/styles/pages/admin.css";
+import "./styles/index.css";
 
 import React from "react";
 

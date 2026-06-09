@@ -75,6 +75,7 @@
   },
   "auth": {
     "loginTitle": "Đăng nhập",
+    "email": "Email",
     "emailOrUsername": "Email hoặc Username",
     "password": "Mật khẩu",
     "forgotPassword": "Quên mật khẩu?",
@@ -162,5 +163,14 @@
     "activityHistory": "Lịch sử hoạt động & Giao dịch xu",
     "notLoggedIn": "Người dùng chưa đăng nhập.",
     "noEmail": "Không có email khả dụng"
+  },
+  "footer": {
+    "aboutDesc": "Green Flag là nền tảng cộng đồng hướng tới bảo vệ môi trường. Thực hiện các nhiệm vụ xanh hằng ngày, tích lũy EcoCoins và đổi lấy các phần quà thân thiện môi trường.",
+    "quickLinks": "Liên kết nhanh",
+    "contact": "Liên hệ",
+    "allRightsReserved": "© {year} Green Flag. Bảo lưu mọi quyền.",
+    "phone": "Điện thoại: +84 (0) 123 456 789",
+    "email": "Email: support@greenflag.vn",
+    "address": "Địa chỉ: Hà Nội, Việt Nam"
   }
 }

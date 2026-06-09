@@ -36,7 +36,7 @@ function isPublicRoute(pathname: string, locales: readonly string[]) {
   return PUBLIC_ROUTES.some((route) => cleanPath === route);
 }
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const { locales, defaultLocale } = routing;
 
@@ -60,4 +60,3 @@ export const config = {
   // Match only internationalized pathnames
   matcher: ["/", "/(vi|en)/:path*", "/((?!api|_next|.*\\..*).*)"],
 };
-

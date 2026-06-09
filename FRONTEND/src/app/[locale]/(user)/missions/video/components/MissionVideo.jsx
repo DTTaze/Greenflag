@@ -1,4 +1,4 @@
-import "@/src/styles/pages/mission-video.css";
+import "../styles/index.css";
 
 import React from "react";
 

@@ -1,36 +1,9 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
-
-@custom-variant dark (&:where(.dark, .dark *));
-@tailwind utilities;
-
-/* Custom Styles */
-@layer utilities {
-  /* Shimmer effect for skeleton loaders */
-  .shimmer-effect {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.6) 50%,
-      rgba(255, 255, 255, 0) 100%
-    );
-    animation: shimmer 2s infinite;
-  }
-
-  @keyframes shimmer {
-    0% {
-      transform: translateX(-100%);
-    }
-    100% {
-      transform: translateX(100%);
-    }
-  }
+@font-face {
+  font-family: "CaveatBold";
+  src: url("../../public/fonts/Quicksand-SemiBold.ttf");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
 }
 
 @theme inline {
@@ -40,9 +13,11 @@
     0% {
       transform: rotate(45deg) rotateX(-25deg) rotateY(25deg);
     }
+
     50% {
       transform: rotate(45deg) rotateX(-385deg) rotateY(25deg);
     }
+
     100% {
       transform: rotate(45deg) rotateX(-385deg) rotateY(385deg);
     }
@@ -158,77 +133,4 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-}
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-  html {
-    @apply font-sans;
-  }
-
-  .dark {
-    color-scheme: dark;
-  }
-
-  /* Automatically map common light-mode classes to dark-mode equivalents in dark mode */
-  .dark .bg-white {
-    background-color: var(--color-zinc-900) !important;
-  }
-  .dark .bg-gray-50,
-  .dark .bg-gray-50\/50 {
-    background-color: var(--color-zinc-950) !important;
-  }
-  .dark .bg-gray-100 {
-    background-color: var(--color-zinc-800) !important;
-  }
-
-  .dark .text-gray-900,
-  .dark .text-gray-800,
-  .dark .text-zinc-900,
-  .dark .text-slate-800 {
-    color: var(--color-zinc-100) !important;
-  }
-
-  .dark .text-gray-700,
-  .dark .text-gray-600,
-  .dark .text-zinc-700,
-  .dark .text-zinc-650,
-  .dark .text-slate-700 {
-    color: var(--color-zinc-300) !important;
-  }
-
-  .dark .text-gray-500,
-  .dark .text-gray-400,
-  .dark .text-zinc-500,
-  .dark .text-slate-500 {
-    color: var(--color-zinc-400) !important;
-  }
-
-  .dark .border-gray-100,
-  .dark .border-gray-200,
-  .dark .border-gray-300,
-  .dark .border-zinc-200,
-  .dark .border-zinc-100 {
-    border-color: var(--color-zinc-800) !important;
-  }
-
-  .dark .shadow-sm,
-  .dark .shadow,
-  .dark .shadow-md,
-  .dark .shadow-lg,
-  .dark .shadow-xl {
-    --tw-shadow-color: rgba(0, 0, 0, 0.5);
-    box-shadow:
-      var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000),
-      var(--tw-shadow);
-  }
-}
-
-@utility pulse {
-  @apply animate-pulse;
 }

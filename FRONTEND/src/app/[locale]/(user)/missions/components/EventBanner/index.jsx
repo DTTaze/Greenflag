@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 
 import { getAllEvents, getEventSignedByUserId } from "@/src/utils/api";
 
-import EventDetailsModal from "./EventDetailsModal";
+import EventDetailsModal from "../EventDetailsModal";
 
 const EventBanner = ({ userInfo }) => {
   const [events, setEvents] = useState([]);
@@ -40,7 +40,7 @@ const EventBanner = ({ userInfo }) => {
     };
 
     fetchEvents();
-  }, []);
+  }, [userInfo.id]);
 
   useEffect(() => {
     if (events.length > 1 && !isModalOpen) {
@@ -50,7 +50,7 @@ const EventBanner = ({ userInfo }) => {
             prevIndex === events.length - 1 ? 0 : prevIndex + 1,
           );
         },
-        Math.random() * 2000 + 3000,
+        5000,
       );
 
       return () => clearInterval(interval);
@@ -60,23 +60,17 @@ const EventBanner = ({ userInfo }) => {
   const handlePreviousEvent = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("Previous button clicked");
-    setCurrentEventIndex((prevIndex) => {
-      const newIndex = prevIndex === 0 ? events.length - 1 : prevIndex - 1;
-      console.log("Changing index from", prevIndex, "to", newIndex);
-      return newIndex;
-    });
+    setCurrentEventIndex((prevIndex) =>
+      prevIndex === 0 ? events.length - 1 : prevIndex - 1,
+    );
   };
 
   const handleNextEvent = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("Next button clicked");
-    setCurrentEventIndex((prevIndex) => {
-      const newIndex = prevIndex === events.length - 1 ? 0 : prevIndex + 1;
-      console.log("Changing index from", prevIndex, "to", newIndex);
-      return newIndex;
-    });
+    setCurrentEventIndex((prevIndex) =>
+      prevIndex === events.length - 1 ? 0 : prevIndex + 1,
+    );
   };
 
   const handleOpenModal = (event) => {
@@ -93,52 +87,54 @@ const EventBanner = ({ userInfo }) => {
 
   return (
     <>
-      <div className="relative mb-6 h-48 w-full overflow-hidden rounded-xl shadow-lg">
-        {/* Background Image */}
+      <div className="relative mb-6 h-52 w-full overflow-hidden rounded-2xl shadow-md border border-gray-100">
+        {/* Background Image with smooth transition effect */}
         <div
-          className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
+          className="absolute inset-0 bg-cover bg-center transition-all duration-1000 transform scale-102"
           style={{
             backgroundImage: `url(${
               currentEvent.images?.[0] ||
               "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80"
             })`,
-            opacity: 0.8,
           }}
         >
           {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-green-600/90 to-blue-600/90" />
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-950/85 via-emerald-900/60 to-transparent" />
         </div>
 
-        {/* Navigation Buttons - Positioned at edges */}
+        {/* Navigation Buttons */}
         <button
           onClick={handlePreviousEvent}
-          className="group absolute top-1/2 left-0 z-10 flex h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center rounded-r-xl bg-white/10 backdrop-blur-sm transition-all duration-300 hover:bg-white/30"
+          className="group absolute top-1/2 left-3 z-10 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-xl bg-white/10 backdrop-blur-md transition-all duration-300 border border-white/15 hover:bg-white/20 active:scale-90"
           aria-label="Previous event"
         >
-          <ChevronLeft className="h-6 w-6 transform text-white transition-transform duration-300 group-hover:scale-125" />
+          <ChevronLeft className="h-5 w-5 text-white transition-transform duration-300 group-hover:scale-115" />
         </button>
 
         <button
           onClick={handleNextEvent}
-          className="group absolute top-1/2 right-0 z-10 flex h-12 w-12 -translate-y-1/2 cursor-pointer items-center justify-center rounded-l-xl bg-white/10 backdrop-blur-sm transition-all duration-300 hover:bg-white/30"
+          className="group absolute top-1/2 right-3 z-10 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-xl bg-white/10 backdrop-blur-md transition-all duration-300 border border-white/15 hover:bg-white/20 active:scale-90"
           aria-label="Next event"
         >
-          <ChevronRight className="h-6 w-6 transform text-white transition-transform duration-300 group-hover:scale-125" />
+          <ChevronRight className="h-5 w-5 text-white transition-transform duration-300 group-hover:scale-115" />
         </button>
 
-        {/* Content */}
-        <div className="pointer-events-none relative flex h-full items-center justify-between px-16">
-          <div className="max-w-2xl text-white">
-            <h2 className="mb-2 text-2xl font-bold drop-shadow-lg">
+        {/* Content Container */}
+        <div className="relative flex h-full items-center justify-between pl-16 pr-16 text-white">
+          <div className="max-w-xl pr-6">
+            <span className="mb-1.5 inline-block text-[10px] font-bold tracking-widest text-emerald-350 uppercase">
+              Sự kiện môi trường nổi bật
+            </span>
+            <h2 className="mb-2 text-xl sm:text-2xl font-extrabold tracking-tight drop-shadow-md truncate">
               {currentEvent.title}
             </h2>
-            <p className="mb-4 line-clamp-2 text-sm drop-shadow-md">
+            <p className="mb-4 line-clamp-2 text-xs sm:text-sm text-emerald-100/90 drop-shadow-xs leading-relaxed">
               {currentEvent.description}
             </p>
-            <div className="flex items-center space-x-4 text-sm drop-shadow-sm">
-              <div className="flex items-center">
+            <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-emerald-200/90 drop-shadow-2xs">
+              <div className="flex items-center gap-1">
                 <svg
-                  className="mr-1 h-4 w-4"
+                  className="h-3.5 w-3.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -149,18 +145,13 @@ const EventBanner = ({ userInfo }) => {
                     strokeWidth={2}
                     d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
                   />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
                 </svg>
                 <span>{currentEvent.location}</span>
               </div>
-              <div className="flex items-center">
+              <span>•</span>
+              <div className="flex items-center gap-1">
                 <svg
-                  className="mr-1 h-4 w-4"
+                  className="h-3.5 w-3.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -173,32 +164,39 @@ const EventBanner = ({ userInfo }) => {
                   />
                 </svg>
                 <span>
-                  {new Date(currentEvent.start_time).toLocaleDateString()}
+                  {new Date(currentEvent.start_time).toLocaleDateString("vi-VN", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
                 </span>
               </div>
             </div>
           </div>
 
           {/* Join Button */}
-          <button
-            className="pointer-events-auto transform rounded-lg bg-white px-8 py-4 text-lg font-bold text-green-600 shadow-lg transition-all duration-300 hover:scale-105 hover:bg-green-50 hover:shadow-xl active:scale-95"
-            onClick={() => handleOpenModal(currentEvent)}
-          >
-            {isParticipated ? "Xem chi tiết" : "Tham gia ngay!"}
-          </button>
+          <div className="shrink-0 hidden sm:block">
+            <button
+              className="cursor-pointer rounded-xl bg-white px-6 py-3.5 text-xs sm:text-sm font-extrabold text-emerald-800 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-102 active:scale-98"
+              onClick={() => handleOpenModal(currentEvent)}
+            >
+              {isParticipated ? "Chi tiết vé" : "Đăng ký tham gia"}
+            </button>
+          </div>
         </div>
 
-        {/* Event Indicators */}
-        <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 space-x-3">
+        {/* Slide Indicators */}
+        <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 space-x-2">
           {events.map((_, index) => (
             <button
               key={index}
-              className={`h-2.5 w-2.5 transform rounded-full transition-all duration-300 ${
+              className={`h-1.5 rounded-full transition-all duration-300 ${
                 index === currentEventIndex
-                  ? "scale-125 bg-white shadow-lg"
-                  : "bg-white/50 hover:bg-white/70"
+                  ? "w-4 bg-white shadow-xs"
+                  : "w-1.5 bg-white/40 hover:bg-white/60"
               }`}
               onClick={() => setCurrentEventIndex(index)}
+              aria-label={`Go to slide ${index + 1}`}
             />
           ))}
         </div>

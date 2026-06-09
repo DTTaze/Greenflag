@@ -1,34 +1,30 @@
 import React from "react";
 
-import TaskCardSkeleton from "./TaskCardSkeleton.jsx";
+import TaskCardSkeleton from "../TaskCardSkeleton";
 
 export default function MissionSkeleton() {
   return (
     <div className="min-h-screen bg-gray-50 pb-12">
       <div className="mx-auto max-w-7xl px-4 pt-16 sm:px-6 lg:px-8">
-        <div className="mb-8 flex animate-pulse flex-col items-center justify-between rounded-xl bg-gradient-to-r from-green-500 to-green-400 p-6 text-white shadow-lg sm:flex-row">
+        <div className="mb-8 flex animate-pulse flex-col items-center justify-between rounded-xl bg-gradient-to-r from-emerald-600/70 to-emerald-500/70 p-7 text-white shadow-lg sm:flex-row">
           <div>
-            <div className="bg-opacity-20 mb-2 h-8 w-56 rounded bg-white"></div>
-            <div className="bg-opacity-20 h-4 w-80 rounded bg-white"></div>
+            <div className="mb-2.5 h-8 w-56 rounded bg-white/20"></div>
+            <div className="h-4 w-80 rounded bg-white/20"></div>
           </div>
           <div className="mt-4 flex items-center sm:mt-0">
-            <div className="bg-opacity-20 mr-4 h-16 w-20 rounded-lg bg-white p-3"></div>
-            <div className="bg-opacity-20 h-10 w-24 rounded-lg bg-white"></div>
+            <div className="h-16 w-64 rounded-xl bg-white/20"></div>
           </div>
         </div>
 
         <div className="flex flex-col gap-8 lg:flex-row">
           <div className="w-full lg:w-2/3">
-            <div className="rounded-t-xl border border-gray-200 bg-white p-1 shadow-sm">
-              <div className="flex">
-                <div className="tab flex-1 rounded-lg bg-gray-100 py-3 text-center"></div>
-                <div className="tab flex-1 rounded-lg py-3 text-center"></div>
-              </div>
-            </div>
+            <div className="mb-6 h-12 w-64 rounded-xl bg-gray-200 animate-pulse"></div>
 
-            <div className="rounded-b-xl border-x border-b border-gray-200 bg-white p-6 shadow-sm">
-              <div className="mb-6 h-6 w-40 rounded bg-gray-200"></div>
-              <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-1">
+            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-xs space-y-4">
+              <div className="mb-6 h-6 w-40 rounded bg-gray-200 animate-pulse"></div>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+                <TaskCardSkeleton />
+                <TaskCardSkeleton />
                 <TaskCardSkeleton />
                 <TaskCardSkeleton />
               </div>
@@ -37,15 +33,15 @@ export default function MissionSkeleton() {
 
           <div className="w-full space-y-6 lg:w-1/3">
             <div className="animate-pulse overflow-hidden rounded-xl border border-gray-200 bg-white">
-              <div className="h-16 w-full bg-green-500"></div>
+              <div className="h-16 w-full bg-emerald-600/70"></div>
               <div className="p-4">
                 <div className="mb-4 h-8 w-full rounded bg-gray-200"></div>
                 <div className="mb-4 grid grid-cols-7 gap-1">
                   {Array.from({ length: 7 }).map((_, i) => (
-                    <div key={i} className="h-6 rounded-full bg-gray-200"></div>
+                    <div key={i} className="h-6 rounded bg-gray-200"></div>
                   ))}
                 </div>
-                <div className="grid grid-cols-7 gap-1">
+                <div className="grid grid-cols-7 gap-1.5">
                   {Array.from({ length: 28 }).map((_, i) => (
                     <div
                       key={i}

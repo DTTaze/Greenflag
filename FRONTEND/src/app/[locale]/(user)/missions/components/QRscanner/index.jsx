@@ -6,22 +6,23 @@ export default function QRscanner({ onScan, onError, style }) {
   const [message, setMessage] = useState(
     "Đang kiểm tra quyền truy cập camera...",
   );
+  const [hasPermission, setHasPermission] = useState(false);
 
   const checkCameraPermission = async () => {
     try {
       await navigator.mediaDevices.getUserMedia({ video: true });
       setMessage("Camera đã sẵn sàng. Vui lòng đưa mã QR vào khung hình");
+      setHasPermission(true);
+      return true;
     } catch (error) {
       setMessage(
         "Vui lòng cấp quyền truy cập camera để sử dụng tính năng quét mã QR",
       );
       console.error("Camera permission denied:", error);
+      setHasPermission(false);
       return false;
     }
-    return true;
   };
-
-  const hasPermission = checkCameraPermission();
 
   useEffect(() => {
     checkCameraPermission();
@@ -98,7 +99,7 @@ export default function QRscanner({ onScan, onError, style }) {
         }
       }
     };
-  }, [onScan, onError]);
+  }, [hasPermission, onScan, onError]);
 
   const handleResume = () => {
     if (scannerRef.current) {
@@ -109,54 +110,29 @@ export default function QRscanner({ onScan, onError, style }) {
   };
 
   return (
-    <div style={{ textAlign: "center" }}>
-      <div
-        style={{
-          padding: "10px",
-          marginBottom: "10px",
-          backgroundColor: "#f5f5f5",
-          borderRadius: "4px",
-          fontSize: "14px",
-          color: "#666",
-        }}
-      >
+    <div className="text-center w-full">
+      <div className="p-3 mb-3 bg-gray-50 border border-gray-100 rounded-xl text-xs font-semibold text-gray-500 uppercase tracking-wide">
         {message}
       </div>
 
       {hasPermission && (
-        <>
+        <div className="space-y-4">
           <div
             id="qr-reader"
-            style={{
-              width: "100%",
-              maxWidth: "600px",
-              margin: "0 auto",
-              border: "2px solid #ddd",
-              borderRadius: "8px",
-              overflow: "hidden",
-              ...style,
-            }}
+            className="w-full max-w-[400px] mx-auto border border-gray-200 rounded-xl overflow-hidden shadow-2xs bg-black"
+            style={style}
           >
             <div id="qr-reader-results"></div>
           </div>
           {isScanning && (
             <button
               onClick={handleResume}
-              style={{
-                margin: "10px",
-                padding: "8px 16px",
-                backgroundColor: "#4CAF50",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-                fontSize: "14px",
-              }}
+              className="cursor-pointer rounded-xl bg-[#0B6E4F] hover:bg-[#0D7F5C] active:scale-95 transition-all text-white px-5 py-2 text-xs font-bold shadow-sm"
             >
               Quét tiếp
             </button>
           )}
-        </>
+        </div>
       )}
     </div>
   );

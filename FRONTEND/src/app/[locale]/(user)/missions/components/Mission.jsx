@@ -3,18 +3,18 @@ import "react-toastify/dist/ReactToastify.css";
 import React from "react";
 import { ToastContainer } from "react-toastify";
 
-import Calendar from "./Calendar.jsx";
-import Ranking from "./ChartRank.jsx";
-import EventBanner from "./EventBanner.jsx";
-import EventList from "./EventList.jsx";
-import MissionFilters from "./MissionFilters.jsx";
-import MissionHeader from "./MissionHeader.jsx";
-import MissionSkeleton from "./MissionSkeleton.jsx";
-import MissionTabs from "./MissionTabs.jsx";
-import QrTaskSubmissionModal from "./QrTaskSubmissionModal.jsx";
-import TasksList from "./TasksList.jsx";
-import TaskSubmissionModal from "./TaskSubmissionModal.jsx";
-import useMission from "./useMission";
+import Calendar from "./Calendar/index.jsx";
+import Ranking from "./ChartRank/index.jsx";
+import EventBanner from "./EventBanner/index.jsx";
+import EventList from "./EventList/index.jsx";
+import MissionFilters from "./MissionFilters/index.jsx";
+import MissionHeader from "./MissionHeader/index.jsx";
+import MissionSkeleton from "./MissionSkeleton/index.jsx";
+import MissionTabs from "./MissionTabs/index.jsx";
+import QrTaskSubmissionModal from "./QrTaskSubmissionModal/index.jsx";
+import TasksList from "./TasksList/index.jsx";
+import TaskSubmissionModal from "./TaskSubmissionModal/index.jsx";
+import useMission from "./hooks/useMission";
 
 function Mission() {
   const {
@@ -90,7 +90,7 @@ function Mission() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-12">
+    <div className="min-h-screen bg-gray-50/50 pb-16">
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -142,16 +142,16 @@ function Mission() {
             />
 
             {/* Task List */}
-            <div className="rounded-b-xl border-x border-b border-gray-200 bg-white p-6 shadow-sm">
+            <div className="rounded-b-2xl border-x border-b border-gray-200 bg-white p-6 shadow-2xs">
               {selectedTab === "daily" && dailyTasks.length === 0 ? (
-                <div className="py-8 text-center">
-                  <p className="mb-4 text-gray-500">
+                <div className="py-12 text-center">
+                  <p className="text-sm font-semibold text-gray-400">
                     Không có nhiệm vụ hàng ngày nào
                   </p>
                 </div>
               ) : selectedTab === "other" && otherTasks.length === 0 ? (
-                <div className="py-8 text-center">
-                  <p className="mb-4 text-gray-500">
+                <div className="py-12 text-center">
+                  <p className="text-sm font-semibold text-gray-400">
                     Không có nhiệm vụ phụ nào
                   </p>
                 </div>
@@ -192,46 +192,46 @@ function Mission() {
           {/* Right Column - Calendar and Rankings */}
           <div className="w-full space-y-6 lg:w-1/3">
             {/* Calendar Component */}
-            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-              <Calendar
-                streak={userInfo?.streak || 0}
-                lastLogin={userInfo?.last_completed_task || null}
-              />
-            </div>
+            <Calendar
+              streak={userInfo?.streak || 0}
+              lastLogin={userInfo?.last_completed_task || null}
+            />
 
             {/* Ranking Component */}
-            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-              <div className="border-b border-gray-100 p-4">
-                <h2 className="text-lg font-semibold text-gray-800">
+            <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xs">
+              <div className="border-b border-gray-100 p-4 bg-gray-50/50">
+                <h2 className="text-sm font-extrabold uppercase tracking-wider text-gray-800">
                   Bảng Xếp Hạng
                 </h2>
               </div>
-              <div className="p-3">
+              <div className="p-4">
                 <Ranking />
               </div>
             </div>
 
             {/* Stats Card */}
-            <div className="rounded-xl border border-gray-200 bg-white p-5">
-              <h2 className="mb-3 text-lg font-semibold text-gray-800">
-                Thống Kê
+            <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-2xs">
+              <h2 className="mb-4 text-sm font-extrabold uppercase tracking-wider text-gray-800">
+                Thống Kê Hoạt Động
               </h2>
               <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-lg bg-blue-50 p-3 text-center">
-                  <p className="text-2xl font-bold text-blue-600">
+                <div className="rounded-xl bg-blue-50/50 border border-blue-100/50 p-4 text-center">
+                  <p className="text-2xl font-black text-blue-600">
                     {completedTasks.length}
                   </p>
-                  <p className="text-sm text-blue-700">
-                    Nhiệm vụ đã hoàn thành
+                  <p className="text-[10px] font-bold text-blue-800 uppercase tracking-wide mt-1 leading-snug">
+                    Nhiệm vụ đã xong
                   </p>
                 </div>
-                <div className="rounded-lg bg-emerald-50 p-3 text-center">
-                  <p className="text-2xl font-bold text-emerald-600">
+                <div className="rounded-xl bg-emerald-50/50 border border-emerald-100/50 p-4 text-center">
+                  <p className="text-2xl font-black text-emerald-600">
                     {completedTasks.reduce((sum, task) => {
                       return sum + (task.coin || task.coins || 0);
                     }, 0)}
                   </p>
-                  <p className="text-sm text-emerald-700">Xu đã nhận</p>
+                  <p className="text-[10px] font-bold text-emerald-800 uppercase tracking-wide mt-1 leading-snug">
+                    Xu đã nhận
+                  </p>
                 </div>
               </div>
             </div>

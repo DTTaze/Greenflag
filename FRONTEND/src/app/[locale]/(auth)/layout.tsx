@@ -17,7 +17,7 @@ export default function AuthLayout({
   const pathname = usePathname();
   const tMenu = useTranslations("menu");
   const tFeatures = useTranslations("homepage.features");
-  
+
   const [activeSlide, setActiveSlide] = useState(0);
   const isSuccessPage = pathname?.includes("/auth/success");
 
@@ -55,7 +55,7 @@ export default function AuthLayout({
         {/* Blurred background blobs */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-[40%] -left-[20%] h-[80%] w-[60%] rounded-full bg-emerald-500/10 blur-[120px] dark:bg-emerald-500/5" />
-          <div className="absolute -bottom-[40%] -right-[20%] h-[80%] w-[60%] rounded-full bg-teal-500/10 blur-[120px] dark:bg-teal-500/5" />
+          <div className="absolute -right-[20%] -bottom-[40%] h-[80%] w-[60%] rounded-full bg-teal-500/10 blur-[120px] dark:bg-teal-500/5" />
         </div>
         <div className="relative z-10">{children}</div>
       </div>
@@ -85,7 +85,7 @@ export default function AuthLayout({
       {/* Backdrop glowing ambient blobs */}
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
         <div className="animate-blob-1 absolute top-[10%] left-[5%] h-[400px] w-[400px] rounded-full bg-emerald-400/15 blur-[100px] dark:bg-emerald-500/5" />
-        <div className="animate-blob-2 absolute bottom-[15%] right-[5%] h-[450px] w-[450px] rounded-full bg-teal-400/15 blur-[120px] dark:bg-[#0B6E4F]/5" />
+        <div className="animate-blob-2 absolute right-[5%] bottom-[15%] h-[450px] w-[450px] rounded-full bg-teal-400/15 blur-[120px] dark:bg-[#0B6E4F]/5" />
       </div>
 
       {/* Top Header Row */}
@@ -106,7 +106,7 @@ export default function AuthLayout({
       {/* Grid split view container */}
       <main className="relative z-10 mx-auto grid min-h-[calc(100vh-76px)] max-w-7xl px-4 pb-12 sm:px-6 md:grid-cols-12 md:gap-8 lg:px-8 lg:pb-16">
         {/* Left Branding sidebar */}
-        <section className="relative hidden flex-col justify-between rounded-2xl border border-emerald-800/10 bg-radial from-[#064e3b] via-[#022c22] to-[#041f1a] p-12 text-white shadow-xl dark:border-zinc-800/60 dark:from-zinc-900 dark:via-zinc-950 dark:to-zinc-950 md:col-span-5 md:flex">
+        <section className="relative hidden flex-col justify-between rounded-2xl border border-emerald-800/10 bg-radial from-[#064e3b] via-[#022c22] to-[#041f1a] p-12 text-white shadow-xl md:col-span-5 md:flex dark:border-zinc-800/60 dark:from-zinc-900 dark:via-zinc-950 dark:to-zinc-950">
           {/* Decorative backdrop glow */}
           <div className="absolute inset-0 -z-10 overflow-hidden rounded-2xl">
             <div className="absolute top-[20%] -left-[10%] h-[60%] w-[60%] rounded-full bg-emerald-500/20 blur-[80px] dark:bg-emerald-500/10" />
@@ -122,7 +122,7 @@ export default function AuthLayout({
               />
             </div>
             <div>
-              <h1 className="text-xl font-black tracking-wider uppercase text-emerald-400 dark:text-emerald-400">
+              <h1 className="text-xl font-black tracking-wider text-emerald-400 uppercase dark:text-emerald-400">
                 Green Flag
               </h1>
               <p className="text-xs font-semibold text-emerald-300/70 dark:text-emerald-500/60">
@@ -146,7 +146,7 @@ export default function AuthLayout({
                   <Leaf className="h-3.5 w-3.5" />
                   <span>{slides[activeSlide].badge}</span>
                 </div>
-                <h2 className="text-2xl font-bold leading-tight tracking-tight lg:text-3xl">
+                <h2 className="text-2xl leading-tight font-bold tracking-tight lg:text-3xl">
                   {slides[activeSlide].title}
                 </h2>
                 <p className="text-sm leading-relaxed text-emerald-100/80 dark:text-zinc-400">

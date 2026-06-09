@@ -3,20 +3,14 @@ import createMiddleware from "next-intl/middleware";
 
 import { routing } from "./i18n/routing";
 
-export const PUBLIC_ROUTES = [
-  "/login",
-  "/register",
-  "/forgot-password",
-];
+export const PUBLIC_ROUTES = ["/login", "/register", "/forgot-password"];
 
-export const PROTECTED_ROUTES = [
-  "/user",
-  "/admin",
-  "/customer",
-  "/community",
-];
+export const PROTECTED_ROUTES = ["/user", "/admin", "/customer", "/community"];
 
-function stripLocalePrefix(pathname: string, locales: readonly string[]): string {
+function stripLocalePrefix(
+  pathname: string,
+  locales: readonly string[],
+): string {
   const segments = pathname.split("/");
   if (locales.includes(segments[1])) {
     return "/" + segments.slice(2).join("/");

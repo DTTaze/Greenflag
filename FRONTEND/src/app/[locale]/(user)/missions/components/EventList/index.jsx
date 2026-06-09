@@ -3,9 +3,9 @@ import { toast } from "react-toastify";
 
 import { getAllEvents, getEventSignedByUserId } from "@/src/utils/api";
 
-import EventCard from "./EventCard";
-import EventDetailsModal from "./EventDetailsModal";
-import Pagination from "./Pagination";
+import Pagination from "../Pagination";
+import EventCard from "../EventCard";
+import EventDetailsModal from "../EventDetailsModal";
 
 const EventList = ({ userInfo }) => {
   const [activeTab, setActiveTab] = useState("hot");
@@ -109,11 +109,11 @@ const EventList = ({ userInfo }) => {
   }, [activeTab]);
 
   return (
-    <div className="mb-6 overflow-hidden rounded-xl border border-gray-200 bg-white">
-      <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3">
-        <h2 className="flex items-center text-lg font-semibold text-gray-800">
+    <div className="mb-6 overflow-hidden rounded-2xl border border-gray-200/60 bg-white shadow-2xs">
+      <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+        <h2 className="flex items-center text-base font-extrabold text-gray-800 uppercase tracking-wider">
           <svg
-            className="mr-2 h-5 w-5 text-green-600"
+            className="mr-2 h-5 w-5 text-emerald-600"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -126,28 +126,25 @@ const EventList = ({ userInfo }) => {
               d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
             ></path>
           </svg>
-          Sự Kiện
+          Sự Kiện Môi Trường
         </h2>
-        <a href="#" className="text-sm text-blue-600 hover:text-blue-800">
-          Xem tất cả
-        </a>
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 px-2 py-1">
-        <div className="flex">
+      <div className="border-b border-gray-100 px-3.5 py-1.5 bg-gray-50/40">
+        <div className="flex gap-1">
           <button
-            className={`tab flex-1 rounded-lg py-1.5 text-center text-sm font-medium transition-all duration-200 ${
+            className={`flex-1 cursor-pointer rounded-xl py-2.5 text-center text-xs font-bold transition-all duration-300 ${
               activeTab === "hot"
-                ? "bg-gradient-to-r from-red-50 to-orange-50 text-red-600 shadow-sm"
-                : "text-gray-600 hover:bg-gray-50"
+                ? "bg-red-50 text-red-650 shadow-2xs border border-red-100/50"
+                : "text-gray-500 hover:bg-gray-100/50 hover:text-gray-900"
             }`}
             onClick={() => setActiveTab("hot")}
           >
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center gap-1.5">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="mr-1 h-3.5 w-3.5"
+                className="h-4 w-4"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -163,17 +160,17 @@ const EventList = ({ userInfo }) => {
             </div>
           </button>
           <button
-            className={`tab flex-1 rounded-lg py-1.5 text-center text-sm font-medium transition-all duration-200 ${
+            className={`flex-1 cursor-pointer rounded-xl py-2.5 text-center text-xs font-bold transition-all duration-300 ${
               activeTab === "current"
-                ? "bg-gradient-to-r from-green-50 to-emerald-50 text-green-600 shadow-sm"
-                : "text-gray-600 hover:bg-gray-50"
+                ? "bg-emerald-50 text-emerald-700 shadow-2xs border border-emerald-100/50"
+                : "text-gray-500 hover:bg-gray-100/50 hover:text-gray-900"
             }`}
             onClick={() => setActiveTab("current")}
           >
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center gap-1.5">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="mr-1 h-3.5 w-3.5"
+                className="h-4 w-4"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -189,17 +186,17 @@ const EventList = ({ userInfo }) => {
             </div>
           </button>
           <button
-            className={`tab flex-1 rounded-lg py-1.5 text-center text-sm font-medium transition-all duration-200 ${
+            className={`flex-1 cursor-pointer rounded-xl py-2.5 text-center text-xs font-bold transition-all duration-300 ${
               activeTab === "completed"
-                ? "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-600 shadow-sm"
-                : "text-gray-600 hover:bg-gray-50"
+                ? "bg-blue-50 text-blue-650 shadow-2xs border border-blue-100/50"
+                : "text-gray-500 hover:bg-gray-100/50 hover:text-gray-900"
             }`}
             onClick={() => setActiveTab("completed")}
           >
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center gap-1.5">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="mr-1 h-3.5 w-3.5"
+                className="h-4 w-4"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -218,26 +215,34 @@ const EventList = ({ userInfo }) => {
       </div>
 
       {/* Event Cards */}
-      <div className="p-3">
-        <div className="space-y-3">
-          {getPaginatedEvents().map((event) => (
-            <EventCard
-              key={event.id}
-              event={event}
-              onOpenModal={handleOpenModal}
-              isParticipated={isEventParticipated(event.id)}
-            />
-          ))}
-        </div>
+      <div className="p-4">
+        {getCurrentEvents().length > 0 ? (
+          <div className="space-y-3">
+            {getPaginatedEvents().map((event) => (
+              <EventCard
+                key={event.id}
+                event={event}
+                onOpenModal={handleOpenModal}
+                isParticipated={isEventParticipated(event.id)}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="py-8 text-center text-sm font-medium text-gray-405">
+            Không có sự kiện nào trong mục này.
+          </div>
+        )}
 
         {/* Pagination */}
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          goToNextPage={() => handlePageChange(currentPage + 1)}
-          goToPreviousPage={() => handlePageChange(currentPage - 1)}
-          goToPage={handlePageChange}
-        />
+        {totalPages > 1 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            goToNextPage={() => handlePageChange(currentPage + 1)}
+            goToPreviousPage={() => handlePageChange(currentPage - 1)}
+            goToPage={handlePageChange}
+          />
+        )}
       </div>
 
       {/* Event Details Modal */}

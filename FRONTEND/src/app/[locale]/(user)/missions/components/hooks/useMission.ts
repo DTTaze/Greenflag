@@ -15,7 +15,7 @@ import {
   filterTasksByDifficulty,
   getTaskCategory,
   mapUserTasksData,
-} from "./missionHelpers";
+} from "../utils/missionHelpers";
 
 export default function useMission() {
   const [tasks, setTasks] = useState<any[]>([]);

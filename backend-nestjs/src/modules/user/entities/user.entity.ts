@@ -1,73 +1,59 @@
-import * as crypto from 'crypto';
 import {
-  BeforeInsert,
   Column,
   Entity,
+  Index,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { AuditWithTimezone } from '@shared/common/audit.entity';
-import { ROLE } from '@shared/enums';
+import { ENTITY_STATUS, ROLE } from '@shared/enums';
 
 import { Coin } from './coin.entity';
 import { Rank } from './rank.entity';
+import { UserProfile } from './user-profile.entity';
+import { UserSocialAccount } from './user-social-account.entity';
 
 @Entity('users')
 export class User extends AuditWithTimezone {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column({ name: 'public_id', unique: true, type: 'varchar', length: 255 })
-  publicId: string;
+  @Column({ type: 'varchar', default: ENTITY_STATUS.ACTIVE })
+  status: ENTITY_STATUS;
 
-  @Column({
-    type: 'varchar',
-    default: ROLE.USER,
-  })
-  role: ROLE;
-
-  @Column({ name: 'avatar_url', nullable: true, type: 'varchar', length: 255 })
-  avatarUrl?: string;
-
-  @Column({
-    name: 'google_id',
-    nullable: true,
-    unique: true,
-    type: 'varchar',
-    length: 255,
-  })
-  googleId?: string;
-
-  @Column({ unique: true, type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', unique: true })
+  @Index()
   email: string;
 
-  @Column({ nullable: true, type: 'varchar', length: 255 })
-  password?: string;
-
-  @Column({ unique: true, type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', unique: true })
+  @Index()
   username: string;
 
-  @Column({ name: 'full_name', type: 'varchar', length: 255 })
-  fullName: string;
+  @Column({ type: 'varchar', nullable: true })
+  password?: string;
+
+  @Column({ type: 'varchar', default: ROLE.USER })
+  role: ROLE;
 
   @Column({
-    name: 'phone_number',
+    type: 'jsonb',
     nullable: true,
-    unique: true,
-    type: 'varchar',
-    length: 255,
   })
-  phoneNumber?: string;
+  metadata?: Record<string, any>;
 
-  @Column({ name: 'rank_id', type: 'integer', default: 0 })
-  rankId: number;
+  @Column({
+    name: 'avatar_url',
+    type: 'varchar',
+    length: 512,
+    default:
+      'https://res.cloudinary.com/ptquanh/image/upload/v1779947161/default-avatar.png',
+  })
+  avatarUrl: string;
 
-  @Column({ type: 'integer', default: 0 })
-  streak: number;
-
-  @Column({ name: 'last_completed_task', nullable: true, type: 'date' })
-  lastCompletedTask?: Date;
+  @OneToOne(() => UserProfile, (profile) => profile.user, { cascade: true })
+  profile: UserProfile;
 
   @OneToOne(() => Coin, (coin) => coin.user)
   coin: Coin;
@@ -75,10 +61,6 @@ export class User extends AuditWithTimezone {
   @OneToOne(() => Rank, (rank) => rank.user)
   rank: Rank;
 
-  @BeforeInsert()
-  generatePublicId() {
-    if (!this.publicId) {
-      this.publicId = crypto.randomUUID();
-    }
-  }
+  @OneToMany(() => UserSocialAccount, (social) => social.user)
+  socialAccounts: UserSocialAccount[];
 }

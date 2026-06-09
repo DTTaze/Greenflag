@@ -26,6 +26,7 @@ This plan outlines the adjusted roadmap, files to be modified in the boilerplate
 
 > [!IMPORTANT]
 > The Identity & Access Context has been simplified to favor development speed and maintainability:
+>
 > 1. **Auth Strategy:** Single JWT access token stored in an `HttpOnly`, `Secure`, `SameSite=Strict` cookie. The `AuthGuard` extracts this token strictly from `req.cookies.access_token`.
 > 2. **Authorization Strategy:** Static RBAC (dropped CASL ABAC). The role enum is strictly `admin`, `partner`, and `user`.
 > 3. **Database Schema Simplification:** Separate `Role`, `Permission`, and `RolePermission` tables are deleted. The `User` entity holds a direct `role` column mapping the `ROLE` enum value.
@@ -37,6 +38,7 @@ This plan outlines the adjusted roadmap, files to be modified in the boilerplate
 ## Boilerplate Code Reuse & Customizations
 
 We will reuse the following files directly from the boilerplate with minimal changes:
+
 - `shared/services/base-crud.service.ts` — Standardized CRUD operations
 - `shared/common/audit.entity.ts` — `AuditWithTimezone` entity
 - `shared/common/pagination.dto.ts` — Pagination DTOs
@@ -47,6 +49,7 @@ We will reuse the following files directly from the boilerplate with minimal cha
 - `shared/filters/all-exceptions.filter.ts` — Exception handler
 
 We will implement/modify the following additions to the boilerplate:
+
 1. **Database Config:** Map `DB_NAME` in `configs/database.config.ts`.
 2. **Guards:** Create `shared/guards/auth.guard.ts` (stateless cookie JWT) and `shared/guards/roles.guard.ts` (RBAC validation).
 3. **Domain Enums:** Create `shared/enums.ts` containing `ROLE` and all specific transaction/delivery/task/item statuses.
@@ -57,6 +60,7 @@ We will implement/modify the following additions to the boilerplate:
 ## Phased Execution Roadmap
 
 ### Phase 1: Boilerplate Alignment & Shared Setup
+
 - [x] Verify `yarn install` and `yarn build` on the boilerplate completes successfully.
 - [x] Modify `tsconfig.json` to configure path aliases matching the project:
   - `@configs/*` -> `src/configs/*`
@@ -69,6 +73,7 @@ We will implement/modify the following additions to the boilerplate:
 - [x] Verify basic health check `/api/v1/health` compiles and runs.
 
 ### Phase 2: Identity & Access Context (`auth`, `user`)
+
 - [x] Define TypeORM entities: `User`, `Rank`, `Coin` (Dropped separate role/permission tables).
 - [x] Refactor `User` entity to use a direct enum `role` column (`admin`, `partner`, `user`).
 - [x] Implement `UserModule` (incorporating `UserService`, `UserController` and consolidated `user.dto.ts`).
@@ -77,19 +82,26 @@ We will implement/modify the following additions to the boilerplate:
 - [x] Apply cascading updates (cookie-only extraction in AuthGuard, credentials-enabled CORS in setup.ts).
 
 ### Phase 3: Core Task & Acceptance Context (`task`, `task-submit`)
-- [ ] Define TypeORM entities: `Task`, `TaskType`, `TaskUser`, `TaskSubmit`.
-- [ ] Implement DTOs using `class-validator` matching original validation rules.
-- [ ] Implement modules extending `BaseCRUDService`.
+
+- [x] Define TypeORM entities: `Task`, `Type`, `TaskType`, `TaskUser`, `TaskSubmit` (using direct JSONB `images` storage).
+- [x] Implement DTOs using `class-validator` matching original validation rules (consolidated into `task.dto.ts`).
+- [x] Implement modules extending `BaseCRUDService` (`TaskModule` with `TaskService` and `TaskSubmitService` query methods).
+- [x] Integrate full file uploads using NestJS FilesInterceptor and CloudinaryService uploading direct JSONB images arrays.
+- [x] Implement database custom seeding for task types (`daily`, `weekly`, `event`, `others`) using an OnModuleInit lifecycle hook.
+- [x] Apply manual task and visibility ownership checks inside TaskController / TaskService.
 
 ### Phase 4: E-Commerce & Shipping Context (`item`, `product`, `transaction`, `delivery`)
+
 - [ ] Define TypeORM entities: `Item`, `Product`, `Transaction`, `DeliveryAccount`, `DeliveryOrder`, `ReceiverInformation`.
 - [ ] Integrate background BullMQ processors for item purchases.
 
 ### Phase 5: Event, Media & Utility Context (`event`, `media`, `qr`)
+
 - [ ] Define TypeORM entities: `Event`, `EventUser`, `Image`.
 - [ ] Implement media Cloudinary streams and QR code services.
 
 ### Phase 6: Testing & E2E Validation
+
 - [ ] Re-run all supertest integration test suites against PostgreSQL test database.
 
 ---
@@ -97,6 +109,7 @@ We will implement/modify the following additions to the boilerplate:
 ## Verification Plan
 
 ### Automated Tests
+
 ```bash
 # Verify compilation
 yarn build

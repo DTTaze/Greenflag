@@ -1,157 +1,771 @@
-import * as bcrypt from 'bcryptjs';
-import { CacheService, SET_CACHE_POLICY } from 'mvc-common-toolkit';
-
+import { isEmail } from 'class-validator';
 import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+  AuditService,
+  CacheService,
+  ErrorLog,
+  HttpService,
+  OperationResult,
+  SET_CACHE_POLICY,
+  bcryptHelper,
+  stringUtils,
+} from 'mvc-common-toolkit';
+
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
-import { INJECTION_TOKEN } from '@shared/constants';
+import { EmailService } from '@modules/email/email.service';
+import { UserSocialAccount } from '@modules/user/entities/user-social-account.entity';
+import { User } from '@modules/user/entities/user.entity';
+import { UserSocialAccountService } from '@modules/user/services/user-social-account.service';
+import { UserService } from '@modules/user/services/user.service';
 
-import { UserService } from '../user/user.service';
+import { otpCacheKey, resetPasswordCacheKey } from '@shared/cache-key';
+import {
+  APP_ACTION,
+  CACHE_TTL,
+  ENV_KEY,
+  ERR_CODE,
+  INJECTION_TOKEN,
+} from '@shared/constants';
+import {
+  EMAIL_TEMPLATE,
+  ENTITY_STATUS,
+  VERIFY_OTP_ACTION,
+} from '@shared/enums';
+import {
+  generateBadRequestResult,
+  generateConflictResult,
+  generateForbiddenResult,
+  generateInternalServerResult,
+  generateNotFoundResult,
+} from '@shared/helpers/operation-result.helper';
+import { extractUserPublicInfo } from '@shared/helpers/user.helper';
+import { UserAuthProfile, UserAuthSocialProfile } from '@shared/interfaces';
+import { generateOtpCode } from '@shared/utils/hash.util';
+import { SOCIAL_CONFIG } from '@shared/utils/social-provider.util';
+
+import {
+  ChangePasswordDTO,
+  ForgotPasswordDTO,
+  LoginDTO,
+  RegisterDTO,
+  ResendEmailDTO,
+  ResetPasswordDTO,
+  VerifyOtpDTO,
+} from './auth.dto';
 
 @Injectable()
 export class AuthService {
+  protected logger = new Logger(AuthService.name);
+
   constructor(
-    private readonly userService: UserService,
-    private readonly jwtService: JwtService,
+    @Inject(INJECTION_TOKEN.AUDIT_SERVICE)
+    protected auditService: AuditService,
+
+    @Inject(INJECTION_TOKEN.HTTP_SERVICE)
+    protected httpService: HttpService,
+
     @Inject(INJECTION_TOKEN.REDIS_SERVICE)
-    private readonly cacheService: CacheService,
+    protected cacheService: CacheService,
+
+    protected userService: UserService,
+    protected userSocialAccountService: UserSocialAccountService,
+    protected configService: ConfigService,
+    protected jwtService: JwtService,
+    protected emailService: EmailService,
   ) {}
 
-  async login(
-    email: string,
-    password: string,
-  ): Promise<{ access_token: string; user: any }> {
-    const user = await this.userService.findByEmail(email);
-    if (!user || !user.password) {
-      throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
-    }
-
-    const isMatch = bcrypt.compareSync(password, user.password);
-    if (!isMatch) {
-      throw new UnauthorizedException('Email hoặc mật khẩu không chính xác');
-    }
-
-    const payload = {
-      id: user.id,
-      role: user.role,
-      username: user.username,
-      email: user.email,
-      fullName: user.fullName,
-      phoneNumber: user.phoneNumber,
-      streak: user.streak,
-      lastCompletedTask: user.lastCompletedTask,
-      avatarUrl: user.avatarUrl,
-    };
-
-    const token = await this.jwtService.signAsync(payload);
-
-    return {
-      access_token: token,
-      user: payload,
-    };
+  protected get appUrl(): string {
+    return this.configService.getOrThrow(ENV_KEY.APP_PUBLIC_URL);
   }
 
-  async googleLogin(user: any): Promise<{ access_token: string; user: any }> {
-    const payload = {
-      id: user.id,
-      role: user.role,
-      username: user.username,
-      email: user.email,
-      fullName: user.fullName,
-      phoneNumber: user.phoneNumber,
-      streak: user.streak,
-      lastCompletedTask: user.lastCompletedTask,
-      avatarUrl: user.avatarUrl,
-      googleId: user.googleId,
-    };
-
-    const token = await this.jwtService.signAsync(payload);
-
-    return {
-      access_token: token,
-      user: payload,
-    };
+  protected getEmailSubject(content: string): string {
+    return `[${this.configService.get(ENV_KEY.APP_NAME, 'HEARTIFY').toUpperCase()}] - ${content}`;
   }
 
-  async sendForgotPassword(email: string): Promise<{ message: string }> {
-    const user = await this.userService.findByEmail(email);
-    if (!user) {
-      throw new NotFoundException('Email not found');
-    }
-
-    // Generate forgot password token
-    const token = await this.jwtService.signAsync(
-      { email },
-      { expiresIn: '1h' },
-    );
-
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-    const resetLink = `${frontendUrl}/forgot_password?token=${token}`;
-
-    console.log('Reset link: ', resetLink);
-    console.log('Sending reset email to:', email);
-
-    // Standard email html formatting
-    const htmlContent = `
-      <h1>Reset Password</h1>
-      <p>Click the link below to reset your password:</p>
-      <a href="${resetLink}">Reset Password</a>
-      <p>If you did not request this, please ignore this email.</p>
-      <p>Thank you!</p>
-    `;
-
-    // Logging for development visibility
-    return { message: 'Reset password link printed to console successfully' };
+  protected resetPasswordUrl(email: string, otpCode: string): string {
+    return `${this.appUrl}/reset-password?email=${email}&otpCode=${otpCode}`;
   }
 
-  async resetPassword(
-    token: string,
-    newPassword: string,
-  ): Promise<{ email: string }> {
-    let email: string;
+  public async register(
+    logId: string,
+    dto: RegisterDTO,
+  ): Promise<OperationResult> {
     try {
-      const decoded = await this.jwtService.verifyAsync(token);
-      email = decoded.email;
-    } catch (err) {
-      throw new BadRequestException('Reset token is invalid or expired');
+      const verifyUniquenessRes = await this.userService.verifyUniquenessUser({
+        email: dto.email,
+        username: dto.username,
+      });
+
+      if (!verifyUniquenessRes.success) {
+        return verifyUniquenessRes;
+      }
+
+      const passwordHash = await bcryptHelper.hash(dto.password, 10);
+
+      const user = await this.userService.create({
+        email: dto.email,
+        username: dto.username,
+        password: passwordHash,
+        status: ENTITY_STATUS.INACTIVE,
+      });
+
+      const otpCode = generateOtpCode();
+
+      await this.cacheService.set(
+        otpCacheKey(user.id, VERIFY_OTP_ACTION.REGISTER),
+        otpCode,
+        {
+          policy: SET_CACHE_POLICY.WITH_TTL,
+          value: CACHE_TTL.TEN_MINUTES,
+        },
+      );
+
+      this.emailService.send({
+        to: user.email,
+        subject: this.getEmailSubject('Verify your email'),
+        content: {
+          username: user.username,
+          passCode: otpCode,
+        },
+        templatePath: EMAIL_TEMPLATE.EMAIL_VERIFICATION,
+      });
+
+      return {
+        success: true,
+        data: user,
+      };
+    } catch (error) {
+      this.logger.error(error.message, error.stack);
+
+      this.auditService.emitLog(
+        new ErrorLog({
+          logId,
+          message: error.message,
+          payload: JSON.stringify(dto, stringUtils.maskFn),
+          action: APP_ACTION.REGISTER,
+        }),
+      );
     }
+  }
 
-    if (!email) {
-      throw new BadRequestException('Missing email from decoded reset token');
+  public async resendVerificationEmail(
+    logId: string,
+    dto: ResendEmailDTO,
+  ): Promise<OperationResult> {
+    try {
+      const user = await this.userService.findOne({ email: dto.email });
+
+      if (!user) {
+        return generateNotFoundResult(
+          'User not found',
+          ERR_CODE.USER_NOT_FOUND,
+        );
+      }
+
+      if (user.status !== ENTITY_STATUS.INACTIVE) {
+        return generateConflictResult(
+          'Your account is active',
+          ERR_CODE.ALREADY_EXISTS,
+        );
+      }
+
+      const otpCode = generateOtpCode();
+
+      await this.cacheService.set(
+        otpCacheKey(user.id, VERIFY_OTP_ACTION.REGISTER),
+        otpCode,
+        {
+          policy: SET_CACHE_POLICY.WITH_TTL,
+          value: CACHE_TTL.TEN_MINUTES,
+        },
+      );
+
+      this.emailService.send({
+        to: user.email,
+        subject: this.getEmailSubject('Verify your email'),
+        content: {
+          username: user.username,
+          passCode: otpCode,
+        },
+        templatePath: EMAIL_TEMPLATE.EMAIL_VERIFICATION,
+      });
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      this.logger.error(error.message, error.stack);
+
+      this.auditService.emitLog(
+        new ErrorLog({
+          logId,
+          message: error.message,
+          payload: JSON.stringify(dto, stringUtils.maskFn),
+          action: APP_ACTION.SEND_EMAIL,
+        }),
+      );
+
+      return generateInternalServerResult();
     }
+  }
 
-    // Rate limiting check via Redis
-    const cacheKey = `reset:email:${email}`;
-    const emailCache = await this.cacheService.get(cacheKey);
-    if (emailCache) {
-      throw new BadRequestException('Email can only be reset once per hour');
+  public async verifyOTP(
+    logId: string,
+    dto: VerifyOtpDTO,
+  ): Promise<OperationResult> {
+    try {
+      const identifier = dto.usernameOrEmail;
+      const query = isEmail(identifier)
+        ? { email: identifier }
+        : { username: identifier };
+
+      const user = await this.userService.findOne(query);
+
+      if (!user) {
+        return generateNotFoundResult(
+          'User not found',
+          ERR_CODE.USER_NOT_FOUND,
+        );
+      }
+
+      const cacheKey = otpCacheKey(user.id, dto.action);
+      const cachedOtp = await this.cacheService.get(cacheKey);
+
+      if (!cachedOtp) {
+        return generateForbiddenResult('OTP expired', ERR_CODE.INVALID_OTP);
+      }
+
+      if (cachedOtp !== dto.code) {
+        return generateForbiddenResult('Invalid OTP', ERR_CODE.INVALID_OTP);
+      }
+
+      await this.cacheService.del(cacheKey);
+
+      if (dto.action === VERIFY_OTP_ACTION.REGISTER) {
+        await this.userService.updateByID(user.id, {
+          status: ENTITY_STATUS.ACTIVE,
+        });
+      }
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      this.logger.error(error.message, error.stack);
+
+      this.auditService.emitLog(
+        new ErrorLog({
+          logId,
+          message: error.message,
+          payload: JSON.stringify(dto, stringUtils.maskFn),
+          action: APP_ACTION.REGISTER,
+        }),
+      );
+
+      return generateInternalServerResult();
     }
+  }
 
-    // Hash and update password
-    const salt = bcrypt.genSaltSync(10);
-    const hashedPassword = bcrypt.hashSync(newPassword, salt);
+  public async login(
+    logId: string,
+    data: LoginDTO,
+  ): Promise<OperationResult<{ accessToken: string; user: UserAuthProfile }>> {
+    try {
+      const identifier = data.usernameOrEmail;
+      const query = isEmail(identifier)
+        ? { email: identifier }
+        : { username: identifier };
 
-    const user = await this.userService.findByEmail(email);
+      const user = await this.userService.findOne(query);
+
+      if (!user) {
+        return generateNotFoundResult(
+          'User not found',
+          ERR_CODE.USER_NOT_FOUND,
+        );
+      }
+
+      if (user.status !== ENTITY_STATUS.ACTIVE) {
+        return generateForbiddenResult(
+          'User is not active',
+          ERR_CODE.ACCOUNT_IS_NOT_ACTIVE,
+        );
+      }
+
+      if (!user.password) {
+        return generateConflictResult(
+          'Password incorrect',
+          ERR_CODE.PASSWORD_INCORRECT,
+        );
+      }
+
+      const isPasswordValid = await bcryptHelper.compare(
+        data.password,
+        user.password,
+      );
+
+      if (!isPasswordValid) {
+        return generateConflictResult(
+          'Password incorrect',
+          ERR_CODE.PASSWORD_INCORRECT,
+        );
+      }
+
+      const accessToken = await this.jwtService.signAsync({
+        id: user.id,
+      });
+
+      return {
+        success: true,
+        data: {
+          accessToken,
+          user: extractUserPublicInfo(user),
+        },
+      };
+    } catch (error) {
+      this.logger.error(error.message, error.stack);
+
+      this.auditService.emitLog(
+        new ErrorLog({
+          logId: logId,
+          message: error.message,
+          payload: JSON.stringify(data, stringUtils.maskFn),
+          action: APP_ACTION.LOGIN,
+        }),
+      );
+
+      return generateInternalServerResult();
+    }
+  }
+
+  public async beginForgotUserPassword(
+    logId: string,
+    dto: ForgotPasswordDTO,
+  ): Promise<OperationResult> {
+    const user = await this.userService.findOne({ email: dto.email });
+
     if (!user) {
-      throw new NotFoundException('User not found');
+      return generateNotFoundResult('User not found', ERR_CODE.USER_NOT_FOUND);
     }
 
-    await this.userService.updateUserById(user.id, {
-      password: hashedPassword,
-    } as any);
+    if (user.status !== ENTITY_STATUS.ACTIVE) {
+      return generateForbiddenResult(
+        'User is not active',
+        ERR_CODE.ACCOUNT_IS_NOT_ACTIVE,
+      );
+    }
 
-    // Set lock for 1 hour (3600 seconds)
-    await this.cacheService.set(cacheKey, email, {
-      policy: SET_CACHE_POLICY.WITH_TTL,
-      value: 3600,
+    try {
+      const cacheKey = resetPasswordCacheKey(user.email);
+      const existingOtp = await this.cacheService.get(cacheKey);
+
+      if (existingOtp) {
+        return generateConflictResult(
+          'OTP already sent',
+          ERR_CODE.OTP_ALREADY_SENT,
+        );
+      }
+
+      const oneTimeCode = generateOtpCode();
+
+      await this.cacheService.set(cacheKey, oneTimeCode, {
+        policy: SET_CACHE_POLICY.WITH_TTL,
+        value: CACHE_TTL.ONE_HOUR,
+      });
+
+      await this.emailService.send({
+        to: user.email,
+        subject: this.getEmailSubject('Reset Your Password'),
+        content: {
+          appUrl: this.appUrl,
+          resetPasswordUrl: this.resetPasswordUrl(user.email, oneTimeCode),
+          username: user.username,
+        },
+        templatePath: EMAIL_TEMPLATE.EMAIL_RESET_PASSWORD,
+      });
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      this.logger.error(error.message, error.stack);
+
+      this.auditService.emitLog(
+        new ErrorLog({
+          logId,
+          message: error.message,
+          userId: user.id,
+          action: APP_ACTION.FORGOT_PASSWORD,
+        }),
+      );
+
+      return generateInternalServerResult();
+    }
+  }
+
+  public async resetPassword(
+    logId: string,
+    dto: ResetPasswordDTO,
+  ): Promise<OperationResult> {
+    const user = await this.userService.findOne({ email: dto.email });
+
+    if (!user) {
+      return generateNotFoundResult('User not found', ERR_CODE.USER_NOT_FOUND);
+    }
+
+    if (user.status !== ENTITY_STATUS.ACTIVE) {
+      return generateForbiddenResult(
+        'User is not active',
+        ERR_CODE.ACCOUNT_IS_NOT_ACTIVE,
+      );
+    }
+
+    try {
+      const cacheKey = resetPasswordCacheKey(dto.email);
+      const otpCode = await this.cacheService.get(cacheKey);
+
+      if (!otpCode || otpCode !== dto.otpCode) {
+        return generateForbiddenResult('Invalid OTP', ERR_CODE.INVALID_OTP);
+      }
+
+      const hashedPassword = await bcryptHelper.hash(dto.newPassword);
+
+      await this.userService.updateByID(user.id, {
+        password: hashedPassword,
+      });
+
+      this.cacheService.del(cacheKey);
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      this.logger.error(error.message, error.stack);
+
+      this.auditService.emitLog(
+        new ErrorLog({
+          logId,
+          message: error.message,
+          userId: user.id,
+          action: APP_ACTION.RESET_PASSWORD,
+        }),
+      );
+
+      return generateInternalServerResult();
+    }
+  }
+
+  public async changePassword(
+    logId: string,
+    userId: string,
+    dto: ChangePasswordDTO,
+  ): Promise<OperationResult> {
+    try {
+      const foundUser = await this.userService.findByID(userId);
+
+      if (!foundUser) {
+        return generateNotFoundResult(
+          'user not found',
+          ERR_CODE.USER_NOT_FOUND,
+        );
+      }
+
+      const hasPassword = !!foundUser.password;
+
+      if (dto.oldPassword && dto.oldPassword === dto.newPassword) {
+        return generateBadRequestResult(
+          'New password must be different from old password',
+          ERR_CODE.PASSWORD_SAME_AS_OLD,
+        );
+      }
+
+      const isOldPasswordValid = hasPassword
+        ? dto.oldPassword
+          ? await bcryptHelper.compare(dto.oldPassword, foundUser.password)
+          : false
+        : true;
+
+      if (!isOldPasswordValid) {
+        return generateBadRequestResult(
+          'Old password is incorrect',
+          ERR_CODE.PASSWORD_INCORRECT,
+        );
+      }
+
+      const hashedPassword = await bcryptHelper.hash(dto.newPassword);
+
+      await this.userService.updateByID(userId, {
+        password: hashedPassword,
+      });
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      this.logger.error(error.message, error.stack);
+
+      this.auditService.emitLog(
+        new ErrorLog({
+          logId: logId,
+          message: error.message,
+          payload: JSON.stringify(dto, stringUtils.maskFn),
+          action: APP_ACTION.CHANGE_PASSWORD,
+        }),
+      );
+
+      return generateInternalServerResult();
+    }
+  }
+
+  public async getSocialLoginProviderUrl(
+    provider: string,
+  ): Promise<OperationResult> {
+    const config = SOCIAL_CONFIG[provider];
+
+    const queryParams = new URLSearchParams({
+      client_id: this.configService.getOrThrow(config.clientId),
+      redirect_uri: this.configService.getOrThrow(config.redirectUri),
+      response_type: config.responseType,
+      scope: config.scope.join(' '),
+      ...config.extraParams,
     });
 
-    return { email };
+    return {
+      success: true,
+      data: { url: `${config.authUrl}?${queryParams.toString()}` },
+    };
+  }
+
+  public async loginOrCreateSocialAccount(
+    user: UserAuthSocialProfile,
+  ): Promise<OperationResult> {
+    const foundUserSocialAccount = await this.userSocialAccountService.findOne({
+      provider: user.provider,
+      providerUserId: user.providerUserId,
+    });
+
+    if (foundUserSocialAccount) {
+      const foundUser = await this.userService.findByID(
+        foundUserSocialAccount.userId,
+      );
+      if (foundUser && user.avatarUrl && !foundUser.avatarUrl) {
+        foundUser.avatarUrl = user.avatarUrl;
+        await this.userService.updateByID(foundUser.id, {
+          avatarUrl: user.avatarUrl,
+        });
+      }
+      return this.handleLoginBySocialAccount(foundUserSocialAccount);
+    }
+
+    const foundUser = await this.userService.findOne({ email: user.email });
+
+    if (foundUser) {
+      if (user.avatarUrl && !foundUser.avatarUrl) {
+        foundUser.avatarUrl = user.avatarUrl;
+        await this.userService.updateByID(foundUser.id, {
+          avatarUrl: user.avatarUrl,
+        });
+      }
+      return this.handleNormalAccountLogin(foundUser, user);
+    }
+
+    const registerSocialAccountResult =
+      await this.handleRegisterSocialAccount(user);
+
+    if (!registerSocialAccountResult.success) {
+      return registerSocialAccountResult;
+    }
+
+    const newUser = registerSocialAccountResult.data;
+
+    const accessToken = await this.jwtService.signAsync({ id: newUser.id });
+
+    return {
+      success: true,
+      data: {
+        accessToken,
+        user: extractUserPublicInfo(newUser),
+      },
+    };
+  }
+
+  protected async handleLoginBySocialAccount(
+    socialAccount: UserSocialAccount,
+  ): Promise<OperationResult> {
+    const foundUser = await this.userService.findByID(socialAccount.userId);
+
+    if (!foundUser) {
+      return generateNotFoundResult('user not found', ERR_CODE.NOT_FOUND);
+    }
+
+    if (foundUser.status === ENTITY_STATUS.INACTIVE) {
+      foundUser.status = ENTITY_STATUS.ACTIVE;
+      await this.userService.updateByID(foundUser.id, {
+        status: ENTITY_STATUS.ACTIVE,
+      });
+    }
+
+    const userStatusVerifyResult = this.verifyUserStatus(foundUser);
+    if (!userStatusVerifyResult.success) {
+      return userStatusVerifyResult;
+    }
+
+    const accessToken = await this.jwtService.signAsync({
+      id: foundUser.id,
+    });
+
+    return {
+      success: true,
+      data: {
+        accessToken,
+        user: extractUserPublicInfo(foundUser),
+      },
+    };
+  }
+
+  protected async handleNormalAccountLogin(
+    foundUser: User,
+    userSocialProfile: UserAuthSocialProfile,
+  ): Promise<OperationResult> {
+    if (foundUser.password) {
+      if (foundUser.status === ENTITY_STATUS.INACTIVE) {
+        foundUser.status = ENTITY_STATUS.ACTIVE;
+        await this.userService.updateByID(foundUser.id, {
+          status: ENTITY_STATUS.ACTIVE,
+        });
+      }
+
+      const userStatusVerifyResult = this.verifyUserStatus(foundUser);
+      if (!userStatusVerifyResult.success) {
+        return userStatusVerifyResult;
+      }
+
+      const createdResult = await this.userSocialAccountService.create({
+        userId: foundUser.id,
+        provider: userSocialProfile.provider,
+        providerUserId: userSocialProfile.providerUserId,
+      });
+
+      if (!createdResult) {
+        return generateInternalServerResult();
+      }
+
+      const accessToken = await this.jwtService.signAsync({
+        id: foundUser.id,
+      });
+
+      return {
+        success: true,
+        data: {
+          accessToken,
+          user: extractUserPublicInfo(foundUser),
+        },
+      };
+    }
+
+    return generateForbiddenResult(
+      'password or username incorrect',
+      ERR_CODE.PASSWORD_OR_USERNAME_INCORRECT,
+    );
+  }
+
+  protected async handleRegisterSocialAccount(
+    user: UserAuthSocialProfile,
+  ): Promise<OperationResult> {
+    const newUser = await this.userService.create({
+      email: user.email,
+      username: user.email,
+      password: null,
+      status: ENTITY_STATUS.ACTIVE,
+      avatarUrl: user.avatarUrl,
+    });
+
+    await this.userSocialAccountService.create({
+      userId: newUser.id,
+      provider: user.provider,
+      providerUserId: user.providerUserId,
+    });
+
+    return {
+      success: true,
+      data: newUser,
+    };
+  }
+
+  public async socialLoginCallback(
+    provider: string,
+    code: string,
+  ): Promise<OperationResult> {
+    try {
+      const config = SOCIAL_CONFIG[provider];
+      const tokenResponse = await this.httpService.send(
+        'post',
+        config.tokenUrl,
+        {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          data: new URLSearchParams({
+            code,
+            client_id: this.configService.get(config.clientId),
+            client_secret: this.configService.get(config.clientSecret),
+            redirect_uri: this.configService.get(config.redirectUri),
+            grant_type: 'authorization_code',
+          }).toString(),
+        },
+      );
+
+      const accessToken = tokenResponse.data.access_token;
+      const refreshToken = tokenResponse.data.refresh_token;
+
+      const profileResponse = await this.httpService.send(
+        'get',
+        config.userInfoUrl,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      );
+      const profile = profileResponse.data;
+
+      const user: UserAuthSocialProfile = {
+        provider,
+        providerUserId: profile.sub,
+        email: profile.email,
+        accessToken,
+        refreshToken,
+        avatarUrl: profile.picture,
+      };
+
+      return {
+        success: true,
+        data: user,
+      };
+    } catch (error) {
+      this.logger.error(error.message, error.stack);
+
+      this.auditService.emitLog(
+        new ErrorLog({
+          logId: stringUtils.generateRandomId(),
+          message: error.message,
+          payload: provider,
+          action: APP_ACTION.SOCIAL_LOGIN,
+        }),
+      );
+
+      return generateInternalServerResult();
+    }
+  }
+
+  public verifyUserStatus(user: User): OperationResult {
+    if (user.status !== ENTITY_STATUS.ACTIVE) {
+      return generateForbiddenResult(
+        'User is not active',
+        ERR_CODE.ACCOUNT_IS_NOT_ACTIVE,
+      );
+    }
+
+    return {
+      success: true,
+    };
   }
 }

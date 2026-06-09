@@ -7,8 +7,12 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AuthModule } from '@modules/auth/auth.module';
+import { CloudinaryModule } from '@modules/cloudinary/cloudinary.module';
+import { EmailModule } from '@modules/email/email.module';
 import { GlobalModule } from '@modules/global/global.module';
 import { HealthModule } from '@modules/health/health.module';
+import { SystemConfigModule } from '@modules/system-config/system-config.module';
+import { TaskModule } from '@modules/task/task.module';
 import { UserModule } from '@modules/user/user.module';
 
 import configs from './configs';
@@ -41,6 +45,10 @@ import configs from './configs';
     HealthModule,
     UserModule,
     AuthModule,
+    SystemConfigModule,
+    CloudinaryModule,
+    TaskModule,
+    EmailModule,
   ],
 })
 export class AppModule {}

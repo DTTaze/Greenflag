@@ -1,0 +1,221 @@
+Project TechSolve_2025 {
+  database_type: 'PostgreSQL'
+  Note: 'TechSolve 2025 Database ERD'
+}
+
+Table users {
+  id uuid [pk]
+  status varchar(255) [not null, default: 'active']
+  email varchar(255) [unique, not null]
+  username varchar(255) [unique, not null]
+  password varchar(255)
+  role varchar(255) [not null, default: 'user', note: "enum('admin','partner','user')"]
+  avatar_url varchar(255) [not null]
+  metadata jsonb
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table user_profiles {
+  id uuid [pk]
+  user_id uuid [ref: - users.id, unique, not null]
+  full_name varchar(255) [not null]
+  phone_number varchar(255) [unique]
+  streak int [not null, default: 0]
+  last_completed_task datetime
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table user_social_accounts {
+  id uuid [pk]
+  user_id uuid [ref: > users.id, not null]
+  provider varchar(255) [not null]
+  provider_user_id varchar(255) [unique, not null]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table coins {
+  id int [pk, increment]
+  user_id uuid [ref: - users.id, unique, not null]
+  amount int [not null, default: 0]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table ranks {
+  id int [pk, increment]
+  user_id uuid [ref: > users.id]
+  amount int [not null, default: 0]
+  order int [not null, default: 0]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table delivery_accounts {
+  id int [pk, increment]
+  name varchar(255) [not null]
+  user_id uuid [ref: > users.id, not null]
+  carrier varchar(255) [not null, default: 'ghn', note: "enum('ghn','ghtk','grab')"]
+  token text [not null]
+  shop_id varchar(255) [not null]
+  is_default boolean [not null, default: false]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table delivery_orders {
+  id int [pk, increment]
+  seller_id uuid [ref: > users.id, not null]
+  buyer_id uuid [ref: > users.id]
+  delivery_account_id int [ref: > delivery_accounts.id, not null]
+  order_code text
+  status varchar(255) [not null, default: 'ready_to_pick']
+  to_name varchar(255) [not null]
+  to_phone varchar(255) [not null]
+  to_address text [not null]
+  is_printed boolean [default: false]
+  created_date datetime
+  cod_amount int [not null]
+  weight int [not null]
+  payment_type_id int [not null]
+  total_amount int [not null]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table receiver_informations {
+  id int [pk, increment]
+  user_id uuid [ref: > users.id, not null]
+  to_name varchar(255) [not null]
+  to_phone varchar(255) [not null]
+  to_address text [not null]
+  to_ward_name varchar(255) [not null]
+  to_district_name varchar(255) [not null]
+  to_province_name varchar(255) [not null]
+  account_type varchar(255) [not null, default: 'home', note: "enum('home','office')"]
+  is_default boolean [not null, default: false]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table items {
+  id uuid [pk]
+  creator_id uuid [ref: > users.id, not null]
+  name varchar(255) [not null]
+  description text
+  price int [not null]
+  stock int [not null]
+  status varchar(255) [default: 'pending', note: "enum('available','sold_out','pending')"]
+  weight int [not null]
+  length int [not null]
+  width int [not null]
+  height int [not null]
+  purchase_limit_per_day int
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table products {
+  id uuid [pk]
+  seller_id uuid [ref: > users.id, not null]
+  name varchar(255) [not null]
+  description text
+  price int [not null]
+  category varchar(255) [not null]
+  product_status varchar(255) [not null, default: 'new']
+  post_status varchar(255) [not null, default: 'pending']
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table transactions {
+  id uuid [pk]
+  receiver_information_id int [ref: > receiver_informations.id, not null]
+  buyer_id uuid [ref: > users.id, not null]
+  seller_id uuid [ref: > users.id, not null]
+  item_id uuid [ref: > items.id, not null]
+  name varchar(255)
+  item_snapshot json [not null]
+  total_price int [not null]
+  quantity int [not null, default: 1]
+  status varchar(255) [not null, default: 'pending']
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table events {
+  id uuid [pk]
+  creator_id uuid [ref: > users.id, not null]
+  title text [not null]
+  description text [not null]
+  location text [not null]
+  capacity int [not null]
+  coins int [not null]
+  end_sign datetime [not null]
+  start_time datetime [not null]
+  end_time datetime [not null]
+  status varchar(255) [default: 'upcoming']
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table event_users {
+  id int [pk, increment]
+  user_id uuid [ref: > users.id, not null]
+  event_id uuid [ref: > events.id, not null]
+  joined_at datetime
+  completed_at datetime
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table types {
+  id int [pk, increment]
+  type varchar(255) [unique, not null]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table tasks {
+  id uuid [pk]
+  creator_id uuid [ref: > users.id, not null]
+  title varchar(255) [not null]
+  description varchar(255) [not null]
+  coins int [not null]
+  difficulty varchar(255) [not null]
+  total int [default: 1]
+  status varchar(255) [not null, default: 'public']
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table task_types {
+  id int [pk, increment]
+  task_id uuid [ref: > tasks.id, not null]
+  type_id int [ref: > types.id, not null]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table task_users {
+  id int [pk, increment]
+  user_id uuid [ref: > users.id, not null]
+  task_id uuid [ref: > tasks.id, not null]
+  progress_count int [default: 0]
+  assigned_at datetime [not null]
+  completed_at datetime
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table task_submits {
+  id int [pk, increment]
+  task_user_id int [ref: > task_users.id, not null]
+  description text
+  status varchar(255) [default: 'pending']
+  submitted_at datetime [not null]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}

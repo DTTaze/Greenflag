@@ -13,7 +13,23 @@ export const INJECTION_TOKEN = {
   HTTP_SERVICE: Symbol.for('HTTP_SERVICE'),
   REDIS_SERVICE: Symbol.for('REDIS_SERVICE'),
   SYNC_TASK_QUEUE: Symbol.for('SYNC_TASK_QUEUE'),
+  CLOUDINARY_SERVICE: Symbol.for('CLOUDINARY_SERVICE'),
+  MAIL_TRANSPORTER: Symbol.for('MAIL_TRANSPORTER'),
 };
+
+export const CACHE_TTL = {
+  FIVE_MINUTES: 300,
+  TEN_MINUTES: 600,
+  ONE_HOUR: 3600,
+  ONE_DAY: 86400,
+  THIRTY_DAYS: 2592000,
+};
+
+export const getStorageFolder = () => ({
+  DIAGNOSES: `${process.env.APP_NAME}/diagnoses`,
+  DIAGNOSES_RESULTS: `${process.env.APP_NAME}/diagnoses_results`,
+  TASK_SUBMIT: `${process.env.APP_NAME}/task_submits`,
+});
 
 export const ERR_CODE = {
   INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR'.toLowerCase(),
@@ -24,13 +40,35 @@ export const ERR_CODE = {
   FORBIDDEN: 'FORBIDDEN'.toLowerCase(),
   UNAUTHORIZED: 'UNAUTHORIZED'.toLowerCase(),
   TOO_MANY_REQUESTS: 'TOO_MANY_REQUESTS'.toLowerCase(),
+  USER_NOT_FOUND: 'USER_NOT_FOUND'.toLowerCase(),
+  ACCOUNT_IS_NOT_ACTIVE: 'ACCOUNT_IS_NOT_ACTIVE'.toLowerCase(),
+  OTP_ALREADY_SENT: 'OTP_ALREADY_SENT'.toLowerCase(),
+  INVALID_OTP: 'INVALID_OTP'.toLowerCase(),
+  PASSWORD_SAME_AS_OLD: 'PASSWORD_SAME_AS_OLD'.toLowerCase(),
+  PASSWORD_INCORRECT: 'PASSWORD_INCORRECT'.toLowerCase(),
+  PASSWORD_OR_USERNAME_INCORRECT:
+    'PASSWORD_OR_USERNAME_INCORRECT'.toLowerCase(),
+  PASSWORD_CONFIRMATION_MISMATCH:
+    'PASSWORD_CONFIRMATION_MISMATCH'.toLowerCase(),
 };
 
 export const APP_ACTION = {
   API_CALL: 'API_CALL'.toLowerCase(),
   HANDLE_EXCEPTION: 'HANDLE_EXCEPTION'.toLowerCase(),
   SEND_TO_PARTNER: 'SEND_TO_PARTNER'.toLowerCase(),
+  LOGIN: 'LOGIN'.toLowerCase(),
+  FORGOT_PASSWORD: 'FORGOT_PASSWORD'.toLowerCase(),
+  RESET_PASSWORD: 'RESET_PASSWORD'.toLowerCase(),
+  CHANGE_PASSWORD: 'CHANGE_PASSWORD'.toLowerCase(),
+  SOCIAL_LOGIN: 'SOCIAL_LOGIN'.toLowerCase(),
+  REGISTER: 'REGISTER'.toLowerCase(),
+  SEND_EMAIL: 'SEND_EMAIL'.toLowerCase(),
+  BAN_TOO_MANY_FAILED_ATTEMPTS: 'BAN_TOO_MANY_FAILED_ATTEMPTS'.toLowerCase(),
 };
+
+export const DEFAULT_FAILED_ATTEMPTS_BAN = 3;
+
+export const RESERVED_USERNAMES = ['admin', 'moderator', 'system', 'root'];
 
 export {
   CONFIG_KEY,
@@ -48,6 +86,8 @@ export const ENV_KEY = {
   SERVICE_NAME: CONFIG_KEY.APP + '.serviceName',
   ENABLE_CORS: CONFIG_KEY.APP + '.enableCors',
   ENABLE_SWAGGER: CONFIG_KEY.APP + '.enableSwagger',
+  APP_PUBLIC_URL: CONFIG_KEY.APP + '.appPublicUrl',
+  APP_NAME: CONFIG_KEY.APP + '.appName',
 
   DB_HOST: CONFIG_KEY.DATABASE + '.host',
   DB_PORT: CONFIG_KEY.DATABASE + '.port',
@@ -65,6 +105,17 @@ export const ENV_KEY = {
   JWT_EXPIRATION: CONFIG_KEY.APP + '.jwtExpiration',
 
   AUDIT_WEBHOOK_URL: CONFIG_KEY.APP + '.auditWebhookUrl',
+
+  GOOGLE_CLIENT_ID: CONFIG_KEY.APP + '.googleClientId',
+  GOOGLE_CLIENT_SECRET: CONFIG_KEY.APP + '.googleClientSecret',
+  GOOGLE_CALLBACK_URL: CONFIG_KEY.APP + '.googleCallbackUrl',
+
+  SMTP_HOST: CONFIG_KEY.APP + '.smtpHost',
+  SMTP_PORT: CONFIG_KEY.APP + '.smtpPort',
+  SMTP_SECURE: CONFIG_KEY.APP + '.smtpSecure',
+  SMTP_USERNAME: CONFIG_KEY.APP + '.smtpUsername',
+  SMTP_PASSWORD: CONFIG_KEY.APP + '.smtpPassword',
+  ADMIN_EMAILS: CONFIG_KEY.APP + '.adminEmails',
 };
 
 export const DEFAULT_MAX_CONCURRENT_CALL = 1;

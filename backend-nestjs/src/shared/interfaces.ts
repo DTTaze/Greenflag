@@ -16,14 +16,26 @@ export interface RunnerUser {
 export interface UserAuthProfile {
   id: string;
   username: string;
-  companyId: string;
   role: string;
-  status: ENTITY_STATUS;
   email?: string;
+  fullName?: string;
+  phoneNumber?: string;
+  streak?: number;
+  lastCompletedTask?: Date;
+  avatarUrl?: string;
+  googleId?: string;
+  companyId?: string;
+  status?: string;
   phone?: string;
-  bankAccountName?: string;
-  isPassCodeSet?: boolean;
-  isTwoFactorEnabled?: boolean;
+}
+
+export interface UserAuthSocialProfile {
+  provider: string;
+  providerUserId: string;
+  email: string;
+  accessToken: string;
+  refreshToken?: string;
+  avatarUrl?: string;
 }
 
 export interface SystemUserAuthProfile {

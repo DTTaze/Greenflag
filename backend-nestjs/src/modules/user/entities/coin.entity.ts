@@ -12,11 +12,11 @@ import { User } from './user.entity';
 
 @Entity('coins')
 export class Coin extends AuditWithTimezone {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column({ name: 'user_id', type: 'integer', unique: true })
-  userId: number;
+  @Column({ name: 'user_id', type: 'uuid', unique: true })
+  userId: string;
 
   @Column({ type: 'integer', default: 0 })
   amount: number;

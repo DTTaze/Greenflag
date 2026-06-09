@@ -11,6 +11,8 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+import { TaskService } from '@modules/task/services/task.service';
+
 import { RequestUser } from '@shared/decorators/request-user.decorator';
 import { Roles } from '@shared/decorators/roles.decorator';
 import { ROLE } from '@shared/enums';
@@ -21,14 +23,17 @@ import {
   AdminUpdateUserDto,
   CreateUserDto,
   UpdateUserProfileDto,
-} from './dto/user.dto';
-import { UserService } from './user.service';
+} from './dtos/user.dto';
+import { UserService } from './services/user.service';
 
 @ApiTags('Users')
 @ApiBearerAuth()
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly taskService: TaskService,
+  ) {}
 
   @Get()
   @UseGuards(AuthGuard, RolesGuard)
@@ -47,17 +52,16 @@ export class UserController {
     return user;
   }
 
-  // Stub endpoints for Phase 3/4 integration compatibility
   @Get('task/completed')
   @UseGuards(AuthGuard)
-  async getTaskCompleted() {
-    return [];
+  async getTaskCompleted(@RequestUser() reqUser: any) {
+    return this.taskService.getCompletedTasksByUserId(reqUser.id);
   }
 
   @Get('tasks/all/:id')
   @UseGuards(AuthGuard)
-  async getAllTasksById(@Param('id') id: string) {
-    return [];
+  async getAllTasksById(@RequestUser() reqUser: any) {
+    return this.taskService.getAllTasksByUserId(reqUser.id);
   }
 
   @Get('items/:user_id')
@@ -66,43 +70,10 @@ export class UserController {
     return [];
   }
 
-  @Get('public/:public_id')
-  async getUserByPublicId(@Param('public_id') publicId: string) {
-    const user = await this.userService.getUserByPublicID(publicId);
-    if (user) {
-      delete user.password;
-    }
-    return user;
-  }
-
-  @Put('public/:public_id')
-  @UseGuards(AuthGuard)
-  async updateUserByPublicId(
-    @Param('public_id') publicId: string,
-    @Body() dto: UpdateUserProfileDto,
-    @RequestUser() reqUser: any,
-  ) {
-    const user = await this.userService.getUserByPublicID(publicId);
-    if (reqUser.role !== ROLE.ADMIN && reqUser.id !== user.id) {
-      throw new ForbiddenException(
-        'Bạn không có quyền cập nhật người dùng này',
-      );
-    }
-    return this.userService.updateUserByPublicID(publicId, dto);
-  }
-
-  @Delete('public/:public_id')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(ROLE.ADMIN)
-  async deleteUserByPublicId(@Param('public_id') publicId: string) {
-    await this.userService.deleteUserByPublicID(publicId);
-    return { message: 'Delete user success' };
-  }
-
   @Get(':id')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(ROLE.ADMIN)
-  async getUser(@Param('id') id: number) {
+  async getUser(@Param('id') id: string) {
     const user = await this.userService.getUserByID(id);
     if (user) {
       delete user.password;
@@ -113,23 +84,23 @@ export class UserController {
   @Put(':id')
   @UseGuards(AuthGuard)
   async updateUserById(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() dto: AdminUpdateUserDto,
     @RequestUser() reqUser: any,
   ) {
-    if (reqUser.role !== ROLE.ADMIN && reqUser.id !== Number(id)) {
+    if (reqUser.role !== ROLE.ADMIN && reqUser.id !== id) {
       throw new ForbiddenException(
         'Bạn không có quyền cập nhật người dùng này',
       );
     }
-    return this.userService.updateUserById(Number(id), dto);
+    return this.userService.updateUserById(id, dto);
   }
 
   @Delete(':id')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(ROLE.ADMIN)
-  async handleDeleteUser(@Param('id') id: number) {
-    await this.userService.deleteUser(Number(id));
+  async handleDeleteUser(@Param('id') id: string) {
+    await this.userService.deleteUser(id);
     return { message: 'Delete user success' };
   }
 }

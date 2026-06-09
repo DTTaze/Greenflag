@@ -89,11 +89,25 @@ export enum TRANSACTION_STATUS {
 export enum CONFIG_KEY {
   APP = 'app',
   DATABASE = 'database',
+  CLOUDINARY = 'cloudinary',
+}
+
+export enum SYSTEM_CONFIG_KEY {
+  MAX_IMAGE_SIZE_MB = 'max_image_size_mb',
+  POST_EXPIRE_DAYS = 'post_expire_days',
+  BANNED_WORDS = 'banned_words',
+  AI_AUTO_MODERATION_ENABLED = 'ai_auto_moderation_enabled',
+  AI_MODERATION_POST_ROLES = 'ai_moderation_post_roles',
+  AI_MODERATION_COMMENT_ROLES = 'ai_moderation_comment_roles',
+  AI_CRON_MODERATION_ENABLED = 'ai_cron_moderation_enabled',
+  AI_CRON_DELAY_MINUTES = 'ai_cron_delay_minutes',
 }
 
 export enum METADATA_KEY {
   MAX_CONCURRENCY_CALL = 'max_concurrency_call',
   RATE_LIMITING = 'rate_limiting',
+  USER_ID_EXTRACTOR = 'user_id_extractor',
+  MAX_ATTEMPTS_ALLOWED = 'max_attempts_allowed',
 }
 
 export enum HEADER_KEY {
@@ -126,4 +140,18 @@ export enum PARTNER_AUTH_TYPE {
   ID_AND_SECRET = 'idAndSecret',
   MASTER_TOKEN = 'masterToken',
   API_KEY = 'apiKey',
+}
+
+export enum SOCIAL_PROVIDER {
+  GOOGLE = 'google',
+}
+
+export enum VERIFY_OTP_ACTION {
+  REGISTER = 'register',
+  RESET_PASSWORD = 'reset_password',
+}
+
+export enum EMAIL_TEMPLATE {
+  EMAIL_VERIFICATION = 'email_verification',
+  EMAIL_RESET_PASSWORD = 'email_reset_password',
 }

@@ -6,10 +6,14 @@ import {
   Get,
   Param,
   Put,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+import { TransactionService } from '@modules/commerce/services/transaction.service';
 import { TaskService } from '@modules/task/services/task.service';
 
 import { RequestUser } from '@shared/decorators/request-user.decorator';
@@ -19,8 +23,8 @@ import { AuthGuard } from '@shared/guards/auth.guard';
 import { RolesGuard } from '@shared/guards/roles.guard';
 import { extractUserPublicInfo } from '@shared/helpers/user.helper';
 
-import { AdminUpdateUserDto } from './dtos/user.dto';
-import { UserService } from './services/user.service';
+import { AdminUpdateUserDto } from '../dtos/user.dto';
+import { UserService } from '../services/user.service';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -29,6 +33,7 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly taskService: TaskService,
+    private readonly transactionService: TransactionService,
   ) {}
 
   @Get()
@@ -42,10 +47,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   async getProfile(@RequestUser() reqUser: any) {
     const user = await this.userService.getUserByID(reqUser.id);
-    if (user) {
-      delete user.password;
-    }
-    return user;
+    return extractUserPublicInfo(user);
   }
 
   @Get('task/completed')
@@ -63,7 +65,17 @@ export class UserController {
   @Get('items/:user_id')
   @UseGuards(AuthGuard)
   async getItemByIdUser(@Param('user_id') userId: string) {
-    return [];
+    return this.transactionService.getItemsByUserId(userId);
+  }
+
+  @Put('me/avatar')
+  @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor('avatar'))
+  async updateAvatar(
+    @RequestUser() reqUser: any,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.userService.updateUserAvatar(reqUser.id, file);
   }
 
   @Get(':id')

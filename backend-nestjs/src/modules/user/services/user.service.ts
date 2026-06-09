@@ -1,13 +1,19 @@
 import * as bcrypt from 'bcryptjs';
+import { CacheService } from 'mvc-common-toolkit';
 import { Repository } from 'typeorm';
 
 import {
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
+import { CloudinaryService } from '@modules/cloudinary/services/cloudinary.service';
+
+import { CACHE_KEYS } from '@shared/cache-key';
+import { INJECTION_TOKEN, getStorageFolder } from '@shared/constants';
 import { ROLE } from '@shared/enums';
 import { BaseCRUDService } from '@shared/services/base-crud.service';
 
@@ -31,6 +37,9 @@ export class UserService extends BaseCRUDService<User> {
     private readonly userRepository: Repository<User>,
     private readonly userProfileService: UserProfileService,
     private readonly userSocialAccountService: UserSocialAccountService,
+    private readonly cloudinaryService: CloudinaryService,
+    @Inject(INJECTION_TOKEN.REDIS_SERVICE)
+    private readonly cacheService: CacheService,
   ) {
     super(userRepository);
   }
@@ -236,5 +245,36 @@ export class UserService extends BaseCRUDService<User> {
       });
       await transactionalEntityManager.delete(User, { id: user.id });
     });
+  }
+
+  async updateUserAvatar(
+    userId: string,
+    file: Express.Multer.File,
+  ): Promise<User> {
+    const user = await this.getUserByID(userId);
+
+    // Clean up old avatar from Cloudinary if it is not the default one
+    if (user.avatarUrl) {
+      const publicId = this.cloudinaryService.extractPublicId(user.avatarUrl);
+      if (publicId) {
+        await this.cloudinaryService.deleteImage(publicId);
+      }
+    }
+
+    // Upload new avatar to avatars folder
+    const uploadResult = await this.cloudinaryService.uploadImage(
+      file,
+      getStorageFolder().AVATAR,
+    );
+
+    user.avatarUrl = uploadResult.secure_url;
+    const updatedUser = await this.userRepository.save(user);
+
+    // Invalidate avatar cache
+    await this.cacheService.del(CACHE_KEYS.IDENTITY.USER_AVATAR(userId));
+    await this.cacheService.del(CACHE_KEYS.IDENTITY.AVATARS_ALL());
+
+    delete updatedUser.password;
+    return updatedUser;
   }
 }

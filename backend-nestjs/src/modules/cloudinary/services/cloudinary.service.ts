@@ -3,11 +3,7 @@ import { OperationResult } from 'mvc-common-toolkit';
 
 import { Inject, Injectable } from '@nestjs/common';
 
-import {
-  CACHE_TTL,
-  INJECTION_TOKEN,
-  getStorageFolder,
-} from '@shared/constants';
+import { CACHE_TTL, INJECTION_TOKEN } from '@shared/constants';
 import { generateSuccessResult } from '@shared/helpers/operation-result.helper';
 
 import { GetSignatureDto } from '../cloudinary.dto';
@@ -19,24 +15,23 @@ export class CloudinaryService {
     private readonly cloudinaryService: typeof cloudinary,
   ) {}
 
-  async uploadImage(
-    file: Express.Multer.File,
-    folder: string = getStorageFolder().DIAGNOSES,
-  ): Promise<any> {
-    return new Promise((resolve, reject) => {
+  async uploadImage(file: Express.Multer.File, folder: string): Promise<any> {
+    const result: any = await new Promise((resolve, reject) => {
       const uploadStream = this.cloudinaryService.uploader.upload_stream(
         {
           folder,
           resource_type: 'image',
           transformation: [{ quality: 'auto', fetch_format: 'auto' }],
         },
-        (error, result) => {
+        (error, res) => {
           if (error) return reject(error);
-          resolve(result);
+          resolve(res);
         },
       );
       uploadStream.end(file.buffer);
     });
+
+    return result;
   }
 
   async uploadFile(
@@ -62,15 +57,14 @@ export class CloudinaryService {
     });
   }
 
-  async uploadBase64Image(
-    base64Data: string,
-    folder: string = getStorageFolder().DIAGNOSES_RESULTS,
-  ): Promise<any> {
+  async uploadBase64Image(base64Data: string, folder: string): Promise<any> {
     const dataUri = `data:image/png;base64,${base64Data}`;
-    return this.cloudinaryService.uploader.upload(dataUri, {
+    const result = await this.cloudinaryService.uploader.upload(dataUri, {
       folder,
       resource_type: 'image',
     });
+
+    return result;
   }
 
   getUploadSignature(dto: GetSignatureDto): OperationResult {
@@ -97,5 +91,23 @@ export class CloudinaryService {
       apiKey: this.cloudinaryService.config().api_key,
       expireAt: timestamp + CACHE_TTL.FIVE_MINUTES,
     });
+  }
+
+  async deleteImage(publicId: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.cloudinaryService.uploader.destroy(publicId, (error, result) => {
+        if (error) return reject(error);
+        resolve(result);
+      });
+    });
+  }
+
+  extractPublicId(url: string): string | null {
+    if (!url) return null;
+    if (url.includes('default-avatar.png')) return null;
+    if (!url.includes('cloudinary.com')) return null;
+
+    const match = url.match(/\/image\/upload\/(?:v\d+\/)?(.+)\.[a-z0-9]+$/i);
+    return match ? match[1] : null;
   }
 }

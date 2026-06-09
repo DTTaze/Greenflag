@@ -1,10 +1,5 @@
-import { redisStore } from 'cache-manager-redis-yet';
-import { appConfig } from 'src/configs/app.config';
-
 import { HttpModule } from '@nestjs/axios';
-import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
-import { ConfigType } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { Transaction } from '@modules/commerce/entities/transaction.entity';
@@ -23,20 +18,6 @@ import { GhtkShippingStrategy } from './strategies/ghtk-shipping.strategy';
 @Module({
   imports: [
     HttpModule,
-    CacheModule.registerAsync({
-      inject: [appConfig.KEY],
-      useFactory: async (config: ConfigType<typeof appConfig>) => {
-        const store = await redisStore({
-          socket: {
-            host: config.redisHost,
-            port: config.redisPort,
-          },
-          password: config.redisPassword,
-          ttl: 86400 * 1000, // 24 hours in milliseconds
-        });
-        return { store };
-      },
-    }),
     TypeOrmModule.forFeature([
       DeliveryAccount,
       ReceiverInformation,

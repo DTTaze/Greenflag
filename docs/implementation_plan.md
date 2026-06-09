@@ -130,12 +130,21 @@ We will implement/modify the following additions to the boilerplate:
   - Cached `getProvinces`, `getDistricts`, and `getWards` calls inside `GhnShippingStrategy` with 24-hour TTL (86400s).
   - Implemented dynamic credential verification (`validateConfig`) check in strategies (pinging GHN `/v2/shop/all` API) and intercepted `create` and `updateByID` in `DeliveryAccountService` to reject invalid accounts.
 
-### Phase 5: Event, Media & Utility Context (`event`, `media`, `qr`)
+### Phase 5: Event & Engagement Context (`event`, `qr`)
 
-- [ ] Define TypeORM entities: `Event`, `EventUser`, `Image`.
-- [ ] Implement media Cloudinary streams and QR code services.
+- [x] Define TypeORM entities: `Event`, `EventUser`, `Image` (polymorphic).
+- [x] Implement QR code services & registration check-in/out rewards.
 
-### Phase 6: Testing & E2E Validation
+### Phase 6: Media, Coin & Rank Module Migration
+
+- [x] Create generic `MediaModule` with `POST /media/upload` endpoint.
+- [x] Implement user profile avatar update `PUT /users/me/avatar` inside `UserController`.
+- [x] Port `CoinController` and `CoinService` inside `UserModule` (supporting caching).
+- [x] Port `RankController` and `RankService` inside `UserModule` (supporting caching).
+- [x] Implement user purchased items query `GET /users/items/:user_id`.
+- [x] Implement console logging socket stub service.
+
+### Phase 7: Testing & E2E Validation
 
 - [ ] Re-run all supertest integration test suites against PostgreSQL test database.
 

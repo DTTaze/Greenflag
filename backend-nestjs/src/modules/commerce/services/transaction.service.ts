@@ -1,4 +1,4 @@
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 
 import {
   BadRequestException,
@@ -11,6 +11,7 @@ import { Coin } from '@modules/user/entities/coin.entity';
 
 import { ITEM_STATUS, TRANSACTION_STATUS } from '@shared/enums';
 import { BaseCRUDService } from '@shared/services/base-crud.service';
+import { SocketStubService } from '@shared/services/socket-stub.service';
 
 import { Item } from '../entities/item.entity';
 import { Transaction } from '../entities/transaction.entity';
@@ -21,6 +22,7 @@ export class TransactionService extends BaseCRUDService<Transaction> {
     @InjectRepository(Transaction)
     private readonly transactionRepository: Repository<Transaction>,
     private readonly dataSource: DataSource,
+    private readonly socketStubService: SocketStubService,
   ) {
     super(transactionRepository);
   }
@@ -32,6 +34,24 @@ export class TransactionService extends BaseCRUDService<Transaction> {
       { buyerId },
       { relations: { receiverInformation: true, item: true } },
     );
+  }
+
+  public async getItemsByUserId(userId: string): Promise<Transaction[]> {
+    return this.transactionRepository.find({
+      where: {
+        buyerId: userId,
+        status: In([TRANSACTION_STATUS.PENDING, TRANSACTION_STATUS.ACCEPTED]),
+      },
+      relations: {
+        item: true,
+      },
+      select: {
+        id: true,
+        totalPrice: true,
+        quantity: true,
+        status: true,
+      },
+    });
   }
 
   public async getTransactionBySellerId(
@@ -179,6 +199,12 @@ export class TransactionService extends BaseCRUDService<Transaction> {
           item.status = ITEM_STATUS.AVAILABLE;
         }
         await queryRunner.manager.save(Item, item);
+
+        this.socketStubService.emitStockUpdate(item.id, item.stock, {
+          name: item.name,
+          price: item.price,
+          status: item.status,
+        });
       }
 
       await queryRunner.commitTransaction();

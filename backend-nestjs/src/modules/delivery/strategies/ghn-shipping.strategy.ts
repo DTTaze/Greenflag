@@ -1,13 +1,12 @@
-import { Cache } from 'cache-manager';
+import { CacheService, SET_CACHE_POLICY } from 'mvc-common-toolkit';
 import { firstValueFrom } from 'rxjs';
 
 import { HttpService } from '@nestjs/axios';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { CACHE_KEYS } from '@shared/cache-key';
-import { ENV_KEY } from '@shared/constants';
+import { CACHE_TTL, ENV_KEY, INJECTION_TOKEN } from '@shared/constants';
 import { DELIVERY_ORDER_STATUS } from '@shared/enums';
 
 import { DeliveryAccount } from '../entities/delivery-account.entity';
@@ -25,8 +24,8 @@ export class GhnShippingStrategy implements IShippingProvider {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
-    @Inject(CACHE_MANAGER)
-    private readonly cacheManager: Cache,
+    @Inject(INJECTION_TOKEN.REDIS_SERVICE)
+    private readonly cacheService: CacheService,
   ) {
     this.baseUrl = this.configService.getOrThrow<string>(ENV_KEY.GHN_URL);
   }
@@ -173,16 +172,19 @@ export class GhnShippingStrategy implements IShippingProvider {
 
   public async getProvinces(account: DeliveryAccount): Promise<any> {
     const cacheKey = CACHE_KEYS.SHIPPING.GHN_PROVINCES();
-    const cached = await this.cacheManager.get(cacheKey);
+    const cached = await this.cacheService.get(cacheKey);
     if (cached) {
-      return cached;
+      return JSON.parse(cached);
     }
     const url = `${this.baseUrl}/master-data/province`;
     const response = await firstValueFrom(
       this.httpService.get(url, { headers: this.buildHeaders(account) }),
     );
     const data = response.data;
-    await this.cacheManager.set(cacheKey, data, 86400 * 1000); // 24 hours
+    await this.cacheService.set(cacheKey, JSON.stringify(data), {
+      policy: SET_CACHE_POLICY.WITH_TTL,
+      value: CACHE_TTL.ONE_DAY,
+    });
     return data;
   }
 
@@ -191,9 +193,9 @@ export class GhnShippingStrategy implements IShippingProvider {
     provinceId: number | string,
   ): Promise<any> {
     const cacheKey = CACHE_KEYS.SHIPPING.GHN_DISTRICTS(provinceId);
-    const cached = await this.cacheManager.get(cacheKey);
+    const cached = await this.cacheService.get(cacheKey);
     if (cached) {
-      return cached;
+      return JSON.parse(cached);
     }
     const url = `${this.baseUrl}/master-data/district`;
     const response = await firstValueFrom(
@@ -204,7 +206,10 @@ export class GhnShippingStrategy implements IShippingProvider {
       ),
     );
     const data = response.data;
-    await this.cacheManager.set(cacheKey, data, 86400 * 1000); // 24 hours
+    await this.cacheService.set(cacheKey, JSON.stringify(data), {
+      policy: SET_CACHE_POLICY.WITH_TTL,
+      value: CACHE_TTL.ONE_DAY,
+    });
     return data;
   }
 
@@ -213,16 +218,19 @@ export class GhnShippingStrategy implements IShippingProvider {
     districtId: number | string,
   ): Promise<any> {
     const cacheKey = CACHE_KEYS.SHIPPING.GHN_WARDS(districtId);
-    const cached = await this.cacheManager.get(cacheKey);
+    const cached = await this.cacheService.get(cacheKey);
     if (cached) {
-      return cached;
+      return JSON.parse(cached);
     }
     const url = `${this.baseUrl}/master-data/ward?district_id=${Number(districtId)}`;
     const response = await firstValueFrom(
       this.httpService.get(url, { headers: this.buildHeaders(account) }),
     );
     const data = response.data;
-    await this.cacheManager.set(cacheKey, data, 86400 * 1000); // 24 hours
+    await this.cacheService.set(cacheKey, JSON.stringify(data), {
+      policy: SET_CACHE_POLICY.WITH_TTL,
+      value: CACHE_TTL.ONE_DAY,
+    });
     return data;
   }
 

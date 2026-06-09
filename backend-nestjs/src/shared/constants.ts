@@ -34,9 +34,10 @@ export const CACHE_TTL = {
 };
 
 export const getStorageFolder = () => ({
-  DIAGNOSES: `${process.env.APP_NAME}/diagnoses`,
-  DIAGNOSES_RESULTS: `${process.env.APP_NAME}/diagnoses_results`,
-  TASK_SUBMIT: `${process.env.APP_NAME}/task_submits`,
+  TASK_SUBMIT: `${process.env.APP_NAME || 'greenflag'}/task_submits`,
+  EVENT: `${process.env.APP_NAME || 'greenflag'}/events`,
+  AVATAR: `${process.env.APP_NAME || 'greenflag'}/avatars`,
+  MEDIA: `${process.env.APP_NAME || 'greenflag'}/media`,
 });
 
 export const ERR_CODE = {

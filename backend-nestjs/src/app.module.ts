@@ -13,8 +13,10 @@ import { CloudinaryModule } from '@modules/cloudinary/cloudinary.module';
 import { CommerceModule } from '@modules/commerce/commerce.module';
 import { DeliveryModule } from '@modules/delivery/delivery.module';
 import { EmailModule } from '@modules/email/email.module';
+import { EventModule } from '@modules/event/event.module';
 import { GlobalModule } from '@modules/global/global.module';
 import { HealthModule } from '@modules/health/health.module';
+import { MediaModule } from '@modules/media/media.module';
 import { SystemConfigModule } from '@modules/system-config/system-config.module';
 import { TaskModule } from '@modules/task/task.module';
 import { UserModule } from '@modules/user/user.module';
@@ -65,6 +67,8 @@ import configs from './configs';
     EmailModule,
     CommerceModule,
     DeliveryModule,
+    EventModule,
+    MediaModule,
   ],
 })
 export class AppModule {}

@@ -38,4 +38,12 @@ export const CACHE_KEYS = {
     GHTK_WARDS: (districtId: number | string) =>
       `shipping:ghtk:wards:${districtId}`,
   },
+  IDENTITY: {
+    RANK_BY_ID: (id: string) => `identity:rank:id:${id}`,
+    USER_AVATAR: (id: string) => `identity:user:avatar:${id}`,
+    AVATARS_ALL: () => 'identity:avatar:all',
+  },
+  COMMERCE: {
+    COIN_BY_ID: (id: string) => `commerce:coin:id:${id}`,
+  },
 };

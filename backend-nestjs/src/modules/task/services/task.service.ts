@@ -14,6 +14,7 @@ import { Coin } from '@modules/user/entities/coin.entity';
 import { UserProfile } from '@modules/user/entities/user-profile.entity';
 import { User } from '@modules/user/entities/user.entity';
 
+import { getStorageFolder } from '@shared/constants';
 import {
   TASK_DIFFICULTY,
   TASK_SUBMIT_STATUS,
@@ -200,7 +201,7 @@ export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
     for (const file of files) {
       const uploadResult = await this.cloudinaryService.uploadImage(
         file,
-        'task_submits',
+        getStorageFolder().TASK_SUBMIT,
       );
       if (uploadResult && uploadResult.secure_url) {
         imageUrls.push(uploadResult.secure_url);

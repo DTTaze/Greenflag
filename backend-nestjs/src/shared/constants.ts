@@ -17,6 +17,14 @@ export const INJECTION_TOKEN = {
   MAIL_TRANSPORTER: Symbol.for('MAIL_TRANSPORTER'),
 };
 
+export const QUEUE_NAME = {
+  COMMERCE: 'COMMERCE_QUEUE',
+};
+
+export const JOB_NAME = {
+  PROCESS_ITEM_PURCHASE: 'process-item-purchase',
+};
+
 export const CACHE_TTL = {
   FIVE_MINUTES: 300,
   TEN_MINUTES: 600,
@@ -110,12 +118,14 @@ export const ENV_KEY = {
   GOOGLE_CLIENT_SECRET: CONFIG_KEY.APP + '.googleClientSecret',
   GOOGLE_CALLBACK_URL: CONFIG_KEY.APP + '.googleCallbackUrl',
 
-  SMTP_HOST: CONFIG_KEY.APP + '.smtpHost',
-  SMTP_PORT: CONFIG_KEY.APP + '.smtpPort',
-  SMTP_SECURE: CONFIG_KEY.APP + '.smtpSecure',
-  SMTP_USERNAME: CONFIG_KEY.APP + '.smtpUsername',
-  SMTP_PASSWORD: CONFIG_KEY.APP + '.smtpPassword',
-  ADMIN_EMAILS: CONFIG_KEY.APP + '.adminEmails',
+  SMTP_HOST: CONFIG_KEY.EMAIL + '.smtpHost',
+  SMTP_PORT: CONFIG_KEY.EMAIL + '.smtpPort',
+  SMTP_SECURE: CONFIG_KEY.EMAIL + '.smtpSecure',
+  SMTP_USERNAME: CONFIG_KEY.EMAIL + '.smtpUsername',
+  SMTP_PASSWORD: CONFIG_KEY.EMAIL + '.smtpPassword',
+  ADMIN_EMAILS: CONFIG_KEY.EMAIL + '.adminEmails',
+
+  GHN_URL: CONFIG_KEY.APP + '.ghnUrl',
 };
 
 export const DEFAULT_MAX_CONCURRENT_CALL = 1;

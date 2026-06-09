@@ -24,3 +24,18 @@ export function failedAttemptCacheKey(
 export function systemConfigCacheKey(key: string): string {
   return `system_config:${key}`;
 }
+
+export const CACHE_KEYS = {
+  SHIPPING: {
+    GHN_PROVINCES: () => 'shipping:ghn:provinces',
+    GHN_DISTRICTS: (provinceId: number | string) =>
+      `shipping:ghn:districts:${provinceId}`,
+    GHN_WARDS: (districtId: number | string) =>
+      `shipping:ghn:wards:${districtId}`,
+    GHTK_PROVINCES: () => 'shipping:ghtk:provinces',
+    GHTK_DISTRICTS: (provinceId: number | string) =>
+      `shipping:ghtk:districts:${provinceId}`,
+    GHTK_WARDS: (districtId: number | string) =>
+      `shipping:ghtk:wards:${districtId}`,
+  },
+};

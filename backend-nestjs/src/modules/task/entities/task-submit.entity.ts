@@ -23,8 +23,7 @@ export class TaskSubmit extends AuditWithTimezone {
   description?: string;
 
   @Column({
-    type: 'enum',
-    enum: TASK_SUBMIT_STATUS,
+    type: 'varchar',
     default: TASK_SUBMIT_STATUS.PENDING,
   })
   status: TASK_SUBMIT_STATUS;

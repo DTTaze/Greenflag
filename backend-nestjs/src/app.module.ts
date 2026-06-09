@@ -1,5 +1,7 @@
+import { appConfig } from 'src/configs/app.config';
 import databaseConfig from 'src/configs/database.config';
 
+import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigType } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
@@ -8,6 +10,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AuthModule } from '@modules/auth/auth.module';
 import { CloudinaryModule } from '@modules/cloudinary/cloudinary.module';
+import { CommerceModule } from '@modules/commerce/commerce.module';
+import { DeliveryModule } from '@modules/delivery/delivery.module';
 import { EmailModule } from '@modules/email/email.module';
 import { GlobalModule } from '@modules/global/global.module';
 import { HealthModule } from '@modules/health/health.module';
@@ -41,6 +45,16 @@ import configs from './configs';
     }),
     EventEmitterModule.forRoot(),
     ScheduleModule.forRoot(),
+    BullModule.forRootAsync({
+      inject: [appConfig.KEY],
+      useFactory: (config: ConfigType<typeof appConfig>) => ({
+        connection: {
+          host: config.redisHost,
+          port: config.redisPort,
+          password: config.redisPassword,
+        },
+      }),
+    }),
     GlobalModule,
     HealthModule,
     UserModule,
@@ -49,6 +63,8 @@ import configs from './configs';
     CloudinaryModule,
     TaskModule,
     EmailModule,
+    CommerceModule,
+    DeliveryModule,
   ],
 })
 export class AppModule {}

@@ -124,7 +124,20 @@
     "emailResetSentSuccess": "Reset link sent successfully to your email!",
     "emailResetSendFailed": "Failed to send email. Please try again.",
     "emailRequiredForgot": "Please enter your email.",
-    "emailInvalidForgot": "Invalid email address."
+    "emailInvalidForgot": "Invalid email address.",
+    "verificationTitle": "Email Verification",
+    "otpSentTo": "We've sent a 6-digit verification code to {email}.",
+    "enterOtp": "Enter 6-digit OTP code",
+    "verifyBtn": "Verify",
+    "resendIn": "Resend code in {seconds}s",
+    "resendOtp": "Resend OTP",
+    "otpInvalid": "OTP must be exactly 6 characters.",
+    "verifySuccess": "Account verified successfully!",
+    "verifyFailed": "Verification failed. Please check your OTP.",
+    "otpResentSuccess": "OTP code resent successfully!",
+    "otpResentFailed": "Failed to resend OTP code. Please try again.",
+    "otpRequired": "Please enter the OTP code.",
+    "confirmPasswordRequired": "Please confirm your password."
   },
   "user": {
     "profileTitle": "Personal Information",

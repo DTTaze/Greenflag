@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { setCookie } from "cookies-next/client";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -6,7 +7,8 @@ import { z } from "zod";
 
 import { useNotification } from "@/src/components/ui/NotificationProvider";
 import { useRouter } from "@/src/i18n/navigation";
-import { loginUser } from "@/src/services/auth.service";
+import { login } from "@/src/services/auth";
+import { mapUserToStore } from "@/src/services/user.service";
 import { useAuthStore } from "@/src/store/auth/authStore";
 
 const getLoginSchema = (t: any) =>
@@ -39,38 +41,42 @@ export const useLoginForm = () => {
 
   const onSubmit = async (values: LoginFormValues) => {
     try {
-      const isEmail = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(
-        values.identifier,
-      );
-      const loginData = isEmail
-        ? { email: values.identifier, password: values.password }
-        : { username: values.identifier, password: values.password };
+      const loginData = {
+        usernameOrEmail: values.identifier,
+        password: values.password,
+      };
 
-      const res = await loginUser(loginData);
-      if (res && res.status === 200) {
+      const res = await login(loginData);
+      if (res && res.success) {
         notify("success", t("loginSuccess"));
+        
+        // Save access token to cookie
+        setCookie("access_token", res.data.accessToken, { maxAge: 60 * 60 * 24 * 7, path: "/" }); // 7 days
+
         dispatch({
           type: "LOGIN_SUCCESS",
-          payload: res.data.user,
+          payload: mapUserToStore(res.data.user),
         });
 
-        const roleId = res.data.user.role_id;
-        if (roleId === 1) {
+        const role = res.data.user.role;
+        if (role === "admin") {
           router.push("/admin");
-        } else if (roleId === 2) {
+        } else if (role === "user") {
           router.push("/");
-        } else if (roleId === 3) {
+        } else if (role === "partner") {
           router.push("/customer");
         } else {
           notify("error", t("generalError"));
         }
       } else {
-        notify("error", res.error || t("loginFailed"));
+        notify("error", res.message || t("loginFailed"));
       }
     } catch (error: any) {
-      if (error.status === 401) {
-        notify("error", t("invalidCredentials"));
-      } else if (error.status === 429) {
+      const status = error?.response?.status;
+      const message = error?.response?.data?.message;
+      if (status === 401) {
+        notify("error", message || t("invalidCredentials"));
+      } else if (status === 429) {
         notify("error", t("tooManyRequests"));
         setIsLoginDisabled(true);
         setTimeout(() => {
@@ -78,7 +84,7 @@ export const useLoginForm = () => {
           notify("info", t("tryAgainNow"));
         }, 300000);
       } else {
-        notify("error", error.message || t("generalError"));
+        notify("error", message || error.message || t("generalError"));
       }
     }
   };

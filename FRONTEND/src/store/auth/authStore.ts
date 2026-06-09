@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 export interface User {
-  id: number;
+  id: string | number;
   username: string;
   email: string;
   full_name?: string;
@@ -11,6 +11,9 @@ export interface User {
     id: number;
     name: string;
   };
+  role?: string;
+  avatarUrl?: string;
+  fullName?: string;
   coins?: {
     amount: number;
   };

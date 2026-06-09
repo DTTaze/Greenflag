@@ -1,7 +1,47 @@
 import axios from "@/src/utils/axios.customize";
+import { whoAmI } from "./auth";
 
-export const getUser = () => {
-  return axios.get("api/users/me");
+export const mapUserToStore = (user: any): any => {
+  if (!user) return null;
+  const roleMap: Record<string, { id: number; name: string }> = {
+    admin: { id: 1, name: "Admin" },
+    user: { id: 2, name: "User" },
+    partner: { id: 3, name: "Customer" },
+  };
+
+  const roleInfo = roleMap[user.role] || { id: 2, name: "User" };
+
+  return {
+    ...user,
+    id: user.id,
+    public_id: user.public_id || user.id,
+    full_name: user.fullName || user.profile?.fullName || user.username,
+    avatar_url: user.avatarUrl,
+    role_id: roleInfo.id,
+    roles: roleInfo,
+    phone_number: user.phoneNumber || user.profile?.phoneNumber,
+  };
+};
+
+export const getUser = async () => {
+  try {
+    const res = await whoAmI();
+    if (res.success) {
+      return {
+        status: 200,
+        data: mapUserToStore(res.data),
+      };
+    }
+    return {
+      status: 401,
+      error: res.message,
+    };
+  } catch (err: any) {
+    return {
+      status: err?.response?.status || 500,
+      error: err?.response?.data?.message || err?.message,
+    };
+  }
 };
 
 export const getAllUsers = () => {

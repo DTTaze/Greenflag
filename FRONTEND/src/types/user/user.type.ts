@@ -32,3 +32,23 @@ export interface UserType {
   profile?: UserProfileType;
   coin?: UserCoinType;
 }
+
+export interface RankType {
+  id: string;
+  userId?: string;
+  amount: number;
+  order: number;
+  createdAt: string;
+  updatedAt: string;
+  user?: UserType;
+}
+
+export interface CoinType {
+  id: string;
+  userId: string;
+  amount: number;
+  createdAt: string;
+  updatedAt: string;
+  user?: UserType;
+}
+

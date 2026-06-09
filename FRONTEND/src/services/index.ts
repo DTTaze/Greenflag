@@ -37,3 +37,13 @@ axiosClient.interceptors.response.use(
 );
 
 export default axiosClient;
+
+export * from "./commerce";
+export * from "./commerce/commerceHandlers";
+export * from "./delivery";
+export * from "./delivery/deliveryHandlers";
+export * from "./event";
+export * from "./event/eventHandlers";
+export * from "./user";
+export * from "./user/userHandlers";
+

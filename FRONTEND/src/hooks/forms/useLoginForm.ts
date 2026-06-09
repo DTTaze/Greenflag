@@ -1,25 +1,33 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { useNotification } from "@/src/components/ui/NotificationProvider";
+import { useRouter } from "@/src/i18n/navigation";
 import { loginUser } from "@/src/services/auth.service";
 import { useAuthStore } from "@/src/store/auth/authStore";
 
-const loginSchema = z.object({
-  identifier: z.string().min(1, "Vui lòng nhập email hoặc username."),
-  password: z.string().min(1, "Vui lòng nhập mật khẩu."),
-});
+const getLoginSchema = (t: any) =>
+  z.object({
+    identifier: z.string().min(1, t("emailOrUsernameRequired")),
+    password: z.string().min(1, t("passwordRequired")),
+  });
 
-export type LoginFormValues = z.infer<typeof loginSchema>;
+export type LoginFormValues = {
+  identifier: string;
+  password: string;
+};
 
 export const useLoginForm = () => {
   const router = useRouter();
+  const t = useTranslations("auth");
   const { dispatch } = useAuthStore();
   const { notify } = useNotification() as any;
   const [isLoginDisabled, setIsLoginDisabled] = useState(false);
+
+  const loginSchema = useMemo(() => getLoginSchema(t), [t]);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -40,7 +48,7 @@ export const useLoginForm = () => {
 
       const res = await loginUser(loginData);
       if (res && res.status === 200) {
-        notify("success", "Đăng nhập thành công!");
+        notify("success", t("loginSuccess"));
         dispatch({
           type: "LOGIN_SUCCESS",
           payload: res.data.user,
@@ -54,23 +62,23 @@ export const useLoginForm = () => {
         } else if (roleId === 3) {
           router.push("/customer");
         } else {
-          notify("error", "Đã xảy ra lỗi, vui lòng thử lại sau");
+          notify("error", t("generalError"));
         }
       } else {
-        notify("error", res.error || "Đăng nhập thất bại, vui lòng thử lại.");
+        notify("error", res.error || t("loginFailed"));
       }
     } catch (error: any) {
       if (error.status === 401) {
-        notify("error", "Thông tin đăng nhập không đúng");
+        notify("error", t("invalidCredentials"));
       } else if (error.status === 429) {
-        notify("error", "Quá nhiều yêu cầu, vui lòng thử lại sau 5 phút");
+        notify("error", t("tooManyRequests"));
         setIsLoginDisabled(true);
         setTimeout(() => {
           setIsLoginDisabled(false);
-          notify("info", "Bạn có thể thử đăng nhập lại bây giờ");
+          notify("info", t("tryAgainNow"));
         }, 300000);
       } else {
-        notify("error", error.message || "Đã xảy ra lỗi, vui lòng thử lại.");
+        notify("error", error.message || t("generalError"));
       }
     }
   };

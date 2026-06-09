@@ -36,7 +36,10 @@ export const getProductByUserId = (userId: string | number) => {
   return axios.get(`api/products/users/${userId}`);
 };
 
-export const updateProduct = (productId: string | number, formData: FormData) => {
+export const updateProduct = (
+  productId: string | number,
+  formData: FormData,
+) => {
   return axios.put(`api/products/${productId}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",

@@ -1,38 +1,43 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { useNotification } from "@/src/components/ui/NotificationProvider";
+import { useRouter } from "@/src/i18n/navigation";
 import { registerUser } from "@/src/services/auth.service";
 
-const registerSchema = z.object({
-  full_name: z
-    .string()
-    .min(1, "Vui lòng nhập họ tên!")
-    .regex(
-      /^[a-zA-ZÀ-ỹà-ỹ\s]+$/,
-      "Họ tên chỉ được chứa chữ cái tiếng Việt và dấu cách!",
-    ),
-  username: z
-    .string()
-    .min(1, "Vui lòng nhập tên tài khoản!")
-    .regex(
-      /^[a-zA-Z0-9]+$/,
-      "Tên tài khoản chỉ được chứa chữ cái không dấu và số!",
-    ),
-  role_id: z.number({ message: "Vui lòng chọn loại tài khoản!" }),
-  email: z.string().min(1, "Vui lòng nhập email!").email("Email không hợp lệ!"),
-  password: z.string().min(1, "Vui lòng nhập mật khẩu!"),
-});
+const getRegisterSchema = (t: any) =>
+  z.object({
+    full_name: z
+      .string()
+      .min(1, t("fullNameRequired"))
+      .regex(/^[a-zA-ZÀ-ỹà-ỹ\s]+$/, t("fullNameInvalid")),
+    username: z
+      .string()
+      .min(1, t("usernameRequired"))
+      .regex(/^[a-zA-Z0-9]+$/, t("usernameInvalid")),
+    role_id: z.number({ message: t("roleRequired") }),
+    email: z.string().min(1, t("emailRequired")).email(t("emailInvalid")),
+    password: z.string().min(1, t("passwordRequired")),
+  });
 
-export type RegisterFormValues = z.infer<typeof registerSchema>;
+export type RegisterFormValues = {
+  full_name: string;
+  username: string;
+  role_id: number;
+  email: string;
+  password: string;
+};
 
 export const useRegisterForm = () => {
   const router = useRouter();
+  const t = useTranslations("auth");
   const { notify } = useNotification() as any;
   const [loading, setLoading] = useState(false);
+
+  const registerSchema = useMemo(() => getRegisterSchema(t), [t]);
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -51,18 +56,12 @@ export const useRegisterForm = () => {
       const res = await registerUser(values);
       if (res?.status === 200) {
         router.push("/login");
-        notify("success", "Đăng ký thành công!");
+        notify("success", t("registerSuccess"));
       } else {
-        notify(
-          "error",
-          res?.error || "Đăng ký không thành công. Vui lòng thử lại!",
-        );
+        notify("error", res?.error || t("registerFailed"));
       }
     } catch (e: any) {
-      notify(
-        "error",
-        e.message || "Đăng ký không thành công. Vui lòng thử lại!",
-      );
+      notify("error", e.message || t("registerFailed"));
     } finally {
       setLoading(false);
     }

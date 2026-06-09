@@ -1,0 +1,281 @@
+import { Copy, QrCode } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+
+import Button from "@/src/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/src/components/ui/dialog";
+import InputField from "@/src/components/ui/InputField.jsx";
+import { useAuthStore } from "@/src/store/auth/authStore";
+import { getQR, updateUserPublic } from "@/src/utils/api";
+
+import PersonalInfomationSkeleton from "./PersonalInfomationSkeleton.jsx";
+
+function PersonalInformation() {
+  const t = useTranslations("user");
+  const tAuth = useTranslations("auth");
+  const { isAuthenticated, user: storeUser, dispatch } = useAuthStore();
+  const [user, setUser] = useState(null);
+  const [originalUser, setOriginalUser] = useState(null);
+  const [errors, setErrors] = useState({});
+  const [isEditing, setIsEditing] = useState(false);
+  const [qrCode, setQrCode] = useState(null);
+  const [showQrDialog, setShowQrDialog] = useState(false);
+
+  useEffect(() => {
+    if (storeUser) {
+      setUser({
+        public_id: storeUser.public_id,
+        username: storeUser.username || "",
+        email: storeUser.email || "",
+        full_name: storeUser.full_name || "",
+        phone_number: storeUser.phone_number || "",
+      });
+      setOriginalUser(storeUser);
+    }
+  }, [storeUser]);
+
+  const validateField = (name, value) => {
+    let error = "";
+    switch (name) {
+      case "username":
+        if (!value) error = tAuth("usernameRequired");
+        else if (value.length < 3) error = tAuth("usernameInvalid");
+        else if (!/^[a-zA-Z0-9]+$/.test(value))
+          error = tAuth("usernameInvalid");
+        break;
+      case "email":
+        if (!value) error = tAuth("emailRequired");
+        else if (!/\S+@\S+\.\S+/.test(value)) error = tAuth("emailInvalid");
+        break;
+      case "full_name":
+        if (!value) error = tAuth("fullNameRequired");
+        else if (!/^[a-zA-ZÀ-ỹà-ỹ\s]+$/.test(value))
+          error = tAuth("fullNameInvalid");
+        break;
+      case "phone_number":
+        if (!value) error = t("phoneInvalid");
+        else if (!/^\d{10}$/.test(value)) error = t("phoneInvalid");
+        break;
+      default:
+        break;
+    }
+    return error;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUser((prev) => ({ ...prev, [name]: value }));
+
+    const error = validateField(name, value);
+    setErrors((prev) => ({ ...prev, [name]: error }));
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    if (!user) return;
+
+    const newErrors = {};
+    inputFields.forEach(({ id }) => {
+      const error = validateField(id, user[id] || "");
+      if (error) newErrors[id] = error;
+    });
+
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      alert(t("invalidInfo"));
+      return;
+    }
+
+    try {
+      const payload = {
+        username: user.username,
+        email: user.email,
+        full_name: user.full_name,
+        phone_number: user.phone_number,
+      };
+      const res = await updateUserPublic(user.public_id, payload);
+      dispatch({
+        type: "UPDATE_USER",
+        payload: res.data,
+      });
+      setOriginalUser(res.data);
+      setUser({
+        public_id: res.data.public_id,
+        username: res.data.username || "",
+        email: res.data.email || "",
+        full_name: res.data.full_name || "",
+        phone_number: res.data.phone_number || "",
+      });
+      alert(t("updateSuccess"));
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Lỗi khi cập nhật thông tin:", error);
+      alert(t("updateFailed"));
+    }
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setUser({
+      public_id: originalUser.public_id,
+      username: originalUser.username || "",
+      email: originalUser.email || "",
+      full_name: originalUser.full_name || "",
+      phone_number: originalUser.phone_number || "",
+    });
+    setErrors({});
+    setIsEditing(false);
+  };
+
+  const generateQRCode = async () => {
+    try {
+      setQrCode(null);
+      setShowQrDialog(true);
+      const response = await getQR(user?.public_id || "");
+      if (response?.data) {
+        setQrCode(response.data);
+      }
+    } catch (error) {
+      console.error("Error generating QR code:", error);
+      alert(t("generateQrFailed"));
+      setShowQrDialog(false);
+    }
+  };
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    alert(t("copiedToClipboard"));
+  };
+
+  if (!isAuthenticated || !user) return <PersonalInfomationSkeleton />;
+
+  const inputFields = [
+    { id: "username", label: tAuth("username") },
+    { id: "email", label: t("email") },
+    { id: "full_name", label: tAuth("fullName") },
+    { id: "phone_number", label: t("phone") },
+  ];
+
+  return (
+    <div className="rounded-lg bg-white p-4 shadow-md">
+      <div className="flex items-center justify-between">
+        <h4 className="text-lg font-semibold text-gray-900">
+          {t("profileTitle")}
+        </h4>
+        <div className="flex gap-2">
+          <Button
+            text="QR Code"
+            onClick={generateQRCode}
+            padding="15px"
+            icon={<QrCode size={20} />}
+            className="bg-green-100 text-green-600 hover:bg-green-200"
+          />
+          {!isEditing && (
+            <Button text={t("editBtn")} onClick={handleEdit} padding="15px" />
+          )}
+        </div>
+      </div>
+      <hr className="my-2 border-gray-200" />
+
+      <form className="space-y-4" onSubmit={handleUpdate}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {inputFields.map(({ id, label }) => (
+            <div key={id}>
+              <InputField
+                id={id}
+                label={label}
+                value={user[id] || ""}
+                onChange={handleChange}
+                error={errors[id]}
+                disabled={!isEditing}
+                className={
+                  isEditing ? "" : "cursor-not-allowed bg-gray-50 text-gray-600"
+                }
+              />
+            </div>
+          ))}
+        </div>
+
+        {isEditing && (
+          <div className="flex justify-end space-x-2">
+            <Button
+              text={t("saveBtn")}
+              type="submit"
+              className="bg-green-500 text-white hover:bg-green-600"
+              padding="15px"
+            />
+            <Button
+              text={t("cancelBtn")}
+              type="button"
+              onClick={handleCancel}
+              className="bg-red-500 text-white hover:bg-red-600"
+              padding="15px"
+            />
+          </div>
+        )}
+      </form>
+
+      {/* QR Code Dialog */}
+      <Dialog
+        open={showQrDialog}
+        onOpenChange={(isOpen) => !isOpen && setShowQrDialog(false)}
+      >
+        <DialogContent className="rounded-xl border border-gray-100 bg-white p-6 shadow-lg sm:max-w-[400px]">
+          <DialogHeader className="mb-4">
+            <DialogTitle className="text-lg font-bold text-emerald-800">
+              Your Personal QR Code
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <p className="text-sm text-gray-500">
+              Scan this QR code to quickly access your profile or register for
+              events.
+            </p>
+
+            <div className="flex min-h-[220px] flex-col items-center justify-center rounded-xl border border-dashed border-emerald-200 bg-emerald-50/10 p-6">
+              {qrCode ? (
+                <div className="flex flex-col items-center">
+                  <img
+                    src={qrCode}
+                    alt="QR Code"
+                    className="h-auto max-w-[200px] rounded-lg shadow-sm"
+                  />
+                  <button
+                    onClick={() => copyToClipboard(user?.public_id)}
+                    className="mt-4 flex items-center justify-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 transition-colors hover:bg-emerald-100"
+                  >
+                    <span>Public ID: {user?.public_id}</span>
+                    <Copy size={14} />
+                  </button>
+                </div>
+              ) : (
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-700 border-t-transparent" />
+              )}
+            </div>
+          </div>
+
+          <DialogFooter className="mt-6">
+            <Button
+              text="Close"
+              onClick={() => setShowQrDialog(false)}
+              className="w-full bg-emerald-600 text-white hover:bg-emerald-700"
+              padding="15px"
+            />
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+export default PersonalInformation;

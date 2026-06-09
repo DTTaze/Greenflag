@@ -1,5 +1,8 @@
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+
+import { useRouter } from "@/src/i18n/navigation";
 
 import Button from "../components/ui/button";
 import InputField from "../components/ui/InputField";
@@ -7,6 +10,7 @@ import { useNotification } from "../components/ui/NotificationProvider";
 import { forgotPassword, resetPassword } from "../utils/api";
 
 const ForgotPassword = () => {
+  const t = useTranslations("auth");
   const router = useRouter();
   const searchParams = useSearchParams();
   const { notify } = useNotification();
@@ -29,53 +33,50 @@ const ForgotPassword = () => {
   const handleRequestReset = async (e) => {
     e.preventDefault();
     const newErrors = {};
-    if (!email.trim()) newErrors.email = "Vui lòng nhập email.";
+    if (!email.trim()) newErrors.email = t("emailRequiredForgot");
     else if (!/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(email))
-      newErrors.email = "Email không hợp lệ.";
+      newErrors.email = t("emailInvalidForgot");
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
     try {
       const response = await forgotPassword(email);
       if (response) {
-        notify(
-          "success",
-          "Link đặt lại mật khẩu đã được gửi đến email của bạn!",
-        );
+        notify("success", t("emailResetSentSuccess"));
         setEmailSent(true);
       } else {
-        notify("error", "Không thể gửi email, vui lòng thử lại.");
+        notify("error", t("emailResetSendFailed"));
       }
     } catch (error) {
-      notify("error", error.message || "Đã xảy ra lỗi, vui lòng thử lại.");
+      notify("error", error.message || t("generalError"));
     }
   };
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
     const newErrors = {};
-    if (!newPassword) newErrors.newPassword = "Vui lòng nhập mật khẩu mới.";
+    if (!newPassword) newErrors.newPassword = t("newPasswordRequired");
     if (newPassword !== confirmPassword)
-      newErrors.confirmPassword = "Mật khẩu xác nhận không khớp.";
+      newErrors.confirmPassword = t("passwordsDoNotMatch");
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
     try {
       const res = await resetPassword(token, newPassword);
       if (res && res.data.email) {
-        notify("success", "Mật khẩu đã được thay đổi thành công!");
+        notify("success", t("passwordChangedSuccess"));
         router.push("/login");
       } else {
-        notify("error", "Đổi mật khẩu thất bại, vui lòng thử lại.");
+        notify("error", t("passwordChangeFailed"));
       }
     } catch (error) {
-      notify("error", error.message || "Token không hợp lệ hoặc đã hết hạn.");
+      notify("error", error.message || t("invalidOrExpiredToken"));
     }
   };
 
   return (
     <div className="mx-auto mt-8 max-w-sm rounded border border-gray-300 bg-white p-4 shadow">
       <h2 className="mb-4 text-center text-xl font-semibold">
-        {step === 1 ? "Quên mật khẩu" : "Đặt lại mật khẩu"}
+        {step === 1 ? t("forgotPasswordTitle") : t("resetPasswordTitle")}
       </h2>
 
       {step === 1 && (
@@ -84,19 +85,16 @@ const ForgotPassword = () => {
             <form onSubmit={handleRequestReset} className="space-y-4">
               <InputField
                 id="email"
-                label="Email"
+                label={t("email")}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 error={errors.email}
               />
-              <Button text="Gửi link đặt lại" />
+              <Button type="submit" text={t("sendResetLink")} />
             </form>
           ) : (
             <div className="text-center">
-              <p className="text-green-600">
-                Link đặt lại mật khẩu đã được gửi đến {email}. Vui lòng kiểm tra
-                email của bạn!
-              </p>
+              <p className="text-green-600">{t("resetLinkSent", { email })}</p>
             </div>
           )}
         </>
@@ -106,7 +104,7 @@ const ForgotPassword = () => {
         <form onSubmit={handleResetPassword} className="space-y-4">
           <InputField
             id="newPassword"
-            label="Mật khẩu mới"
+            label={t("newPassword")}
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
@@ -114,13 +112,13 @@ const ForgotPassword = () => {
           />
           <InputField
             id="confirmPassword"
-            label="Xác nhận mật khẩu"
+            label={t("confirmPassword")}
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             error={errors.confirmPassword}
           />
-          <Button text="Đổi mật khẩu" />
+          <Button type="submit" text={t("changePasswordBtn")} />
         </form>
       )}
 
@@ -129,7 +127,7 @@ const ForgotPassword = () => {
           onClick={() => router.push("/login")}
           className="text-blue-600 hover:underline"
         >
-          Quay lại đăng nhập
+          {t("backToLogin")}
         </button>
       </div>
     </div>

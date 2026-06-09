@@ -1,5 +1,8 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
 import path from "path";
+
+const nextIntlPlugin = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
   pageExtensions: ["tsx", "ts"],
@@ -24,4 +27,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default nextIntlPlugin(nextConfig);

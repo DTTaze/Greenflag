@@ -1,18 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { io } from "socket.io-client";
 
-import Loader from "@/src/components/ui/Loader";
-import { SocketProvider } from "@/src/providers/socket.context";
 import UserHeader from "@/src/components/layout/Header";
+import Loader from "@/src/components/ui/Loader";
 import { useAuthStore } from "@/src/store/auth/authStore";
 import { getUser } from "@/src/utils/api";
-
-const socket = io({
-  path: "/socket.io",
-  withCredentials: true,
-});
 
 export default function MainLayout({
   children,
@@ -44,26 +37,19 @@ export default function MainLayout({
     initializeAuth();
   }, [dispatch]);
 
-  const SocketProviderCast = SocketProvider as React.ComponentType<{
-    value: unknown;
-    children?: React.ReactNode;
-  }>;
-
   return (
-    <SocketProviderCast value={socket}>
-      <div>
-        {appLoading ? (
-          <div style={styles.spinnerWrapper}>
-            <Loader />
-          </div>
-        ) : (
-          <>
-            <UserHeader />
-            {children}
-          </>
-        )}
-      </div>
-    </SocketProviderCast>
+    <div>
+      {appLoading ? (
+        <div style={styles.spinnerWrapper}>
+          <Loader />
+        </div>
+      ) : (
+        <>
+          <UserHeader />
+          {children}
+        </>
+      )}
+    </div>
   );
 }
 

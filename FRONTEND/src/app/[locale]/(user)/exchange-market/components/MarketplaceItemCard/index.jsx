@@ -12,7 +12,6 @@ import {
 import { useContext, useEffect, useState } from "react";
 
 import DeleteConfirmModal from "@/src/components/common/DeleteConfirmModal";
-import { socket } from "@/src/lib/socket";
 import { useAuthStore } from "@/src/store/auth/authStore";
 
 import { MarketplaceContext } from "../../layout";
@@ -29,7 +28,8 @@ export const statusConfig = {
 
 const getStatusClass = (status) => {
   const statusClasses = {
-    public: "border-emerald-100 bg-white hover:border-emerald-250 hover:shadow-emerald-50/50",
+    public:
+      "border-emerald-100 bg-white hover:border-emerald-250 hover:shadow-emerald-50/50",
     private: "border-gray-200 bg-gray-50/50",
     pending: "border-amber-100 bg-amber-50/20",
     rejected: "border-red-100 bg-red-50/20",
@@ -65,20 +65,9 @@ const MarketplaceItemCard = ({
   const { confirmPurchase, handlePurchase } = useContext(MarketplaceContext);
 
   useEffect(() => {
-    socket.emit("join-item-room", item.id);
-
-    socket.on("stock-update", (data) => {
-      if (data.itemId === item.id) {
-        setCurrentStock(data.stock);
-        setCurrentStatus(data.status);
-      }
-    });
-
-    return () => {
-      socket.emit("leave-item-room", item.id);
-      socket.off("stock-update");
-    };
-  }, [item.id]);
+    setCurrentStock(item.stock);
+    setCurrentStatus(item.postStatus);
+  }, [item.stock, item.postStatus]);
 
   const handleEditClick = () => {
     setShowDetailsModal(true);
@@ -141,13 +130,13 @@ const MarketplaceItemCard = ({
               : ""
           } ${showPurchaseModal || showDetailsModal ? "blur-xs" : ""}`}
         >
-          <h3 className="text-sm font-bold text-gray-800 leading-snug group-hover:text-emerald-800 transition-colors truncate">
+          <h3 className="truncate text-sm leading-snug font-bold text-gray-800 transition-colors group-hover:text-emerald-800">
             {item.name}
           </h3>
-          <span className="inline-block rounded-lg bg-emerald-50 px-2 py-0.5 mt-1 text-[10px] font-extrabold uppercase tracking-wide border border-emerald-100 text-[#0B6E4F]">
+          <span className="mt-1 inline-block rounded-lg border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-[10px] font-extrabold tracking-wide text-[#0B6E4F] uppercase">
             {getCategoryDisplayName(item.category)}
           </span>
-          <p className="mt-2.5 line-clamp-2 text-xs leading-relaxed text-gray-550 min-h-[32px]">
+          <p className="text-gray-550 mt-2.5 line-clamp-2 min-h-[32px] text-xs leading-relaxed">
             {item.description}
           </p>
         </div>
@@ -166,17 +155,17 @@ const MarketplaceItemCard = ({
             <span className="coin-value font-extrabold">{item.price}</span>
             <Coins className="h-4 w-4 text-amber-600" />
           </div>
-          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+          <span className="text-[10px] font-bold tracking-wider text-gray-400 uppercase">
             Còn lại: {currentStock}
           </span>
         </div>
 
         {/* Hover action overlay for all_items/redeem */}
         {(viewMode === "all_items" || viewMode === "redeem") && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100 backdrop-blur-3xs rounded-2xl">
+          <div className="backdrop-blur-3xs absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-black/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
             <button
               onClick={handleDetailsClick}
-              className="cursor-pointer flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-5 py-3 text-xs font-bold text-[#0B6E4F] shadow-md hover:bg-gray-50 active:scale-95 transition-all"
+              className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-5 py-3 text-xs font-bold text-[#0B6E4F] shadow-md transition-all hover:bg-gray-50 active:scale-95"
             >
               <Eye size={15} />
               {viewMode === "redeem" ? "Đổi quà" : "Chi tiết"}
@@ -189,14 +178,14 @@ const MarketplaceItemCard = ({
           <div className="mt-3.5 flex items-center justify-end gap-2.5 border-t border-gray-100 pt-3">
             <button
               onClick={handleEditClick}
-              className="cursor-pointer flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white text-blue-600 shadow-2xs hover:bg-gray-50 hover:text-blue-800 transition-all active:scale-90"
+              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-gray-200 bg-white text-blue-600 shadow-2xs transition-all hover:bg-gray-50 hover:text-blue-800 active:scale-90"
               aria-label="Edit item"
             >
               <Pencil size={14} />
             </button>
             <button
               onClick={handleDeleteClick}
-              className="cursor-pointer flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white text-red-650 shadow-2xs hover:bg-gray-50 hover:text-red-800 transition-all active:scale-90"
+              className="text-red-650 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-gray-200 bg-white shadow-2xs transition-all hover:bg-gray-50 hover:text-red-800 active:scale-90"
               aria-label="Delete item"
             >
               <Trash2 size={14} />

@@ -49,21 +49,13 @@ export class UserController {
   @Get('task/completed')
   @UseGuards(AuthGuard)
   async getTaskCompleted(@RequestUser() reqUser: any): Promise<HttpResponse> {
-    const data = await this.taskService.getCompletedTasksByUserId(reqUser.id);
-    return {
-      success: true,
-      data,
-    };
+    return this.taskService.getCompletedTasksByUserId(reqUser.id);
   }
 
   @Get('tasks/all/:id')
   @UseGuards(AuthGuard)
   async getAllTasksById(@RequestUser() reqUser: any): Promise<HttpResponse> {
-    const data = await this.taskService.getAllTasksByUserId(reqUser.id);
-    return {
-      success: true,
-      data,
-    };
+    return this.taskService.getAllTasksByUserId(reqUser.id);
   }
 
   @Get('items/:user_id')
@@ -71,11 +63,7 @@ export class UserController {
   async getItemByIdUser(
     @Param('user_id') userId: string,
   ): Promise<HttpResponse> {
-    const data = await this.transactionService.getItemsByUserId(userId);
-    return {
-      success: true,
-      data,
-    };
+    return this.transactionService.getItemsByUserId(userId);
   }
 
   @Put('me/avatar')

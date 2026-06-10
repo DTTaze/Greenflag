@@ -22,51 +22,31 @@ export class EventController {
 
   @Get('information/:eventId')
   async getEventById(@Param('eventId') eventId: string): Promise<HttpResponse> {
-    const data = await this.eventService.getEventById(eventId);
-    return {
-      success: true,
-      data,
-    };
+    return this.eventService.getEventById(eventId);
   }
 
   @Get('informations')
   async getAllEvents(): Promise<HttpResponse> {
-    const data = await this.eventService.getAllEvents();
-    return {
-      success: true,
-      data,
-    };
+    return this.eventService.getAllEvents();
   }
 
   @Get('signed')
   async getEventsSignedSelf(@Req() req: any): Promise<HttpResponse> {
-    const data = await this.eventUserService.getEventsSigned(req.user.id);
-    return {
-      success: true,
-      data,
-    };
+    return this.eventUserService.getEventsSigned(req.user.id);
   }
 
   @Get('signed/:userId')
   async getEventsSigned(
     @Param('userId') userId: string,
   ): Promise<HttpResponse> {
-    const data = await this.eventUserService.getEventsSigned(userId);
-    return {
-      success: true,
-      data,
-    };
+    return this.eventUserService.getEventsSigned(userId);
   }
 
   @Get('user/:eventId')
   async getEventUsersByEventId(
     @Param('eventId') eventId: string,
   ): Promise<HttpResponse> {
-    const data = await this.eventUserService.getEventUsersByEventId(eventId);
-    return {
-      success: true,
-      data,
-    };
+    return this.eventUserService.getEventUsersByEventId(eventId);
   }
 
   @Post('accept/:eventId')
@@ -74,12 +54,11 @@ export class EventController {
     @Param('eventId') eventId: string,
     @Req() req: any,
   ): Promise<HttpResponse> {
-    const data = await this.eventUserService.acceptEvent(eventId, req.user.id);
-    return {
-      success: true,
-      message: 'Accept event success',
-      data,
-    };
+    const result = await this.eventUserService.acceptEvent(eventId, req.user.id);
+    if (result.success) {
+      result.message = 'Accept event success';
+    }
+    return result;
   }
 
   @Get('qr/:eventId')

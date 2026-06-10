@@ -52,24 +52,31 @@ export default function CustomerUsers() {
 
   const fetchUserData = async (eventUser) => {
     try {
-      const userData = eventUser.User;
-      const avatarResponse = await getUserAvatarById(eventUser.user_id);
-      const avatarData = avatarResponse.data;
+      const userData = eventUser.user || eventUser.User;
+      if (!userData) return null;
+
+      const userId = eventUser.userId || eventUser.user_id;
+      const eventId = eventUser.eventId || eventUser.event_id;
+      const event = eventUser.event || eventUser.Event;
+
+      const avatar = userData.avatarUrl || userData.avatar_url || "/placeholder-avatar.jpg";
+      const coins = userData.coin?.amount !== undefined ? userData.coin.amount : (userData.coins || 0);
+      const fullName = userData.profile?.fullName || userData.full_name || userData.fullName || userData.username || "";
 
       return {
-        id: eventUser.user_id,
-        full_name: userData.full_name,
+        id: userId,
+        full_name: fullName,
         email: userData.email,
-        avatar: avatarData?.avatar_url || "/placeholder-avatar.jpg",
-        coins: userData.coins || 0,
+        avatar: avatar,
+        coins: coins,
         events: [
           {
-            id: eventUser.event_id,
-            title: eventUser.Event.title,
-            status: eventUser.Event.status,
-            completion_rate: !eventUser.joined_at
+            id: eventId,
+            title: event?.title || "",
+            status: event?.status || "",
+            completion_rate: !(eventUser.joinedAt || eventUser.joined_at)
               ? 0
-              : eventUser.completed_at
+              : (eventUser.completedAt || eventUser.completed_at)
                 ? 100
                 : 50,
             eventUser: eventUser,
@@ -78,7 +85,7 @@ export default function CustomerUsers() {
       };
     } catch (error) {
       console.error(
-        `Error fetching user data for user ${eventUser.user_id}:`,
+        `Error fetching user data for user ${eventUser.userId || eventUser.user_id}:`,
         error,
       );
       return null;
@@ -90,7 +97,7 @@ export default function CustomerUsers() {
       try {
         setLoading(true);
         setError(null);
-
+ 
         const eventsResponse = await getOwnerEvents();
         const eventsData = eventsResponse.data;
         setEvents(eventsData);
@@ -100,15 +107,30 @@ export default function CustomerUsers() {
           const eventUsers = await fetchEventUsers(event.id);
 
           for (const eventUser of eventUsers) {
-            if (!allUsers.has(eventUser.user_id)) {
+            const userId = eventUser.userId || eventUser.user_id;
+            if (!userId) continue;
+
+            if (!allUsers.has(userId)) {
               const userData = await fetchUserData(eventUser);
               if (userData) {
-                allUsers.set(eventUser.user_id, userData);
+                if (!userData.events[0].title) {
+                  userData.events[0].title = event.title;
+                }
+                if (!userData.events[0].status) {
+                  userData.events[0].status = event.status;
+                }
+                allUsers.set(userId, userData);
               }
             } else {
-              const existingUser = allUsers.get(eventUser.user_id);
+              const existingUser = allUsers.get(userId);
               const userData = await fetchUserData(eventUser);
               if (userData) {
+                if (!userData.events[0].title) {
+                  userData.events[0].title = event.title;
+                }
+                if (!userData.events[0].status) {
+                  userData.events[0].status = event.status;
+                }
                 existingUser.events.push(userData.events[0]);
               }
             }

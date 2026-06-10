@@ -200,7 +200,7 @@ export class EventUserService extends BaseCRUDService<EventUser> {
   ): Promise<OperationResult<EventUser[]>> {
     const list = await this.eventUserRepository.find({
       where: { eventId },
-      relations: ['user'],
+      relations: ['user', 'user.profile', 'user.coin', 'event'],
     });
     return generateSuccessResult(list);
   }

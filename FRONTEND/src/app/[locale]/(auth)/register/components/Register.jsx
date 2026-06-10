@@ -59,7 +59,7 @@ function RegisterPage() {
           {t("verificationTitle") || "Email Verification"}
         </h2>
         <p className="mb-6 text-center text-sm text-slate-500 dark:text-zinc-400">
-          {t("otpSentTo") ? t("otpSentTo").replace("{email}", registeredEmail) : `We've sent a 6-digit verification code to ${registeredEmail}.`}
+          {t("otpSentTo", { email: registeredEmail })}
         </p>
 
         <form onSubmit={handleVerifySubmit} className="space-y-4">
@@ -83,7 +83,7 @@ function RegisterPage() {
         <div className="mt-6 text-center">
           {otpTimer > 0 ? (
             <p className="text-xs text-slate-400 dark:text-zinc-500">
-              {t("resendIn") ? t("resendIn").replace("{seconds}", otpTimer.toString()) : `Resend code in ${otpTimer}s`}
+              {t("resendIn", { seconds: otpTimer })}
             </p>
           ) : (
             <button

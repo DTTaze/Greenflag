@@ -20,7 +20,15 @@ function HistoryDashboard() {
   const [activeTab, setActiveTab] = useState("all-activity");
   
   // React Query hook for task history
-  const { data: tasksData = [], isLoading: isTasksLoading } = useUserTasksQuery(user?.id || "");
+  const { data: rawTasksData, isLoading: isTasksLoading } = useUserTasksQuery(user?.id || "");
+
+  const tasksData = useMemo(() => {
+    if (Array.isArray(rawTasksData)) return rawTasksData;
+    if (rawTasksData && typeof rawTasksData === "object" && "data" in rawTasksData && Array.isArray(rawTasksData.data)) {
+      return rawTasksData.data;
+    }
+    return [];
+  }, [rawTasksData]);
 
   const [loading, setLoading] = useState(true);
 
@@ -86,7 +94,7 @@ function HistoryDashboard() {
 
   // Calculate statistics
   const completedMissionsCount =
-    tasks.filter((t) => t.completed_at).length || 1; // Fallback to 1 mock if empty
+    tasksData.filter((t) => t.completedAt || t.completed_at).length || 1; // Fallback to 1 mock if empty
   const eventsCount = events.length || 1; // Fallback to 1 mock if empty
 
   return (

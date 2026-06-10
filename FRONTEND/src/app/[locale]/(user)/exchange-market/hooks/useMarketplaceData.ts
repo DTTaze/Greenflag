@@ -41,10 +41,8 @@ export function useMarketplaceData(userId?: number | string) {
   useEffect(() => {
     async function initialize() {
       try {
-        const userResponse = (await getUser()) as any as {
-          success: boolean;
-        };
-        if (!userResponse.success) {
+        const userResponse = (await getUser()) as any;
+        if (userResponse.status !== 200 || !userResponse.data) {
           throw new Error("Không thể tải dữ liệu người dùng");
         }
       } catch (err: unknown) {

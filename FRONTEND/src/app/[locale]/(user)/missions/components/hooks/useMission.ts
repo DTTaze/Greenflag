@@ -46,11 +46,20 @@ export default function useMission() {
   const loading =
     isUserLoading || isDailyLoading || isOtherLoading || isUserTasksLoading;
 
+  // Normalize allUserTasks to always be a flat array (handling potential NestJS backend wrapping)
+  const userTasksArray = useMemo(() => {
+    if (Array.isArray(allUserTasks)) return allUserTasks;
+    if (allUserTasks && typeof allUserTasks === "object" && "data" in allUserTasks && Array.isArray((allUserTasks as any).data)) {
+      return (allUserTasks as any).data;
+    }
+    return [];
+  }, [allUserTasks]);
+
   // Reactively compute dailyTasks
   const dailyTasks = useMemo(() => {
-    if (!rawDailyTasks || !allUserTasks) return [];
+    if (!rawDailyTasks || !userTasksArray) return [];
 
-    const processedUserTasks = (allUserTasks || [])
+    const processedUserTasks = userTasksArray
       .filter((ut: any) => rawDailyTasks.some((t: any) => t.id === ut.taskId))
       .map((ut: any) => {
         const task = rawDailyTasks.find((t: any) => t.id === ut.taskId);
@@ -67,7 +76,7 @@ export default function useMission() {
       .filter(Boolean);
 
     const unstartedTasks = rawDailyTasks
-      .filter((t: any) => !allUserTasks.some((ut: any) => ut.taskId === t.id))
+      .filter((t: any) => !userTasksArray.some((ut: any) => ut.taskId === t.id))
       .map((t: any) => ({
         ...t,
         isUserTask: false,
@@ -76,13 +85,13 @@ export default function useMission() {
       }));
 
     return [...processedUserTasks, ...unstartedTasks];
-  }, [rawDailyTasks, allUserTasks]);
+  }, [rawDailyTasks, userTasksArray]);
 
   // Reactively compute otherTasks (excluding completed tasks in legacy behavior)
   const otherTasks = useMemo(() => {
-    if (!rawOtherTasks || !allUserTasks) return [];
+    if (!rawOtherTasks || !userTasksArray) return [];
 
-    const processedUserTasks = (allUserTasks || [])
+    const processedUserTasks = userTasksArray
       .filter((ut: any) => ut.completedAt === null)
       .filter((ut: any) => rawOtherTasks.some((t: any) => t.id === ut.taskId))
       .map((ut: any) => {
@@ -100,7 +109,7 @@ export default function useMission() {
       .filter(Boolean);
 
     const unstartedTasks = rawOtherTasks
-      .filter((t: any) => !allUserTasks.some((ut: any) => ut.taskId === t.id))
+      .filter((t: any) => !userTasksArray.some((ut: any) => ut.taskId === t.id))
       .map((t: any) => ({
         ...t,
         isUserTask: false,
@@ -109,12 +118,12 @@ export default function useMission() {
       }));
 
     return [...processedUserTasks, ...unstartedTasks];
-  }, [rawOtherTasks, allUserTasks]);
+  }, [rawOtherTasks, userTasksArray]);
 
   // Reactively compute completedTasks
   const completedTasks = useMemo(() => {
-    if (!allUserTasks) return [];
-    return allUserTasks
+    if (!userTasksArray) return [];
+    return userTasksArray
       .filter((ut: any) => ut.completedAt !== null)
       .map((ut: any) => {
         const task =
@@ -131,7 +140,7 @@ export default function useMission() {
           : null;
       })
       .filter(Boolean);
-  }, [allUserTasks, rawDailyTasks, rawOtherTasks]);
+  }, [userTasksArray, rawDailyTasks, rawOtherTasks]);
 
   // Handle task completion
   const handleTaskCompletion = useCallback(
@@ -287,7 +296,7 @@ export default function useMission() {
 
   return {
     tasks: rawDailyTasks || [], // fallback list of raw tasks
-    userTasks: allUserTasks || [],
+    userTasks: userTasksArray,
     userInfo,
     loading,
     completingTask,

@@ -7,6 +7,7 @@ import Calendar from "./Calendar/index.jsx";
 import Ranking from "./ChartRank/index.jsx";
 import EventBanner from "./EventBanner/index.jsx";
 import EventList from "./EventList/index.jsx";
+import useMission from "./hooks/useMission";
 import MissionFilters from "./MissionFilters/index.jsx";
 import MissionHeader from "./MissionHeader/index.jsx";
 import MissionSkeleton from "./MissionSkeleton/index.jsx";
@@ -14,7 +15,6 @@ import MissionTabs from "./MissionTabs/index.jsx";
 import QrTaskSubmissionModal from "./QrTaskSubmissionModal/index.jsx";
 import TasksList from "./TasksList/index.jsx";
 import TaskSubmissionModal from "./TaskSubmissionModal/index.jsx";
-import useMission from "./hooks/useMission";
 
 function Mission() {
   const {
@@ -199,8 +199,8 @@ function Mission() {
 
             {/* Ranking Component */}
             <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xs">
-              <div className="border-b border-gray-100 p-4 bg-gray-50/50">
-                <h2 className="text-sm font-extrabold uppercase tracking-wider text-gray-800">
+              <div className="border-b border-gray-100 bg-gray-50/50 p-4">
+                <h2 className="text-sm font-extrabold tracking-wider text-gray-800 uppercase">
                   Bảng Xếp Hạng
                 </h2>
               </div>
@@ -211,25 +211,25 @@ function Mission() {
 
             {/* Stats Card */}
             <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-2xs">
-              <h2 className="mb-4 text-sm font-extrabold uppercase tracking-wider text-gray-800">
+              <h2 className="mb-4 text-sm font-extrabold tracking-wider text-gray-800 uppercase">
                 Thống Kê Hoạt Động
               </h2>
               <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-xl bg-blue-50/50 border border-blue-100/50 p-4 text-center">
+                <div className="rounded-xl border border-blue-100/50 bg-blue-50/50 p-4 text-center">
                   <p className="text-2xl font-black text-blue-600">
                     {completedTasks.length}
                   </p>
-                  <p className="text-[10px] font-bold text-blue-800 uppercase tracking-wide mt-1 leading-snug">
+                  <p className="mt-1 text-[10px] leading-snug font-bold tracking-wide text-blue-800 uppercase">
                     Nhiệm vụ đã xong
                   </p>
                 </div>
-                <div className="rounded-xl bg-emerald-50/50 border border-emerald-100/50 p-4 text-center">
+                <div className="rounded-xl border border-emerald-100/50 bg-emerald-50/50 p-4 text-center">
                   <p className="text-2xl font-black text-emerald-600">
                     {completedTasks.reduce((sum, task) => {
                       return sum + (task.coin || task.coins || 0);
                     }, 0)}
                   </p>
-                  <p className="text-[10px] font-bold text-emerald-800 uppercase tracking-wide mt-1 leading-snug">
+                  <p className="mt-1 text-[10px] leading-snug font-bold tracking-wide text-emerald-800 uppercase">
                     Xu đã nhận
                   </p>
                 </div>

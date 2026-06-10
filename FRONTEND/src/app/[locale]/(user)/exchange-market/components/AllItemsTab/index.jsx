@@ -48,7 +48,7 @@ function AllItemsTab({ fetchItems }) {
   return (
     <div className="space-y-6">
       {/* Search and Filters container */}
-      <div className="flex flex-col gap-4 rounded-2xl border border-slate-800/85 bg-slate-900/40 p-5 backdrop-blur-md shadow-xl">
+      <div className="flex flex-col gap-4 rounded-2xl border border-slate-800/85 bg-slate-900/40 p-5 shadow-xl backdrop-blur-md">
         <MarketSearchBar
           marketSearchText={marketSearchText}
           setMarketSearchText={setMarketSearchText}
@@ -64,7 +64,7 @@ function AllItemsTab({ fetchItems }) {
           statusColors={statusColors}
         />
       </div>
-      
+
       {filteredMarketItems.length === 0 ? (
         <MarketEmptyState
           marketView="all_items"

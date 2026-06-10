@@ -12,7 +12,7 @@ export default function TransactionSummary({
   const finalBalance = userCoins - totalCost;
 
   return (
-    <div className="rounded-xl border border-slate-800/80 bg-slate-950/50 p-4 space-y-3">
+    <div className="space-y-3 rounded-xl border border-slate-800/80 bg-slate-950/50 p-4">
       {/* Product Cost */}
       <div className="flex items-center justify-between text-xs">
         <span className="text-slate-400">Giá sản phẩm:</span>
@@ -25,7 +25,9 @@ export default function TransactionSummary({
       {/* Shipping Fee */}
       <div className="flex items-center justify-between text-xs">
         <span className="text-slate-400">Phí giao hàng:</span>
-        <span className="font-semibold text-slate-200">{shippingFee.toLocaleString()} VND</span>
+        <span className="font-semibold text-slate-200">
+          {shippingFee.toLocaleString()} VND
+        </span>
       </div>
 
       {/* Separator */}
@@ -33,7 +35,9 @@ export default function TransactionSummary({
 
       {/* Total Coin Cost */}
       <div className="flex items-center justify-between text-xs">
-        <span className="text-slate-400 font-medium">Tổng giá sản phẩm (Xu):</span>
+        <span className="font-medium text-slate-400">
+          Tổng giá sản phẩm (Xu):
+        </span>
         <div className="flex items-center font-bold text-emerald-400">
           <span>{totalCost}</span>
           <Coins className="ml-1 h-3.5 w-3.5 text-amber-400" />
@@ -54,7 +58,7 @@ export default function TransactionSummary({
 
       {/* Balance After Purchase */}
       <div className="flex items-center justify-between text-sm">
-        <span className="text-slate-300 font-medium">Số dư sau giao dịch:</span>
+        <span className="font-medium text-slate-300">Số dư sau giao dịch:</span>
         <div
           className={`flex items-center font-bold ${
             canPurchase ? "text-emerald-400" : "text-rose-500"

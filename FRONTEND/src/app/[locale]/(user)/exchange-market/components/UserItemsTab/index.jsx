@@ -64,19 +64,19 @@ function UserItemsTab({ fetchItems }) {
         onSubmit={handleSubmitItem}
         onCancel={handleCancelForm}
       />
-      
+
       {/* Add Product Button */}
       <div className="flex justify-end pt-1">
         <button
           onClick={handleAddItem}
-          className="rounded-lg bg-emerald-600 hover:bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/10 active:scale-95 transition-all duration-200"
+          className="rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/10 transition-all duration-200 hover:bg-emerald-500 active:scale-95"
         >
           Thêm sản phẩm
         </button>
       </div>
 
       {/* Controls Container */}
-      <div className="flex flex-col gap-4 rounded-2xl border border-slate-800/85 bg-slate-900/40 p-5 backdrop-blur-md shadow-xl">
+      <div className="flex flex-col gap-4 rounded-2xl border border-slate-800/85 bg-slate-900/40 p-5 shadow-xl backdrop-blur-md">
         <MarketSearchBar
           marketSearchText={marketSearchText}
           setMarketSearchText={setMarketSearchText}

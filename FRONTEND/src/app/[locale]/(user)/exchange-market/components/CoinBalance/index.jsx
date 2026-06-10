@@ -8,7 +8,7 @@ export default function CoinBalance({ coins }) {
         <div className="mr-3.5 rounded-full bg-emerald-100/70 p-2.5">
           <Coins className="h-5 w-5 animate-pulse text-emerald-700" />
         </div>
-        <span className="font-extrabold text-emerald-800 text-sm tracking-wide uppercase">
+        <span className="text-sm font-extrabold tracking-wide text-emerald-800 uppercase">
           Số dư của bạn
         </span>
       </div>
@@ -17,7 +17,7 @@ export default function CoinBalance({ coins }) {
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        className="rounded-xl border border-emerald-250/20 bg-white px-5 py-2 text-lg font-black text-[#0B6E4F] shadow-xs flex items-center gap-1.5"
+        className="border-emerald-250/20 flex items-center gap-1.5 rounded-xl border bg-white px-5 py-2 text-lg font-black text-[#0B6E4F] shadow-xs"
       >
         <span>{coins.toLocaleString()}</span>
         <span className="text-sm font-bold text-emerald-600/80">Xu</span>

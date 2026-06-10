@@ -2,6 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
   adminCancelOrderHandler,
+  createOrderFromTransactionHandler,
+  createOrderHandler,
   createReceiverHandler,
   deleteReceiverHandler,
   partnerCancelOrderHandler,
@@ -10,8 +12,6 @@ import {
   partnerSetDefaultAccountHandler,
   partnerUpdateAccountHandler,
   previewOrderHandler,
-  createOrderHandler,
-  createOrderFromTransactionHandler,
   setDefaultReceiverHandler,
   updateReceiverHandler,
 } from "@/src/services/delivery/deliveryHandlers";
@@ -109,7 +109,13 @@ export const useOrderDetailQuery = (
   shopId?: string,
 ) => {
   return useQuery({
-    queryKey: [QueryKeysDelivery.ORDER_DETAIL, orderCode, carrier, token, shopId],
+    queryKey: [
+      QueryKeysDelivery.ORDER_DETAIL,
+      orderCode,
+      carrier,
+      token,
+      shopId,
+    ],
     queryFn: () => getOrderInfoQueryFn(orderCode, carrier, token, shopId),
     enabled: !!orderCode,
   });
@@ -164,9 +170,12 @@ export const useAdminOrdersByStatusQuery = (status: string) => {
 export const useCreateReceiverMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: CreateReceiverInfoPayload) => createReceiverHandler(payload),
+    mutationFn: (payload: CreateReceiverInfoPayload) =>
+      createReceiverHandler(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeysDelivery.RECEIVERS] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysDelivery.RECEIVERS],
+      });
     },
   });
 };
@@ -174,11 +183,20 @@ export const useCreateReceiverMutation = () => {
 export const useUpdateReceiverMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: UpdateReceiverInfoPayload }) =>
-      updateReceiverHandler(id, payload),
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: UpdateReceiverInfoPayload;
+    }) => updateReceiverHandler(id, payload),
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeysDelivery.RECEIVERS] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeysDelivery.RECEIVER_DETAIL, id] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysDelivery.RECEIVERS],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysDelivery.RECEIVER_DETAIL, id],
+      });
     },
   });
 };
@@ -188,7 +206,9 @@ export const useDeleteReceiverMutation = () => {
   return useMutation({
     mutationFn: (id: string) => deleteReceiverHandler(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeysDelivery.RECEIVERS] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysDelivery.RECEIVERS],
+      });
     },
   });
 };
@@ -198,23 +218,43 @@ export const useSetDefaultReceiverMutation = () => {
   return useMutation({
     mutationFn: (id: string) => setDefaultReceiverHandler(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeysDelivery.RECEIVERS] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysDelivery.RECEIVERS],
+      });
     },
   });
 };
 
 export const usePreviewOrderMutation = () => {
   return useMutation({
-    mutationFn: ({ dto, carrier, token, shopId }: { dto: any; carrier?: string; token?: string; shopId?: string }) =>
-      previewOrderHandler(dto, carrier, token, shopId),
+    mutationFn: ({
+      dto,
+      carrier,
+      token,
+      shopId,
+    }: {
+      dto: any;
+      carrier?: string;
+      token?: string;
+      shopId?: string;
+    }) => previewOrderHandler(dto, carrier, token, shopId),
   });
 };
 
 export const useCreateOrderMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ dto, carrier, token, shopId }: { dto: CreateDeliveryOrderPayload; carrier?: string; token?: string; shopId?: string }) =>
-      createOrderHandler(dto, carrier, token, shopId),
+    mutationFn: ({
+      dto,
+      carrier,
+      token,
+      shopId,
+    }: {
+      dto: CreateDeliveryOrderPayload;
+      carrier?: string;
+      token?: string;
+      shopId?: string;
+    }) => createOrderHandler(dto, carrier, token, shopId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QueryKeysDelivery.ORDERS] });
     },
@@ -236,7 +276,14 @@ export const useCreateOrderFromTransactionMutation = () => {
       carrier?: string;
       token?: string;
       shopId?: string;
-    }) => createOrderFromTransactionHandler(transactionId, dto, carrier, token, shopId),
+    }) =>
+      createOrderFromTransactionHandler(
+        transactionId,
+        dto,
+        carrier,
+        token,
+        shopId,
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QueryKeysDelivery.ORDERS] });
     },
@@ -246,7 +293,8 @@ export const useCreateOrderFromTransactionMutation = () => {
 export const usePartnerCreateAccountMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: CreateDeliveryAccountPayload) => partnerCreateAccountHandler(payload),
+    mutationFn: (payload: CreateDeliveryAccountPayload) =>
+      partnerCreateAccountHandler(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QueryKeysDelivery.ACCOUNTS] });
     },
@@ -256,11 +304,18 @@ export const usePartnerCreateAccountMutation = () => {
 export const usePartnerUpdateAccountMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: UpdateDeliveryAccountPayload }) =>
-      partnerUpdateAccountHandler(id, payload),
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: UpdateDeliveryAccountPayload;
+    }) => partnerUpdateAccountHandler(id, payload),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: [QueryKeysDelivery.ACCOUNTS] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeysDelivery.ACCOUNT_DETAIL, id] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysDelivery.ACCOUNT_DETAIL, id],
+      });
     },
   });
 };
@@ -288,11 +343,28 @@ export const usePartnerSetDefaultAccountMutation = () => {
 export const usePartnerCancelOrderMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ orderCode, carrier, token, shopId }: { orderCode: string; carrier?: string; token?: string; shopId?: string }) =>
-      partnerCancelOrderHandler(orderCode, carrier, token, shopId),
+    mutationFn: ({
+      orderCode,
+      carrier,
+      token,
+      shopId,
+    }: {
+      orderCode: string;
+      carrier?: string;
+      token?: string;
+      shopId?: string;
+    }) => partnerCancelOrderHandler(orderCode, carrier, token, shopId),
     onSuccess: (_, { orderCode, carrier, token, shopId }) => {
       queryClient.invalidateQueries({ queryKey: [QueryKeysDelivery.ORDERS] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeysDelivery.ORDER_DETAIL, orderCode, carrier, token, shopId] });
+      queryClient.invalidateQueries({
+        queryKey: [
+          QueryKeysDelivery.ORDER_DETAIL,
+          orderCode,
+          carrier,
+          token,
+          shopId,
+        ],
+      });
     },
   });
 };
@@ -300,11 +372,28 @@ export const usePartnerCancelOrderMutation = () => {
 export const useAdminCancelOrderMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ orderCode, carrier, token, shopId }: { orderCode: string; carrier?: string; token?: string; shopId?: string }) =>
-      adminCancelOrderHandler(orderCode, carrier, token, shopId),
+    mutationFn: ({
+      orderCode,
+      carrier,
+      token,
+      shopId,
+    }: {
+      orderCode: string;
+      carrier?: string;
+      token?: string;
+      shopId?: string;
+    }) => adminCancelOrderHandler(orderCode, carrier, token, shopId),
     onSuccess: (_, { orderCode, carrier, token, shopId }) => {
       queryClient.invalidateQueries({ queryKey: [QueryKeysDelivery.ORDERS] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeysDelivery.ORDER_DETAIL, orderCode, carrier, token, shopId] });
+      queryClient.invalidateQueries({
+        queryKey: [
+          QueryKeysDelivery.ORDER_DETAIL,
+          orderCode,
+          carrier,
+          token,
+          shopId,
+        ],
+      });
     },
   });
 };

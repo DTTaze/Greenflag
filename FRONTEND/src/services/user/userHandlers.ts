@@ -16,31 +16,43 @@ export const updateProfileHandler = async (
   return UserService.updateProfile(data);
 };
 
-export const updateAvatarHandler = async (file: File): Promise<ApiResponse<UserType>> => {
+export const updateAvatarHandler = async (
+  file: File,
+): Promise<ApiResponse<UserType>> => {
   return UserService.updateAvatar(file);
 };
 
 // --- Task & Item Integration ---
 
-export const getUserTasksCompletedHandler = async (): Promise<ApiResponse<any[]>> => {
+export const getUserTasksCompletedHandler = async (): Promise<
+  ApiResponse<any[]>
+> => {
   return UserService.getUserTasksCompleted();
 };
 
-export const getUserAllTasksHandler = async (userId: string): Promise<ApiResponse<any[]>> => {
+export const getUserAllTasksHandler = async (
+  userId: string,
+): Promise<ApiResponse<any[]>> => {
   return UserService.getUserAllTasks(userId);
 };
 
-export const getUserItemsHandler = async (userId: string): Promise<ApiResponse<any[]>> => {
+export const getUserItemsHandler = async (
+  userId: string,
+): Promise<ApiResponse<any[]>> => {
   return UserService.getUserItems(userId);
 };
 
 // --- Admin User Handlers ---
 
-export const adminGetAllUsersHandler = async (): Promise<ApiResponse<UserType[]>> => {
+export const adminGetAllUsersHandler = async (): Promise<
+  ApiResponse<UserType[]>
+> => {
   return UserService.adminGetAllUsers();
 };
 
-export const adminGetUserByIdHandler = async (id: string): Promise<ApiResponse<UserType>> => {
+export const adminGetUserByIdHandler = async (
+  id: string,
+): Promise<ApiResponse<UserType>> => {
   return UserService.adminGetUserById(id);
 };
 
@@ -51,23 +63,31 @@ export const adminUpdateUserHandler = async (
   return UserService.adminUpdateUser(id, data);
 };
 
-export const adminDeleteUserHandler = async (id: string): Promise<ApiResponse<void>> => {
+export const adminDeleteUserHandler = async (
+  id: string,
+): Promise<ApiResponse<void>> => {
   return UserService.adminDeleteUser(id);
 };
 
 // --- Rank Handlers ---
 
-export const getRankHandler = async (id: string): Promise<ApiResponse<RankType>> => {
+export const getRankHandler = async (
+  id: string,
+): Promise<ApiResponse<RankType>> => {
   return UserService.getRank(id);
 };
 
-export const adminRearrangeRanksHandler = async (): Promise<ApiResponse<void>> => {
+export const adminRearrangeRanksHandler = async (): Promise<
+  ApiResponse<void>
+> => {
   return UserService.adminRearrangeRanks();
 };
 
 // --- Coin Handlers ---
 
-export const getCoinHandler = async (id: string): Promise<ApiResponse<CoinType>> => {
+export const getCoinHandler = async (
+  id: string,
+): Promise<ApiResponse<CoinType>> => {
   return UserService.getCoin(id);
 };
 

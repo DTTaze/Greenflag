@@ -37,7 +37,7 @@ function MissionFilters({
           />
         </div>
         <div className="flex items-center gap-2.5">
-          <span className="text-xs font-bold whitespace-nowrap text-gray-400 uppercase tracking-wider">
+          <span className="text-xs font-bold tracking-wider whitespace-nowrap text-gray-400 uppercase">
             Sắp xếp:
           </span>
           <select
@@ -78,10 +78,10 @@ function MissionFilters({
                   setDailyCurrentPage(1);
                   setOtherCurrentPage(1);
                 }}
-                className={`cursor-pointer rounded-xl px-4 py-2.5 text-xs font-bold transition-all duration-200 active:scale-95 border ${
+                className={`cursor-pointer rounded-xl border px-4 py-2.5 text-xs font-bold transition-all duration-200 active:scale-95 ${
                   categoryFilter === cat.value
-                    ? "bg-[#0B6E4F] border-[#0B6E4F] text-white shadow-md shadow-[#0B6E4F]/10"
-                    : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-300"
+                    ? "border-[#0B6E4F] bg-[#0B6E4F] text-white shadow-md shadow-[#0B6E4F]/10"
+                    : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-900"
                 }`}
               >
                 {cat.label}
@@ -120,10 +120,10 @@ function MissionFilters({
                     setFilter(diff.value);
                     setPage(1);
                   }}
-                  className={`cursor-pointer rounded-xl px-4 py-2.5 text-xs font-bold transition-all duration-200 active:scale-95 border ${
+                  className={`cursor-pointer rounded-xl border px-4 py-2.5 text-xs font-bold transition-all duration-200 active:scale-95 ${
                     activeFilter === diff.value
                       ? "border-emerald-200 bg-emerald-50 text-[#0B6E4F] shadow-2xs"
-                      : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-300"
+                      : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-900"
                   }`}
                 >
                   {diff.label}

@@ -51,32 +51,32 @@ const EventDetailsModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl border border-gray-100 flex flex-col max-h-[90vh]">
+      <div className="flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-2xl">
         {/* Header with Background Pattern */}
-        <div className="relative bg-gradient-to-r from-[#0B6E4F] to-[#0D7F5C] p-6 text-white shrink-0">
-          <div className="absolute right-0 top-0 -mt-6 -mr-6 h-24 w-24 rounded-full bg-white/10 blur-xl"></div>
+        <div className="relative shrink-0 bg-gradient-to-r from-[#0B6E4F] to-[#0D7F5C] p-6 text-white">
+          <div className="absolute top-0 right-0 -mt-6 -mr-6 h-24 w-24 rounded-full bg-white/10 blur-xl"></div>
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 rounded-xl p-1.5 text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+            className="absolute top-4 right-4 rounded-xl p-1.5 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
           >
             <X className="h-5 w-5" />
           </button>
-          <span className="mb-1 inline-block text-[10px] font-bold uppercase tracking-wider text-emerald-250">
+          <span className="text-emerald-250 mb-1 inline-block text-[10px] font-bold tracking-wider uppercase">
             Chi tiết sự kiện
           </span>
-          <h2 className="text-xl font-bold leading-tight truncate pr-8">
+          <h2 className="truncate pr-8 text-xl leading-tight font-bold">
             {event.title}
           </h2>
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 space-y-6 overflow-y-auto p-6">
           {/* Description */}
           <div className="space-y-1.5">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-gray-400">
+            <span className="text-[10px] font-extrabold tracking-wider text-gray-400 uppercase">
               Giới thiệu hoạt động
             </span>
-            <p className="text-sm leading-relaxed text-gray-650">
+            <p className="text-gray-650 text-sm leading-relaxed">
               {event.description || "Chưa có mô tả chi tiết cho sự kiện này."}
             </p>
           </div>
@@ -88,7 +88,7 @@ const EventDetailsModal = ({
                 <Calendar className="h-4 w-4" />
               </div>
               <div>
-                <span className="block text-[9px] font-extrabold uppercase tracking-wider text-gray-400">
+                <span className="block text-[9px] font-extrabold tracking-wider text-gray-400 uppercase">
                   Bắt đầu
                 </span>
                 <span className="text-xs font-semibold text-gray-700">
@@ -105,7 +105,7 @@ const EventDetailsModal = ({
                 <Clock className="h-4 w-4" />
               </div>
               <div>
-                <span className="block text-[9px] font-extrabold uppercase tracking-wider text-gray-400">
+                <span className="block text-[9px] font-extrabold tracking-wider text-gray-400 uppercase">
                   Kết thúc
                 </span>
                 <span className="text-xs font-semibold text-gray-700">
@@ -122,10 +122,10 @@ const EventDetailsModal = ({
                 <MapPin className="h-4 w-4" />
               </div>
               <div>
-                <span className="block text-[9px] font-extrabold uppercase tracking-wider text-gray-400">
+                <span className="block text-[9px] font-extrabold tracking-wider text-gray-400 uppercase">
                   Địa điểm
                 </span>
-                <span className="text-xs font-semibold text-gray-700 truncate block max-w-[170px]">
+                <span className="block max-w-[170px] truncate text-xs font-semibold text-gray-700">
                   {event.location}
                 </span>
               </div>
@@ -136,14 +136,17 @@ const EventDetailsModal = ({
                 <Clock className="h-4 w-4" />
               </div>
               <div>
-                <span className="block text-[9px] font-extrabold uppercase tracking-wider text-gray-400">
+                <span className="block text-[9px] font-extrabold tracking-wider text-gray-400 uppercase">
                   Hạn đăng ký
                 </span>
                 <span className="text-xs font-semibold text-gray-700">
-                  {new Date(event.registration_deadline).toLocaleString("vi-VN", {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  })}
+                  {new Date(event.registration_deadline).toLocaleString(
+                    "vi-VN",
+                    {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    },
+                  )}
                 </span>
               </div>
             </div>
@@ -152,14 +155,15 @@ const EventDetailsModal = ({
           {/* Participation State */}
           {isParticipated ? (
             <div className="space-y-3 rounded-xl border border-emerald-100 bg-emerald-50/20 p-5 text-center">
-              <span className="block text-[10px] font-extrabold uppercase tracking-wider text-[#0B6E4F]">
+              <span className="block text-[10px] font-extrabold tracking-wider text-[#0B6E4F] uppercase">
                 Vé sự kiện của bạn
               </span>
-              <div className="mx-auto inline-block rounded-xl bg-white p-3.5 shadow-sm border border-emerald-100/30">
+              <div className="mx-auto inline-block rounded-xl border border-emerald-100/30 bg-white p-3.5 shadow-sm">
                 <QRCodeDisplay initialText={userPublicId} />
               </div>
               <p className="text-xs font-medium text-emerald-800/80">
-                Xuất trình mã QR tại điểm tổ chức sự kiện để được check-in và nhận xu thưởng.
+                Xuất trình mã QR tại điểm tổ chức sự kiện để được check-in và
+                nhận xu thưởng.
               </p>
             </div>
           ) : isRegistrationOpen ? (
@@ -170,8 +174,8 @@ const EventDetailsModal = ({
               Tham gia sự kiện (+{event.coins || 0} Xu)
             </button>
           ) : (
-            <div className="rounded-xl bg-red-50 p-4 text-center border border-red-150">
-              <p className="text-sm font-semibold text-red-650">
+            <div className="border-red-150 rounded-xl border bg-red-50 p-4 text-center">
+              <p className="text-red-650 text-sm font-semibold">
                 Sự kiện này đã kết thúc thời gian đăng ký.
               </p>
             </div>

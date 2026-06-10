@@ -6,7 +6,8 @@ export const UserService = {
   // --- Profile Actions ---
   getProfile: (): Promise<any> => axiosClient.get("/users/me"),
 
-  updateProfile: (data: Partial<UserType>): Promise<any> => axiosClient.put("/users/me", data),
+  updateProfile: (data: Partial<UserType>): Promise<any> =>
+    axiosClient.put("/users/me", data),
 
   updateAvatar: (file: File): Promise<any> => {
     const formData = new FormData();
@@ -19,26 +20,32 @@ export const UserService = {
   },
 
   // --- Task & Item integration ---
-  getUserTasksCompleted: (): Promise<any> => axiosClient.get("/users/task/completed"),
+  getUserTasksCompleted: (): Promise<any> =>
+    axiosClient.get("/users/task/completed"),
 
-  getUserAllTasks: (userId: string): Promise<any> => axiosClient.get(`/users/tasks/all/${userId}`),
+  getUserAllTasks: (userId: string): Promise<any> =>
+    axiosClient.get(`/users/tasks/all/${userId}`),
 
-  getUserItems: (userId: string): Promise<any> => axiosClient.get(`/users/items/${userId}`),
+  getUserItems: (userId: string): Promise<any> =>
+    axiosClient.get(`/users/items/${userId}`),
 
   // --- Admin User Actions ---
   adminGetAllUsers: (): Promise<any> => axiosClient.get("/admin/users"),
 
-  adminGetUserById: (id: string): Promise<any> => axiosClient.get(`/admin/users/${id}`),
+  adminGetUserById: (id: string): Promise<any> =>
+    axiosClient.get(`/admin/users/${id}`),
 
   adminUpdateUser: (id: string, data: any): Promise<any> =>
     axiosClient.put(`/admin/users/${id}`, data),
 
-  adminDeleteUser: (id: string): Promise<any> => axiosClient.delete(`/admin/users/${id}`),
+  adminDeleteUser: (id: string): Promise<any> =>
+    axiosClient.delete(`/admin/users/${id}`),
 
   // --- Ranks ---
   getRank: (id: string): Promise<any> => axiosClient.get(`/ranks/${id}`),
 
-  adminRearrangeRanks: (): Promise<any> => axiosClient.post("/admin/ranks/rearrange"),
+  adminRearrangeRanks: (): Promise<any> =>
+    axiosClient.post("/admin/ranks/rearrange"),
 
   // --- Coins ---
   getCoin: (id: string): Promise<any> => axiosClient.get(`/coins/${id}`),

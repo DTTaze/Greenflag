@@ -23,7 +23,9 @@ export const getUserAvatarById = async (userId: string | number) => {
   try {
     // Attempt to get the latest profile info from NestJS auth/whoami
     const res = await axiosClient.get<any>("/auth/whoami");
-    const avatarUrl = res?.data?.avatarUrl || "https://res.cloudinary.com/ptquanh/image/upload/v1779947161/default-avatar.png";
+    const avatarUrl =
+      res?.data?.avatarUrl ||
+      "https://res.cloudinary.com/ptquanh/image/upload/v1779947161/default-avatar.png";
     return {
       success: true,
       data: {
@@ -35,9 +37,11 @@ export const getUserAvatarById = async (userId: string | number) => {
     return {
       success: true,
       data: {
-        avatar_url: "https://res.cloudinary.com/ptquanh/image/upload/v1779947161/default-avatar.png",
+        avatar_url:
+          "https://res.cloudinary.com/ptquanh/image/upload/v1779947161/default-avatar.png",
       },
-      avatar_url: "https://res.cloudinary.com/ptquanh/image/upload/v1779947161/default-avatar.png",
+      avatar_url:
+        "https://res.cloudinary.com/ptquanh/image/upload/v1779947161/default-avatar.png",
     };
   }
 };

@@ -79,19 +79,20 @@ function CreatePostModal({ isOpen, onClose, onPostCreated }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-md">
-      <div className="relative flex max-h-[90vh] w-full max-w-lg transform flex-col overflow-hidden rounded-2xl bg-slate-900/95 border border-slate-800/85 shadow-2xl transition-all">
+      <div className="relative flex max-h-[90vh] w-full max-w-lg transform flex-col overflow-hidden rounded-2xl border border-slate-800/85 bg-slate-900/95 shadow-2xl transition-all">
         {/* Decorative Glow */}
-        <div className="absolute -top-20 -left-20 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -right-20 h-40 w-40 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
+        <div className="pointer-events-none absolute -top-20 -left-20 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl" />
+        <div className="pointer-events-none absolute -right-20 -bottom-20 h-40 w-40 rounded-full bg-blue-500/10 blur-3xl" />
 
         {/* Header */}
         <div className="relative flex items-center justify-between border-b border-slate-800/60 p-5">
-          <h2 className="flex items-center gap-1.5 text-md font-bold bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
-            <Sparkles size={18} className="text-emerald-400" /> Chia sẻ hoạt động sống xanh
+          <h2 className="text-md flex items-center gap-1.5 bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text font-bold text-transparent">
+            <Sparkles size={18} className="text-emerald-400" /> Chia sẻ hoạt
+            động sống xanh
           </h2>
           <button
             onClick={onClose}
-            className="rounded-full p-1.5 text-slate-400 hover:text-white hover:bg-slate-800/80 transition-all duration-200"
+            className="rounded-full p-1.5 text-slate-400 transition-all duration-200 hover:bg-slate-800/80 hover:text-white"
           >
             <X size={20} />
           </button>
@@ -107,13 +108,13 @@ function CreatePostModal({ isOpen, onClose, onPostCreated }) {
             <img
               src={user?.avatar_url || "/images/default-avatar.jpg"}
               alt="Avatar"
-              className="h-10 w-10 rounded-full border border-slate-850 object-cover bg-slate-950"
+              className="border-slate-850 h-10 w-10 rounded-full border bg-slate-950 object-cover"
             />
             <div>
               <h4 className="text-sm font-semibold text-white">
                 {user?.full_name || user?.username}
               </h4>
-              <span className="inline-flex rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[9px] font-bold text-emerald-400">
+              <span className="inline-flex rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[9px] font-bold text-emerald-400">
                 Thành viên xanh
               </span>
             </div>
@@ -125,7 +126,7 @@ function CreatePostModal({ isOpen, onClose, onPostCreated }) {
             onChange={(e) => setContent(e.target.value)}
             placeholder="Kể về hành động xanh của bạn hôm nay (Ví dụ: Trồng thêm một cái cây #TrongCay, Phân loại rác thải nhựa #TaiChe...)"
             rows={5}
-            className="w-full resize-none border-0 border-b border-slate-800/80 bg-transparent py-2 text-sm text-white placeholder-slate-500 focus:border-emerald-500 focus:ring-0 focus:outline-none transition-colors"
+            className="w-full resize-none border-0 border-b border-slate-800/80 bg-transparent py-2 text-sm text-white placeholder-slate-500 transition-colors focus:border-emerald-500 focus:ring-0 focus:outline-none"
           />
 
           {/* Image preview */}
@@ -139,7 +140,7 @@ function CreatePostModal({ isOpen, onClose, onPostCreated }) {
               <button
                 type="button"
                 onClick={handleRemoveImage}
-                className="absolute top-2.5 right-2.5 rounded-full bg-black/60 p-1.5 text-slate-350 hover:text-white hover:bg-black/90 transition-colors"
+                className="text-slate-350 absolute top-2.5 right-2.5 rounded-full bg-black/60 p-1.5 transition-colors hover:bg-black/90 hover:text-white"
               >
                 <X size={15} />
               </button>
@@ -161,7 +162,7 @@ function CreatePostModal({ isOpen, onClose, onPostCreated }) {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-1.5 rounded-lg border border-slate-850 bg-slate-950/60 px-3 py-2 text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition-all duration-200"
+              className="border-slate-850 flex items-center gap-1.5 rounded-lg border bg-slate-950/60 px-3 py-2 text-xs font-semibold text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white"
             >
               <ImageIcon size={16} className="text-emerald-400" />
               Thêm hình ảnh
@@ -177,14 +178,14 @@ function CreatePostModal({ isOpen, onClose, onPostCreated }) {
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+                className="px-4 py-2 text-xs font-semibold text-slate-400 transition-colors hover:text-white"
               >
                 Hủy
               </button>
               <button
                 type="submit"
                 disabled={submitting}
-                className="rounded-lg bg-emerald-600 hover:bg-emerald-500 px-5 py-2 text-xs font-semibold text-white shadow-lg shadow-emerald-600/10 active:scale-95 disabled:bg-slate-800 disabled:text-slate-500 transition-all duration-200"
+                className="rounded-lg bg-emerald-600 px-5 py-2 text-xs font-semibold text-white shadow-lg shadow-emerald-600/10 transition-all duration-200 hover:bg-emerald-500 active:scale-95 disabled:bg-slate-800 disabled:text-slate-500"
               >
                 {submitting ? "Đang đăng..." : "Đăng bài"}
               </button>

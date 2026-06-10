@@ -5,7 +5,7 @@ import React from "react";
  */
 export default function TaskCardSkeleton() {
   return (
-    <div className="flex flex-col rounded-xl border border-gray-200 bg-white p-4 shadow-2xs space-y-4 animate-pulse">
+    <div className="flex animate-pulse flex-col space-y-4 rounded-xl border border-gray-200 bg-white p-4 shadow-2xs">
       <div className="flex items-center gap-3">
         <div className="h-9 w-9 rounded-full bg-gray-200"></div>
         <div className="flex-1 space-y-2">
@@ -16,14 +16,14 @@ export default function TaskCardSkeleton() {
       </div>
 
       <div className="space-y-1.5">
-        <div className="h-3 w-full rounded bg-gray-150"></div>
-        <div className="h-3 w-5/6 rounded bg-gray-150"></div>
+        <div className="bg-gray-150 h-3 w-full rounded"></div>
+        <div className="bg-gray-150 h-3 w-5/6 rounded"></div>
       </div>
 
       <div className="space-y-1.5">
         <div className="flex justify-between">
-          <div className="h-3 w-10 rounded bg-gray-150"></div>
-          <div className="h-3 w-8 rounded bg-gray-150"></div>
+          <div className="bg-gray-150 h-3 w-10 rounded"></div>
+          <div className="bg-gray-150 h-3 w-8 rounded"></div>
         </div>
         <div className="h-2.5 w-full rounded-full bg-gray-100"></div>
       </div>

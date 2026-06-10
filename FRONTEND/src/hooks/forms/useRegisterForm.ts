@@ -6,7 +6,7 @@ import { z } from "zod";
 
 import { useNotification } from "@/src/components/ui/NotificationProvider";
 import { useRouter } from "@/src/i18n/navigation";
-import { register, verifyOtp, resendEmail } from "@/src/services/auth";
+import { register, resendEmail, verifyOtp } from "@/src/services/auth";
 
 const getRegisterSchema = (t: any) =>
   z

@@ -1,38 +1,46 @@
 import axiosClient from "@/src/services";
 import {
-  CreateProductPayload,
-  UpdateProductPayload,
   CreateItemPayload,
-  UpdateItemPayload,
+  CreateProductPayload,
   PurchaseItemPayload,
+  UpdateItemPayload,
+  UpdateProductPayload,
 } from "@/src/types/commerce/commerce.payload";
 
 export const commerceServices = {
   // --- Products ---
   getAllProducts: (): Promise<any> => axiosClient.get("/commerce/products"),
 
-  getProductById: (id: string): Promise<any> => axiosClient.get(`/commerce/products/${id}`),
+  getProductById: (id: string): Promise<any> =>
+    axiosClient.get(`/commerce/products/${id}`),
 
   // --- Items ---
   getAllItems: (): Promise<any> => axiosClient.get("/commerce/items"),
 
-  getItemById: (id: string): Promise<any> => axiosClient.get(`/commerce/items/${id}`),
+  getItemById: (id: string): Promise<any> =>
+    axiosClient.get(`/commerce/items/${id}`),
 
   purchaseItem: (itemId: string, payload: PurchaseItemPayload): Promise<any> =>
     axiosClient.post(`/commerce/items/${itemId}/purchase`, payload),
 
   // --- Transactions ---
-  getTransactionsByBuyer: (): Promise<any> => axiosClient.get("/commerce/transactions/buyer"),
+  getTransactionsByBuyer: (): Promise<any> =>
+    axiosClient.get("/commerce/transactions/buyer"),
 
-  getTransactionById: (id: string): Promise<any> => axiosClient.get(`/commerce/transactions/${id}`),
+  getTransactionById: (id: string): Promise<any> =>
+    axiosClient.get(`/commerce/transactions/${id}`),
 
-  cancelTransaction: (id: string): Promise<any> => axiosClient.post(`/commerce/transactions/${id}/cancel`),
+  cancelTransaction: (id: string): Promise<any> =>
+    axiosClient.post(`/commerce/transactions/${id}/cancel`),
 
   // --- Partner Commerce ---
   partnerCreateProduct: (payload: CreateProductPayload): Promise<any> =>
     axiosClient.post("/partner/commerce/products", payload),
 
-  partnerUpdateProduct: (id: string, payload: UpdateProductPayload): Promise<any> =>
+  partnerUpdateProduct: (
+    id: string,
+    payload: UpdateProductPayload,
+  ): Promise<any> =>
     axiosClient.patch(`/partner/commerce/products/${id}`, payload),
 
   partnerDeleteProduct: (id: string): Promise<any> =>
@@ -50,11 +58,19 @@ export const commerceServices = {
   partnerGetTransactions: (): Promise<any> =>
     axiosClient.get("/partner/commerce/transactions"),
 
-  partnerMakeTransactionDecision: (id: string, decision: string): Promise<any> =>
-    axiosClient.patch(`/partner/commerce/transactions/${id}/decision`, { decision }),
+  partnerMakeTransactionDecision: (
+    id: string,
+    decision: string,
+  ): Promise<any> =>
+    axiosClient.patch(`/partner/commerce/transactions/${id}/decision`, {
+      decision,
+    }),
 
   // --- Admin Commerce ---
-  adminUpdateProduct: (id: string, payload: UpdateProductPayload): Promise<any> =>
+  adminUpdateProduct: (
+    id: string,
+    payload: UpdateProductPayload,
+  ): Promise<any> =>
     axiosClient.patch(`/admin/commerce/products/${id}`, payload),
 
   adminDeleteProduct: (id: string): Promise<any> =>
@@ -73,7 +89,9 @@ export const commerceServices = {
     axiosClient.get(`/admin/commerce/transactions/status/${status}`),
 
   adminMakeTransactionDecision: (id: string, decision: string): Promise<any> =>
-    axiosClient.patch(`/admin/commerce/transactions/${id}/decision`, { decision }),
+    axiosClient.patch(`/admin/commerce/transactions/${id}/decision`, {
+      decision,
+    }),
 
   adminCancelTransaction: (id: string): Promise<any> =>
     axiosClient.post(`/admin/commerce/transactions/${id}/cancel`),

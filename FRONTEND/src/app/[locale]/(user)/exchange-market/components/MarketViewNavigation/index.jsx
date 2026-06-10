@@ -10,7 +10,7 @@ function NavLink({ to, children }) {
   return (
     <Link
       href={to}
-      className={`relative z-10 flex-1 rounded-lg py-2.5 text-center text-xs sm:text-sm font-bold transition-all duration-300 ${
+      className={`relative z-10 flex-1 rounded-lg py-2.5 text-center text-xs font-bold transition-all duration-300 sm:text-sm ${
         isActive ? "text-[#0B6E4F]" : "text-gray-500 hover:text-gray-900"
       }`}
     >
@@ -18,7 +18,7 @@ function NavLink({ to, children }) {
       {isActive && (
         <motion.span
           layoutId="activeMarketTab"
-          className="absolute inset-0 -z-10 rounded-lg bg-white shadow-xs border border-gray-200/20"
+          className="absolute inset-0 -z-10 rounded-lg border border-gray-200/20 bg-white shadow-xs"
           transition={{ type: "spring", stiffness: 350, damping: 25 }}
         />
       )}

@@ -69,19 +69,21 @@ function PostCard({ post, onLikeUpdate }) {
   };
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/40 backdrop-blur-md shadow-xl transition-all duration-300 hover:border-slate-700/80">
+    <div className="overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/40 shadow-xl backdrop-blur-md transition-all duration-300 hover:border-slate-700/80">
       {/* Header author details */}
       <div className="flex items-center gap-3 p-4">
         <img
           src={post.authorAvatar || "/images/default-avatar.jpg"}
           alt="Avatar"
-          className="h-10 w-10 rounded-full border border-slate-800 object-cover bg-slate-950"
+          className="h-10 w-10 rounded-full border border-slate-800 bg-slate-950 object-cover"
         />
         <div>
           <h3 className="text-sm font-semibold text-white">
             {post.authorName}
           </h3>
-          <p className="text-[10px] text-slate-500">{formatDate(post.createdAt)}</p>
+          <p className="text-[10px] text-slate-500">
+            {formatDate(post.createdAt)}
+          </p>
         </div>
       </div>
 
@@ -94,7 +96,7 @@ function PostCard({ post, onLikeUpdate }) {
 
       {/* Post image */}
       {post.image && (
-        <div className="relative aspect-video w-full overflow-hidden border-y border-slate-850 bg-slate-950/20">
+        <div className="border-slate-850 relative aspect-video w-full overflow-hidden border-y bg-slate-950/20">
           <img
             src={post.image}
             alt="Community Post Attached"
@@ -110,7 +112,7 @@ function PostCard({ post, onLikeUpdate }) {
           <button
             onClick={handleLike}
             className={`flex cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 font-semibold transition-colors hover:bg-rose-500/10 ${
-              isLiked ? "text-rose-500" : "text-slate-400 hover:text-slate-250"
+              isLiked ? "text-rose-500" : "hover:text-slate-250 text-slate-400"
             }`}
           >
             <Heart
@@ -124,7 +126,9 @@ function PostCard({ post, onLikeUpdate }) {
           <button
             onClick={() => setShowComments(!showComments)}
             className={`flex cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 font-semibold transition-colors hover:bg-blue-500/10 ${
-              showComments ? "bg-slate-800/40 text-blue-400" : "text-slate-400 hover:text-slate-250"
+              showComments
+                ? "bg-slate-800/40 text-blue-400"
+                : "hover:text-slate-250 text-slate-400"
             }`}
           >
             <MessageCircle size={17} />
@@ -140,7 +144,7 @@ function PostCard({ post, onLikeUpdate }) {
             );
             toast.info("Đã sao chép liên kết bài viết!");
           }}
-          className="flex cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 font-semibold text-slate-400 hover:text-white hover:bg-slate-800/40 transition-colors"
+          className="flex cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 font-semibold text-slate-400 transition-colors hover:bg-slate-800/40 hover:text-white"
         >
           <Share2 size={16} />
           <span>Chia sẻ</span>
@@ -155,7 +159,7 @@ function PostCard({ post, onLikeUpdate }) {
             <img
               src={user?.avatar_url || "/images/default-avatar.jpg"}
               alt="My Avatar"
-              className="h-8 w-8 shrink-0 rounded-full object-cover bg-slate-950"
+              className="h-8 w-8 shrink-0 rounded-full bg-slate-950 object-cover"
             />
             <div className="relative flex-1">
               <input
@@ -163,12 +167,12 @@ function PostCard({ post, onLikeUpdate }) {
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder="Viết phản hồi sống xanh của bạn..."
-                className="w-full rounded-lg bg-slate-900 border border-slate-850 py-2 pr-10 pl-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+                className="border-slate-850 w-full rounded-lg border bg-slate-900 py-2 pr-10 pl-3 text-xs text-white placeholder-slate-500 transition-colors focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
               />
               <button
                 type="submit"
                 disabled={commenting || !newComment.trim()}
-                className="absolute top-1.5 right-2 cursor-pointer text-emerald-400 hover:text-emerald-300 disabled:text-slate-600 transition-colors"
+                className="absolute top-1.5 right-2 cursor-pointer text-emerald-400 transition-colors hover:text-emerald-300 disabled:text-slate-600"
               >
                 <CornerDownRight size={16} />
               </button>
@@ -183,9 +187,9 @@ function PostCard({ post, onLikeUpdate }) {
                   <img
                     src={comment.authorAvatar || "/images/default-avatar.jpg"}
                     alt="Commenter Avatar"
-                    className="mt-0.5 h-7 w-7 shrink-0 rounded-full object-cover bg-slate-950"
+                    className="mt-0.5 h-7 w-7 shrink-0 rounded-full bg-slate-950 object-cover"
                   />
-                  <div className="flex-1 rounded-xl border border-slate-850 bg-slate-900/60 p-3 shadow-inner">
+                  <div className="border-slate-850 flex-1 rounded-xl border bg-slate-900/60 p-3 shadow-inner">
                     <div className="mb-1.5 flex items-center justify-between">
                       <span className="font-semibold text-slate-200">
                         {comment.authorName}
@@ -194,7 +198,7 @@ function PostCard({ post, onLikeUpdate }) {
                         {formatDate(comment.createdAt)}
                       </span>
                     </div>
-                    <p className="leading-relaxed text-slate-350">
+                    <p className="text-slate-350 leading-relaxed">
                       {comment.content}
                     </p>
                   </div>
@@ -202,7 +206,7 @@ function PostCard({ post, onLikeUpdate }) {
               ))}
             </div>
           ) : (
-            <p className="py-3 text-center text-xs text-slate-500 font-medium">
+            <p className="py-3 text-center text-xs font-medium text-slate-500">
               Chưa có bình luận nào. Hãy gửi phản hồi đầu tiên nhé!
             </p>
           )}

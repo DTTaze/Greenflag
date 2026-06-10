@@ -32,7 +32,7 @@ const Pagination = ({
           <button
             key={index}
             onClick={() => goToPage(page)}
-            className={`flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-sm font-semibold transition-all duration-200 active:scale-95 focus:ring-2 focus:ring-emerald-500/20 ${
+            className={`flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-sm font-semibold transition-all duration-200 focus:ring-2 focus:ring-emerald-500/20 active:scale-95 ${
               isActive
                 ? "bg-[#0B6E4F] text-white shadow-sm shadow-[#0B6E4F]/20"
                 : "border border-transparent text-gray-600 hover:border-gray-200 hover:bg-gray-50 hover:text-gray-900"

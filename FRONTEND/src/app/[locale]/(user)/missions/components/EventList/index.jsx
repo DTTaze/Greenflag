@@ -3,9 +3,9 @@ import { toast } from "react-toastify";
 
 import { getAllEvents, getEventSignedByUserId } from "@/src/utils/api";
 
-import Pagination from "../Pagination";
 import EventCard from "../EventCard";
 import EventDetailsModal from "../EventDetailsModal";
+import Pagination from "../Pagination";
 
 const EventList = ({ userInfo }) => {
   const [activeTab, setActiveTab] = useState("hot");
@@ -111,7 +111,7 @@ const EventList = ({ userInfo }) => {
   return (
     <div className="mb-6 overflow-hidden rounded-2xl border border-gray-200/60 bg-white shadow-2xs">
       <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
-        <h2 className="flex items-center text-base font-extrabold text-gray-800 uppercase tracking-wider">
+        <h2 className="flex items-center text-base font-extrabold tracking-wider text-gray-800 uppercase">
           <svg
             className="mr-2 h-5 w-5 text-emerald-600"
             fill="none"
@@ -131,12 +131,12 @@ const EventList = ({ userInfo }) => {
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-100 px-3.5 py-1.5 bg-gray-50/40">
+      <div className="border-b border-gray-100 bg-gray-50/40 px-3.5 py-1.5">
         <div className="flex gap-1">
           <button
             className={`flex-1 cursor-pointer rounded-xl py-2.5 text-center text-xs font-bold transition-all duration-300 ${
               activeTab === "hot"
-                ? "bg-red-50 text-red-650 shadow-2xs border border-red-100/50"
+                ? "text-red-650 border border-red-100/50 bg-red-50 shadow-2xs"
                 : "text-gray-500 hover:bg-gray-100/50 hover:text-gray-900"
             }`}
             onClick={() => setActiveTab("hot")}
@@ -162,7 +162,7 @@ const EventList = ({ userInfo }) => {
           <button
             className={`flex-1 cursor-pointer rounded-xl py-2.5 text-center text-xs font-bold transition-all duration-300 ${
               activeTab === "current"
-                ? "bg-emerald-50 text-emerald-700 shadow-2xs border border-emerald-100/50"
+                ? "border border-emerald-100/50 bg-emerald-50 text-emerald-700 shadow-2xs"
                 : "text-gray-500 hover:bg-gray-100/50 hover:text-gray-900"
             }`}
             onClick={() => setActiveTab("current")}
@@ -188,7 +188,7 @@ const EventList = ({ userInfo }) => {
           <button
             className={`flex-1 cursor-pointer rounded-xl py-2.5 text-center text-xs font-bold transition-all duration-300 ${
               activeTab === "completed"
-                ? "bg-blue-50 text-blue-650 shadow-2xs border border-blue-100/50"
+                ? "text-blue-650 border border-blue-100/50 bg-blue-50 shadow-2xs"
                 : "text-gray-500 hover:bg-gray-100/50 hover:text-gray-900"
             }`}
             onClick={() => setActiveTab("completed")}
@@ -228,7 +228,7 @@ const EventList = ({ userInfo }) => {
             ))}
           </div>
         ) : (
-          <div className="py-8 text-center text-sm font-medium text-gray-405">
+          <div className="text-gray-405 py-8 text-center text-sm font-medium">
             Không có sự kiện nào trong mục này.
           </div>
         )}

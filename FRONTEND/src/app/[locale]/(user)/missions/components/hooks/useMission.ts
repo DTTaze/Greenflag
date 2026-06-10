@@ -49,7 +49,12 @@ export default function useMission() {
   // Normalize allUserTasks to always be a flat array (handling potential NestJS backend wrapping)
   const userTasksArray = useMemo(() => {
     if (Array.isArray(allUserTasks)) return allUserTasks;
-    if (allUserTasks && typeof allUserTasks === "object" && "data" in allUserTasks && Array.isArray((allUserTasks as any).data)) {
+    if (
+      allUserTasks &&
+      typeof allUserTasks === "object" &&
+      "data" in allUserTasks &&
+      Array.isArray((allUserTasks as any).data)
+    ) {
       return (allUserTasks as any).data;
     }
     return [];

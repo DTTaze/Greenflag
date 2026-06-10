@@ -23,7 +23,8 @@ export const eventServices = {
   // --- Public / General User ---
   getAllEvents: (): Promise<any> => axiosClient.get("/events/informations"),
 
-  getEventById: (eventId: string): Promise<any> => axiosClient.get(`/events/information/${eventId}`),
+  getEventById: (eventId: string): Promise<any> =>
+    axiosClient.get(`/events/information/${eventId}`),
 
   getEventsSignedSelf: (): Promise<any> => axiosClient.get("/events/signed"),
 
@@ -33,14 +34,19 @@ export const eventServices = {
   getEventUsersByEventId: (eventId: string): Promise<any> =>
     axiosClient.get(`/events/user/${eventId}`),
 
-  acceptEvent: (eventId: string): Promise<any> => axiosClient.post(`/events/accept/${eventId}`),
+  acceptEvent: (eventId: string): Promise<any> =>
+    axiosClient.post(`/events/accept/${eventId}`),
 
-  generateEventQr: (eventId: string): Promise<any> => axiosClient.get(`/events/qr/${eventId}`),
+  generateEventQr: (eventId: string): Promise<any> =>
+    axiosClient.get(`/events/qr/${eventId}`),
 
   // --- Partner ---
   partnerGetMyEvents: (): Promise<any> => axiosClient.get("/partner/events"),
 
-  partnerCreateEvent: (payload: CreateEventPayload, images?: File[]): Promise<any> => {
+  partnerCreateEvent: (
+    payload: CreateEventPayload,
+    images?: File[],
+  ): Promise<any> => {
     const formData = buildEventFormData(payload, images);
     return axiosClient.post("/partner/events", formData, {
       headers: { "Content-Type": "multipart/form-data" },
@@ -62,13 +68,18 @@ export const eventServices = {
     axiosClient.put(`/partner/events/${eventId}/check-in`, { user_id: userId }),
 
   partnerCheckOut: (eventId: string, userId: string): Promise<any> =>
-    axiosClient.put(`/partner/events/${eventId}/check-out`, { user_id: userId }),
+    axiosClient.put(`/partner/events/${eventId}/check-out`, {
+      user_id: userId,
+    }),
 
   partnerDeleteParticipant: (eventUserId: string): Promise<any> =>
     axiosClient.delete(`/partner/events/participants/${eventUserId}`),
 
   // --- Admin ---
-  adminCreateEvent: (payload: CreateEventPayload, images?: File[]): Promise<any> => {
+  adminCreateEvent: (
+    payload: CreateEventPayload,
+    images?: File[],
+  ): Promise<any> => {
     const formData = buildEventFormData(payload, images);
     return axiosClient.post("/admin/events", formData, {
       headers: { "Content-Type": "multipart/form-data" },
@@ -92,7 +103,8 @@ export const eventServices = {
   adminCheckOut: (eventId: string, userId: string): Promise<any> =>
     axiosClient.put(`/admin/events/${eventId}/check-out`, { user_id: userId }),
 
-  adminDeleteEvent: (eventId: string): Promise<any> => axiosClient.delete(`/admin/events/${eventId}`),
+  adminDeleteEvent: (eventId: string): Promise<any> =>
+    axiosClient.delete(`/admin/events/${eventId}`),
 
   adminDeleteParticipant: (eventUserId: string): Promise<any> =>
     axiosClient.delete(`/admin/events/participants/${eventUserId}`),

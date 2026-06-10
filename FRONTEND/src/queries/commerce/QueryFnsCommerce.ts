@@ -23,7 +23,9 @@ export const getProductsQueryFn = async (): Promise<ProductResponse[]> => {
   return response.data;
 };
 
-export const getProductByIdQueryFn = async (id: string): Promise<ProductResponse> => {
+export const getProductByIdQueryFn = async (
+  id: string,
+): Promise<ProductResponse> => {
   const response = await getProductByIdHandler(id);
   if (!response.success) {
     throw new Error(response.message || "Failed to fetch product details");
@@ -92,7 +94,9 @@ export const adminGetTransactionsByStatusQueryFn = async (
 ): Promise<TransactionResponse[]> => {
   const response = await adminGetTransactionsByStatusHandler(status);
   if (!response.success) {
-    throw new Error(response.message || `Failed to fetch transactions with status ${status}`);
+    throw new Error(
+      response.message || `Failed to fetch transactions with status ${status}`,
+    );
   }
   return response.data;
 };

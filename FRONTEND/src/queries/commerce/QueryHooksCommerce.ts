@@ -112,11 +112,18 @@ export const useAdminTransactionsByStatusQuery = (status: string) => {
 export const usePurchaseItemMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ itemId, payload }: { itemId: string; payload: PurchaseItemPayload }) =>
-      purchaseItemHandler(itemId, payload),
+    mutationFn: ({
+      itemId,
+      payload,
+    }: {
+      itemId: string;
+      payload: PurchaseItemPayload;
+    }) => purchaseItemHandler(itemId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QueryKeysCommerce.ITEMS] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeysCommerce.TRANSACTIONS] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysCommerce.TRANSACTIONS],
+      });
     },
   });
 };
@@ -126,8 +133,12 @@ export const useCancelTransactionMutation = () => {
   return useMutation({
     mutationFn: (id: string) => cancelTransactionHandler(id),
     onSuccess: (_, id) => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeysCommerce.TRANSACTIONS] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeysCommerce.TRANSACTION_DETAIL, id] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysCommerce.TRANSACTIONS],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysCommerce.TRANSACTION_DETAIL, id],
+      });
     },
   });
 };
@@ -135,7 +146,8 @@ export const useCancelTransactionMutation = () => {
 export const usePartnerCreateProductMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: CreateProductPayload) => partnerCreateProductHandler(payload),
+    mutationFn: (payload: CreateProductPayload) =>
+      partnerCreateProductHandler(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QueryKeysCommerce.PRODUCTS] });
     },
@@ -145,11 +157,18 @@ export const usePartnerCreateProductMutation = () => {
 export const usePartnerUpdateProductMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: UpdateProductPayload }) =>
-      partnerUpdateProductHandler(id, payload),
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: UpdateProductPayload;
+    }) => partnerUpdateProductHandler(id, payload),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: [QueryKeysCommerce.PRODUCTS] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeysCommerce.PRODUCT_DETAIL, id] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysCommerce.PRODUCT_DETAIL, id],
+      });
     },
   });
 };
@@ -167,7 +186,8 @@ export const usePartnerDeleteProductMutation = () => {
 export const usePartnerCreateItemMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: CreateItemPayload) => partnerCreateItemHandler(payload),
+    mutationFn: (payload: CreateItemPayload) =>
+      partnerCreateItemHandler(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QueryKeysCommerce.ITEMS] });
     },
@@ -181,7 +201,9 @@ export const usePartnerUpdateItemMutation = () => {
       partnerUpdateItemHandler(id, payload),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: [QueryKeysCommerce.ITEMS] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeysCommerce.ITEM_DETAIL, id] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysCommerce.ITEM_DETAIL, id],
+      });
     },
   });
 };
@@ -202,8 +224,12 @@ export const usePartnerMakeDecisionMutation = () => {
     mutationFn: ({ id, decision }: { id: string; decision: string }) =>
       partnerMakeTransactionDecisionHandler(id, decision),
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeysCommerce.TRANSACTIONS] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeysCommerce.TRANSACTION_DETAIL, id] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysCommerce.TRANSACTIONS],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysCommerce.TRANSACTION_DETAIL, id],
+      });
     },
   });
 };
@@ -211,11 +237,18 @@ export const usePartnerMakeDecisionMutation = () => {
 export const useAdminUpdateProductMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: UpdateProductPayload }) =>
-      adminUpdateProductHandler(id, payload),
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: UpdateProductPayload;
+    }) => adminUpdateProductHandler(id, payload),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: [QueryKeysCommerce.PRODUCTS] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeysCommerce.PRODUCT_DETAIL, id] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysCommerce.PRODUCT_DETAIL, id],
+      });
     },
   });
 };
@@ -237,7 +270,9 @@ export const useAdminUpdateItemMutation = () => {
       adminUpdateItemHandler(id, payload),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: [QueryKeysCommerce.ITEMS] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeysCommerce.ITEM_DETAIL, id] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysCommerce.ITEM_DETAIL, id],
+      });
     },
   });
 };
@@ -258,8 +293,12 @@ export const useAdminMakeDecisionMutation = () => {
     mutationFn: ({ id, decision }: { id: string; decision: string }) =>
       adminMakeTransactionDecisionHandler(id, decision),
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeysCommerce.TRANSACTIONS] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeysCommerce.TRANSACTION_DETAIL, id] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysCommerce.TRANSACTIONS],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysCommerce.TRANSACTION_DETAIL, id],
+      });
     },
   });
 };
@@ -269,8 +308,12 @@ export const useAdminCancelTransactionMutation = () => {
   return useMutation({
     mutationFn: (id: string) => adminCancelTransactionHandler(id),
     onSuccess: (_, id) => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeysCommerce.TRANSACTIONS] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeysCommerce.TRANSACTION_DETAIL, id] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysCommerce.TRANSACTIONS],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysCommerce.TRANSACTION_DETAIL, id],
+      });
     },
   });
 };

@@ -30,7 +30,9 @@ export const getProductByIdHandler = async (
 
 // --- Items ---
 
-export const getItemsHandler = async (): Promise<ApiResponse<ItemResponse[]>> => {
+export const getItemsHandler = async (): Promise<
+  ApiResponse<ItemResponse[]>
+> => {
   return commerceServices.getAllItems();
 };
 

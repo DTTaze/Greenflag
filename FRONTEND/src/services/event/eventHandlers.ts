@@ -13,7 +13,9 @@ import { eventServices } from ".";
 
 // --- Public Handlers ---
 
-export const getAllEventsHandler = async (): Promise<ApiResponse<EventResponse[]>> => {
+export const getAllEventsHandler = async (): Promise<
+  ApiResponse<EventResponse[]>
+> => {
   return eventServices.getAllEvents();
 };
 

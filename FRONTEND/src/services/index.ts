@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getCookie, deleteCookie } from "cookies-next/client";
+import { deleteCookie, getCookie } from "cookies-next/client";
 
 import { queryClient } from "@/src/lib/react-query/queryClient";
 
@@ -46,4 +46,3 @@ export * from "./event";
 export * from "./event/eventHandlers";
 export * from "./user";
 export * from "./user/userHandlers";
-

@@ -17,12 +17,12 @@ import { UserType } from "@/src/types/user/user.type";
 import {
   adminGetAllUsersQueryFn,
   adminGetUserByIdQueryFn,
+  fetchUserProfileQueryFn,
   getCoinQueryFn,
   getRankQueryFn,
   getUserAllTasksQueryFn,
   getUserItemsQueryFn,
   getUserTasksCompletedQueryFn,
-  fetchUserProfileQueryFn,
 } from "./QueryFnsUser";
 import { QueryKeysUser } from "./QueryKeysUser";
 
@@ -131,10 +131,13 @@ export const useUpdateAvatarMutation = () => {
 export const useAdminUpdateUserMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => adminUpdateUserHandler(id, data),
+    mutationFn: ({ id, data }: { id: string; data: any }) =>
+      adminUpdateUserHandler(id, data),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: [QueryKeysUser.ADMIN_USERS] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeysUser.ADMIN_USERS, id] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysUser.ADMIN_USERS, id],
+      });
     },
   });
 };

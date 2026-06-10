@@ -8,4 +8,3 @@ export interface UpdateUserPayload {
 export interface UpdateCoinPayload {
   coins: number;
 }
-

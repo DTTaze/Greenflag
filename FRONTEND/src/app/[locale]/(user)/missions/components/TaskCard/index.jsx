@@ -33,7 +33,7 @@ const TaskCard = React.memo(
             isCompleted
               ? "border-emerald-200 shadow-emerald-50/50"
               : "border-gray-200"
-          } group overflow-hidden shadow-2xs transition-all duration-300 hover:translate-y-[-3px] hover:shadow-md hover:border-gray-300 ${
+          } group overflow-hidden shadow-2xs transition-all duration-300 hover:translate-y-[-3px] hover:border-gray-300 hover:shadow-md ${
             isLoading ? "opacity-70" : ""
           }`}
         >
@@ -50,32 +50,38 @@ const TaskCard = React.memo(
             }`}
           ></div>
 
-          <div className="p-4 flex-grow flex flex-col justify-between gap-4">
+          <div className="flex flex-grow flex-col justify-between gap-4 p-4">
             <div className="space-y-3">
               {/* Header inside card */}
               <div className="flex items-start gap-2.5">
                 <div
                   className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border bg-gray-50/50 p-1.5 ${
                     isCompleted
-                      ? "border-emerald-200 bg-emerald-55/30 text-emerald-600"
+                      ? "bg-emerald-55/30 border-emerald-200 text-emerald-600"
                       : "border-gray-200 text-gray-500"
                   }`}
                 >
-                  <img src={imgScr} alt="task icon" className="h-full w-full opacity-80" />
+                  <img
+                    src={imgScr}
+                    alt="task icon"
+                    className="h-full w-full opacity-80"
+                  />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-sm font-bold text-gray-800 leading-snug group-hover:text-emerald-800 transition-colors truncate">
+                <div className="min-w-0 flex-1">
+                  <h3 className="truncate text-sm leading-snug font-bold text-gray-800 transition-colors group-hover:text-emerald-800">
                     {task.title}
                   </h3>
                   <span
-                    className={`inline-block rounded-lg px-2 py-0.5 mt-1 text-[10px] font-extrabold uppercase tracking-wide border ${levelColorClass}`}
+                    className={`mt-1 inline-block rounded-lg border px-2 py-0.5 text-[10px] font-extrabold tracking-wide uppercase ${levelColorClass}`}
                   >
                     {getLevelText(task.difficulty)}
                   </span>
                 </div>
                 {/* Coins reward badge */}
-                <div className="task-coin-reward shrink-0 flex items-center rounded-lg border border-amber-100 bg-amber-50 px-2 py-1 text-xs font-black text-amber-700">
-                  <span className="coin-value mr-1 font-extrabold">+{task.coins || 0}</span>
+                <div className="task-coin-reward flex shrink-0 items-center rounded-lg border border-amber-100 bg-amber-50 px-2 py-1 text-xs font-black text-amber-700">
+                  <span className="coin-value mr-1 font-extrabold">
+                    +{task.coins || 0}
+                  </span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
@@ -86,7 +92,7 @@ const TaskCard = React.memo(
                     strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="h-4.5 w-4.5 text-amber-600 animate-spin-slow"
+                    className="animate-spin-slow h-4.5 w-4.5 text-amber-600"
                   >
                     <circle cx="8" cy="8" r="6"></circle>
                     <path d="M18.09 10.37A6 6 0 1 1 10.34 18"></path>
@@ -120,11 +126,11 @@ const TaskCard = React.memo(
                 disabled={task.completed_at || isLoading}
                 className={`w-full cursor-pointer rounded-xl py-2.5 text-xs font-bold text-white transition-all duration-300 active:scale-98 ${
                   isUserTask
-                    ? "bg-gradient-to-r from-emerald-600 to-green-600 shadow-sm shadow-emerald-500/10 hover:shadow-md hover:from-emerald-700 hover:to-green-700"
-                    : "bg-gradient-to-r from-blue-500 to-indigo-500 shadow-sm shadow-blue-500/10 hover:shadow-md hover:from-blue-600 hover:to-indigo-600"
+                    ? "bg-gradient-to-r from-emerald-600 to-green-600 shadow-sm shadow-emerald-500/10 hover:from-emerald-700 hover:to-green-700 hover:shadow-md"
+                    : "bg-gradient-to-r from-blue-500 to-indigo-500 shadow-sm shadow-blue-500/10 hover:from-blue-600 hover:to-indigo-600 hover:shadow-md"
                 } ${
                   task.completed_at || isLoading
-                    ? "cursor-not-allowed opacity-50 shadow-none hover:shadow-none hover:from-current"
+                    ? "cursor-not-allowed opacity-50 shadow-none hover:from-current hover:shadow-none"
                     : ""
                 }`}
               >

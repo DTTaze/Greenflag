@@ -106,28 +106,30 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
       ></div>
 
       {/* Modal Container */}
-      <div className="relative z-10 w-full max-w-2xl transform rounded-2xl bg-slate-900/95 border border-slate-800/80 p-6 shadow-2xl transition-all">
+      <div className="relative z-10 w-full max-w-2xl transform rounded-2xl border border-slate-800/80 bg-slate-900/95 p-6 shadow-2xl transition-all">
         {/* Decorative Glow */}
         <div className="absolute -top-20 -left-20 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl" />
-        <div className="absolute -bottom-20 -right-20 h-40 w-40 rounded-full bg-blue-500/10 blur-3xl" />
+        <div className="absolute -right-20 -bottom-20 h-40 w-40 rounded-full bg-blue-500/10 blur-3xl" />
 
         {/* Close Button */}
         <button
           onClick={onCancel}
-          className="absolute top-4 right-4 rounded-full p-1.5 text-slate-400 hover:text-white hover:bg-slate-800/80 transition-all duration-200"
+          className="absolute top-4 right-4 rounded-full p-1.5 text-slate-400 transition-all duration-200 hover:bg-slate-800/80 hover:text-white"
         >
           <X className="h-5 w-5" />
         </button>
 
         {/* Header */}
         <div className="mb-6">
-          <h2 className="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
+          <h2 className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-xl font-bold text-transparent">
             {isEditing ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm mới"}
           </h2>
-          <p className="text-xs text-slate-400 mt-1">Điền đầy đủ thông tin để đăng sản phẩm lên thị trường trao đổi.</p>
+          <p className="mt-1 text-xs text-slate-400">
+            Điền đầy đủ thông tin để đăng sản phẩm lên thị trường trao đổi.
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 relative">
+        <form onSubmit={handleSubmit} className="relative space-y-4">
           <ImageUpload
             image={formData.image}
             onImageChange={(imageUrl) =>
@@ -143,7 +145,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
             <div>
               <label
                 htmlFor="name"
-                className="text-sm font-semibold text-slate-300 flex items-center gap-1"
+                className="flex items-center gap-1 text-sm font-semibold text-slate-300"
               >
                 Tên sản phẩm <span className="text-red-500">*</span>
               </label>
@@ -153,9 +155,9 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className={`mt-1.5 w-full bg-slate-950/40 border ${
+                className={`mt-1.5 w-full border bg-slate-950/40 ${
                   errors.name ? "border-red-500" : "border-slate-800"
-                } rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-600 transition-all`}
+                } rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none`}
                 placeholder="Nhập tên sản phẩm"
               />
               {errors.name && (
@@ -167,7 +169,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
               <div>
                 <label
                   htmlFor="price"
-                  className="text-sm font-semibold text-slate-300 flex items-center gap-1"
+                  className="flex items-center gap-1 text-sm font-semibold text-slate-300"
                 >
                   Giá <span className="text-red-500">*</span>
                 </label>
@@ -178,9 +180,9 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
                     name="price"
                     value={formData.price}
                     onChange={handleChange}
-                    className={`w-full bg-slate-950/40 border ${
+                    className={`w-full border bg-slate-950/40 ${
                       errors.price ? "border-red-500" : "border-slate-800"
-                    } rounded-lg py-2 pr-3 pl-8 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-600 transition-all`}
+                    } rounded-lg py-2 pr-3 pl-8 text-sm text-white placeholder-slate-600 transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none`}
                     placeholder="100"
                     min="1"
                   />
@@ -194,7 +196,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
               <div>
                 <label
                   htmlFor="stock"
-                  className="text-sm font-semibold text-slate-300 flex items-center gap-1"
+                  className="flex items-center gap-1 text-sm font-semibold text-slate-300"
                 >
                   Số lượng <span className="text-red-500">*</span>
                 </label>
@@ -204,9 +206,9 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
                   name="stock"
                   value={formData.stock}
                   onChange={handleChange}
-                  className={`mt-1.5 w-full bg-slate-950/40 border ${
+                  className={`mt-1.5 w-full border bg-slate-950/40 ${
                     errors.stock ? "border-red-500" : "border-slate-800"
-                  } rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-600 transition-all`}
+                  } rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none`}
                   placeholder="1"
                   min="1"
                 />
@@ -221,7 +223,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
           <div>
             <label
               htmlFor="description"
-              className="text-sm font-semibold text-slate-300 flex items-center gap-1"
+              className="flex items-center gap-1 text-sm font-semibold text-slate-300"
             >
               Mô tả sản phẩm <span className="text-red-500">*</span>
             </label>
@@ -231,9 +233,9 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
               value={formData.description}
               onChange={handleChange}
               rows="4"
-              className={`mt-1.5 w-full bg-slate-950/40 border ${
+              className={`mt-1.5 w-full border bg-slate-950/40 ${
                 errors.description ? "border-red-500" : "border-slate-800"
-              } rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 placeholder-slate-600 transition-all`}
+              } rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none`}
               placeholder="Mô tả chi tiết về sản phẩm của bạn"
             ></textarea>
             {errors.description && (
@@ -255,7 +257,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                className="mt-1.5 w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                className="mt-1.5 w-full rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-300 transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
               >
                 <option value="handicraft">Đồ thủ công</option>
                 <option value="recycled">Đồ tái chế</option>
@@ -277,7 +279,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
                 name="product_status"
                 value={formData.product_status}
                 onChange={handleChange}
-                className="mt-1.5 w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                className="mt-1.5 w-full rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-300 transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
               >
                 <option value="new">Mới</option>
                 <option value="like-new">Như mới</option>
@@ -288,17 +290,17 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
           </div>
 
           {/* Submit Buttons */}
-          <div className="flex justify-end gap-3 border-t border-slate-800/60 pt-5 mt-2">
+          <div className="mt-2 flex justify-end gap-3 border-t border-slate-800/60 pt-5">
             <button
               type="button"
               onClick={onCancel}
-              className="rounded-lg border border-slate-800 bg-slate-950/80 px-4 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-all duration-200"
+              className="rounded-lg border border-slate-800 bg-slate-950/80 px-4 py-2 text-sm font-medium text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white"
             >
               Hủy
             </button>
             <button
               type="submit"
-              className="rounded-lg bg-emerald-600 hover:bg-emerald-500 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-emerald-600/10 active:scale-95 transition-all duration-200"
+              className="rounded-lg bg-emerald-600 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-emerald-600/10 transition-all duration-200 hover:bg-emerald-500 active:scale-95"
             >
               {isEditing ? "Cập nhật sản phẩm" : "Đăng sản phẩm"}
             </button>

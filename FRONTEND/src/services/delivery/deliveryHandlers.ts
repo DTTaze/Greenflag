@@ -45,7 +45,9 @@ export const updateReceiverHandler = async (
   return deliveryServices.updateReceiver(id, payload);
 };
 
-export const deleteReceiverHandler = async (id: string): Promise<ApiResponse<void>> => {
+export const deleteReceiverHandler = async (
+  id: string,
+): Promise<ApiResponse<void>> => {
   return deliveryServices.deleteReceiver(id);
 };
 

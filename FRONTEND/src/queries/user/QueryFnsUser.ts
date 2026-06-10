@@ -26,7 +26,9 @@ export const getUserTasksCompletedQueryFn = async (): Promise<any[]> => {
   return response.data;
 };
 
-export const getUserAllTasksQueryFn = async (userId: string): Promise<any[]> => {
+export const getUserAllTasksQueryFn = async (
+  userId: string,
+): Promise<any[]> => {
   const response = await getUserAllTasksHandler(userId);
   if (!response.success) {
     throw new Error(response.message || "Failed to fetch user tasks");
@@ -50,7 +52,9 @@ export const adminGetAllUsersQueryFn = async (): Promise<UserType[]> => {
   return response.data;
 };
 
-export const adminGetUserByIdQueryFn = async (id: string): Promise<UserType> => {
+export const adminGetUserByIdQueryFn = async (
+  id: string,
+): Promise<UserType> => {
   const response = await adminGetUserByIdHandler(id);
   if (!response.success) {
     throw new Error(response.message || "Failed to fetch user by ID");

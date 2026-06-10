@@ -3,9 +3,9 @@ import {
   generateEventQrHandler,
   getAllEventsHandler,
   getEventByIdHandler,
-  getEventUsersByEventIdHandler,
   getEventsSignedByUserIdHandler,
   getEventsSignedSelfHandler,
+  getEventUsersByEventIdHandler,
   partnerGetMyEventsHandler,
 } from "@/src/services/event/eventHandlers";
 import {
@@ -22,7 +22,9 @@ export const getAllEventsQueryFn = async (): Promise<EventResponse[]> => {
   return response.data;
 };
 
-export const getEventByIdQueryFn = async (eventId: string): Promise<EventResponse> => {
+export const getEventByIdQueryFn = async (
+  eventId: string,
+): Promise<EventResponse> => {
   const response = await getEventByIdHandler(eventId);
   if (!response.success) {
     throw new Error(response.message || "Failed to fetch event detail");
@@ -30,7 +32,9 @@ export const getEventByIdQueryFn = async (eventId: string): Promise<EventRespons
   return response.data;
 };
 
-export const getEventsSignedSelfQueryFn = async (): Promise<EventUserResponse[]> => {
+export const getEventsSignedSelfQueryFn = async (): Promise<
+  EventUserResponse[]
+> => {
   const response = await getEventsSignedSelfHandler();
   if (!response.success) {
     throw new Error(response.message || "Failed to fetch signed events");
@@ -43,7 +47,9 @@ export const getEventsSignedByUserIdQueryFn = async (
 ): Promise<EventUserResponse[]> => {
   const response = await getEventsSignedByUserIdHandler(userId);
   if (!response.success) {
-    throw new Error(response.message || "Failed to fetch signed events for user");
+    throw new Error(
+      response.message || "Failed to fetch signed events for user",
+    );
   }
   return response.data;
 };
@@ -58,7 +64,9 @@ export const getEventUsersByEventIdQueryFn = async (
   return response.data;
 };
 
-export const generateEventQrQueryFn = async (eventId: string): Promise<EventQrResponse> => {
+export const generateEventQrQueryFn = async (
+  eventId: string,
+): Promise<EventQrResponse> => {
   const response = await generateEventQrHandler(eventId);
   if (!response.success) {
     throw new Error(response.message || "Failed to generate QR code for event");

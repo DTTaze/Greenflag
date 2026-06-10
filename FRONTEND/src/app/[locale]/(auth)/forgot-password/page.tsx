@@ -3,6 +3,7 @@
 import React, { Suspense } from "react";
 
 import Loader from "@/src/components/ui/Loader";
+
 import ForgotPassword from "./components/ForgotPassword";
 
 export default function Page() {

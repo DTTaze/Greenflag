@@ -13,21 +13,29 @@ export const deliveryServices = {
   // --- Receiver Information ---
   getReceivers: (): Promise<any> => axiosClient.get("/delivery/receivers"),
 
-  getReceiverById: (id: string): Promise<any> => axiosClient.get(`/delivery/receivers/${id}`),
+  getReceiverById: (id: string): Promise<any> =>
+    axiosClient.get(`/delivery/receivers/${id}`),
 
   createReceiver: (payload: CreateReceiverInfoPayload): Promise<any> =>
     axiosClient.post("/delivery/receivers", payload),
 
-  updateReceiver: (id: string, payload: UpdateReceiverInfoPayload): Promise<any> =>
-    axiosClient.patch(`/delivery/receivers/${id}`, payload),
+  updateReceiver: (
+    id: string,
+    payload: UpdateReceiverInfoPayload,
+  ): Promise<any> => axiosClient.patch(`/delivery/receivers/${id}`, payload),
 
-  deleteReceiver: (id: string): Promise<any> => axiosClient.delete(`/delivery/receivers/${id}`),
+  deleteReceiver: (id: string): Promise<any> =>
+    axiosClient.delete(`/delivery/receivers/${id}`),
 
   setDefaultReceiver: (id: string): Promise<any> =>
     axiosClient.patch(`/delivery/receivers/${id}/default`),
 
   // --- Locations ---
-  getProvinces: (carrier?: string, token?: string, shopId?: string): Promise<any> =>
+  getProvinces: (
+    carrier?: string,
+    token?: string,
+    shopId?: string,
+  ): Promise<any> =>
     axiosClient.get("/delivery/provinces", {
       params: { carrier },
       headers: token || shopId ? { token, shop_id: shopId } : undefined,
@@ -108,7 +116,8 @@ export const deliveryServices = {
   getOrdersByBuyer: (): Promise<any> => axiosClient.get("/delivery/orders"),
 
   // --- Partner Accounts & Orders ---
-  partnerGetAccounts: (): Promise<any> => axiosClient.get("/partner/delivery/accounts"),
+  partnerGetAccounts: (): Promise<any> =>
+    axiosClient.get("/partner/delivery/accounts"),
 
   partnerGetAccountById: (id: string): Promise<any> =>
     axiosClient.get(`/partner/delivery/accounts/${id}`),
@@ -116,7 +125,10 @@ export const deliveryServices = {
   partnerCreateAccount: (payload: CreateDeliveryAccountPayload): Promise<any> =>
     axiosClient.post("/partner/delivery/accounts", payload),
 
-  partnerUpdateAccount: (id: string, payload: UpdateDeliveryAccountPayload): Promise<any> =>
+  partnerUpdateAccount: (
+    id: string,
+    payload: UpdateDeliveryAccountPayload,
+  ): Promise<any> =>
     axiosClient.patch(`/partner/delivery/accounts/${id}`, payload),
 
   partnerDeleteAccount: (id: string): Promise<any> =>
@@ -125,7 +137,8 @@ export const deliveryServices = {
   partnerSetDefaultAccount: (id: string): Promise<any> =>
     axiosClient.patch(`/partner/delivery/accounts/${id}/default`),
 
-  partnerGetOrders: (): Promise<any> => axiosClient.get("/partner/delivery/orders"),
+  partnerGetOrders: (): Promise<any> =>
+    axiosClient.get("/partner/delivery/orders"),
 
   partnerCancelOrder: (
     orderCode: string,
@@ -139,7 +152,8 @@ export const deliveryServices = {
     }),
 
   // --- Admin Accounts & Orders ---
-  adminGetAccounts: (): Promise<any> => axiosClient.get("/admin/delivery/accounts"),
+  adminGetAccounts: (): Promise<any> =>
+    axiosClient.get("/admin/delivery/accounts"),
 
   adminGetOrders: (): Promise<any> => axiosClient.get("/admin/delivery/orders"),
 

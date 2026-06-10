@@ -22,7 +22,9 @@ import {
   WardResponse,
 } from "@/src/types/delivery/delivery.response";
 
-export const getReceiversQueryFn = async (): Promise<ReceiverInfoResponse[]> => {
+export const getReceiversQueryFn = async (): Promise<
+  ReceiverInfoResponse[]
+> => {
   const response = await getReceiversHandler();
   if (!response.success) {
     throw new Error(response.message || "Failed to fetch receivers");
@@ -30,7 +32,9 @@ export const getReceiversQueryFn = async (): Promise<ReceiverInfoResponse[]> => 
   return response.data;
 };
 
-export const getReceiverByIdQueryFn = async (id: string): Promise<ReceiverInfoResponse> => {
+export const getReceiverByIdQueryFn = async (
+  id: string,
+): Promise<ReceiverInfoResponse> => {
   const response = await getReceiverByIdHandler(id);
   if (!response.success) {
     throw new Error(response.message || "Failed to fetch receiver info");
@@ -56,7 +60,12 @@ export const getDistrictsQueryFn = async (
   token?: string,
   shopId?: string,
 ): Promise<DistrictResponse[]> => {
-  const response = await getDistrictsHandler(provinceId, carrier, token, shopId);
+  const response = await getDistrictsHandler(
+    provinceId,
+    carrier,
+    token,
+    shopId,
+  );
   if (!response.success) {
     throw new Error(response.message || "Failed to fetch districts");
   }
@@ -94,7 +103,9 @@ export const getOrderInfoQueryFn = async (
 ): Promise<DeliveryOrderResponse> => {
   const response = await getOrderInfoHandler(orderCode, carrier, token, shopId);
   if (!response.success) {
-    throw new Error(response.message || "Failed to fetch delivery order detail");
+    throw new Error(
+      response.message || "Failed to fetch delivery order detail",
+    );
   }
   return response.data;
 };
@@ -104,7 +115,9 @@ export const partnerGetAccountsQueryFn = async (): Promise<
 > => {
   const response = await partnerGetAccountsHandler();
   if (!response.success) {
-    throw new Error(response.message || "Failed to fetch partner delivery accounts");
+    throw new Error(
+      response.message || "Failed to fetch partner delivery accounts",
+    );
   }
   return response.data;
 };
@@ -124,7 +137,9 @@ export const partnerGetOrdersQueryFn = async (): Promise<
 > => {
   const response = await partnerGetOrdersHandler();
   if (!response.success) {
-    throw new Error(response.message || "Failed to fetch partner delivery orders");
+    throw new Error(
+      response.message || "Failed to fetch partner delivery orders",
+    );
   }
   return response.data;
 };
@@ -134,7 +149,9 @@ export const adminGetAccountsQueryFn = async (): Promise<
 > => {
   const response = await adminGetAccountsHandler();
   if (!response.success) {
-    throw new Error(response.message || "Failed to fetch all delivery accounts");
+    throw new Error(
+      response.message || "Failed to fetch all delivery accounts",
+    );
   }
   return response.data;
 };
@@ -154,7 +171,10 @@ export const adminGetOrdersByStatusQueryFn = async (
 ): Promise<DeliveryOrderResponse[]> => {
   const response = await adminGetOrdersByStatusHandler(status);
   if (!response.success) {
-    throw new Error(response.message || `Failed to fetch delivery orders with status ${status}`);
+    throw new Error(
+      response.message ||
+        `Failed to fetch delivery orders with status ${status}`,
+    );
   }
   return response.data;
 };

@@ -59,9 +59,18 @@ export default function CustomerUsers() {
       const eventId = eventUser.eventId || eventUser.event_id;
       const event = eventUser.event || eventUser.Event;
 
-      const avatar = userData.avatarUrl || userData.avatar_url || "/placeholder-avatar.jpg";
-      const coins = userData.coin?.amount !== undefined ? userData.coin.amount : (userData.coins || 0);
-      const fullName = userData.profile?.fullName || userData.full_name || userData.fullName || userData.username || "";
+      const avatar =
+        userData.avatarUrl || userData.avatar_url || "/placeholder-avatar.jpg";
+      const coins =
+        userData.coin?.amount !== undefined
+          ? userData.coin.amount
+          : userData.coins || 0;
+      const fullName =
+        userData.profile?.fullName ||
+        userData.full_name ||
+        userData.fullName ||
+        userData.username ||
+        "";
 
       return {
         id: userId,
@@ -76,7 +85,7 @@ export default function CustomerUsers() {
             status: event?.status || "",
             completion_rate: !(eventUser.joinedAt || eventUser.joined_at)
               ? 0
-              : (eventUser.completedAt || eventUser.completed_at)
+              : eventUser.completedAt || eventUser.completed_at
                 ? 100
                 : 50,
             eventUser: eventUser,
@@ -97,7 +106,7 @@ export default function CustomerUsers() {
       try {
         setLoading(true);
         setError(null);
- 
+
         const eventsResponse = await getOwnerEvents();
         const eventsData = eventsResponse.data;
         setEvents(eventsData);

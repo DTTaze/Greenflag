@@ -1,9 +1,8 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 
-import { useAuthStore } from "@/src/store/auth/authStore";
-
 import Loader from "@/src/components/ui/Loader";
+import { useAuthStore } from "@/src/store/auth/authStore";
 import { getUser } from "@/src/utils/api";
 
 const AuthCallback = () => {

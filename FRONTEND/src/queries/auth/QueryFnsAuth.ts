@@ -1,11 +1,11 @@
 import {
+  changePassword,
+  forgotPassword,
   login,
   register,
-  verifyOtp,
   resendEmail,
-  forgotPassword,
   resetPassword,
-  changePassword,
+  verifyOtp,
 } from "@/src/services/auth";
 
 export const loginFn = async (payload: any) => {

@@ -51,4 +51,3 @@ export interface CoinType {
   updatedAt: string;
   user?: UserType;
 }
-

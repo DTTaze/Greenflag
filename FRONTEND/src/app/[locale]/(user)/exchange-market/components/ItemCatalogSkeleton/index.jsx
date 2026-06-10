@@ -5,7 +5,7 @@ export default function ItemCatalogSkeleton() {
   return (
     <div className="flex flex-col">
       {/* Hero Section Skeleton */}
-      <div className="relative mb-8 rounded-2xl bg-gradient-to-br from-emerald-600/70 to-emerald-500/70 p-7 shadow-xl animate-pulse">
+      <div className="relative mb-8 animate-pulse rounded-2xl bg-gradient-to-br from-emerald-600/70 to-emerald-500/70 p-7 shadow-xl">
         {/* Title Skeleton */}
         <div className="mb-3 flex items-center">
           <div className="bg-opacity-20 mr-2.5 h-6 w-6 rounded-full bg-white" />
@@ -21,10 +21,10 @@ export default function ItemCatalogSkeleton() {
       </div>
 
       {/* Tabs Skeleton */}
-      <div className="mb-6 h-12 w-96 rounded-xl bg-gray-200 animate-pulse" />
+      <div className="mb-6 h-12 w-96 animate-pulse rounded-xl bg-gray-200" />
 
       {/* Search and Filter Skeleton */}
-      <div className="mb-6 rounded-xl border border-gray-200 bg-white p-6 shadow-xs space-y-4 animate-pulse">
+      <div className="mb-6 animate-pulse space-y-4 rounded-xl border border-gray-200 bg-white p-6 shadow-xs">
         <div className="flex flex-col gap-3 md:flex-row">
           <div className="h-10 flex-grow rounded-xl bg-gray-100" />
           <div className="h-10 w-24 rounded-xl bg-gray-100" />

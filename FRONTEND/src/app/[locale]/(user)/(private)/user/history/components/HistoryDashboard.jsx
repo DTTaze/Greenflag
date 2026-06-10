@@ -18,13 +18,20 @@ import HistoryTabs from "./HistoryTabs.jsx";
 function HistoryDashboard() {
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState("all-activity");
-  
+
   // React Query hook for task history
-  const { data: rawTasksData, isLoading: isTasksLoading } = useUserTasksQuery(user?.id || "");
+  const { data: rawTasksData, isLoading: isTasksLoading } = useUserTasksQuery(
+    user?.id || "",
+  );
 
   const tasksData = useMemo(() => {
     if (Array.isArray(rawTasksData)) return rawTasksData;
-    if (rawTasksData && typeof rawTasksData === "object" && "data" in rawTasksData && Array.isArray(rawTasksData.data)) {
+    if (
+      rawTasksData &&
+      typeof rawTasksData === "object" &&
+      "data" in rawTasksData &&
+      Array.isArray(rawTasksData.data)
+    ) {
       return rawTasksData.data;
     }
     return [];
@@ -37,8 +44,14 @@ function HistoryDashboard() {
   const [transactions, setTransactions] = useState([]);
 
   // Aggregated lists computed reactively via useMemo
-  const coinLogs = useMemo(() => aggregateCoinLogs(tasksData, transactions), [tasksData, transactions]);
-  const activityLogs = useMemo(() => aggregateActivityLogs(tasksData, events), [tasksData, events]);
+  const coinLogs = useMemo(
+    () => aggregateCoinLogs(tasksData, transactions),
+    [tasksData, transactions],
+  );
+  const activityLogs = useMemo(
+    () => aggregateActivityLogs(tasksData, events),
+    [tasksData, events],
+  );
 
   useEffect(() => {
     const fetchUserData = async () => {

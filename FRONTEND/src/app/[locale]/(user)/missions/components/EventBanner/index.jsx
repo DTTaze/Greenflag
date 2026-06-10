@@ -44,14 +44,11 @@ const EventBanner = ({ userInfo }) => {
 
   useEffect(() => {
     if (events.length > 1 && !isModalOpen) {
-      const interval = setInterval(
-        () => {
-          setCurrentEventIndex((prevIndex) =>
-            prevIndex === events.length - 1 ? 0 : prevIndex + 1,
-          );
-        },
-        5000,
-      );
+      const interval = setInterval(() => {
+        setCurrentEventIndex((prevIndex) =>
+          prevIndex === events.length - 1 ? 0 : prevIndex + 1,
+        );
+      }, 5000);
 
       return () => clearInterval(interval);
     }
@@ -87,10 +84,10 @@ const EventBanner = ({ userInfo }) => {
 
   return (
     <>
-      <div className="relative mb-6 h-52 w-full overflow-hidden rounded-2xl shadow-md border border-gray-100">
+      <div className="relative mb-6 h-52 w-full overflow-hidden rounded-2xl border border-gray-100 shadow-md">
         {/* Background Image with smooth transition effect */}
         <div
-          className="absolute inset-0 bg-cover bg-center transition-all duration-1000 transform scale-102"
+          className="absolute inset-0 scale-102 transform bg-cover bg-center transition-all duration-1000"
           style={{
             backgroundImage: `url(${
               currentEvent.images?.[0] ||
@@ -105,7 +102,7 @@ const EventBanner = ({ userInfo }) => {
         {/* Navigation Buttons */}
         <button
           onClick={handlePreviousEvent}
-          className="group absolute top-1/2 left-3 z-10 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-xl bg-white/10 backdrop-blur-md transition-all duration-300 border border-white/15 hover:bg-white/20 active:scale-90"
+          className="group absolute top-1/2 left-3 z-10 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-xl border border-white/15 bg-white/10 backdrop-blur-md transition-all duration-300 hover:bg-white/20 active:scale-90"
           aria-label="Previous event"
         >
           <ChevronLeft className="h-5 w-5 text-white transition-transform duration-300 group-hover:scale-115" />
@@ -113,25 +110,25 @@ const EventBanner = ({ userInfo }) => {
 
         <button
           onClick={handleNextEvent}
-          className="group absolute top-1/2 right-3 z-10 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-xl bg-white/10 backdrop-blur-md transition-all duration-300 border border-white/15 hover:bg-white/20 active:scale-90"
+          className="group absolute top-1/2 right-3 z-10 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-xl border border-white/15 bg-white/10 backdrop-blur-md transition-all duration-300 hover:bg-white/20 active:scale-90"
           aria-label="Next event"
         >
           <ChevronRight className="h-5 w-5 text-white transition-transform duration-300 group-hover:scale-115" />
         </button>
 
         {/* Content Container */}
-        <div className="relative flex h-full items-center justify-between pl-16 pr-16 text-white">
+        <div className="relative flex h-full items-center justify-between pr-16 pl-16 text-white">
           <div className="max-w-xl pr-6">
-            <span className="mb-1.5 inline-block text-[10px] font-bold tracking-widest text-emerald-350 uppercase">
+            <span className="text-emerald-350 mb-1.5 inline-block text-[10px] font-bold tracking-widest uppercase">
               Sự kiện môi trường nổi bật
             </span>
-            <h2 className="mb-2 text-xl sm:text-2xl font-extrabold tracking-tight drop-shadow-md truncate">
+            <h2 className="mb-2 truncate text-xl font-extrabold tracking-tight drop-shadow-md sm:text-2xl">
               {currentEvent.title}
             </h2>
-            <p className="mb-4 line-clamp-2 text-xs sm:text-sm text-emerald-100/90 drop-shadow-xs leading-relaxed">
+            <p className="mb-4 line-clamp-2 text-xs leading-relaxed text-emerald-100/90 drop-shadow-xs sm:text-sm">
               {currentEvent.description}
             </p>
-            <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-emerald-200/90 drop-shadow-2xs">
+            <div className="drop-shadow-2xs flex flex-wrap items-center gap-4 text-xs font-semibold text-emerald-200/90">
               <div className="flex items-center gap-1">
                 <svg
                   className="h-3.5 w-3.5"
@@ -164,20 +161,23 @@ const EventBanner = ({ userInfo }) => {
                   />
                 </svg>
                 <span>
-                  {new Date(currentEvent.start_time).toLocaleDateString("vi-VN", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
+                  {new Date(currentEvent.start_time).toLocaleDateString(
+                    "vi-VN",
+                    {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    },
+                  )}
                 </span>
               </div>
             </div>
           </div>
 
           {/* Join Button */}
-          <div className="shrink-0 hidden sm:block">
+          <div className="hidden shrink-0 sm:block">
             <button
-              className="cursor-pointer rounded-xl bg-white px-6 py-3.5 text-xs sm:text-sm font-extrabold text-emerald-800 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-102 active:scale-98"
+              className="cursor-pointer rounded-xl bg-white px-6 py-3.5 text-xs font-extrabold text-emerald-800 shadow-lg transition-all duration-300 hover:scale-102 hover:shadow-xl active:scale-98 sm:text-sm"
               onClick={() => handleOpenModal(currentEvent)}
             >
               {isParticipated ? "Chi tiết vé" : "Đăng ký tham gia"}

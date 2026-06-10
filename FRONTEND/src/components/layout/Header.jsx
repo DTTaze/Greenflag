@@ -10,11 +10,11 @@ import {
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
+import { useNotification } from "@/src/components/ui/NotificationProvider";
 import { Link, usePathname, useRouter } from "@/src/i18n/navigation";
 import { useAuthStore } from "@/src/store/auth/authStore";
-
-import { useNotification } from "@/src/components/ui/NotificationProvider";
 import { getUser, getUserAvatarById, logoutUser } from "@/src/utils/api";
+
 import CoinsBadge from "./CoinsBadge";
 import LocaleSwitcher from "./LocaleSwitcher";
 import MobileMenu from "./MobileMenu";

@@ -18,10 +18,10 @@ export default function MissionSkeleton() {
 
         <div className="flex flex-col gap-8 lg:flex-row">
           <div className="w-full lg:w-2/3">
-            <div className="mb-6 h-12 w-64 rounded-xl bg-gray-200 animate-pulse"></div>
+            <div className="mb-6 h-12 w-64 animate-pulse rounded-xl bg-gray-200"></div>
 
-            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-xs space-y-4">
-              <div className="mb-6 h-6 w-40 rounded bg-gray-200 animate-pulse"></div>
+            <div className="space-y-4 rounded-xl border border-gray-200 bg-white p-6 shadow-xs">
+              <div className="mb-6 h-6 w-40 animate-pulse rounded bg-gray-200"></div>
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
                 <TaskCardSkeleton />
                 <TaskCardSkeleton />

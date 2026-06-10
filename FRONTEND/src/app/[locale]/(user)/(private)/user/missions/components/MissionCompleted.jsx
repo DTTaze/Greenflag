@@ -14,11 +14,14 @@ function MissionCompleted() {
       const response = await getMyCompletedTasks();
       const tasks = Array.isArray(response)
         ? response
-        : (response?.data && Array.isArray(response.data)
+        : response?.data && Array.isArray(response.data)
           ? response.data
-          : (response && typeof response === "object" && "data" in response && Array.isArray(response.data?.data)
+          : response &&
+              typeof response === "object" &&
+              "data" in response &&
+              Array.isArray(response.data?.data)
             ? response.data.data
-            : []));
+            : [];
 
       setUserCompletedTasks(
         tasks.map(({ id, title, coins, created_at, createdAt }) => ({

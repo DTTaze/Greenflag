@@ -8,12 +8,12 @@ const SocialLoginIcons = () => {
   };
 
   return (
-    <div className="flex flex-col gap-3 my-4 w-full">
+    <div className="my-4 flex w-full flex-col gap-3">
       {/* Google Sign In Button */}
       <button
         type="button"
         onClick={handleGoogleLogin}
-        className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-all hover:bg-slate-50 hover:border-slate-300 active:scale-[0.98] dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-200 dark:hover:bg-zinc-900 dark:hover:border-zinc-700 cursor-pointer shadow-sm hover:shadow-md"
+        className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-slate-300 hover:bg-slate-50 hover:shadow-md active:scale-[0.98] dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-200 dark:hover:border-zinc-700 dark:hover:bg-zinc-900"
       >
         <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24">
           <path
@@ -40,14 +40,14 @@ const SocialLoginIcons = () => {
       <div className="grid grid-cols-2 gap-3">
         <button
           type="button"
-          className="flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 transition-all hover:bg-slate-50 active:scale-[0.98] dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-200 dark:hover:bg-zinc-900 cursor-pointer shadow-sm hover:shadow-md"
+          className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 shadow-sm transition-all hover:bg-slate-50 hover:shadow-md active:scale-[0.98] dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-200 dark:hover:bg-zinc-900"
         >
           <i className="fab fa-apple text-base text-black dark:text-white"></i>
           <span>Apple</span>
         </button>
         <button
           type="button"
-          className="flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 transition-all hover:bg-slate-50 active:scale-[0.98] dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-200 dark:hover:bg-zinc-900 cursor-pointer shadow-sm hover:shadow-md"
+          className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 shadow-sm transition-all hover:bg-slate-50 hover:shadow-md active:scale-[0.98] dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-200 dark:hover:bg-zinc-900"
         >
           <i className="fab fa-facebook text-base text-[#1877f2]"></i>
           <span>Facebook</span>

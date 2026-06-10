@@ -110,8 +110,8 @@ export default function QRscanner({ onScan, onError, style }) {
   };
 
   return (
-    <div className="text-center w-full">
-      <div className="p-3 mb-3 bg-gray-50 border border-gray-100 rounded-xl text-xs font-semibold text-gray-500 uppercase tracking-wide">
+    <div className="w-full text-center">
+      <div className="mb-3 rounded-xl border border-gray-100 bg-gray-50 p-3 text-xs font-semibold tracking-wide text-gray-500 uppercase">
         {message}
       </div>
 
@@ -119,7 +119,7 @@ export default function QRscanner({ onScan, onError, style }) {
         <div className="space-y-4">
           <div
             id="qr-reader"
-            className="w-full max-w-[400px] mx-auto border border-gray-200 rounded-xl overflow-hidden shadow-2xs bg-black"
+            className="mx-auto w-full max-w-[400px] overflow-hidden rounded-xl border border-gray-200 bg-black shadow-2xs"
             style={style}
           >
             <div id="qr-reader-results"></div>
@@ -127,7 +127,7 @@ export default function QRscanner({ onScan, onError, style }) {
           {isScanning && (
             <button
               onClick={handleResume}
-              className="cursor-pointer rounded-xl bg-[#0B6E4F] hover:bg-[#0D7F5C] active:scale-95 transition-all text-white px-5 py-2 text-xs font-bold shadow-sm"
+              className="cursor-pointer rounded-xl bg-[#0B6E4F] px-5 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-[#0D7F5C] active:scale-95"
             >
               Quét tiếp
             </button>

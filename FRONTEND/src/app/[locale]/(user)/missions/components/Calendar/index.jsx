@@ -77,7 +77,7 @@ const Calendar = ({ streak = 0, lastLogin = null }) => {
             />
           </svg>
         </button>
-        <div className="text-sm font-bold tracking-wider uppercase text-emerald-100">
+        <div className="text-sm font-bold tracking-wider text-emerald-100 uppercase">
           {dayObj.format("MMMM YYYY")}
         </div>
         <button
@@ -105,10 +105,10 @@ const Calendar = ({ streak = 0, lastLogin = null }) => {
       {/* Streak indicator */}
       <div className="streak-indicator flex items-center border-b border-emerald-100/30 bg-emerald-50/50 p-4">
         <div className="mr-3">
-          <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+          <div className="text-[10px] font-bold tracking-wider text-gray-400 uppercase">
             Chuỗi hoạt động
           </div>
-          <div className="text-xl font-extrabold text-[#0B6E4F] flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 text-xl font-extrabold text-[#0B6E4F]">
             🔥 {streak} ngày
           </div>
         </div>
@@ -128,10 +128,10 @@ const Calendar = ({ streak = 0, lastLogin = null }) => {
         </div>
       </div>
 
-      <div className="week-container grid grid-cols-7 bg-gray-50/50 border-b border-gray-100">
+      <div className="week-container grid grid-cols-7 border-b border-gray-100 bg-gray-50/50">
         {weekDays.map((d) => (
           <div
-            className="flex h-8 items-center justify-center text-center text-[10px] font-extrabold text-emerald-800 uppercase tracking-wider"
+            className="flex h-8 items-center justify-center text-center text-[10px] font-extrabold tracking-wider text-emerald-800 uppercase"
             key={d}
           >
             {d}
@@ -139,7 +139,7 @@ const Calendar = ({ streak = 0, lastLogin = null }) => {
         ))}
       </div>
 
-      <div className="day-container grid grid-cols-7 bg-white p-2 gap-1">
+      <div className="day-container grid grid-cols-7 gap-1 bg-white p-2">
         {range(weekDayObjOf1).map((i) => (
           <div
             className="flex h-9 items-center justify-center text-xs text-gray-300 opacity-30 select-none"
@@ -159,11 +159,11 @@ const Calendar = ({ streak = 0, lastLogin = null }) => {
 
           return (
             <div
-              className={`relative flex h-9 w-9 mx-auto items-center justify-center text-xs font-semibold rounded-xl transition-all duration-200 ${
+              className={`relative mx-auto flex h-9 w-9 items-center justify-center rounded-xl text-xs font-semibold transition-all duration-200 ${
                 isToday
-                  ? "bg-emerald-600 text-white font-extrabold shadow-sm shadow-emerald-600/20"
+                  ? "bg-emerald-600 font-extrabold text-white shadow-sm shadow-emerald-600/20"
                   : inStreak
-                    ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-100/50"
+                    ? "border border-emerald-100/50 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
                     : "text-gray-700 hover:bg-gray-50"
               }`}
               key={i}
@@ -187,9 +187,9 @@ const Calendar = ({ streak = 0, lastLogin = null }) => {
       </div>
 
       {/* Streak tips */}
-      <div className="streak-tips flex justify-between border-t border-gray-100 bg-gray-50/50 p-3 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+      <div className="streak-tips flex justify-between border-t border-gray-100 bg-gray-50/50 p-3 text-[10px] font-bold tracking-wider text-gray-400 uppercase">
         <div className="flex items-center">
-          <div className="mr-1.5 h-2 w-2 rounded bg-emerald-50 border border-emerald-200"></div>
+          <div className="mr-1.5 h-2 w-2 rounded border border-emerald-200 bg-emerald-50"></div>
           <span>Đã hoạt động</span>
         </div>
         <div className="flex items-center">

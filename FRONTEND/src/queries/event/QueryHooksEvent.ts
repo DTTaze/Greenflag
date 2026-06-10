@@ -4,9 +4,9 @@ import {
   acceptEventHandler,
   adminCheckInHandler,
   adminCheckOutHandler,
+  adminCreateEventHandler,
   adminDeleteEventHandler,
   adminDeleteParticipantHandler,
-  adminCreateEventHandler,
   adminUpdateEventHandler,
   partnerCheckInHandler,
   partnerCheckOutHandler,
@@ -23,9 +23,9 @@ import {
   generateEventQrQueryFn,
   getAllEventsQueryFn,
   getEventByIdQueryFn,
-  getEventUsersByEventIdQueryFn,
   getEventsSignedByUserIdQueryFn,
   getEventsSignedSelfQueryFn,
+  getEventUsersByEventIdQueryFn,
   partnerGetMyEventsQueryFn,
 } from "./QueryFnsEvent";
 import { QueryKeysEvent } from "./QueryKeysEvent";
@@ -92,8 +92,12 @@ export const useAcceptEventMutation = () => {
   return useMutation({
     mutationFn: (eventId: string) => acceptEventHandler(eventId),
     onSuccess: (_, eventId) => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeysEvent.SIGNED_EVENTS] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeysEvent.PARTICIPANTS, eventId] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysEvent.SIGNED_EVENTS],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysEvent.PARTICIPANTS, eventId],
+      });
     },
   });
 };
@@ -101,8 +105,13 @@ export const useAcceptEventMutation = () => {
 export const usePartnerCreateEventMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ payload, images }: { payload: CreateEventPayload; images?: File[] }) =>
-      partnerCreateEventHandler(payload, images),
+    mutationFn: ({
+      payload,
+      images,
+    }: {
+      payload: CreateEventPayload;
+      images?: File[];
+    }) => partnerCreateEventHandler(payload, images),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QueryKeysEvent.EVENTS] });
     },
@@ -112,11 +121,20 @@ export const usePartnerCreateEventMutation = () => {
 export const usePartnerUpdateEventMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ eventId, payload, images }: { eventId: string; payload: UpdateEventPayload; images?: File[] }) =>
-      partnerUpdateEventHandler(eventId, payload, images),
+    mutationFn: ({
+      eventId,
+      payload,
+      images,
+    }: {
+      eventId: string;
+      payload: UpdateEventPayload;
+      images?: File[];
+    }) => partnerUpdateEventHandler(eventId, payload, images),
     onSuccess: (_, { eventId }) => {
       queryClient.invalidateQueries({ queryKey: [QueryKeysEvent.EVENTS] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeysEvent.EVENT_DETAIL, eventId] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysEvent.EVENT_DETAIL, eventId],
+      });
     },
   });
 };
@@ -127,7 +145,9 @@ export const usePartnerCheckInMutation = () => {
     mutationFn: ({ eventId, userId }: { eventId: string; userId: string }) =>
       partnerCheckInHandler(eventId, userId),
     onSuccess: (_, { eventId }) => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeysEvent.PARTICIPANTS, eventId] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysEvent.PARTICIPANTS, eventId],
+      });
     },
   });
 };
@@ -138,7 +158,9 @@ export const usePartnerCheckOutMutation = () => {
     mutationFn: ({ eventId, userId }: { eventId: string; userId: string }) =>
       partnerCheckOutHandler(eventId, userId),
     onSuccess: (_, { eventId }) => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeysEvent.PARTICIPANTS, eventId] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysEvent.PARTICIPANTS, eventId],
+      });
     },
   });
 };
@@ -146,9 +168,12 @@ export const usePartnerCheckOutMutation = () => {
 export const usePartnerDeleteParticipantMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (eventUserId: string) => partnerDeleteParticipantHandler(eventUserId),
+    mutationFn: (eventUserId: string) =>
+      partnerDeleteParticipantHandler(eventUserId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeysEvent.PARTICIPANTS] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysEvent.PARTICIPANTS],
+      });
     },
   });
 };
@@ -156,8 +181,13 @@ export const usePartnerDeleteParticipantMutation = () => {
 export const useAdminCreateEventMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ payload, images }: { payload: CreateEventPayload; images?: File[] }) =>
-      adminCreateEventHandler(payload, images),
+    mutationFn: ({
+      payload,
+      images,
+    }: {
+      payload: CreateEventPayload;
+      images?: File[];
+    }) => adminCreateEventHandler(payload, images),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QueryKeysEvent.EVENTS] });
     },
@@ -167,11 +197,20 @@ export const useAdminCreateEventMutation = () => {
 export const useAdminUpdateEventMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ eventId, payload, images }: { eventId: string; payload: UpdateEventPayload; images?: File[] }) =>
-      adminUpdateEventHandler(eventId, payload, images),
+    mutationFn: ({
+      eventId,
+      payload,
+      images,
+    }: {
+      eventId: string;
+      payload: UpdateEventPayload;
+      images?: File[];
+    }) => adminUpdateEventHandler(eventId, payload, images),
     onSuccess: (_, { eventId }) => {
       queryClient.invalidateQueries({ queryKey: [QueryKeysEvent.EVENTS] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeysEvent.EVENT_DETAIL, eventId] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysEvent.EVENT_DETAIL, eventId],
+      });
     },
   });
 };
@@ -182,7 +221,9 @@ export const useAdminCheckInMutation = () => {
     mutationFn: ({ eventId, userId }: { eventId: string; userId: string }) =>
       adminCheckInHandler(eventId, userId),
     onSuccess: (_, { eventId }) => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeysEvent.PARTICIPANTS, eventId] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysEvent.PARTICIPANTS, eventId],
+      });
     },
   });
 };
@@ -193,7 +234,9 @@ export const useAdminCheckOutMutation = () => {
     mutationFn: ({ eventId, userId }: { eventId: string; userId: string }) =>
       adminCheckOutHandler(eventId, userId),
     onSuccess: (_, { eventId }) => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeysEvent.PARTICIPANTS, eventId] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysEvent.PARTICIPANTS, eventId],
+      });
     },
   });
 };
@@ -211,9 +254,12 @@ export const useAdminDeleteEventMutation = () => {
 export const useAdminDeleteParticipantMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (eventUserId: string) => adminDeleteParticipantHandler(eventUserId),
+    mutationFn: (eventUserId: string) =>
+      adminDeleteParticipantHandler(eventUserId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeysEvent.PARTICIPANTS] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysEvent.PARTICIPANTS],
+      });
     },
   });
 };

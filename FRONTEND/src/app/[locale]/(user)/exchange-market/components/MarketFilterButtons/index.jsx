@@ -32,12 +32,12 @@ function MarketFilterButtons({
         return (
           <button
             key={filterKey}
-            className={`flex items-center cursor-pointer rounded-xl px-4 py-2.5 text-xs font-bold transition-all duration-200 active:scale-95 border ${
+            className={`flex cursor-pointer items-center rounded-xl border px-4 py-2.5 text-xs font-bold transition-all duration-200 active:scale-95 ${
               isActive
                 ? marketView === "my_items"
                   ? `${statusColor} shadow-md`
-                  : "bg-[#0B6E4F] border-[#0B6E4F] text-white shadow-md shadow-[#0B6E4F]/10"
-                : "border-gray-200 bg-white text-gray-650 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-300"
+                  : "border-[#0B6E4F] bg-[#0B6E4F] text-white shadow-md shadow-[#0B6E4F]/10"
+                : "text-gray-650 border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50 hover:text-gray-900"
             }`}
             onClick={() =>
               marketView === "my_items"

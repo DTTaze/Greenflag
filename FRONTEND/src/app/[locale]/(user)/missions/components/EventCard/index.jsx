@@ -3,36 +3,40 @@ import React from "react";
 
 export default function EventCard({ event, onOpenModal, isParticipated }) {
   return (
-    <div className="group flex overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xs hover:shadow-sm hover:border-gray-300 transition-all duration-200">
+    <div className="group flex overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xs transition-all duration-200 hover:border-gray-300 hover:shadow-sm">
       {/* Decorative vertical line */}
-      <div className={`w-1.5 ${isParticipated ? "bg-emerald-500" : "bg-blue-500"}`}></div>
+      <div
+        className={`w-1.5 ${isParticipated ? "bg-emerald-500" : "bg-blue-500"}`}
+      ></div>
 
       <div className="flex-1 p-4">
-        <h3 className="text-sm font-bold text-gray-800 group-hover:text-emerald-800 transition-colors">
+        <h3 className="text-sm font-bold text-gray-800 transition-colors group-hover:text-emerald-800">
           {event.title}
         </h3>
-        <p className="mt-1 line-clamp-1 text-xs text-gray-550 leading-relaxed">
+        <p className="text-gray-550 mt-1 line-clamp-1 text-xs leading-relaxed">
           {event.description}
         </p>
 
-        <div className="mt-4.5 flex flex-wrap gap-2 items-center justify-between">
+        <div className="mt-4.5 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-3 text-[11px] font-semibold text-gray-400">
             <div className="flex items-center gap-1">
               <MapPin size={13} className="text-gray-400" />
-              <span className="truncate max-w-[120px]">{event.location}</span>
+              <span className="max-w-[120px] truncate">{event.location}</span>
             </div>
             <span className="text-gray-300">•</span>
             <div className="flex items-center gap-1">
               <CalendarIcon size={13} className="text-gray-400" />
-              <span>{new Date(event.start_time).toLocaleDateString("vi-VN")}</span>
+              <span>
+                {new Date(event.start_time).toLocaleDateString("vi-VN")}
+              </span>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 text-xs font-extrabold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-100/30">
+            <div className="flex items-center gap-1 rounded-lg border border-amber-100/30 bg-amber-50 px-2 py-0.5 text-xs font-extrabold text-amber-600">
               <span>+{event.coins || 0}</span>
               <svg
-                className="h-3.5 w-3.5 text-amber-500 fill-current"
+                className="h-3.5 w-3.5 fill-current text-amber-500"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
               >

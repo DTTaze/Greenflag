@@ -1,13 +1,13 @@
 import axiosClient from "@/src/services";
 import { ApiResponse } from "@/src/types/api";
 import {
+  ChangePasswordPayload,
+  ForgotPasswordPayload,
   LoginPayload,
   RegisterPayload,
-  VerifyOtpPayload,
   ResendEmailPayload,
-  ForgotPasswordPayload,
   ResetPasswordPayload,
-  ChangePasswordPayload,
+  VerifyOtpPayload,
 } from "@/src/types/auth/auth.payload";
 import { AuthResponse } from "@/src/types/auth/auth.response";
 import { UserType } from "@/src/types/user/user.type";

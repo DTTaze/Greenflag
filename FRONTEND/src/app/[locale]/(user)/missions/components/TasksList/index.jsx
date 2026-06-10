@@ -39,8 +39,8 @@ const TasksList = ({
     return (
       <div className="flex min-h-[600px] flex-col">
         <div className="flex-grow">
-          <h2 className="mb-4.5 flex items-center text-base font-extrabold text-gray-800 uppercase tracking-wider">
-            <span className="mr-2 rounded-xl bg-blue-50 p-2 text-blue-600 border border-blue-100/50 shadow-2xs">
+          <h2 className="mb-4.5 flex items-center text-base font-extrabold tracking-wider text-gray-800 uppercase">
+            <span className="mr-2 rounded-xl border border-blue-100/50 bg-blue-50 p-2 text-blue-600 shadow-2xs">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-4.5 w-4.5"
@@ -86,23 +86,23 @@ const TasksList = ({
                 )}
             </div>
           ) : (
-            <div className="rounded-2xl bg-blue-50/45 border border-blue-100/40 px-4 py-16 text-center shadow-3xs max-w-lg mx-auto">
+            <div className="shadow-3xs mx-auto max-w-lg rounded-2xl border border-blue-100/40 bg-blue-50/45 px-4 py-16 text-center">
               <img
                 src={imgSrc}
                 alt="All done!"
                 className="mx-auto mb-4 h-14 w-14 opacity-30"
               />
-              <h3 className="mb-1 text-base font-extrabold text-gray-700 uppercase tracking-wide">
+              <h3 className="mb-1 text-base font-extrabold tracking-wide text-gray-700 uppercase">
                 Tuyệt vời!
               </h3>
-              <p className="mx-auto text-xs text-gray-500 leading-relaxed max-w-sm font-medium">
+              <p className="mx-auto max-w-sm text-xs leading-relaxed font-medium text-gray-500">
                 Bạn đã hoàn thành tất cả nhiệm vụ hôm nay. Hãy quay lại vào ngày
                 mai để tiếp tục chuỗi hoạt động nhé!
               </p>
             </div>
           )}
         </div>
-        <div className="shrink-0 mt-6">
+        <div className="mt-6 shrink-0">
           {tasks && tasks.length > (taskPerPage || 4) && (
             <Pagination
               currentPage={currentPage}
@@ -119,8 +119,8 @@ const TasksList = ({
     return (
       <div className="flex min-h-[600px] flex-col">
         <div className="flex-grow">
-          <h2 className="mb-4.5 flex items-center text-base font-extrabold text-gray-800 uppercase tracking-wider">
-            <span className="mr-2 rounded-xl bg-indigo-50 p-2 text-indigo-650 border border-indigo-100/50 shadow-2xs">
+          <h2 className="mb-4.5 flex items-center text-base font-extrabold tracking-wider text-gray-800 uppercase">
+            <span className="text-indigo-650 mr-2 rounded-xl border border-indigo-100/50 bg-indigo-50 p-2 shadow-2xs">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-4.5 w-4.5"
@@ -160,22 +160,23 @@ const TasksList = ({
                 )}
             </div>
           ) : (
-            <div className="rounded-2xl bg-indigo-50/45 border border-indigo-100/40 px-4 py-16 text-center shadow-3xs max-w-lg mx-auto">
+            <div className="shadow-3xs mx-auto max-w-lg rounded-2xl border border-indigo-100/40 bg-indigo-50/45 px-4 py-16 text-center">
               <img
                 src={imgSrc}
                 alt="No tasks"
                 className="mx-auto mb-4 h-14 w-14 opacity-30"
               />
-              <h3 className="mb-1 text-base font-extrabold text-gray-700 uppercase tracking-wide">
+              <h3 className="mb-1 text-base font-extrabold tracking-wide text-gray-700 uppercase">
                 Chưa có nhiệm vụ!
               </h3>
-              <p className="mx-auto text-xs text-gray-500 leading-relaxed max-w-sm font-medium">
-                Hiện tại chưa có nhiệm vụ khác nào khả dụng. Hãy thử hoàn thành các nhiệm vụ hàng ngày trước nhé!
+              <p className="mx-auto max-w-sm text-xs leading-relaxed font-medium text-gray-500">
+                Hiện tại chưa có nhiệm vụ khác nào khả dụng. Hãy thử hoàn thành
+                các nhiệm vụ hàng ngày trước nhé!
               </p>
             </div>
           )}
         </div>
-        <div className="shrink-0 mt-6">
+        <div className="mt-6 shrink-0">
           {tasks && tasks.length > (taskPerPage || 4) && (
             <Pagination
               currentPage={currentPage}
@@ -190,10 +191,10 @@ const TasksList = ({
     );
   } else if (selectedTab === "completed") {
     return (
-      <div className="min-h-[600px] flex flex-col justify-between">
+      <div className="flex min-h-[600px] flex-col justify-between">
         <div className="flex-grow">
-          <h2 className="mb-4.5 flex items-center text-base font-extrabold text-gray-800 uppercase tracking-wider">
-            <span className="mr-2 rounded-xl bg-emerald-50 p-2 text-emerald-700 border border-emerald-100/50 shadow-2xs">
+          <h2 className="mb-4.5 flex items-center text-base font-extrabold tracking-wider text-gray-800 uppercase">
+            <span className="mr-2 rounded-xl border border-emerald-100/50 bg-emerald-50 p-2 text-emerald-700 shadow-2xs">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-4.5 w-4.5"
@@ -213,7 +214,7 @@ const TasksList = ({
           </h2>
 
           {tasks && tasks.length > 0 ? (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2 animate-fade-in">
+            <div className="animate-fade-in grid gap-4 md:grid-cols-2 lg:grid-cols-2">
               {tasks
                 .slice(
                   (currentPage - 1) * (taskPerPage || 4),
@@ -225,46 +226,54 @@ const TasksList = ({
                     className="flex items-center gap-3.5 rounded-2xl border border-gray-200 bg-gray-50/50 p-4.5 transition-all duration-300 hover:border-emerald-300/40 hover:bg-emerald-50/5 hover:shadow-2xs"
                   >
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-emerald-100 bg-emerald-50">
-                      <img src={imgSrc} alt="task icon" className="h-5.5 w-5.5 opacity-80" />
+                      <img
+                        src={imgSrc}
+                        alt="task icon"
+                        className="h-5.5 w-5.5 opacity-80"
+                      />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="flex items-center text-xs font-bold text-gray-800 gap-1.5 leading-snug">
+                      <h3 className="flex items-center gap-1.5 text-xs leading-snug font-bold text-gray-800">
                         <span className="truncate">{task.tasks.title}</span>
-                        <span className="shrink-0 inline-flex items-center rounded-lg bg-emerald-50 border border-emerald-100 px-2 py-0.5 text-[9px] font-extrabold text-emerald-800">
+                        <span className="inline-flex shrink-0 items-center rounded-lg border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-[9px] font-extrabold text-emerald-800">
                           ✓ Đã xong
                         </span>
                       </h3>
-                      <p className="text-[10px] text-gray-400 font-semibold mt-1">
+                      <p className="mt-1 text-[10px] font-semibold text-gray-400">
                         Hoàn thành:{" "}
-                        {new Date(task.completed_at).toLocaleDateString("vi-VN", {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                        {new Date(task.completed_at).toLocaleDateString(
+                          "vi-VN",
+                          {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          },
+                        )}
                       </p>
                     </div>
                   </div>
                 ))}
             </div>
           ) : (
-            <div className="rounded-2xl bg-emerald-50/30 border border-emerald-100/40 px-4 py-16 text-center shadow-3xs max-w-lg mx-auto">
+            <div className="shadow-3xs mx-auto max-w-lg rounded-2xl border border-emerald-100/40 bg-emerald-50/30 px-4 py-16 text-center">
               <img
                 src={imgSrc}
                 alt="No tasks"
                 className="mx-auto mb-4 h-14 w-14 opacity-30"
               />
-              <h3 className="mb-1 text-base font-extrabold text-gray-700 uppercase tracking-wide">
+              <h3 className="mb-1 text-base font-extrabold tracking-wide text-gray-700 uppercase">
                 Chưa hoàn thành nhiệm vụ nào!
               </h3>
-              <p className="mx-auto text-xs text-gray-500 leading-relaxed max-w-sm font-medium">
-                Bạn chưa hoàn thành nhiệm vụ nào. Hãy bắt đầu với nhiệm vụ hàng ngày để nhận các phần quà giá trị!
+              <p className="mx-auto max-w-sm text-xs leading-relaxed font-medium text-gray-500">
+                Bạn chưa hoàn thành nhiệm vụ nào. Hãy bắt đầu với nhiệm vụ hàng
+                ngày để nhận các phần quà giá trị!
               </p>
             </div>
           )}
         </div>
-        <div className="shrink-0 mt-6">
+        <div className="mt-6 shrink-0">
           {tasks && tasks.length > (taskPerPage || 4) && (
             <Pagination
               currentPage={currentPage}

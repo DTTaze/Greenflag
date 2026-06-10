@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verify Your Email</title>
+    <style>
+      body {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        background-color: #f4f6f8;
+        margin: 0;
+        padding: 0;
+        -webkit-text-size-adjust: 100%;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+      .card {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        padding: 40px;
+        text-align: center;
+      }
+      .header {
+        margin-bottom: 30px;
+      }
+      .logo {
+        font-size: 24px;
+        font-weight: bold;
+        color: #2d3748;
+        text-decoration: none;
+      }
+      h1 {
+        color: #1a202c;
+        font-size: 24px;
+        margin-bottom: 16px;
+      }
+      p {
+        color: #4a5568;
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 24px;
+      }
+      .token-box {
+        background-color: #ebf4ff;
+        color: #3182ce;
+        font-size: 32px;
+        font-weight: bold;
+        letter-spacing: 4px;
+        padding: 24px;
+        border-radius: 8px;
+        margin: 32px 0;
+        display: inline-block;
+      }
+      .footer {
+        margin-top: 32px;
+        color: #718096;
+        font-size: 14px;
+        text-align: center;
+      }
+      .footer a {
+        color: #718096;
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div class="header">
+          <div class="logo">Heartify</div>
+        </div>
+
+        <h1>Verify your email address</h1>
+
+        <p>Hi <strong><%= username %></strong>,</p>
+        <p>
+          Thanks for signing up for Heartify! Please use the verification code
+          below to complete your registration.
+        </p>
+
+        <div class="token-box"><%= passCode %></div>
+
+        <p>This code will expire in 10 minutes.</p>
+        <p>
+          If you didn't create an account with us, you can safely ignore this
+          email.
+        </p>
+      </div>
+
+      <div class="footer">
+        <p>
+          &copy; <%= new Date().getFullYear() %> Heartify. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

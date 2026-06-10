@@ -37,9 +37,9 @@ function MenuItem({ text, path, hasSubmenu, isOpen, onClick, children }) {
           type="button"
           onClick={onClick}
           aria-expanded={isOpen}
-          className="flex w-full items-center justify-between rounded-lg p-2 text-sm text-gray-700 transition-colors duration-200 hover:bg-gray-100 focus:ring-2 focus:ring-blue-300 focus:outline-none dark:text-gray-200 dark:hover:bg-gray-700"
+          className="flex w-full items-center justify-between rounded-3xl px-4 py-3 text-sm font-medium text-slate-700 transition-colors duration-200 hover:bg-slate-100 focus:ring-2 focus:ring-blue-300 focus:outline-none dark:text-slate-200 dark:hover:bg-slate-800"
         >
-          <span className="flex-1 text-sm">{text}</span>
+          <span className="flex-1 text-left">{text}</span>
           <svg
             className={`h-4 w-4 transform transition-transform duration-200 ${isOpen ? "rotate-90" : ""}`}
             fill="none"
@@ -59,8 +59,10 @@ function MenuItem({ text, path, hasSubmenu, isOpen, onClick, children }) {
         <NavLink
           to={path}
           className={({ isActive }) =>
-            `flex items-center rounded-lg p-2 text-sm transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 ${
-              isActive ? "bg-blue-100 font-semibold dark:bg-blue-900" : ""
+            `flex items-center rounded-3xl px-4 py-3 text-sm font-medium transition-colors duration-200 hover:bg-slate-100 dark:hover:bg-slate-800 ${
+              isActive
+                ? "bg-blue-50 text-slate-900 dark:bg-blue-900 dark:text-white"
+                : "text-slate-700 dark:text-slate-300"
             }`
           }
         >
@@ -68,9 +70,8 @@ function MenuItem({ text, path, hasSubmenu, isOpen, onClick, children }) {
         </NavLink>
       )}
 
-      {/* Animated submenu: max-h transition for smooth open/close */}
       <div
-        className={`ml-3 overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out ${
+        className={`ml-4 overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out ${
           isOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0"
         }`}
         aria-hidden={!isOpen}
@@ -87,8 +88,10 @@ function SubMenuItem({ text, path }) {
     <NavLink
       to={path}
       className={({ isActive }) =>
-        `block rounded-lg px-2 py-1 text-sm text-gray-600 transition-colors duration-150 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 ${
-          isActive ? "bg-blue-50 font-semibold dark:bg-blue-900" : ""
+        `block rounded-3xl px-4 py-2 text-sm transition-colors duration-150 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 ${
+          isActive
+            ? "bg-blue-50 font-semibold dark:bg-blue-900 dark:text-white"
+            : "text-slate-600"
         }`
       }
     >
@@ -109,7 +112,6 @@ function ProfileCard() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // entrance animation trigger
     setMounted(true);
   }, []);
 
@@ -136,7 +138,7 @@ function ProfileCard() {
 
   if (!isAuthenticated)
     return (
-      <p className="text-sm text-gray-700 dark:text-gray-300">
+      <p className="text-sm text-slate-700 dark:text-slate-300">
         {t("notLoggedIn")}
       </p>
     );
@@ -170,6 +172,13 @@ function ProfileCard() {
     }
   };
 
+  const roleLabel =
+    user?.role || user?.roles?.name || t("userRole") || "Người dùng";
+  const lastLoginLabel = user?.last_logined
+    ? new Date(user.last_logined).toLocaleDateString()
+    : null;
+  const coins = user?.coins?.amount;
+
   const menuItems = [
     {
       text: t("myAccount"),
@@ -179,6 +188,10 @@ function ProfileCard() {
         { text: t("address"), path: "/user/address" },
         { text: t("changePasswordTitle"), path: "/user/change-password" },
         { text: t("deleteAccount"), path: "/user/delete-account" },
+        {
+          text: t("notifications") || "Thông báo",
+          path: "/user/notifications",
+        },
       ],
     },
     { text: t("completedMissions"), path: "/user/missions" },
@@ -188,7 +201,6 @@ function ProfileCard() {
 
   return (
     <>
-      {/* small local styles for shimmer fallback + focus visible */}
       <style>{`
         .avatar-focus-ring:focus {
           box-shadow: 0 0 0 3px rgba(59,130,246,0.25);
@@ -197,12 +209,12 @@ function ProfileCard() {
       `}</style>
 
       <div
-        className={`mx-auto max-w-sm transform rounded-lg bg-white p-4 shadow-md transition-all duration-300 dark:border dark:border-gray-700 dark:bg-gray-800 ${
+        className={`mx-auto max-w-sm transform overflow-hidden rounded-3xl bg-white p-6 shadow-2xl transition-all duration-300 dark:border dark:border-slate-700 dark:bg-slate-900 ${
           mounted ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
         }`}
       >
-        <div className="flex flex-wrap items-center space-x-4 sm:space-x-6">
-          <div className="relative flex h-20 w-20 shrink-0 sm:h-20 sm:w-20">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+          <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-3xl bg-slate-100 shadow-sm dark:bg-slate-800">
             <button
               type="button"
               onClick={() => fileInputRef.current.click()}
@@ -210,38 +222,24 @@ function ProfileCard() {
                 (e.key === "Enter" || e.key === " ") &&
                 fileInputRef.current.click()
               }
-              className="group avatar-focus-ring relative h-full w-full overflow-hidden rounded-lg focus:outline-none"
+              className="avatar-focus-ring absolute inset-0 flex h-full w-full items-center justify-center rounded-3xl focus:outline-none"
               aria-label={t("changeAvatar") || "Change avatar"}
-              title={t("changeAvatar") || "Change avatar"}
             >
               <img
                 key={avatarUrl}
                 alt="Avatar"
-                className={`h-full w-full object-cover transition-transform duration-200 group-hover:scale-105 ${
-                  loading ? "opacity-50" : "opacity-100"
-                } rounded-lg`}
+                className={`h-full w-full object-cover transition-transform duration-200 ${
+                  loading ? "opacity-40" : "opacity-100"
+                }`}
                 src={avatarUrl}
                 draggable={false}
               />
-              {/* overlay icon */}
-              <span className="absolute inset-0 flex items-end justify-end p-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                <svg
-                  className="h-5 w-5 rounded bg-black/50 p-1 text-white"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="1.5"
-                    d="M3 8h4l3-3h4l3 3h4v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z"
-                  />
-                </svg>
-              </span>
+              <div className="absolute inset-0 flex items-end justify-center bg-linear-to-t from-black/50 p-3 opacity-0 transition-opacity duration-200 hover:opacity-100">
+                <span className="rounded-full bg-white/90 px-3 py-1 text-[11px] font-semibold tracking-[0.22em] text-slate-900 uppercase">
+                  {t("changeAvatar") || "Thay avatar"}
+                </span>
+              </div>
             </button>
-
             <input
               type="file"
               ref={fileInputRef}
@@ -251,17 +249,36 @@ function ProfileCard() {
             />
           </div>
 
-          <div className="flex flex-1 flex-col break-words">
-            <h2 className="text-base font-semibold text-gray-800 dark:text-gray-100">
-              {user?.full_name || "null"}
-            </h2>
-            <p className="text-xs text-gray-600 dark:text-gray-300">
-              {user?.email || t("noEmail")}
-            </p>
+          <div className="min-w-0 flex-1 space-y-3">
+            <div className="space-y-1">
+              <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+                {user?.full_name || "-"}
+              </h2>
+              <p className="text-sm text-slate-600 dark:text-slate-300">
+                {user?.email || t("noEmail")}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold tracking-[0.2em] text-emerald-700 uppercase dark:bg-emerald-500/20 dark:text-emerald-200">
+                {roleLabel}
+              </span>
+              {coins !== undefined && (
+                <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold tracking-[0.2em] text-amber-700 uppercase dark:bg-amber-500/20 dark:text-amber-200">
+                  {coins} {t("coins") || "Coins"}
+                </span>
+              )}
+            </div>
+
+            {lastLoginLabel && (
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                {t("lastUpdated") || "Hoạt động cuối"}: {lastLoginLabel}
+              </p>
+            )}
           </div>
         </div>
 
-        <div className="my-4 h-px w-full border-b border-gray-200 dark:border-gray-700"></div>
+        <div className="my-5 h-px bg-slate-200 dark:bg-slate-700" />
 
         <nav className="space-y-2" aria-label="User menu">
           {menuItems.map((item) => (

@@ -2,6 +2,8 @@
 
 import {
   Calendar,
+  ClipboardList,
+  Gift,
   LayoutDashboard,
   Package,
   ScanQrCode,
@@ -28,6 +30,16 @@ const menuItems = [
     text: "Items",
     icon: <Package size={20} />,
     path: "/customer/items",
+  },
+  {
+    text: "Rewards",
+    icon: <Gift size={20} />,
+    path: "/customer/rewards",
+  },
+  {
+    text: "Tasks",
+    icon: <ClipboardList size={20} />,
+    path: "/customer/tasks",
   },
   {
     text: "Users",
@@ -79,7 +91,10 @@ export default function CustomerDrawer({
 
       {/* Sliding Drawer Container */}
       <div
-        className={`fixed top-0 left-0 z-50 flex h-full transform flex-col border-r border-gray-100 bg-white shadow-xl transition-transform duration-300 ease-in-out ${
+        id="customer-drawer"
+        role="navigation"
+        aria-label="Customer sidebar navigation"
+        className={`fixed top-0 left-0 z-50 flex h-full transform flex-col border-r border-gray-100 bg-white shadow-xl transition-transform duration-300 ease-in-out dark:border-gray-700 dark:bg-gray-800 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
         style={{ width: `${drawerWidth}px` }}

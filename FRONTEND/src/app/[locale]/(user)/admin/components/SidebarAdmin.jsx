@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Bell,
   Calendar,
   ClipboardList,
   Coins,
@@ -66,6 +67,11 @@ export default function TemporaryDrawer({ userInfo }) {
           path: "/admin/content/products",
         },
         {
+          text: "Danh mục",
+          icon: <ListPlus size={20} />,
+          path: "/admin/content/categories",
+        },
+        {
           text: "Sự kiện",
           icon: <Calendar size={20} />,
           path: "/admin/content/events",
@@ -99,6 +105,11 @@ export default function TemporaryDrawer({ userInfo }) {
           text: "Hàng đợi",
           icon: <ListPlus size={20} />,
           path: "/admin/queues",
+        },
+        {
+          text: "Thông báo",
+          icon: <Bell size={20} />,
+          path: "/admin/notifications",
         },
       ],
     },

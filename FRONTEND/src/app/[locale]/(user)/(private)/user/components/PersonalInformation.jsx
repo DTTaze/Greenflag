@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { Copy, QrCode } from "lucide-react";
+import { Copy, QrCode, ShieldCheck, UserCircle2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
@@ -29,6 +29,10 @@ function PersonalInformation() {
   const [showQrDialog, setShowQrDialog] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState({ message: "", type: "info" });
+
+  const showStatus = (message, type = "info") => setStatus({ message, type });
+  const clearStatus = () => setStatus({ message: "", type: "info" });
 
   useEffect(() => void setMounted(true), []);
 
@@ -88,7 +92,7 @@ function PersonalInformation() {
     });
     setErrors(newErrors);
     if (Object.keys(newErrors).length) {
-      alert(t("invalidInfo"));
+      showStatus(t("invalidInfo"), "error");
       return;
     }
     try {
@@ -109,17 +113,18 @@ function PersonalInformation() {
         full_name: res.data.full_name || "",
         phone_number: res.data.phone_number || "",
       });
-      alert(t("updateSuccess"));
+      showStatus(t("updateSuccess"), "success");
       setIsEditing(false);
     } catch (err) {
       console.error("Update failed:", err);
-      alert(t("updateFailed"));
+      showStatus(t("updateFailed"), "error");
     } finally {
       setSaving(false);
     }
   };
 
   const handleEdit = () => {
+    clearStatus();
     setIsEditing(true);
     requestAnimationFrame(() => {
       const el = document.querySelector("#profile-form");
@@ -138,6 +143,7 @@ function PersonalInformation() {
     });
     setErrors({});
     setIsEditing(false);
+    clearStatus();
   };
 
   const generateQRCode = async () => {
@@ -148,14 +154,14 @@ function PersonalInformation() {
       if (response?.data) setQrCode(response.data);
     } catch (err) {
       console.error("QR failed:", err);
-      alert(t("generateQrFailed"));
+      showStatus(t("generateQrFailed"), "error");
       setShowQrDialog(false);
     }
   };
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
-    alert(t("copiedToClipboard"));
+    showStatus(t("copiedToClipboard"), "success");
   };
 
   if (!isAuthenticated || !user) return <PersonalInfomationSkeleton />;
@@ -170,161 +176,227 @@ function PersonalInformation() {
   return (
     <div
       id="profile-form"
-      className={`transform rounded-lg bg-white p-6 shadow-md transition-all duration-300 dark:bg-gray-800 ${
+      className={`transform overflow-hidden rounded-3xl bg-white p-6 shadow-xl transition-all duration-300 dark:bg-slate-950 ${
         mounted ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
       }`}
     >
-      <div className="flex items-center justify-between">
-        <div>
-          <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+      <div className="mb-6 flex flex-col gap-4 rounded-3xl bg-slate-50 p-6 sm:flex-row sm:items-center sm:justify-between dark:bg-slate-900">
+        <div className="space-y-3">
+          <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-200">
+            <ShieldCheck size={16} />
             {t("profileTitle")}
-          </h4>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {t("profileSubtitle") || ""}
-          </p>
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
+              {t("profileSubtitle")}
+            </h1>
+            <p className="max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-400">
+              {t("profileSubtitle") ||
+                "Quản lý thông tin cá nhân và tài khoản của bạn."}
+            </p>
+          </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Button
-            text="QR Code"
+            text={t("qrCodeBtn") || "QR Code"}
+            variant="secondary"
+            size="lg"
             onClick={generateQRCode}
-            padding="12px"
             icon={<QrCode size={18} />}
-            className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
           />
           {!isEditing ? (
             <Button
               text={t("editBtn")}
+              variant="default"
+              size="lg"
               onClick={handleEdit}
-              padding="12px"
-              className="bg-blue-600 text-white hover:bg-blue-700"
             />
           ) : (
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              Editing
-            </span>
+            <Button
+              text={t("cancelBtn")}
+              variant="outline"
+              size="lg"
+              onClick={handleCancel}
+              disabled={saving}
+            />
           )}
         </div>
       </div>
 
-      <hr className="my-4 border-gray-200 dark:border-gray-700" />
-
-      <form
-        id="profile-form-body"
-        className="space-y-6"
-        onSubmit={handleUpdate}
-      >
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {inputFields.map(({ id, label }) => (
-            <div key={id}>
-              <InputField
-                id={id}
-                label={label}
-                value={user[id] || ""}
-                onChange={handleChange}
-                error={errors[id]}
-                disabled={!isEditing || saving}
-                className={`transition-colors duration-150 ${
-                  isEditing
-                    ? "bg-white dark:bg-gray-800"
-                    : "cursor-not-allowed bg-gray-50 text-gray-600 dark:bg-gray-900 dark:text-gray-400"
-                }`}
-              />
+      <div className="grid gap-6 xl:grid-cols-[minmax(280px,320px)_1fr]">
+        <aside className="space-y-4 rounded-3xl bg-slate-50 p-5 ring-1 ring-slate-200 dark:bg-slate-950 dark:ring-slate-700">
+          <div className="flex items-center gap-4">
+            <div className="grid h-14 w-14 place-items-center rounded-3xl bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-200">
+              <UserCircle2 size={26} />
             </div>
-          ))}
-        </div>
-
-        <div className="flex justify-end gap-3">
-          {isEditing ? (
-            <>
-              <Button
-                text={t("saveBtn")}
-                type="submit"
-                className="bg-emerald-600 text-white hover:bg-emerald-700"
-                padding="12px"
-                disabled={saving}
-              />
-              <Button
-                text={t("cancelBtn")}
-                type="button"
-                onClick={handleCancel}
-                className="bg-gray-300 text-gray-800 hover:bg-gray-400 dark:bg-gray-700 dark:text-gray-200"
-                padding="12px"
-                disabled={saving}
-              />
-            </>
-          ) : (
-            <div className="text-sm text-gray-500 dark:text-gray-400">
-              {t("lastUpdated")
-                ? `${t("lastUpdated")}: ${originalUser?.updated_at || "-"}`
-                : ""}
-            </div>
-          )}
-        </div>
-      </form>
-
-      <Dialog
-        open={showQrDialog}
-        onOpenChange={(isOpen) => !isOpen && setShowQrDialog(false)}
-      >
-        <DialogContent className="rounded-xl border border-gray-100 bg-white p-6 shadow-lg sm:max-w-[420px]">
-          <DialogHeader className="mb-3">
-            <DialogTitle className="text-lg font-bold text-emerald-800">
-              {t("qrDialogTitle") || "Your Personal QR Code"}
-            </DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {t("qrDialogDesc") ||
-                "Scan this QR code to quickly access your profile."}
-            </p>
-
-            <div className="flex min-h-[200px] flex-col items-center justify-center rounded-xl border border-dashed border-emerald-200 bg-emerald-50/10 p-4">
-              {qrCode ? (
-                <div className="flex flex-col items-center gap-3">
-                  <img
-                    src={qrCode}
-                    alt="QR Code"
-                    className="h-auto max-w-[220px] rounded-md shadow-sm"
-                  />
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => copyToClipboard(user?.public_id)}
-                      className="inline-flex items-center gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 transition-colors hover:bg-emerald-100"
-                    >
-                      <Copy size={14} />
-                      <span>{t("copyPublicId") || "Copy Public ID"}</span>
-                    </button>
-
-                    <a
-                      href={qrCode}
-                      download={`qr-${user?.public_id || "id"}.png`}
-                      className="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-50"
-                    >
-                      {t("download") || "Download"}
-                    </a>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center gap-2">
-                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-700 border-t-transparent" />
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {t("generatingQr") || "Generating QR..."}
-                  </p>
-                </div>
-              )}
+            <div>
+              <p className="text-xs tracking-[0.24em] text-slate-500 uppercase dark:text-slate-400">
+                {tAuth("username")}
+              </p>
+              <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
+                {user.username || "-"}
+              </p>
             </div>
           </div>
 
-          <DialogFooter className="mt-4">
-            <Button
-              text={t("close") || "Close"}
-              onClick={() => setShowQrDialog(false)}
-              className="w-full bg-emerald-600 text-white hover:bg-emerald-700"
-              padding="12px"
-            />
-          </DialogFooter>
+          <div className="grid gap-3">
+            <div className="rounded-3xl bg-white p-4 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
+              <p className="text-xs tracking-[0.24em] text-slate-500 uppercase dark:text-slate-400">
+                {t("accountId") || "Mã tài khoản"}
+              </p>
+              <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
+                {originalUser?.public_id || "-"}
+              </p>
+            </div>
+
+            <div className="rounded-3xl bg-white p-4 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
+              <p className="text-xs tracking-[0.24em] text-slate-500 uppercase dark:text-slate-400">
+                {t("role") || "Vai trò"}
+              </p>
+              <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
+                {originalUser?.role ||
+                  originalUser?.roles?.name ||
+                  t("userRole") ||
+                  "Người dùng"}
+              </p>
+            </div>
+
+            <div className="rounded-3xl bg-white p-4 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
+              <p className="text-xs tracking-[0.24em] text-slate-500 uppercase dark:text-slate-400">
+                {t("phone") || "Số điện thoại"}
+              </p>
+              <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
+                {user.phone_number || "-"}
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-3xl bg-slate-100 p-4 text-sm text-slate-600 dark:bg-slate-900 dark:text-slate-300">
+            <p className="font-semibold text-slate-900 dark:text-slate-100">
+              {t("profileSubtitle") || "Thông tin cá nhân"}
+            </p>
+            <p className="mt-2 leading-6">
+              {t("profileHint") ||
+                "Nhấn Chỉnh sửa để cập nhật thông tin và giữ hồ sơ luôn chính xác."}
+            </p>
+          </div>
+        </aside>
+
+        <section className="rounded-3xl bg-white p-6 ring-1 ring-slate-200 dark:bg-slate-950 dark:ring-slate-700">
+          {status.message && (
+            <div
+              role="status"
+              className={`mb-6 rounded-3xl border px-4 py-3 text-sm ${
+                status.type === "success"
+                  ? "border-emerald-200 bg-emerald-50 text-emerald-900 dark:bg-emerald-500/10 dark:text-emerald-200"
+                  : "border-rose-200 bg-rose-50 text-rose-900 dark:bg-rose-500/10 dark:text-rose-200"
+              }`}
+            >
+              {status.message}
+            </div>
+          )}
+
+          <form className="space-y-6" onSubmit={handleUpdate}>
+            <div className="grid gap-5 md:grid-cols-2">
+              {inputFields.map(({ id, label }) => (
+                <InputField
+                  key={id}
+                  id={id}
+                  label={label}
+                  value={user[id] || ""}
+                  onChange={handleChange}
+                  error={errors[id]}
+                  disabled={!isEditing || saving}
+                  className={`transition-colors duration-150 ${
+                    isEditing
+                      ? "bg-white dark:bg-slate-950"
+                      : "cursor-not-allowed bg-slate-100 text-slate-500 dark:bg-slate-900 dark:text-slate-400"
+                  }`}
+                />
+              ))}
+            </div>
+
+            <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+              {isEditing ? (
+                <>
+                  <Button
+                    text={t("saveBtn")}
+                    type="submit"
+                    variant="default"
+                    size="lg"
+                    disabled={saving}
+                  />
+                  <Button
+                    text={t("cancelBtn")}
+                    type="button"
+                    variant="outline"
+                    size="lg"
+                    onClick={handleCancel}
+                    disabled={saving}
+                  />
+                </>
+              ) : (
+                <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+                  {t("lastUpdated")
+                    ? `${t("lastUpdated")}: ${originalUser?.updated_at || "-"}`
+                    : ""}
+                </div>
+              )}
+            </div>
+          </form>
+        </section>
+      </div>
+
+      <Dialog open={showQrDialog} onOpenChange={setShowQrDialog}>
+        <DialogContent className="min-w-[min(95vw,420px)] rounded-3xl bg-white p-6 shadow-2xl dark:bg-slate-950">
+          <DialogHeader>
+            <DialogTitle>{t("qrCodeBtn") || "QR Code"}</DialogTitle>
+            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+              {t("qrCodeDescription") || "Quét mã QR để chia sẻ hồ sơ của bạn."}
+            </p>
+          </DialogHeader>
+
+          <div className="mt-6 flex flex-col items-center gap-4">
+            {qrCode ? (
+              <img
+                className="h-64 w-64 rounded-3xl border border-slate-200 object-contain dark:border-slate-700"
+                alt={t("qrCodeBtn") || "QR Code"}
+                src={`data:image/png;base64,${qrCode}`}
+              />
+            ) : (
+              <div className="flex h-64 w-64 items-center justify-center rounded-3xl bg-slate-100 text-sm text-slate-500 dark:bg-slate-900 dark:text-slate-400">
+                {t("loading") || "Đang tạo mã QR..."}
+              </div>
+            )}
+
+            <div className="grid w-full gap-3">
+              <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
+                <div className="font-semibold">
+                  {t("accountId") || "Mã tài khoản"}
+                </div>
+                <div className="mt-2 text-sm break-all text-slate-600 dark:text-slate-400">
+                  {user.public_id || "-"}
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter className="mt-0 flex flex-col gap-3 sm:flex-row sm:justify-end">
+              <Button
+                text={t("copyBtn") || "Sao chép"}
+                variant="secondary"
+                size="lg"
+                icon={<Copy size={16} />}
+                onClick={() => copyToClipboard(user.public_id || "")}
+              />
+              <Button
+                text={t("close") || "Đóng"}
+                variant="outline"
+                size="lg"
+                onClick={() => setShowQrDialog(false)}
+              />
+            </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

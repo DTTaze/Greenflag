@@ -71,3 +71,6 @@ clean:
 	docker compose down -v
 	docker compose -f docker-compose.infra.yml down -v
 	docker network rm greenflag-net || true
+
+migrate:
+	docker compose exec -T db psql -U postgres -d greenflag < backend-nestjs/src/scripts/migrate_seed_data.sql

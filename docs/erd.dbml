@@ -111,6 +111,7 @@ Table items {
   width int [not null]
   height int [not null]
   purchase_limit_per_day int
+  images "text[]"
   created_at datetime [not null]
   updated_at datetime [not null]
 }
@@ -124,6 +125,7 @@ Table products {
   category varchar(255) [not null]
   product_status varchar(255) [not null, default: 'new']
   post_status varchar(255) [not null, default: 'pending']
+  images "text[]"
   created_at datetime [not null]
   updated_at datetime [not null]
 }

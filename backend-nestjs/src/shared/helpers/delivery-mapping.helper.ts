@@ -18,7 +18,7 @@ export function mapToDeliveryAccountEntity(
   // Map token and shop_id into apiConfig JSONB
   entity.apiConfig = entity.apiConfig || {};
   if (dto.token !== undefined) entity.apiConfig.token = dto.token;
-  if (dto.shop_id !== undefined) entity.apiConfig.shopId = dto.shop_id;
+  if (dto.shop_id !== undefined) entity.apiConfig.shop_id = dto.shop_id;
   return entity;
 }
 

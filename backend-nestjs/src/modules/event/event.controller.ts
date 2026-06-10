@@ -54,7 +54,10 @@ export class EventController {
     @Param('eventId') eventId: string,
     @Req() req: any,
   ): Promise<HttpResponse> {
-    const result = await this.eventUserService.acceptEvent(eventId, req.user.id);
+    const result = await this.eventUserService.acceptEvent(
+      eventId,
+      req.user.id,
+    );
     if (result.success) {
       result.message = 'Accept event success';
     }

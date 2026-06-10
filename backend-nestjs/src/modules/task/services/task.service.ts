@@ -1,9 +1,10 @@
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 
 import { Inject, Injectable, OnModuleInit, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CloudinaryService } from '@modules/cloudinary/services/cloudinary.service';
+import { Coin } from '@modules/user/entities/coin.entity';
 import { User } from '@modules/user/entities/user.entity';
 import { CoinService } from '@modules/user/services/coin.service';
 import { UserProfileService } from '@modules/user/services/user-profile.service';
@@ -298,107 +299,159 @@ export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
     taskUser: TaskUser,
     user: User,
   ): Promise<OperationResult<void>> {
-    taskUser.completedAt = new Date();
-    await this.taskUserService.updateByID(taskUser.id, {
-      completedAt: taskUser.completedAt,
-    });
+    return this.taskRepository.manager.transaction(async (manager) => {
+      taskUser.completedAt = new Date();
+      await manager.save(TaskUser, taskUser);
 
-    let newStreak = user.profile?.streak || 0;
-    if (user.profile?.lastCompletedTask) {
-      const lastCompletedTaskDate = new Date(user.profile.lastCompletedTask);
-      lastCompletedTaskDate.setHours(0, 0, 0, 0);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const differenceInDays =
-        (today.getTime() - lastCompletedTaskDate.getTime()) /
-        (1000 * 60 * 60 * 24);
+      let newStreak = user.profile?.streak || 0;
+      if (user.profile?.lastCompletedTask) {
+        const lastCompletedTaskDate = new Date(user.profile.lastCompletedTask);
+        lastCompletedTaskDate.setHours(0, 0, 0, 0);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const differenceInDays =
+          (today.getTime() - lastCompletedTaskDate.getTime()) /
+          (1000 * 60 * 60 * 24);
 
-      if (differenceInDays > 1) {
+        if (differenceInDays > 1) {
+          newStreak = 1;
+        } else if (differenceInDays === 1) {
+          newStreak += 1;
+        }
+      } else {
         newStreak = 1;
-      } else if (differenceInDays === 1) {
-        newStreak += 1;
       }
-    } else {
-      newStreak = 1;
-    }
 
-    if (user.profile) {
-      user.profile.streak = newStreak;
-      user.profile.lastCompletedTask = new Date();
-      await this.userProfileService.updateByID(user.profile.id, {
-        streak: newStreak,
-        lastCompletedTask: user.profile.lastCompletedTask,
+      if (user.profile) {
+        user.profile.streak = newStreak;
+        user.profile.lastCompletedTask = new Date();
+        await manager.save(user.profile);
+      }
+
+      const task = await manager.findOne(Task, {
+        where: { id: taskUser.taskId },
       });
-    }
-
-    // Fetch coins configuration from task
-    const task = await this.taskRepository.findOne({
-      where: { id: taskUser.taskId },
-    });
-    if (task) {
-      const coinResultRes = await this.coinService.findOne({ userId: user.id });
-      if (coinResultRes.success && coinResultRes.data) {
-        await this.coinService.updateIncreaseCoin(coinResultRes.data.id, {
-          coins: task.coins,
+      if (task) {
+        const userCoin = await manager.findOne(Coin, {
+          where: { userId: user.id },
+          lock: { mode: 'pessimistic_write' },
         });
-      }
-    }
 
-    return generateSuccessResult(undefined);
+        if (userCoin) {
+          userCoin.amount += task.coins;
+          await manager.save(Coin, userCoin);
+        }
+      }
+
+      return generateSuccessResult(undefined);
+    });
   }
 
   async increaseProgressCount(
     taskUserId: string,
   ): Promise<OperationResult<TaskUser>> {
-    const taskUserRes = await this.taskUserService.findOne(
-      { id: taskUserId },
-      { relations: { task: true } },
-    );
+    try {
+      const result = await this.taskRepository.manager.transaction(
+        async (manager) => {
+          // 1. Lock and find TaskUser
+          const taskUser = await manager.findOne(TaskUser, {
+            where: { id: taskUserId },
+            lock: { mode: 'pessimistic_write' },
+            relations: { task: true },
+          });
 
-    if (!taskUserRes.success || !taskUserRes.data) {
-      return generateNotFoundResult(
-        'Task user not found.',
-        ERR_CODE.TASK_USER_NOT_FOUND,
-      );
-    }
-    const taskUser = taskUserRes.data;
-    if (!taskUser.task) {
-      return generateNotFoundResult('Task not found.', ERR_CODE.TASK_NOT_FOUND);
-    }
-    if (taskUser.progressCount >= taskUser.task.total) {
-      return generateBadRequestResult(
-        'Task is already completed.',
-        ERR_CODE.TASK_COMPLETED,
-      );
-    }
+          if (!taskUser) {
+            return generateNotFoundResult(
+              'Task user not found.',
+              ERR_CODE.TASK_USER_NOT_FOUND,
+            );
+          }
 
-    taskUser.progressCount += 1;
-    const updatedRes = await this.taskUserService.updateByID(taskUser.id, {
-      progressCount: taskUser.progressCount,
-    });
-    if (!updatedRes.success || !updatedRes.data) {
+          if (!taskUser.task) {
+            return generateNotFoundResult(
+              'Task not found.',
+              ERR_CODE.TASK_NOT_FOUND,
+            );
+          }
+
+          if (
+            taskUser.completedAt ||
+            taskUser.progressCount >= taskUser.task.total
+          ) {
+            return generateBadRequestResult(
+              'Task is already completed.',
+              ERR_CODE.TASK_COMPLETED,
+            );
+          }
+
+          taskUser.progressCount += 1;
+
+          if (taskUser.progressCount >= taskUser.task.total) {
+            taskUser.completedAt = new Date();
+
+            const userResult = await this.userService.getUserByID(
+              taskUser.userId,
+            );
+            if (!userResult.success || !userResult.data) {
+              return generateNotFoundResult(
+                'User not found.',
+                ERR_CODE.USER_NOT_FOUND,
+              );
+            }
+            const user = userResult.data;
+
+            // Streak logic
+            let newStreak = user.profile?.streak || 0;
+            if (user.profile?.lastCompletedTask) {
+              const lastCompletedTaskDate = new Date(
+                user.profile.lastCompletedTask,
+              );
+              lastCompletedTaskDate.setHours(0, 0, 0, 0);
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              const differenceInDays =
+                (today.getTime() - lastCompletedTaskDate.getTime()) /
+                (1000 * 60 * 60 * 24);
+
+              if (differenceInDays > 1) {
+                newStreak = 1;
+              } else if (differenceInDays === 1) {
+                newStreak += 1;
+              }
+            } else {
+              newStreak = 1;
+            }
+
+            if (user.profile) {
+              user.profile.streak = newStreak;
+              user.profile.lastCompletedTask = new Date();
+              await manager.save(user.profile);
+            }
+
+            // Coin reward logic: Lock Coin row and increment atomically
+            const userCoin = await manager.findOne(Coin, {
+              where: { userId: user.id },
+              lock: { mode: 'pessimistic_write' },
+            });
+
+            if (userCoin) {
+              userCoin.amount += taskUser.task.coins;
+              await manager.save(Coin, userCoin);
+            }
+          }
+
+          const savedTaskUser = await manager.save(TaskUser, taskUser);
+          return generateSuccessResult(savedTaskUser);
+        },
+      );
+
+      return result;
+    } catch (error) {
       return OperationResult.fail(
-        updatedRes.code || 'update_failed',
-        updatedRes.message,
+        ERR_CODE.INTERNAL_SERVER_ERROR,
+        error.message,
       );
     }
-    const updated = updatedRes.data;
-    // Restore relation that might have been dropped by updateByID
-    updated.task = taskUser.task;
-
-    if (updated.progressCount >= taskUser.task.total) {
-      const userResult = await this.userService.getUserByID(taskUser.userId);
-      if (!userResult.success) {
-        return generateNotFoundResult(
-          'User not found.',
-          ERR_CODE.USER_NOT_FOUND,
-        );
-      }
-      const user = userResult.data;
-      await this.completeTask(updated, user);
-    }
-
-    return generateSuccessResult(updated);
   }
 
   async updateDecisionTaskSubmit(

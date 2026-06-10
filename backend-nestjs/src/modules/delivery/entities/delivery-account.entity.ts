@@ -10,6 +10,7 @@ import {
 import { User } from '@modules/user/entities/user.entity';
 
 import { CARRIER_TYPE } from '@shared/enums';
+import { DeliveryCarrierConfig } from '@shared/interfaces';
 
 import { DeliveryOrder } from './delivery-order.entity';
 
@@ -31,7 +32,7 @@ export class DeliveryAccount {
   carrier: CARRIER_TYPE;
 
   @Column({ name: 'api_config', type: 'jsonb', nullable: true })
-  apiConfig?: Record<string, any>;
+  apiConfig?: DeliveryCarrierConfig;
 
   @Column({ name: 'is_default', type: 'boolean', default: false })
   isDefault: boolean;

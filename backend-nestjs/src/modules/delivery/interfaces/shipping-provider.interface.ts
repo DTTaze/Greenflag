@@ -54,4 +54,8 @@ export interface IShippingProvider {
   ): Promise<any>;
   getWards(account: DeliveryAccount, districtId: number | string): Promise<any>;
   validateConfig(config: Record<string, any>): Promise<boolean>;
+  getOrderStatus(
+    account: DeliveryAccount,
+    orderCode: string,
+  ): Promise<DELIVERY_ORDER_STATUS>;
 }

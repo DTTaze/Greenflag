@@ -69,7 +69,7 @@ export class DeliveryOrderService extends BaseCRUDService<DeliveryOrder> {
     // Construct a transient/temporary account using headers if available
     const tempAcc = new DeliveryAccount();
     tempAcc.carrier = carrier;
-    tempAcc.apiConfig = { token, shopId };
+    tempAcc.apiConfig = { token, shop_id: shopId };
     return generateSuccessResult(tempAcc);
   }
 

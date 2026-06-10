@@ -81,6 +81,8 @@ services:
       - ./.env
     ports:
       - "5173:5173"
+    environment:
+      - NEXT_PUBLIC_NESTJS_API_URL=http://backend:3030
     depends_on:
       - backend
     networks:

@@ -1,0 +1,38 @@
+name: CI Backend Test Suite
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+          cache-dependency-path: backend-nestjs/yarn.lock
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+        working-directory: backend-nestjs
+
+      - name: Build Backend
+        run: yarn build
+        working-directory: backend-nestjs
+
+      - name: Run Unit Tests
+        run: yarn test
+        working-directory: backend-nestjs
+
+      - name: Run E2E & Integration Tests
+        run: yarn test:e2e
+        working-directory: backend-nestjs

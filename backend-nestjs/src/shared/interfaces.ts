@@ -76,3 +76,10 @@ export interface FindOptions {
   relations?: FindOptionsRelations<any>;
   withDeleted?: boolean;
 }
+
+export interface GHNConfig {
+  token?: string;
+  shop_id?: string;
+}
+
+export type DeliveryCarrierConfig = GHNConfig;

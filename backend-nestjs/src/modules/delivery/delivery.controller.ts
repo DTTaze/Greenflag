@@ -131,7 +131,7 @@ export class DeliveryController {
     const provider = this.shippingFactoryService.getProvider(carrier);
     const tempAccount = new DeliveryAccount();
     tempAccount.carrier = carrier;
-    tempAccount.apiConfig = { token, shopId };
+    tempAccount.apiConfig = { token, shop_id: shopId };
 
     const data = await provider.getProvinces(tempAccount);
     return generateSuccessResult(data, 'Get all provinces success');
@@ -150,7 +150,7 @@ export class DeliveryController {
     const provider = this.shippingFactoryService.getProvider(carrier);
     const tempAccount = new DeliveryAccount();
     tempAccount.carrier = carrier;
-    tempAccount.apiConfig = { token, shopId };
+    tempAccount.apiConfig = { token, shop_id: shopId };
 
     const data = await provider.getDistricts(tempAccount, provinceId);
     return generateSuccessResult(data, 'Get all districts success');
@@ -169,7 +169,7 @@ export class DeliveryController {
     const provider = this.shippingFactoryService.getProvider(carrier);
     const tempAccount = new DeliveryAccount();
     tempAccount.carrier = carrier;
-    tempAccount.apiConfig = { token, shopId };
+    tempAccount.apiConfig = { token, shop_id: shopId };
 
     const data = await provider.getWards(tempAccount, districtId);
     return generateSuccessResult(data, 'Get all wards success');
@@ -185,7 +185,7 @@ export class DeliveryController {
     const provider = this.shippingFactoryService.getProvider(carrier);
     const tempAccount = new DeliveryAccount();
     tempAccount.carrier = carrier;
-    tempAccount.apiConfig = { token, shopId };
+    tempAccount.apiConfig = { token, shop_id: shopId };
 
     let data;
     if (typeof (provider as any).previewOrder === 'function') {
@@ -270,7 +270,7 @@ export class DeliveryController {
     const provider = this.shippingFactoryService.getProvider(carrier);
     const tempAccount = new DeliveryAccount();
     tempAccount.carrier = carrier;
-    tempAccount.apiConfig = { token, shopId };
+    tempAccount.apiConfig = { token, shop_id: shopId };
 
     let data;
     try {

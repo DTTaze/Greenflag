@@ -59,6 +59,9 @@ export class Item extends AuditWithTimezone {
   @Column({ name: 'purchase_limit_per_day', type: 'integer', nullable: true })
   purchaseLimitPerDay?: number;
 
+  @Column({ type: 'text', array: true, nullable: true })
+  images?: string[];
+
   @ManyToOne(() => Product, (product) => product.items, {
     onDelete: 'RESTRICT',
     nullable: true,

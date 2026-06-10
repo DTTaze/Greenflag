@@ -54,6 +54,9 @@ export class Product extends AuditWithTimezone {
   })
   postStatus: PRODUCT_POST_STATUS;
 
+  @Column({ type: 'text', array: true, nullable: true })
+  images?: string[];
+
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'seller_id' })
   seller: User;

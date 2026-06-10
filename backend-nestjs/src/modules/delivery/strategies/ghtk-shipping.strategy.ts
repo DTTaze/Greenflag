@@ -90,4 +90,11 @@ export class GhtkShippingStrategy implements IShippingProvider {
       config.token === 'GHTK_MOCK_TOKEN' || config.token.startsWith('mock')
     );
   }
+
+  public async getOrderStatus(
+    account: DeliveryAccount,
+    orderCode: string,
+  ): Promise<DELIVERY_ORDER_STATUS> {
+    return DELIVERY_ORDER_STATUS.DELIVERED;
+  }
 }

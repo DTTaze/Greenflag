@@ -33,7 +33,7 @@ export class GhnShippingStrategy implements IShippingProvider {
 
   private buildHeaders(account: DeliveryAccount) {
     const token = account.apiConfig?.token || '';
-    const shopId = account.apiConfig?.shopId;
+    const shopId = account.apiConfig?.shop_id;
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       Token: token,
@@ -316,5 +316,20 @@ export class GhnShippingStrategy implements IShippingProvider {
       this.logger.error(`Validation config failed: ${err.message}`);
       return false;
     }
+  }
+
+  public async getOrderStatus(
+    account: DeliveryAccount,
+    orderCode: string,
+  ): Promise<DELIVERY_ORDER_STATUS> {
+    const detailUrl = `${this.baseUrl}/v2/shipping-order/detail`;
+    const response = await firstValueFrom(
+      this.httpService.post(
+        detailUrl,
+        { order_code: orderCode },
+        { headers: this.buildHeaders(account) },
+      ),
+    );
+    return this.mapGhnStatus(response.data?.data?.status);
   }
 }

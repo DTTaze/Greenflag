@@ -17,6 +17,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { INJECTION_TOKEN } from '@shared/constants';
 import { SocketStubService } from '@shared/services/socket-stub.service';
 
+import { MetricsService } from './metrics.service';
+
 const httpServiceProvider: Provider = {
   provide: INJECTION_TOKEN.HTTP_SERVICE,
   useFactory: () => {
@@ -95,6 +97,7 @@ const auditServiceProvider: Provider = {
     syncTaskQueueProvider,
     auditServiceProvider,
     SocketStubService,
+    MetricsService,
   ],
   exports: [
     INJECTION_TOKEN.HTTP_SERVICE,
@@ -103,6 +106,7 @@ const auditServiceProvider: Provider = {
     jwtModuleProvider,
     auditServiceProvider,
     SocketStubService,
+    MetricsService,
   ],
   imports: [jwtModuleProvider],
 })

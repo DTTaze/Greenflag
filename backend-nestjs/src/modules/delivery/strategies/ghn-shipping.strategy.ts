@@ -1,3 +1,4 @@
+import { SpanStatusCode, trace } from '@opentelemetry/api';
 import { CacheService, SET_CACHE_POLICY } from 'mvc-common-toolkit';
 import { firstValueFrom } from 'rxjs';
 
@@ -114,45 +115,65 @@ export class GhnShippingStrategy implements IShippingProvider {
     account: DeliveryAccount,
     payload: StandardShippingPayload,
   ): Promise<StandardShippingResponse> {
-    const ghnPayload = this.mapToGhnPayload(payload);
-    const url = `${this.baseUrl}/v2/shipping-order/create`;
-    const response = await firstValueFrom(
-      this.httpService.post(url, ghnPayload, {
-        headers: this.buildHeaders(account),
-      }),
-    );
+    const tracer = trace.getTracer('ghn-shipping');
+    return tracer.startActiveSpan('ghn-create-order', async (span) => {
+      try {
+        const ghnPayload = this.mapToGhnPayload(payload);
+        const url = `${this.baseUrl}/v2/shipping-order/create`;
 
-    const orderData = response.data.data;
-    const orderCode = orderData.order_code;
-    const totalFee = Number(orderData.total_fee) || 0;
+        span.setAttribute('http.url', url);
+        span.setAttribute('http.method', 'POST');
 
-    // Fetch initial order status from GHN detail API
-    let status = DELIVERY_ORDER_STATUS.READY_TO_PICK;
-    try {
-      const detailUrl = `${this.baseUrl}/v2/shipping-order/detail`;
-      const detailRes = await firstValueFrom(
-        this.httpService.post(
-          detailUrl,
-          { order_code: orderCode },
-          { headers: this.buildHeaders(account) },
-        ),
-      );
-      status = this.mapGhnStatus(detailRes.data?.data?.status);
-    } catch (err) {
-      this.logger.warn(
-        `Failed to fetch GHN detail for mapping status: ${err.message}`,
-      );
-    }
+        const response = await firstValueFrom(
+          this.httpService.post(url, ghnPayload, {
+            headers: this.buildHeaders(account),
+          }),
+        );
 
-    return {
-      orderCode,
-      status,
-      totalFee,
-      expectedDeliveryTime: orderData.expected_delivery_time
-        ? new Date(orderData.expected_delivery_time)
-        : undefined,
-      rawResponse: response.data,
-    };
+        const orderData = response.data.data;
+        const orderCode = orderData.order_code;
+        const totalFee = Number(orderData.total_fee) || 0;
+
+        span.setAttribute('ghn.order_code', orderCode);
+        span.setAttribute('ghn.total_fee', totalFee);
+
+        // Fetch initial order status from GHN detail API
+        let status = DELIVERY_ORDER_STATUS.READY_TO_PICK;
+        try {
+          const detailUrl = `${this.baseUrl}/v2/shipping-order/detail`;
+          const detailRes = await firstValueFrom(
+            this.httpService.post(
+              detailUrl,
+              { order_code: orderCode },
+              { headers: this.buildHeaders(account) },
+            ),
+          );
+          status = this.mapGhnStatus(detailRes.data?.data?.status);
+        } catch (err) {
+          this.logger.warn(
+            `Failed to fetch GHN detail for mapping status: ${err.message}`,
+          );
+          span.recordException(err);
+        }
+
+        span.setStatus({ code: SpanStatusCode.OK });
+        return {
+          orderCode,
+          status,
+          totalFee,
+          expectedDeliveryTime: orderData.expected_delivery_time
+            ? new Date(orderData.expected_delivery_time)
+            : undefined,
+          rawResponse: response.data,
+        };
+      } catch (error) {
+        span.recordException(error);
+        span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
+        throw error;
+      } finally {
+        span.end();
+      }
+    });
   }
 
   public async cancelOrder(

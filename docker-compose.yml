@@ -1,219 +1,87 @@
+networks:
+  greenflag-net:
+    external: true
+
+volumes:
+  postgres_data:
+  redis_data:
+
 services:
-  mysql:
-    image: mysql:latest
-    container_name: mysql_container
+  # ── PostgreSQL ──────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: db
     restart: always
-    env_file:
-      - ./BACKEND/.env
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-123}
+      POSTGRES_DB: ${DB_SCHEMA:-greenflag}
     ports:
-      - "${DB_PORT}:3306"
+      - "${DB_PORT:-5432}:5432"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
     networks:
-      - greenflag_network
+      - greenflag-net
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres}" ]
       interval: 5s
       timeout: 5s
       retries: 5
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin_container
-    restart: always
-    env_file:
-      - ./BACKEND/.env
-    environment:
-      PMA_HOST: mysql
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "8080:80"
-    networks:
-      - greenflag_network
-
+  # ── Redis (Cache + BullMQ) ──────────────────────────────
   redis:
-    image: redis:7
-    container_name: redis_container
+    image: redis:7-alpine
+    container_name: redis
     restart: always
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
     networks:
-      - greenflag_network
+      - greenflag-net
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
       timeout: 5s
       retries: 5
 
+  # ── NestJS Backend ──────────────────────────────────────
   backend:
+    platform: linux/amd64
     build:
-      context: ./BACKEND
+      context: ./backend-nestjs
       dockerfile: Dockerfile
-    container_name: backend_container
+    container_name: backend
     restart: always
     env_file:
-      - ./BACKEND/.env
+      - ./.env
     environment:
-      NODE_ENV: ${NODE_ENV}
-      PORT: ${PORT}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
+      DB_HOST: db
       REDIS_HOST: redis
-      REDIS_PORT: 6379
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
     ports:
-      - "${PORT}:${PORT}"
+      - "${PORT:-3030}:${PORT:-3030}"
     depends_on:
-      mysql:
+      db:
         condition: service_healthy
       redis:
         condition: service_healthy
-    volumes:
-      - ./BACKEND:/app
-      - /app/node_modules
-    working_dir: /app
-    command: ["npm", "start"]
     networks:
-      - greenflag_network
+      - greenflag-net
 
-  purchase_worker:
-    build:
-      context: ./BACKEND
-      dockerfile: Dockerfile
-    container_name: purchase_worker_container
-    restart: always
-    env_file:
-      - ./BACKEND/.env
-    environment:
-      NODE_ENV: ${NODE_ENV}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-    depends_on:
-      - redis
-      - mysql
-    volumes:
-      - ./BACKEND:/app
-      - /app/node_modules
-    working_dir: /app
-    command: ["node", "src/jobs/workers/purchaseWorker.js"]
-    networks:
-      - greenflag_network
-
-  order_worker:
-    build:
-      context: ./BACKEND
-      dockerfile: Dockerfile
-    container_name: order_worker_container
-    restart: always
-    env_file:
-      - ./BACKEND/.env
-    environment:
-      NODE_ENV: ${NODE_ENV}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-    depends_on:
-      - redis
-      - mysql
-    volumes:
-      - ./BACKEND:/app
-      - /app/node_modules
-    working_dir: /app
-    command: ["node", "src/jobs/workers/orderSyncWorker.js"]
-    networks:
-      - greenflag_network
-
-  cron:
-    build:
-      context: ./BACKEND
-      dockerfile: Dockerfile
-    container_name: cron_container
-    restart: always
-    env_file:
-      - ./BACKEND/.env
-    environment:
-      NODE_ENV: ${NODE_ENV}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-    depends_on:
-      - redis
-      - mysql
-    volumes:
-      - ./BACKEND:/app
-      - /app/node_modules
-    working_dir: /app
-    command: ["node", "src/jobs/cron/syncGHNOrdersCron.js"]
-    networks:
-      - greenflag_network
-
+  # ── Next.js Frontend ────────────────────────────────────
   frontend:
+    platform: linux/amd64
     build:
       context: ./FRONTEND
       dockerfile: Dockerfile
-    container_name: frontend_container
+    container_name: frontend
     restart: always
     env_file:
-      - ./FRONTEND/.env
-    environment:
-      NODE_ENV: development
-      CHOKIDAR_USEPOLLING: true
-      VITE_BACKEND_URL: http://backend:6060
+      - ./.env
     ports:
       - "5173:5173"
     depends_on:
-      - mysql
       - backend
-    volumes:
-      - ./FRONTEND:/app
-      - /app/node_modules
-    working_dir: /app
-    command: ["npm", "run", "dev", "--", "-p", "5173", "-H", "0.0.0.0"]
     networks:
-      - greenflag_network
-
-  bullboard:
-    build:
-      context: ./BACKEND
-      dockerfile: Dockerfile
-    container_name: bullboard_container
-    restart: always
-    volumes:
-      - ./BACKEND:/app
-      - /app/node_modules
-    working_dir: /app
-    env_file:
-      - ./BACKEND/.env
-    ports:
-      - "3000:3000"
-    command: ["node", "src/services/bullboard.js"]
-    depends_on:
-      - redis
-    networks:
-      - greenflag_network
-
-volumes:
-  mysql_data:
-
-networks:
-  greenflag_network:
-    driver: bridge
+      - greenflag-net

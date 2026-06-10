@@ -1,3 +1,4 @@
+import { context, propagation } from '@opentelemetry/api';
 import { Queue } from 'bullmq';
 import { DataSource, Repository } from 'typeorm';
 
@@ -186,11 +187,15 @@ export class ItemService extends BaseCRUDService<Item> {
       await queryRunner.commitTransaction();
 
       // 8. Dispatch BullMQ Job
+      const traceContext: Record<string, string> = {};
+      propagation.inject(context.active(), traceContext);
+
       const job = await this.commerceQueue.add(JOB_NAME.PROCESS_ITEM_PURCHASE, {
         transactionId: savedTransaction.id,
         buyerId: userId,
         itemId: item.id,
         quantity,
+        traceContext,
       });
 
       return generateSuccessResult({

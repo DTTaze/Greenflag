@@ -1,5 +1,6 @@
 # Sử dụng image Node.js phiên bản 20
-FROM node:20
+FROM --platform=linux/amd64 node:20
+
 
 # Đặt thư mục làm việc
 WORKDIR /app

@@ -5,60 +5,65 @@ import {
   W3CBaggagePropagator,
   W3CTraceContextPropagator,
 } from '@opentelemetry/core';
-import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
+import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import { B3Propagator } from '@opentelemetry/propagator-b3';
 import { JaegerPropagator } from '@opentelemetry/propagator-jaeger';
+import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 
 dotenv.config({
-  path: ['.env'],
+  path: ['../.env', '.env'],
 });
 
+const serviceName = process.env.SERVICE_NAME || 'greenflag-backend';
+const otelEndpoint =
+  process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://localhost:4318';
+
 const otelSDK = new NodeSDK({
-  serviceName:
-    process.env.SERVICE_NAME || 'boilerplate-backend-nestjs-postgresql',
-  metricReader: process.env.PROMETHEUS_EXPORTER_PORT
-    ? new PrometheusExporter({
-        port: Number(process.env.PROMETHEUS_EXPORTER_PORT),
-      })
-    : undefined,
+  serviceName,
   spanProcessor: new BatchSpanProcessor(
     new OTLPTraceExporter({
-      url:
-        process.env.OTEL_EXPORTER_OTLP_ENDPOINT ||
-        'http://10.10.0.1:4318/v1/traces',
+      url: `${otelEndpoint}/v1/traces`,
       timeoutMillis: 15000,
     }),
   ),
+  metricReader: new PeriodicExportingMetricReader({
+    exporter: new OTLPMetricExporter({
+      url: `${otelEndpoint}/v1/metrics`,
+    }),
+    exportIntervalMillis: 10000,
+  }),
   contextManager: new AsyncLocalStorageContextManager(),
-  // Responsible for propagating trace context across service boundaries via HTTP headers (or other text-based carriers).
   textMapPropagator: new CompositePropagator({
     propagators: [
-      new JaegerPropagator(), // Jaeger's uber-trace-id header
-      new W3CTraceContextPropagator(), // W3C traceparent/tracestate headers
-      new W3CBaggagePropagator(), // W3C baggage header
-      new B3Propagator(), // Zipkin B3 headers
+      new JaegerPropagator(),
+      new W3CTraceContextPropagator(),
+      new W3CBaggagePropagator(),
+      new B3Propagator(),
     ],
   }),
-  instrumentations: [getNodeAutoInstrumentations()],
+  instrumentations: [
+    getNodeAutoInstrumentations({
+      '@opentelemetry/instrumentation-fs': { enabled: false },
+      '@opentelemetry/instrumentation-ioredis': { enabled: true },
+      '@opentelemetry/instrumentation-http': { enabled: true },
+    }),
+  ],
 });
 
-// Start the SDK immediately
 otelSDK.start();
 
-console.log('otel setup successfully');
+console.log(`[OTel] SDK setup successfully. Exporting to ${otelEndpoint}`);
 
-// You can also use the shutdown method to gracefully shut down the SDK before process shutdown
-// or on some operating system signal.
 process.on('SIGTERM', () => {
   otelSDK
     .shutdown()
     .then(
-      () => console.log('SDK shut down successfully'),
-      (err: any) => console.log('Error shutting down SDK', err),
+      () => console.log('[OTel] SDK shut down successfully'),
+      (err: any) => console.log('[OTel] Error shutting down SDK', err),
     )
     .finally(() => process.exit(0));
 });

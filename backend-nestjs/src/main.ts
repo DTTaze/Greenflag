@@ -1,3 +1,5 @@
+import './tracing';
+
 import * as dayjs from 'dayjs';
 import * as timezone from 'dayjs/plugin/timezone';
 import * as utc from 'dayjs/plugin/utc';
@@ -8,6 +10,7 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
 import { ENV_KEY } from '@shared/constants';
+import { PinoLogger } from '@shared/services/logger.service';
 
 import { AppModule } from './app.module';
 import { setup } from './setup';
@@ -20,7 +23,10 @@ dayjs.tz.setDefault('Asia/Ho_Chi_Minh');
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    logger: new PinoLogger(),
+  });
+
   const configService = app.get(ConfigService);
 
   setup(app);

@@ -15,12 +15,14 @@ import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
 import * as dotenv from 'dotenv';
 
 dotenv.config({
-  path: ['../.env', '.env'],
+  path: ['.env'],
 });
 
 const serviceName = process.env.SERVICE_NAME || 'greenflag-backend';
 const otelEndpoint =
   process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://localhost:4318';
+
+const enableTracing = process.env.ENABLE_TRACING || 'false';
 
 const otelSDK = new NodeSDK({
   serviceName,
@@ -54,18 +56,22 @@ const otelSDK = new NodeSDK({
   ],
 });
 
-otelSDK.start();
+if (enableTracing === 'true') {
+  otelSDK.start();
 
-console.log(`[OTel] SDK setup successfully. Exporting to ${otelEndpoint}`);
+  console.log(`[OTel] SDK setup successfully. Exporting to ${otelEndpoint}`);
 
-process.on('SIGTERM', () => {
-  otelSDK
-    .shutdown()
-    .then(
-      () => console.log('[OTel] SDK shut down successfully'),
-      (err: any) => console.log('[OTel] Error shutting down SDK', err),
-    )
-    .finally(() => process.exit(0));
-});
+  process.on('SIGTERM', () => {
+    otelSDK
+      .shutdown()
+      .then(
+        () => console.log('[OTel] SDK shut down successfully'),
+        (err: any) => console.log('[OTel] Error shutting down SDK', err),
+      )
+      .finally(() => process.exit(0));
+  });
+} else {
+  console.log('[OTel] Tracing is disabled in this environment.');
+}
 
 export default otelSDK;

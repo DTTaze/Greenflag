@@ -1,7 +1,7 @@
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
+
+import { Link, usePathname } from "@/src/i18n/navigation";
 
 function NavLink({ to, className, children }) {
   const pathname = usePathname();

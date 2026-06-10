@@ -1,27 +1,33 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 
 import {
-  getAllTasks,
-  getAllTasksByUserId,
-  getUser,
-  increaseProgressCount,
-  receiveCoins,
-} from "@/src/utils/api";
+  useIncreaseProgressMutation,
+  useTasksByTypeNameQuery,
+  useUserTasksQuery,
+} from "@/src/queries/task/useTaskQueries";
+import { useCurrentUserQuery } from "@/src/queries/user/useUserQueries";
 
 import {
-  extractTasksData,
-  fetchTasksHelper,
   filterTasksByDifficulty,
   getTaskCategory,
-  mapUserTasksData,
 } from "../utils/missionHelpers";
 
 export default function useMission() {
-  const [tasks, setTasks] = useState<any[]>([]);
-  const [userTasks, setUserTasks] = useState<any[]>([]);
-  const [userInfo, setUserInfo] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const {
+    data: userInfo,
+    isLoading: isUserLoading,
+    refetch: refetchUser,
+  } = useCurrentUserQuery();
+  const { data: rawDailyTasks, isLoading: isDailyLoading } =
+    useTasksByTypeNameQuery("daily");
+  const { data: rawOtherTasks, isLoading: isOtherLoading } =
+    useTasksByTypeNameQuery("others");
+  const { data: allUserTasks, isLoading: isUserTasksLoading } =
+    useUserTasksQuery(userInfo?.id);
+
+  const increaseProgressMutation = useIncreaseProgressMutation();
+
   const [completingTask, setCompletingTask] = useState<any>(null);
   const [dailyCurrentPage, setDailyCurrentPage] = useState<number>(1);
   const [otherCurrentPage, setOtherCurrentPage] = useState<number>(1);
@@ -29,8 +35,6 @@ export default function useMission() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const taskPerPage = 4;
   const [selectedTab, setSelectedTab] = useState<string>("daily");
-  const [dailyTasks, setDailyTasks] = useState<any[]>([]);
-  const [otherTasks, setOtherTasks] = useState<any[]>([]);
   const [dailyDifficultyFilter, setDailyDifficultyFilter] =
     useState<string>("all");
   const [otherDifficultyFilter, setOtherDifficultyFilter] =
@@ -39,114 +43,125 @@ export default function useMission() {
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [sortByCoins, setSortByCoins] = useState<string>("none");
 
-  // Fetch data from backend
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const [taskResponse, userResponse]: any[] = await Promise.all([
-          getAllTasks(),
-          getUser(),
-        ]);
+  const loading =
+    isUserLoading || isDailyLoading || isOtherLoading || isUserTasksLoading;
 
-        const tasksData = extractTasksData(taskResponse);
+  // Reactively compute dailyTasks
+  const dailyTasks = useMemo(() => {
+    if (!rawDailyTasks || !allUserTasks) return [];
 
-        if (userResponse?.data) {
-          setUserInfo({
-            public_id: userResponse.data.public_id,
-            id: userResponse.data.id,
-            full_name: userResponse.data.full_name || "User",
-            email: userResponse.data.email,
-            coins: userResponse.data.coins.amount || 0,
-            streak: userResponse.data.streak || 0,
-            last_completed_task: userResponse.data.last_completed_task,
-          });
-        } else {
-          setUserInfo({
-            id: 0,
-            name: "Guest User",
-            coins: 0,
-            streak: 0,
-          });
-        }
+    const processedUserTasks = (allUserTasks || [])
+      .filter((ut: any) => rawDailyTasks.some((t: any) => t.id === ut.taskId))
+      .map((ut: any) => {
+        const task = rawDailyTasks.find((t: any) => t.id === ut.taskId);
+        return task
+          ? {
+              ...task,
+              completed_at: ut.completedAt || null,
+              progress_count: ut.progressCount || 0,
+              isUserTask: true,
+              taskUserId: ut.id,
+            }
+          : null;
+      })
+      .filter(Boolean);
 
-        if (tasksData.length > 0) {
-          setTasks(tasksData);
-          const userTasksData: any = await getAllTasksByUserId(
-            userResponse.data.id,
-          );
-          const processedUserTasksData = mapUserTasksData(
-            userTasksData,
-            userResponse.data.id,
-          );
-          setUserTasks(processedUserTasksData);
-        } else {
-          setTasks([]);
-          toast.warning("No tasks available");
-        }
-      } catch (error) {
-        console.error("Failed to fetch data:", error);
-        toast.error("Không thể tải dữ liệu nhiệm vụ");
-      } finally {
-        setLoading(false);
-      }
-    };
+    const unstartedTasks = rawDailyTasks
+      .filter((t: any) => !allUserTasks.some((ut: any) => ut.taskId === t.id))
+      .map((t: any) => ({
+        ...t,
+        isUserTask: false,
+        progress_count: 0,
+        completed_at: null,
+      }));
 
-    fetchData();
-  }, []);
+    return [...processedUserTasks, ...unstartedTasks];
+  }, [rawDailyTasks, allUserTasks]);
+
+  // Reactively compute otherTasks (excluding completed tasks in legacy behavior)
+  const otherTasks = useMemo(() => {
+    if (!rawOtherTasks || !allUserTasks) return [];
+
+    const processedUserTasks = (allUserTasks || [])
+      .filter((ut: any) => ut.completedAt === null)
+      .filter((ut: any) => rawOtherTasks.some((t: any) => t.id === ut.taskId))
+      .map((ut: any) => {
+        const task = rawOtherTasks.find((t: any) => t.id === ut.taskId);
+        return task
+          ? {
+              ...task,
+              completed_at: ut.completedAt || null,
+              progress_count: ut.progressCount || 0,
+              isUserTask: true,
+              taskUserId: ut.id,
+            }
+          : null;
+      })
+      .filter(Boolean);
+
+    const unstartedTasks = rawOtherTasks
+      .filter((t: any) => !allUserTasks.some((ut: any) => ut.taskId === t.id))
+      .map((t: any) => ({
+        ...t,
+        isUserTask: false,
+        progress_count: 0,
+        completed_at: null,
+      }));
+
+    return [...processedUserTasks, ...unstartedTasks];
+  }, [rawOtherTasks, allUserTasks]);
+
+  // Reactively compute completedTasks
+  const completedTasks = useMemo(() => {
+    if (!allUserTasks) return [];
+    return allUserTasks
+      .filter((ut: any) => ut.completedAt !== null)
+      .map((ut: any) => {
+        const task =
+          rawDailyTasks?.find((t: any) => t.id === ut.taskId) ||
+          rawOtherTasks?.find((t: any) => t.id === ut.taskId);
+        return task
+          ? {
+              ...task,
+              completed_at: ut.completedAt,
+              progress_count: ut.progressCount,
+              isUserTask: true,
+              taskUserId: ut.id,
+            }
+          : null;
+      })
+      .filter(Boolean);
+  }, [allUserTasks, rawDailyTasks, rawOtherTasks]);
 
   // Handle task completion
   const handleTaskCompletion = useCallback(
     async (userId: any, taskId: any, numOfProgress: number) => {
+      const combinedTasks = [...dailyTasks, ...otherTasks];
+      const taskObj = combinedTasks.find((t) => t.id === taskId);
+      if (!taskObj || !taskObj.isUserTask || !taskObj.taskUserId) {
+        toast.error("Không tìm thấy thông tin tiến trình nhiệm vụ");
+        return;
+      }
+
+      setCompletingTask(taskId);
       try {
-        const userTask = userTasks.find(
-          (ut) => ut.user_id === userId && ut.task_id === taskId,
-        );
-
-        if (!userTask) return;
-        setCompletingTask(taskId);
-
-        const task = tasks.find((t) => t.id === taskId);
-        if (!task) return;
-
-        let updatedTaskUser: any = null;
+        let updated: any = null;
         for (let i = 0; i < numOfProgress; i++) {
-          updatedTaskUser = await increaseProgressCount(userTask.id);
-        }
-
-        if (updatedTaskUser && updatedTaskUser.data) {
-          setUserTasks((prevUserTasks) =>
-            prevUserTasks.map((ut) =>
-              ut.id === updatedTaskUser.data.id
-                ? {
-                    ...ut,
-                    progress_count: updatedTaskUser.data.progress_count,
-                    completed_at: updatedTaskUser.data.completed_at,
-                  }
-                : ut,
-            ),
+          updated = await increaseProgressMutation.mutateAsync(
+            taskObj.taskUserId,
           );
         }
 
-        if (updatedTaskUser && updatedTaskUser.data.completed_at) {
-          try {
-            await receiveCoins(task.coins);
-            const responseUser: any = await getUser();
-            setUserInfo((prev: any) => ({
-              ...prev,
-              coins: responseUser?.data?.coins.amount || 0,
-            }));
+        // Refetch current user profile to update fresh coins
+        refetchUser();
 
-            toast.success(`🎉 Chúc mừng! Bạn đã nhận được ${task.coins} xu!`, {
-              position: "top-right",
-              autoClose: 3000,
-              theme: "colored",
-              style: { background: "#4CAF50", color: "white" },
-            });
-          } catch (error) {
-            console.error("API call failed:", error);
-            toast.error("❌ Không thể hoàn thành nhiệm vụ");
-          }
+        if (updated && updated.completedAt) {
+          toast.success(`🎉 Chúc mừng! Bạn đã nhận được xu thưởng!`, {
+            position: "top-right",
+            autoClose: 3000,
+            theme: "colored",
+            style: { background: "#4CAF50", color: "white" },
+          });
         } else {
           toast.info("📈 Đã cập nhật tiến độ!", {
             position: "top-right",
@@ -162,7 +177,7 @@ export default function useMission() {
         setCompletingTask(null);
       }
     },
-    [tasks, userTasks],
+    [dailyTasks, otherTasks, increaseProgressMutation, refetchUser],
   );
 
   const handleTaskSelect = useCallback((task: any) => {
@@ -174,36 +189,6 @@ export default function useMission() {
     setIsModalOpen(false);
     setSelectedTask(null);
   }, []);
-
-  // Fetch daily tasks
-  useEffect(() => {
-    const fetchDailyTasks = async () => {
-      try {
-        const allDaily = await fetchTasksHelper("daily", userTasks, false);
-        setDailyTasks(allDaily);
-      } catch (error) {
-        console.error("Error fetching daily tasks:", error);
-      }
-    };
-    fetchDailyTasks();
-  }, [userTasks]);
-
-  // Fetch other tasks
-  useEffect(() => {
-    const fetchOtherTasks = async () => {
-      try {
-        const allOther = await fetchTasksHelper("others", userTasks, true);
-        setOtherTasks(allOther);
-      } catch (error) {
-        console.error("Error fetching other tasks:", error);
-      }
-    };
-    fetchOtherTasks();
-  }, [userTasks]);
-
-  const completedTasks = useMemo(() => {
-    return userTasks.filter((task) => task.completed_at);
-  }, [userTasks]);
 
   const dailyTotalPages = useMemo(() => {
     return Math.max(1, Math.ceil(dailyTasks.length / taskPerPage));
@@ -301,8 +286,8 @@ export default function useMission() {
   };
 
   return {
-    tasks,
-    userTasks,
+    tasks: rawDailyTasks || [], // fallback list of raw tasks
+    userTasks: allUserTasks || [],
     userInfo,
     loading,
     completingTask,

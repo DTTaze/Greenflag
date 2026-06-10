@@ -1,45 +1,48 @@
-import axios from "../axios.customize";
+import * as taskService from "../../services/task";
 
-export const getTaskById = (taskId: string | number) => {
-  return axios.get(`api/tasks/${taskId}`);
+export const getTaskById = async (taskId: string | number) => {
+  return taskService.getTaskById(taskId.toString());
 };
 
-export const getAllTasks = () => {
-  return axios.get("api/tasks");
+export const getAllTasks = async () => {
+  return taskService.getTasks();
 };
 
-export const getMyCompletedTasks = () => {
-  return axios.get(`api/users/task/completed`);
+export const getMyCompletedTasks = async () => {
+  return taskService.getUserCompletedTasks();
 };
 
-export const getAllTasksByUserId = (userId: string | number) => {
-  return axios.get(`api/users/tasks/all/${userId}`);
+export const getAllTasksByUserId = async (userId: string | number) => {
+  return taskService.getUserAllTasks(userId.toString());
 };
 
-export const receiveCoins = (coins: number) => {
-  return axios.post("api/tasks/coin/receive", { coins });
+export const receiveCoins = async (coins: number) => {
+  // NestJS backend handles coin additions automatically upon task completion;
+  // returning a successful mocked response for compatibility.
+  return { success: true, data: null, message: "Coins handled by completion" };
 };
 
-export const increaseProgressCount = (taskUserId: string | number) => {
-  return axios.post(`api/tasks/progress/increase/${taskUserId}`);
+export const increaseProgressCount = async (taskUserId: string | number) => {
+  return taskService.increaseProgressCount(taskUserId.toString());
 };
 
-export const deleteTask = (taskId: string | number) => {
-  return axios.delete(`api/tasks/${taskId}`);
+export const deleteTask = async (taskId: string | number) => {
+  // Default to admin deletion for backward compatibility
+  return taskService.adminDeleteTask(taskId.toString());
 };
 
-export const createTask = (data: any) => {
-  return axios.post("api/tasks/upload", data);
+export const createTask = async (data: any) => {
+  return taskService.adminCreateTask(data);
 };
 
-export const updateTask = (taskId: string | number, data: any) => {
-  return axios.put(`api/tasks/${taskId}`, data);
+export const updateTask = async (taskId: string | number, data: any) => {
+  return taskService.adminUpdateTask(taskId.toString(), data);
 };
 
-export const acceptTask = (taskId: string | number) => {
-  return axios.post(`api/tasks/accept/${taskId}`);
+export const acceptTask = async (taskId: string | number) => {
+  return taskService.acceptTask(taskId.toString());
 };
 
-export const getAllTasksByTypeName = (typeName: string) => {
-  return axios.get(`api/tasks/type/${typeName}`);
+export const getAllTasksByTypeName = async (typeName: string) => {
+  return taskService.getTasksByTypeName(typeName);
 };

@@ -1,35 +1,42 @@
-import axios from "../axios.customize";
+import axiosClient from "../../services";
+
+const getEventPrefix = () => {
+  const isAdmin =
+    typeof window !== "undefined" &&
+    window.location.pathname.includes("/admin");
+  return isAdmin ? "/admin/events" : "/partner/events";
+};
 
 export const getAllEvents = () => {
-  return axios.get("api/events/informations");
+  return axiosClient.get("/events/informations");
 };
 
 export const getOwnerEvents = () => {
-  return axios.get("api/events/creator");
+  // Partner dashboard displays events created by the current user
+  return axiosClient.get("/partner/events");
 };
 
 export const getEventUsersByEventId = (eventId: string | number) => {
-  return axios.get(`api/events/user/${eventId}`);
+  return axiosClient.get(`/events/user/${eventId}`);
 };
 
 export const acceptEvent = (eventId: string | number) => {
-  return axios.post(`api/events/accept/${eventId}`);
+  return axiosClient.post(`/events/accept/${eventId}`);
 };
 
 export const getEventSignedByUserId = (userId: string | number) => {
-  return axios.get(`api/events/signed/${userId}`);
+  return axiosClient.get(`/events/signed/${userId}`);
 };
 
 export const deleteEventUserById = (eventUserId: string | number) => {
-  return axios.delete(`api/events/user/delete/${eventUserId}`);
+  return axiosClient.delete(`${getEventPrefix()}/participants/${eventUserId}`);
 };
 
 export const checkInUser = (
   userId: string | number,
   eventId: string | number,
 ) => {
-  return axios.put("api/events/check_in", {
-    event_id: eventId,
+  return axiosClient.put(`${getEventPrefix()}/${eventId}/check-in`, {
     user_id: userId,
   });
 };
@@ -38,8 +45,7 @@ export const checkOutUser = (
   userId: string | number,
   eventId: string | number,
 ) => {
-  return axios.put("api/events/check_out", {
-    event_id: eventId,
+  return axiosClient.put(`${getEventPrefix()}/${eventId}/check-out`, {
     user_id: userId,
   });
 };
@@ -60,7 +66,7 @@ export const createEvent = (
     });
   }
 
-  return axios.post("api/events/create", formData, {
+  return axiosClient.post(getEventPrefix(), formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -84,7 +90,7 @@ export const updateEvent = (
     });
   }
 
-  return axios.put(`api/events/update/${eventId}`, formData, {
+  return axiosClient.put(`${getEventPrefix()}/${eventId}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -92,5 +98,5 @@ export const updateEvent = (
 };
 
 export const deleteEvent = (eventId: string | number) => {
-  return axios.delete(`api/events/delete/${eventId}`);
+  return axiosClient.delete(`${getEventPrefix()}/${eventId}`);
 };

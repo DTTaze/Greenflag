@@ -1,30 +1,31 @@
-import axios from "@/src/utils/axios.customize";
+import axiosClient from "@/src/services";
 
 export const registerUser = (data: any): Promise<any> => {
-  return axios.post("api/auth/register", data);
+  return axiosClient.post("/auth/register", data);
 };
 
 export const loginUser = (data: any): Promise<any> => {
-  return axios.post("api/auth/login", data);
+  return axiosClient.post("/auth/login", data);
 };
 
 export const logoutUser = (): Promise<any> => {
-  return axios.post("api/auth/logout");
+  // logout handles cache/cookie clearing on frontend
+  return Promise.resolve({ success: true });
 };
 
 export const forgotPassword = (email: string): Promise<any> => {
-  return axios.post("/api/auth/forgot_password", { email });
+  return axiosClient.post("/auth/forgot-password", { email });
 };
 
 export const resetPassword = (
   token: string,
   newPassword: string,
 ): Promise<any> => {
-  return axios.post("/api/auth/reset_password", { token, newPassword });
+  return axiosClient.post("/auth/reset-password", { token, newPassword });
 };
 
 export const getQR = (text: string): Promise<any> => {
-  return axios.get("api/qr", {
-    params: { text },
-  });
+  // Mock QR or call backend QR generator if it maps to event.
+  // GHN or Event generation has its own QR path.
+  return Promise.resolve({ success: true, data: { qrCode: text } });
 };

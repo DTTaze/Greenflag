@@ -1,12 +1,12 @@
 "use client";
 
 import { Coins, Loader2 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 
+import { useUserTasksQuery } from "@/src/queries/task/useTaskQueries";
 import { useAuthStore } from "@/src/store/auth/authStore";
 import {
-  getAllTasksByUserId,
   getBuyerTransactionHistory,
   getEventSignedByUserId,
 } from "@/src/utils/api";
@@ -18,16 +18,19 @@ import HistoryTabs from "./HistoryTabs.jsx";
 function HistoryDashboard() {
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState("all-activity");
+  
+  // React Query hook for task history
+  const { data: tasksData = [], isLoading: isTasksLoading } = useUserTasksQuery(user?.id || "");
+
   const [loading, setLoading] = useState(true);
 
   // Data states
-  const [tasks, setTasks] = useState([]);
   const [events, setEvents] = useState([]);
   const [transactions, setTransactions] = useState([]);
 
-  // Aggregated lists
-  const [coinLogs, setCoinLogs] = useState([]);
-  const [activityLogs, setActivityLogs] = useState([]);
+  // Aggregated lists computed reactively via useMemo
+  const coinLogs = useMemo(() => aggregateCoinLogs(tasksData, transactions), [tasksData, transactions]);
+  const activityLogs = useMemo(() => aggregateActivityLogs(tasksData, events), [tasksData, events]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -35,18 +38,11 @@ function HistoryDashboard() {
       try {
         setLoading(true);
 
-        // Fetch tasks, events, and purchasing transactions concurrently
-        const [tasksRes, eventsRes, transRes] = await Promise.allSettled([
-          getAllTasksByUserId(user.id),
+        // Fetch events and purchasing transactions concurrently
+        const [eventsRes, transRes] = await Promise.allSettled([
           getEventSignedByUserId(user.id),
           getBuyerTransactionHistory(),
         ]);
-
-        let tasksData = [];
-        if (tasksRes.status === "fulfilled" && tasksRes.value?.data) {
-          tasksData = tasksRes.value.data;
-          setTasks(tasksData);
-        }
 
         let eventsData = [];
         if (eventsRes.status === "fulfilled" && eventsRes.value?.data) {
@@ -59,10 +55,6 @@ function HistoryDashboard() {
           transData = transRes.value.data;
           setTransactions(transData);
         }
-
-        // Aggregate logs using imported helper functions
-        setCoinLogs(aggregateCoinLogs(tasksData, transData));
-        setActivityLogs(aggregateActivityLogs(tasksData, eventsData));
       } catch (err) {
         console.error("Error fetching logs:", err);
         toast.error("Không thể tải lịch sử hoạt động");

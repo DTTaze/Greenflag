@@ -124,7 +124,20 @@
     "emailResetSentSuccess": "Link đặt lại mật khẩu đã được gửi đến email của bạn!",
     "emailResetSendFailed": "Không thể gửi email, vui lòng thử lại.",
     "emailRequiredForgot": "Vui lòng nhập email.",
-    "emailInvalidForgot": "Email không hợp lệ."
+    "emailInvalidForgot": "Email không hợp lệ.",
+    "verificationTitle": "Xác minh Email",
+    "otpSentTo": "Chúng tôi đã gửi mã xác minh gồm 6 chữ số đến {email}.",
+    "enterOtp": "Nhập mã OTP gồm 6 chữ số",
+    "verifyBtn": "Xác minh",
+    "resendIn": "Gửi lại mã sau {seconds}s",
+    "resendOtp": "Gửi lại mã OTP",
+    "otpInvalid": "Mã OTP phải có đúng 6 ký tự.",
+    "verifySuccess": "Xác minh tài khoản thành công!",
+    "verifyFailed": "Xác minh thất bại. Vui lòng kiểm tra lại mã OTP.",
+    "otpResentSuccess": "Đã gửi lại mã OTP thành công!",
+    "otpResentFailed": "Gửi lại mã OTP thất bại. Vui lòng thử lại.",
+    "otpRequired": "Vui lòng nhập mã OTP.",
+    "confirmPasswordRequired": "Vui lòng xác nhận mật khẩu."
   },
   "user": {
     "profileTitle": "Thông tin cá nhân",

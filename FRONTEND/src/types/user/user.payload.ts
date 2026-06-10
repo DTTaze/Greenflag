@@ -4,3 +4,8 @@ export interface UpdateUserPayload {
   phoneNumber?: string;
   email?: string;
 }
+
+export interface UpdateCoinPayload {
+  coins: number;
+}
+

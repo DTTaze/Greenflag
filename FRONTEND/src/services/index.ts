@@ -3,7 +3,7 @@ import { getCookie, deleteCookie } from "cookies-next/client";
 
 import { queryClient } from "@/src/lib/react-query/queryClient";
 
-const ACCESS_TOKEN = "access_token";
+export const ACCESS_TOKEN = "access_token";
 const NESTJS_API_BASE = "/nestjs/api/v1";
 
 const axiosClient = axios.create({
@@ -13,7 +13,7 @@ const axiosClient = axios.create({
 });
 
 const logout = () => {
-  deleteCookie(ACCESS_TOKEN);
+  deleteCookie(ACCESS_TOKEN, { path: "/" });
   queryClient.clear();
   window.location.reload();
 };
@@ -27,7 +27,7 @@ axiosClient.interceptors.request.use((config) => {
 });
 
 axiosClient.interceptors.response.use(
-  (response) => response,
+  (response) => response.data,
   (error) => {
     if (error.response?.status === 401) {
       logout();
@@ -37,3 +37,13 @@ axiosClient.interceptors.response.use(
 );
 
 export default axiosClient;
+
+export * from "./commerce";
+export * from "./commerce/commerceHandlers";
+export * from "./delivery";
+export * from "./delivery/deliveryHandlers";
+export * from "./event";
+export * from "./event/eventHandlers";
+export * from "./user";
+export * from "./user/userHandlers";
+

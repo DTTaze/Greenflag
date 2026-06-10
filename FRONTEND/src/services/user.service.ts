@@ -1,27 +1,69 @@
+import axiosClient from "@/src/services";
 import axios from "@/src/utils/axios.customize";
 
-export const getUser = () => {
-  return axios.get("api/users/me");
+import { whoAmI } from "./auth";
+
+export const mapUserToStore = (user: any): any => {
+  if (!user) return null;
+  const roleMap: Record<string, { id: number; name: string }> = {
+    admin: { id: 1, name: "Admin" },
+    user: { id: 2, name: "User" },
+    partner: { id: 3, name: "Customer" },
+  };
+
+  const roleInfo = roleMap[user.role] || { id: 2, name: "User" };
+
+  return {
+    ...user,
+    id: user.id,
+    public_id: user.public_id || user.id,
+    full_name: user.fullName || user.profile?.fullName || user.username,
+    avatar_url: user.avatarUrl,
+    role_id: roleInfo.id,
+    roles: roleInfo,
+    phone_number: user.phoneNumber || user.profile?.phoneNumber,
+  };
+};
+
+export const getUser = async () => {
+  try {
+    const res = await whoAmI();
+    if (res.success) {
+      return {
+        status: 200,
+        data: mapUserToStore(res.data),
+      };
+    }
+    return {
+      status: 401,
+      error: res.message,
+    };
+  } catch (err: any) {
+    return {
+      status: err?.response?.status || 500,
+      error: err?.response?.data?.message || err?.message,
+    };
+  }
 };
 
 export const getAllUsers = () => {
-  return axios.get("api/users");
+  return axiosClient.get("/admin/users");
 };
 
 export const updateUser = (id: number | string, data: any) => {
-  return axios.put(`api/users/${id}`, data);
+  return axiosClient.put(`/admin/users/${id}`, data);
 };
 
 export const updateUserPublic = (public_id: string, data: any) => {
-  return axios.put(`api/users/public/${public_id}`, data);
+  return axiosClient.put(`/admin/users/${public_id}`, data);
 };
 
 export const getUserByIDPublic = (public_id: string) => {
-  return axios.get(`api/users/public/${public_id}`);
+  return axiosClient.get(`/admin/users/${public_id}`);
 };
 
 export const deleteUser = (id: number | string) => {
-  return axios.delete(`api/users/${id}`);
+  return axiosClient.delete(`/admin/users/${id}`);
 };
 
 export const getAllRoles = () => {
@@ -61,9 +103,9 @@ export const updatePermission = (id: number | string, data: any) => {
 };
 
 export const rearrangeRank = () => {
-  return axios.post("api/ranks/rearrange");
+  return axiosClient.post("/admin/ranks/rearrange");
 };
 
 export const getUserById = (id: number | string) => {
-  return axios.get(`api/users/${id}`);
+  return axiosClient.get(`/admin/users/${id}`);
 };

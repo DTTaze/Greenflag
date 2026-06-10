@@ -19,7 +19,7 @@ function MissionFilters({
   setOtherCurrentPage,
 }) {
   return (
-    <div className="space-y-5 border-x border-gray-100 bg-white p-6 shadow-xs dark:border-slate-700/70 dark:bg-slate-900/80">
+    <div className="space-y-5 border-x border-emerald-200/70 bg-emerald-50/90 p-6 shadow-lg dark:border-emerald-400/30 dark:bg-slate-900/80">
       {/* Search bar and Coin sort */}
       <div className="flex flex-col gap-4 sm:flex-row">
         <div className="relative flex-1">

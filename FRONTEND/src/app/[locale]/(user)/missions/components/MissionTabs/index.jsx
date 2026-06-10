@@ -13,7 +13,7 @@ const MissionTabs = ({ selectedTab, setSelectedTab }) => {
   ];
 
   return (
-    <div className="mb-6 max-w-2xl rounded-xl border border-gray-200/50 bg-gray-100/50 p-1.5 shadow-2xs backdrop-blur-md">
+    <div className="mb-6 max-w-2xl rounded-xl border border-emerald-200/70 bg-emerald-100/60 p-1.5 shadow-lg backdrop-blur-md">
       <div className="flex gap-1">
         {tabs.map(({ id, label, icon: Icon }) => {
           const isActive = selectedTab === id;

@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcryptjs';
 import { CacheService } from 'mvc-common-toolkit';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -49,6 +49,17 @@ export class UserService extends BaseCRUDService<User> {
     return this.userRepository.findOne({
       where: { username },
       relations: ['profile', 'coin', 'rank'],
+    });
+  }
+
+  async findUsersByUsernames(usernames: string[]): Promise<User[]> {
+    if (!usernames || usernames.length === 0) {
+      return [];
+    }
+    return this.userRepository.find({
+      where: {
+        username: In(usernames),
+      },
     });
   }
 

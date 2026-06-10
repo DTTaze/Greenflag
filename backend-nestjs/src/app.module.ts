@@ -14,6 +14,7 @@ import { CommerceModule } from '@modules/commerce/commerce.module';
 import { DeliveryModule } from '@modules/delivery/delivery.module';
 import { EmailModule } from '@modules/email/email.module';
 import { EventModule } from '@modules/event/event.module';
+import { ForumModule } from '@modules/forum/forum.module';
 import { GlobalModule } from '@modules/global/global.module';
 import { HealthModule } from '@modules/health/health.module';
 import { MediaModule } from '@modules/media/media.module';
@@ -69,6 +70,7 @@ import configs from './configs';
     DeliveryModule,
     EventModule,
     MediaModule,
+    ForumModule,
   ],
 })
 export class AppModule {}

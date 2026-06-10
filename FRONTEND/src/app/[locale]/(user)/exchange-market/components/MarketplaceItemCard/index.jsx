@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import {
   CheckCircle,
   ClipboardEdit,
@@ -101,64 +102,84 @@ const MarketplaceItemCard = ({
   };
 
   return (
-    <div
-      className={`relative flex flex-col justify-between overflow-hidden rounded-2xl border p-4.5 shadow-2xs transition-all duration-300 hover:translate-y-[-3px] hover:shadow-md ${getStatusClass(
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -6 }}
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      className={`relative flex flex-col justify-between overflow-hidden rounded-3xl border p-5 shadow-sm transition-all ${getStatusClass(
         currentStatus,
       )} group`}
     >
       <div>
         {/* Item Image */}
-        <div
-          className={`relative mb-4.5 aspect-video w-full overflow-hidden rounded-xl bg-gray-50 transition-all duration-300 ${
+        <motion.div
+          className={`relative mb-5 aspect-video w-full overflow-hidden rounded-2xl bg-gradient-to-br from-gray-100 to-gray-50 shadow-sm transition-all ${
             viewMode === "all_items" || viewMode === "redeem"
-              ? "group-hover:blur-xs"
+              ? "group-hover:blur-sm"
               : ""
-          } ${showPurchaseModal || showDetailsModal ? "blur-xs" : ""}`}
+          } ${showPurchaseModal || showDetailsModal ? "blur-sm" : ""}`}
+          whileHover={{ scale: 1.03 }}
+          transition={{ duration: 0.4 }}
         >
           <img
             src={item.image || "/placeholder.svg"}
             alt={item.name}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="h-full w-full object-cover transition-transform duration-500"
           />
-        </div>
+        </motion.div>
 
         {/* Item Details */}
-        <div
+        <motion.div
           className={`mb-4 transition-all duration-300 ${
             viewMode === "all_items" || viewMode === "redeem"
-              ? "group-hover:blur-xs"
+              ? "group-hover:blur-sm"
               : ""
-          } ${showPurchaseModal || showDetailsModal ? "blur-xs" : ""}`}
+          } ${showPurchaseModal || showDetailsModal ? "blur-sm" : ""}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1 }}
         >
-          <h3 className="truncate text-sm leading-snug font-bold text-gray-800 transition-colors group-hover:text-emerald-800">
+          <h3 className="truncate text-sm leading-snug font-bold text-slate-800 transition-colors group-hover:text-emerald-700">
             {item.name}
           </h3>
-          <span className="mt-1 inline-block rounded-lg border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-[10px] font-extrabold tracking-wide text-[#0B6E4F] uppercase">
+          <motion.span
+            initial={{ scale: 0.92, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.15 }}
+            className="mt-2 inline-block rounded-xl border border-emerald-100 bg-gradient-to-r from-emerald-50 to-emerald-50/70 px-2.5 py-1 text-[10px] font-extrabold tracking-wide text-[#0B6E4F] uppercase shadow-sm"
+          >
             {getCategoryDisplayName(item.category)}
-          </span>
-          <p className="text-gray-550 mt-2.5 line-clamp-2 min-h-[32px] text-xs leading-relaxed">
+          </motion.span>
+          <p className="mt-3 line-clamp-2 min-h-[32px] text-xs leading-relaxed font-medium text-slate-600">
             {item.description}
           </p>
-        </div>
+        </motion.div>
       </div>
 
       <div>
         {/* Price and stock row */}
-        <div
-          className={`flex items-center justify-between border-t border-gray-100 pt-3 transition-all duration-300 ${
+        <motion.div
+          className={`flex items-center justify-between border-t border-emerald-100/40 pt-4 transition-all duration-300 ${
             viewMode === "all_items" || viewMode === "redeem"
-              ? "group-hover:blur-xs"
+              ? "group-hover:blur-sm"
               : ""
-          } ${showPurchaseModal || showDetailsModal ? "blur-xs" : ""}`}
+          } ${showPurchaseModal || showDetailsModal ? "blur-sm" : ""}`}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
         >
-          <div className="flex items-center gap-1.5 rounded-lg border border-amber-100 bg-amber-50 px-2 py-0.5 text-xs font-black text-amber-700">
+          <motion.div
+            className="flex items-center gap-1.5 rounded-xl border border-amber-100 bg-gradient-to-r from-amber-50 to-amber-50/60 px-3 py-1.5 text-xs font-black text-amber-700 shadow-sm"
+            whileHover={{ scale: 1.05 }}
+          >
             <span className="coin-value font-extrabold">{item.price}</span>
             <Coins className="h-4 w-4 text-amber-600" />
-          </div>
-          <span className="text-[10px] font-bold tracking-wider text-gray-400 uppercase">
-            Còn lại: {currentStock}
+          </motion.div>
+          <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+            Còn: {currentStock}
           </span>
-        </div>
+        </motion.div>
 
         {/* Hover action overlay for all_items/redeem */}
         {(viewMode === "all_items" || viewMode === "redeem") && (
@@ -236,7 +257,7 @@ const MarketplaceItemCard = ({
           fetchItems={fetchItems}
         />
       )}
-    </div>
+    </motion.div>
   );
 };
 

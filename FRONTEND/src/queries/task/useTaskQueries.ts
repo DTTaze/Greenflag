@@ -9,12 +9,10 @@ import {
   adminGetTaskSubmissionsFn,
   adminHandleDecisionTaskSubmitFn,
   adminUpdateTaskFn,
-  getAllTasksStatusPublicFn,
   getTaskByIdFn,
   getTasksByDifficultyNameFn,
   getTasksByTypeNameFn,
   getTasksFn,
-  getTaskSubmitByUserIdFn,
   getUserAllTasksFn,
   getUserCompletedTasksFn,
   increaseProgressCountFn,
@@ -81,7 +79,7 @@ export const useAcceptTaskMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: acceptTaskFn,
-    onSuccess: (_, variables) => {
+    onSuccess: (_, _variables) => {
       // Invalidate target query caches to trigger automatic UI refetches
       queryClient.invalidateQueries({ queryKey: ["userTasks"] });
     },

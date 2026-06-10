@@ -8,6 +8,13 @@ import { useAuthStore } from "@/src/store/auth/authStore";
 import ProfileCard from "./components/ProfileCard.jsx";
 import ProfileCardSkeleton from "./components/ProfileCardSkeleton.jsx";
 
+/**
+ * UserLayout — improved responsive layout, dark mode, subtle animations
+ * - Responsive grid: sidebar (lg:col-span-4) + main (lg:col-span-8)
+ * - Dark/light friendly backgrounds
+ * - Sticky sidebar for better UX on long pages
+ * - Smooth transitions for entrance + color changes
+ */
 export default function UserLayout({
   children,
 }: {
@@ -18,12 +25,31 @@ export default function UserLayout({
 
   return (
     <ProtectedRoute requiredRole={undefined}>
-      <div className="min-h-screen w-screen bg-[#f7f8fa]">
-        <div className="m-auto flex w-[80vw] gap-3">
-          <div className="mt-4 w-[30%]">
-            {isLoading ? <ProfileCardSkeleton /> : <ProfileCard />}
+      <div className="min-h-screen w-screen bg-gradient-to-b from-white to-[#f7f8fa] transition-colors dark:from-gray-900 dark:to-gray-800">
+        <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+            <aside className="lg:col-span-4">
+              <div className="sticky top-6">
+                <div
+                  className={`rounded-lg transition-transform duration-300 ${
+                    isLoading
+                      ? "-translate-y-1 opacity-90"
+                      : "translate-y-0 opacity-100"
+                  }`}
+                >
+                  {isLoading ? <ProfileCardSkeleton /> : <ProfileCard />}
+                </div>
+              </div>
+            </aside>
+
+            <main className="lg:col-span-8">
+              <div className="transform rounded-lg bg-white/60 p-6 shadow-sm backdrop-blur-sm transition-all duration-300 dark:bg-gray-900/50">
+                <div className="transition-opacity duration-300">
+                  {children}
+                </div>
+              </div>
+            </main>
           </div>
-          <div className="mt-4 w-[70%]">{children}</div>
         </div>
       </div>
     </ProtectedRoute>

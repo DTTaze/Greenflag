@@ -1,5 +1,4 @@
 import {
-  acceptEventHandler,
   generateEventQrHandler,
   getAllEventsHandler,
   getEventByIdHandler,

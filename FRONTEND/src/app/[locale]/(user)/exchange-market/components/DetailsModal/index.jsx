@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { Calendar, Coins, ShieldCheck, Tag, User, X } from "lucide-react";
+import { Calendar, Coins, Tag, User, X } from "lucide-react";
 
 import { statusConfig } from "../MarketplaceItemCard";
 

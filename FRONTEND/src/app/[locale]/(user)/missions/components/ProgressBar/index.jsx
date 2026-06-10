@@ -25,30 +25,30 @@ const ProgressBar = React.memo(({ completed, total, level }) => {
   const trackBgClass = (lvl) => {
     switch (lvl) {
       case "easy":
-        return "bg-emerald-50";
+        return "bg-emerald-50 dark:bg-emerald-950/50";
       case "medium":
-        return "bg-blue-50";
+        return "bg-blue-50 dark:bg-blue-950/50";
       case "hard":
-        return "bg-amber-50";
+        return "bg-amber-50 dark:bg-amber-950/50";
       case "expert":
-        return "bg-rose-50";
+        return "bg-rose-50 dark:bg-rose-950/50";
       default:
-        return "bg-gray-50";
+        return "bg-gray-50 dark:bg-slate-800";
     }
   };
 
   return (
     <div className="progress-container w-full">
       <div className="mb-1.5 flex items-center justify-between">
-        <span className="text-[11px] font-bold tracking-wider text-gray-400 uppercase">
+        <span className="text-[11px] font-bold tracking-wider text-gray-400 uppercase dark:text-slate-300">
           Tiến độ
         </span>
-        <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-extrabold text-[#0B6E4F]">
+        <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-extrabold text-[#0B6E4F] dark:bg-emerald-400/15 dark:text-emerald-200">
           {completed}/{total} ({percentage}%)
         </span>
       </div>
       <div
-        className={`h-2.5 w-full overflow-hidden rounded-full ${trackBgClass(level)} border border-gray-100`}
+        className={`h-2.5 w-full overflow-hidden rounded-full ${trackBgClass(level)} border border-gray-100 dark:border-slate-700`}
       >
         <div
           className={`h-full rounded-full bg-gradient-to-r ${getGradientClass(level)} shadow-[inset_0_1px_2px_rgba(0,0,0,0.1)] transition-all duration-700 ease-out`}

@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import { Coins } from "lucide-react";
 
 import ItemActions from "../ItemActions";
@@ -16,18 +17,25 @@ function MarketItemList({
   fetchItems,
 }) {
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
       className={
         marketListView === "grid"
-          ? "grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-          : "space-y-4"
+          ? "grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+          : "space-y-3"
       }
     >
       {marketListView === "list" ? (
-        <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900/40 shadow-xl backdrop-blur-md">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="overflow-hidden rounded-2xl border border-slate-700/40 bg-gradient-to-b from-slate-900/30 to-slate-950/20 shadow-lg backdrop-blur-md"
+        >
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-800">
-              <thead className="bg-slate-950/60">
+            <table className="min-w-full divide-y divide-slate-700/30">
+              <thead className="bg-slate-900/50 backdrop-blur-sm">
                 <tr>
                   <th className="px-6 py-4.5 text-left text-xs font-semibold tracking-wider text-slate-400 uppercase">
                     Sản phẩm
@@ -56,9 +64,12 @@ function MarketItemList({
               </thead>
               <tbody className="divide-y divide-slate-800/60 bg-transparent">
                 {filteredMarketItems.map((item) => (
-                  <tr
+                  <motion.tr
                     key={item.id}
-                    className="transition-colors duration-150 hover:bg-slate-800/10"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    whileHover={{ backgroundColor: "rgba(15, 23, 42, 0.1)" }}
+                    className="transition-colors duration-150"
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
@@ -119,26 +130,48 @@ function MarketItemList({
                         getCategoryDisplayName={getCategoryDisplayName}
                       />
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </div>
+        </motion.div>
       ) : (
-        filteredMarketItems.map((item) => (
-          <MarketplaceItemCard
-            key={item.id}
-            item={item}
-            onEdit={handleEditItem}
-            onDelete={handleDeleteItem}
-            onPurchase={handlePurchase}
-            viewMode={marketView}
-            fetchItems={fetchItems}
-          />
-        ))
+        <motion.div
+          className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.06,
+              },
+            },
+          }}
+        >
+          {filteredMarketItems.map((item) => (
+            <motion.div
+              key={item.id}
+              variants={{
+                hidden: { opacity: 0, y: 12 },
+                visible: { opacity: 1, y: 0 },
+              }}
+            >
+              <MarketplaceItemCard
+                item={item}
+                onEdit={handleEditItem}
+                onDelete={handleDeleteItem}
+                onPurchase={handlePurchase}
+                viewMode={marketView}
+                fetchItems={fetchItems}
+              />
+            </motion.div>
+          ))}
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }
 

@@ -1,8 +1,4 @@
-import {
-  CARRIER_TYPE,
-  DELIVERY_ORDER_STATUS,
-  RECEIVER_ACCOUNT_TYPE,
-} from "./delivery.type";
+import { CARRIER_TYPE, RECEIVER_ACCOUNT_TYPE } from "./delivery.type";
 
 export interface CreateReceiverInfoPayload {
   to_name: string;

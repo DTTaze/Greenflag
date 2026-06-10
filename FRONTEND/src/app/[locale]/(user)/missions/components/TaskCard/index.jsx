@@ -29,11 +29,11 @@ const TaskCard = React.memo(
     return (
       <>
         <div
-          className={`task-card flex flex-col rounded-2xl border bg-white ${
+          className={`task-card flex flex-col rounded-2xl border bg-white dark:bg-slate-800/90 ${
             isCompleted
-              ? "border-emerald-200 shadow-emerald-50/50"
-              : "border-gray-200"
-          } group overflow-hidden shadow-2xs transition-all duration-300 hover:translate-y-[-3px] hover:border-gray-300 hover:shadow-md ${
+              ? "border-emerald-200 shadow-emerald-50/50 dark:border-emerald-500/40"
+              : "border-gray-200 dark:border-slate-700"
+          } group overflow-hidden shadow-2xs transition-all duration-300 hover:translate-y-[-3px] hover:border-gray-300 hover:shadow-md dark:hover:border-emerald-500/50 ${
             isLoading ? "opacity-70" : ""
           }`}
         >
@@ -55,10 +55,10 @@ const TaskCard = React.memo(
               {/* Header inside card */}
               <div className="flex items-start gap-2.5">
                 <div
-                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border bg-gray-50/50 p-1.5 ${
+                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border bg-gray-50/50 p-1.5 dark:bg-slate-700/70 ${
                     isCompleted
-                      ? "bg-emerald-55/30 border-emerald-200 text-emerald-600"
-                      : "border-gray-200 text-gray-500"
+                      ? "bg-emerald-55/30 border-emerald-200 text-emerald-600 dark:border-emerald-400/40 dark:text-emerald-300"
+                      : "border-gray-200 text-gray-500 dark:border-slate-600 dark:text-slate-300"
                   }`}
                 >
                   <img
@@ -68,7 +68,7 @@ const TaskCard = React.memo(
                   />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="truncate text-sm leading-snug font-bold text-gray-800 transition-colors group-hover:text-emerald-800">
+                  <h3 className="truncate text-sm leading-snug font-bold text-gray-800 transition-colors group-hover:text-emerald-800 dark:text-slate-100 dark:group-hover:text-emerald-300">
                     {task.title}
                   </h3>
                   <span
@@ -78,7 +78,7 @@ const TaskCard = React.memo(
                   </span>
                 </div>
                 {/* Coins reward badge */}
-                <div className="task-coin-reward flex shrink-0 items-center rounded-lg border border-amber-100 bg-amber-50 px-2 py-1 text-xs font-black text-amber-700">
+                <div className="task-coin-reward flex shrink-0 items-center rounded-lg border border-amber-100 bg-amber-50 px-2 py-1 text-xs font-black text-amber-700 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-200">
                   <span className="coin-value mr-1 font-extrabold">
                     +{task.coins || 0}
                   </span>
@@ -92,7 +92,7 @@ const TaskCard = React.memo(
                     strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="animate-spin-slow h-4.5 w-4.5 text-amber-600"
+                    className="animate-spin-slow h-4.5 w-4.5 text-amber-600 dark:text-amber-300"
                   >
                     <circle cx="8" cy="8" r="6"></circle>
                     <path d="M18.09 10.37A6 6 0 1 1 10.34 18"></path>
@@ -102,7 +102,7 @@ const TaskCard = React.memo(
               </div>
 
               {/* Description */}
-              <p className="line-clamp-2 text-xs leading-relaxed text-gray-500">
+              <p className="line-clamp-2 text-xs leading-relaxed text-gray-500 dark:text-slate-300">
                 {task.description || "Mô tả nhiệm vụ đang được cập nhật..."}
               </p>
             </div>

@@ -39,8 +39,8 @@ const TasksList = ({
     return (
       <div className="flex min-h-[600px] flex-col">
         <div className="flex-grow">
-          <h2 className="mb-4.5 flex items-center text-base font-extrabold tracking-wider text-gray-800 uppercase">
-            <span className="mr-2 rounded-xl border border-blue-100/50 bg-blue-50 p-2 text-blue-600 shadow-2xs">
+          <h2 className="mb-4.5 flex items-center text-base font-extrabold tracking-wider text-gray-800 uppercase dark:text-slate-100">
+            <span className="mr-2 rounded-xl border border-blue-100/50 bg-blue-50 p-2 text-blue-600 shadow-2xs dark:border-blue-400/30 dark:bg-blue-400/10 dark:text-blue-300">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-4.5 w-4.5"
@@ -86,16 +86,16 @@ const TasksList = ({
                 )}
             </div>
           ) : (
-            <div className="shadow-3xs mx-auto max-w-lg rounded-2xl border border-blue-100/40 bg-blue-50/45 px-4 py-16 text-center">
+            <div className="shadow-3xs mx-auto max-w-lg rounded-2xl border border-blue-100/40 bg-blue-50/45 px-4 py-16 text-center dark:border-blue-400/20 dark:bg-blue-400/10">
               <img
                 src={imgSrc}
                 alt="All done!"
                 className="mx-auto mb-4 h-14 w-14 opacity-30"
               />
-              <h3 className="mb-1 text-base font-extrabold tracking-wide text-gray-700 uppercase">
+              <h3 className="mb-1 text-base font-extrabold tracking-wide text-gray-700 uppercase dark:text-slate-100">
                 Tuyệt vời!
               </h3>
-              <p className="mx-auto max-w-sm text-xs leading-relaxed font-medium text-gray-500">
+              <p className="mx-auto max-w-sm text-xs leading-relaxed font-medium text-gray-500 dark:text-slate-300">
                 Bạn đã hoàn thành tất cả nhiệm vụ hôm nay. Hãy quay lại vào ngày
                 mai để tiếp tục chuỗi hoạt động nhé!
               </p>
@@ -119,8 +119,8 @@ const TasksList = ({
     return (
       <div className="flex min-h-[600px] flex-col">
         <div className="flex-grow">
-          <h2 className="mb-4.5 flex items-center text-base font-extrabold tracking-wider text-gray-800 uppercase">
-            <span className="text-indigo-650 mr-2 rounded-xl border border-indigo-100/50 bg-indigo-50 p-2 shadow-2xs">
+          <h2 className="mb-4.5 flex items-center text-base font-extrabold tracking-wider text-gray-800 uppercase dark:text-slate-100">
+            <span className="text-indigo-650 mr-2 rounded-xl border border-indigo-100/50 bg-indigo-50 p-2 shadow-2xs dark:border-indigo-400/30 dark:bg-indigo-400/10 dark:text-indigo-300">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-4.5 w-4.5"
@@ -160,16 +160,16 @@ const TasksList = ({
                 )}
             </div>
           ) : (
-            <div className="shadow-3xs mx-auto max-w-lg rounded-2xl border border-indigo-100/40 bg-indigo-50/45 px-4 py-16 text-center">
+            <div className="shadow-3xs mx-auto max-w-lg rounded-2xl border border-indigo-100/40 bg-indigo-50/45 px-4 py-16 text-center dark:border-indigo-400/20 dark:bg-indigo-400/10">
               <img
                 src={imgSrc}
                 alt="No tasks"
                 className="mx-auto mb-4 h-14 w-14 opacity-30"
               />
-              <h3 className="mb-1 text-base font-extrabold tracking-wide text-gray-700 uppercase">
+              <h3 className="mb-1 text-base font-extrabold tracking-wide text-gray-700 uppercase dark:text-slate-100">
                 Chưa có nhiệm vụ!
               </h3>
-              <p className="mx-auto max-w-sm text-xs leading-relaxed font-medium text-gray-500">
+              <p className="mx-auto max-w-sm text-xs leading-relaxed font-medium text-gray-500 dark:text-slate-300">
                 Hiện tại chưa có nhiệm vụ khác nào khả dụng. Hãy thử hoàn thành
                 các nhiệm vụ hàng ngày trước nhé!
               </p>
@@ -193,8 +193,8 @@ const TasksList = ({
     return (
       <div className="flex min-h-[600px] flex-col justify-between">
         <div className="flex-grow">
-          <h2 className="mb-4.5 flex items-center text-base font-extrabold tracking-wider text-gray-800 uppercase">
-            <span className="mr-2 rounded-xl border border-emerald-100/50 bg-emerald-50 p-2 text-emerald-700 shadow-2xs">
+          <h2 className="mb-4.5 flex items-center text-base font-extrabold tracking-wider text-gray-800 uppercase dark:text-slate-100">
+            <span className="mr-2 rounded-xl border border-emerald-100/50 bg-emerald-50 p-2 text-emerald-700 shadow-2xs dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-300">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-4.5 w-4.5"
@@ -223,9 +223,9 @@ const TasksList = ({
                 .map((task) => (
                   <div
                     key={task.id}
-                    className="flex items-center gap-3.5 rounded-2xl border border-gray-200 bg-gray-50/50 p-4.5 transition-all duration-300 hover:border-emerald-300/40 hover:bg-emerald-50/5 hover:shadow-2xs"
+                    className="flex items-center gap-3.5 rounded-2xl border border-gray-200 bg-gray-50/50 p-4.5 transition-all duration-300 hover:border-emerald-300/40 hover:bg-emerald-50/5 hover:shadow-2xs dark:border-slate-700 dark:bg-slate-800/80 dark:hover:border-emerald-500/40 dark:hover:bg-emerald-500/10"
                   >
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-emerald-100 bg-emerald-50">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-emerald-100 bg-emerald-50 dark:border-emerald-400/30 dark:bg-emerald-400/10">
                       <img
                         src={imgSrc}
                         alt="task icon"
@@ -233,13 +233,13 @@ const TasksList = ({
                       />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="flex items-center gap-1.5 text-xs leading-snug font-bold text-gray-800">
+                      <h3 className="flex items-center gap-1.5 text-xs leading-snug font-bold text-gray-800 dark:text-slate-100">
                         <span className="truncate">{task.tasks.title}</span>
-                        <span className="inline-flex shrink-0 items-center rounded-lg border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-[9px] font-extrabold text-emerald-800">
+                        <span className="inline-flex shrink-0 items-center rounded-lg border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-[9px] font-extrabold text-emerald-800 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-200">
                           ✓ Đã xong
                         </span>
                       </h3>
-                      <p className="mt-1 text-[10px] font-semibold text-gray-400">
+                      <p className="mt-1 text-[10px] font-semibold text-gray-400 dark:text-slate-400">
                         Hoàn thành:{" "}
                         {new Date(task.completed_at).toLocaleDateString(
                           "vi-VN",
@@ -257,16 +257,16 @@ const TasksList = ({
                 ))}
             </div>
           ) : (
-            <div className="shadow-3xs mx-auto max-w-lg rounded-2xl border border-emerald-100/40 bg-emerald-50/30 px-4 py-16 text-center">
+            <div className="shadow-3xs mx-auto max-w-lg rounded-2xl border border-emerald-100/40 bg-emerald-50/30 px-4 py-16 text-center dark:border-emerald-400/20 dark:bg-emerald-400/10">
               <img
                 src={imgSrc}
                 alt="No tasks"
                 className="mx-auto mb-4 h-14 w-14 opacity-30"
               />
-              <h3 className="mb-1 text-base font-extrabold tracking-wide text-gray-700 uppercase">
+              <h3 className="mb-1 text-base font-extrabold tracking-wide text-gray-700 uppercase dark:text-slate-100">
                 Chưa hoàn thành nhiệm vụ nào!
               </h3>
-              <p className="mx-auto max-w-sm text-xs leading-relaxed font-medium text-gray-500">
+              <p className="mx-auto max-w-sm text-xs leading-relaxed font-medium text-gray-500 dark:text-slate-300">
                 Bạn chưa hoàn thành nhiệm vụ nào. Hãy bắt đầu với nhiệm vụ hàng
                 ngày để nhận các phần quà giá trị!
               </p>

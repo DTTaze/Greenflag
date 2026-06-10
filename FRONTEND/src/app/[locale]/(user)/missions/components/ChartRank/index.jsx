@@ -96,7 +96,7 @@ function Ranking() {
   return (
     <div className="ranking-container select-none">
       {/* Top 3 Users Section */}
-      <div className="top-users mb-6 flex items-end justify-center border-b border-gray-100/50 px-2 pt-6 pb-5">
+      <div className="top-users mb-6 flex items-end justify-center border-b border-gray-100/50 px-2 pt-6 pb-5 dark:border-slate-700/70">
         {/* 2nd Place */}
         {rankData.labels[1] && (
           <div className="place-2 mx-1.5 flex flex-1 flex-col items-center">
@@ -113,10 +113,10 @@ function Ranking() {
             <div className="flex h-16 w-full items-center justify-center rounded-t-xl border-x border-t border-slate-300/40 bg-gradient-to-t from-slate-300 via-slate-200 to-slate-100 shadow-xs">
               <span className="text-lg font-black text-slate-500">2</span>
             </div>
-            <div className="name mt-2 max-w-[80px] truncate text-center text-xs font-bold text-gray-700">
+            <div className="name mt-2 max-w-[80px] truncate text-center text-xs font-bold text-gray-700 dark:text-slate-100">
               {rankData.labels[1]}
             </div>
-            <div className="score mt-0.5 rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-extrabold text-[#0B6E4F]">
+            <div className="score mt-0.5 rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-extrabold text-[#0B6E4F] dark:bg-emerald-400/15 dark:text-emerald-200">
               {rankData.values[1]}đ
             </div>
           </div>
@@ -139,10 +139,10 @@ function Ranking() {
             <div className="flex h-20 w-full items-center justify-center rounded-t-xl border-x border-t border-amber-400/40 bg-gradient-to-t from-amber-400 via-amber-300 to-amber-200 shadow-sm">
               <span className="text-xl font-black text-amber-700">1</span>
             </div>
-            <div className="name mt-2 max-w-[80px] truncate text-center text-xs font-extrabold text-gray-800">
+            <div className="name mt-2 max-w-[80px] truncate text-center text-xs font-extrabold text-gray-800 dark:text-white">
               {rankData.labels[0]}
             </div>
-            <div className="score mt-0.5 rounded-full bg-amber-50 px-1.5 py-0.5 text-xs font-extrabold text-amber-700 ring-1 ring-amber-200">
+            <div className="score mt-0.5 rounded-full bg-amber-50 px-1.5 py-0.5 text-xs font-extrabold text-amber-700 ring-1 ring-amber-200 dark:bg-amber-400/15 dark:text-amber-200 dark:ring-amber-400/30">
               {rankData.values[0]}đ
             </div>
           </div>
@@ -164,10 +164,10 @@ function Ranking() {
             <div className="flex h-12 w-full items-center justify-center rounded-t-xl border-x border-t border-amber-600/20 bg-gradient-to-t from-amber-600/70 via-amber-600/50 to-amber-600/30 shadow-xs">
               <span className="text-base font-black text-amber-800">3</span>
             </div>
-            <div className="name mt-2 max-w-[80px] truncate text-center text-xs font-bold text-gray-700">
+            <div className="name mt-2 max-w-[80px] truncate text-center text-xs font-bold text-gray-700 dark:text-slate-100">
               {rankData.labels[2]}
             </div>
-            <div className="score mt-0.5 rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-extrabold text-[#0B6E4F]">
+            <div className="score mt-0.5 rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-extrabold text-[#0B6E4F] dark:bg-emerald-400/15 dark:text-emerald-200">
               {rankData.values[2]}đ
             </div>
           </div>
@@ -181,12 +181,12 @@ function Ranking() {
           return (
             <div
               key={position}
-              className="rank-item flex items-center rounded-xl border border-transparent p-2 transition-all duration-200 hover:border-gray-100 hover:bg-gray-50/70"
+              className="rank-item flex items-center rounded-xl border border-transparent p-2 transition-all duration-200 hover:border-gray-100 hover:bg-gray-50/70 dark:hover:border-slate-700 dark:hover:bg-slate-800/70"
             >
-              <div className="position mr-3 flex h-6 w-6 items-center justify-center rounded-lg bg-gray-100 text-xs font-bold text-gray-500">
+              <div className="position mr-3 flex h-6 w-6 items-center justify-center rounded-lg bg-gray-100 text-xs font-bold text-gray-500 dark:bg-slate-800 dark:text-slate-200">
                 {position}
               </div>
-              <div className="avatar mr-3 flex h-7.5 w-7.5 items-center justify-center overflow-hidden rounded-full border border-gray-200 bg-gray-100">
+              <div className="avatar mr-3 flex h-7.5 w-7.5 items-center justify-center overflow-hidden rounded-full border border-gray-200 bg-gray-100 dark:border-slate-700 dark:bg-slate-800">
                 <img
                   src={
                     rankData.avatars[position - 1] ||
@@ -196,10 +196,10 @@ function Ranking() {
                   className="h-full w-full object-cover"
                 />
               </div>
-              <div className="name flex-1 truncate text-xs font-semibold text-gray-700">
+              <div className="name flex-1 truncate text-xs font-semibold text-gray-700 dark:text-slate-100">
                 {name}
               </div>
-              <div className="score text-xs font-bold text-[#0B6E4F]">
+              <div className="score text-xs font-bold text-[#0B6E4F] dark:text-emerald-300">
                 {rankData.values[position - 1]}đ
               </div>
             </div>

@@ -1,48 +1,59 @@
-import * as taskService from "../../services/task";
+import {
+  acceptTask as serviceAcceptTask,
+  adminCreateTask,
+  adminDeleteTask,
+  adminUpdateTask,
+  getTaskById as serviceGetTaskById,
+  getTasks,
+  getTasksByTypeName,
+  getUserAllTasks,
+  getUserCompletedTasks,
+  increaseProgressCount as serviceIncreaseProgressCount,
+} from "../../services/task";
 
 export const getTaskById = async (taskId: string | number) => {
-  return taskService.getTaskById(taskId.toString());
+  return serviceGetTaskById(taskId.toString());
 };
 
 export const getAllTasks = async () => {
-  return taskService.getTasks();
+  return getTasks();
 };
 
 export const getMyCompletedTasks = async () => {
-  return taskService.getUserCompletedTasks();
+  return getUserCompletedTasks();
 };
 
 export const getAllTasksByUserId = async (userId: string | number) => {
-  return taskService.getUserAllTasks(userId.toString());
+  return getUserAllTasks(userId.toString());
 };
 
-export const receiveCoins = async (coins: number) => {
+export const receiveCoins = async (_coins: number) => {
   // NestJS backend handles coin additions automatically upon task completion;
   // returning a successful mocked response for compatibility.
   return { success: true, data: null, message: "Coins handled by completion" };
 };
 
 export const increaseProgressCount = async (taskUserId: string | number) => {
-  return taskService.increaseProgressCount(taskUserId.toString());
+  return serviceIncreaseProgressCount(taskUserId.toString());
 };
 
 export const deleteTask = async (taskId: string | number) => {
   // Default to admin deletion for backward compatibility
-  return taskService.adminDeleteTask(taskId.toString());
+  return adminDeleteTask(taskId.toString());
 };
 
 export const createTask = async (data: any) => {
-  return taskService.adminCreateTask(data);
+  return adminCreateTask(data);
 };
 
 export const updateTask = async (taskId: string | number, data: any) => {
-  return taskService.adminUpdateTask(taskId.toString(), data);
+  return adminUpdateTask(taskId.toString(), data);
 };
 
 export const acceptTask = async (taskId: string | number) => {
-  return taskService.acceptTask(taskId.toString());
+  return serviceAcceptTask(taskId.toString());
 };
 
 export const getAllTasksByTypeName = async (typeName: string) => {
-  return taskService.getTasksByTypeName(typeName);
+  return getTasksByTypeName(typeName);
 };

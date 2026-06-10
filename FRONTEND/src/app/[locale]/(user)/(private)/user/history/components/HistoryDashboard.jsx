@@ -20,7 +20,7 @@ function HistoryDashboard() {
   const [activeTab, setActiveTab] = useState("all-activity");
 
   // React Query hook for task history
-  const { data: rawTasksData, isLoading: isTasksLoading } = useUserTasksQuery(
+  const { data: rawTasksData, isLoading: _isTasksLoading } = useUserTasksQuery(
     user?.id || "",
   );
 

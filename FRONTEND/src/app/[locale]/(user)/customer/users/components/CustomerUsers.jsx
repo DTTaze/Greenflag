@@ -13,7 +13,6 @@ import {
   deleteEventUserById,
   getEventUsersByEventId,
   getOwnerEvents,
-  getUserAvatarById,
 } from "@/src/utils/api";
 
 import UserFilters from "./UserFilters";

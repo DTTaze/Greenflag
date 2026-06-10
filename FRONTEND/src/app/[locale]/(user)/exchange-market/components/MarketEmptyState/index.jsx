@@ -1,13 +1,26 @@
+import { motion } from "framer-motion";
 import { Leaf, Plus } from "lucide-react";
 
 function MarketEmptyState({ marketView, marketStatusFilter, handleAddItem }) {
   return (
-    <div className="shadow-3xs mx-auto max-w-lg rounded-2xl border border-dashed border-gray-200 bg-white py-14 text-center">
-      <Leaf className="mx-auto mb-4 h-12 w-12 text-gray-300" />
-      <h3 className="mb-1 text-base font-extrabold tracking-wide text-gray-700 uppercase">
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95, y: 16 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className="shadow-3xs mx-auto max-w-lg rounded-3xl border border-dashed border-emerald-200/60 bg-gradient-to-br from-emerald-50/90 to-white py-16 text-center"
+    >
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.12 }}
+      >
+        <Leaf className="mx-auto mb-5 h-14 w-14 text-emerald-300" />
+      </motion.div>
+
+      <h3 className="mb-2 text-lg font-extrabold tracking-wide text-emerald-900 uppercase">
         Không có sản phẩm nào
       </h3>
-      <p className="mx-auto mb-6 max-w-sm text-xs leading-relaxed font-medium text-gray-500">
+      <p className="mx-auto mb-8 max-w-sm text-sm leading-relaxed font-medium text-slate-600">
         {marketView === "my_items"
           ? "Bạn chưa có sản phẩm nào với trạng thái này."
           : "Hiện chưa có sản phẩm nào trong danh mục này."}
@@ -15,16 +28,22 @@ function MarketEmptyState({ marketView, marketStatusFilter, handleAddItem }) {
           marketStatusFilter === "all" &&
           " Hãy thử thêm sản phẩm mới!"}
       </p>
+
       {marketView === "my_items" && (
-        <button
+        <motion.button
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          whileHover={{ scale: 1.04, y: -2 }}
+          whileTap={{ scale: 0.96 }}
           onClick={handleAddItem}
-          className="cursor-pointer rounded-xl bg-gradient-to-r from-[#0B6E4F] to-[#0D7F5C] px-5 py-2.5 text-xs font-bold text-white shadow-sm transition-all hover:scale-[1.01] hover:shadow-md active:scale-[0.99]"
+          className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-600/25 transition-all hover:shadow-xl"
         >
-          <Plus className="mr-1.5 inline h-4 w-4" />
+          <Plus className="h-4.5 w-4.5" />
           Thêm sản phẩm mới
-        </button>
+        </motion.button>
       )}
-    </div>
+    </motion.div>
   );
 }
 

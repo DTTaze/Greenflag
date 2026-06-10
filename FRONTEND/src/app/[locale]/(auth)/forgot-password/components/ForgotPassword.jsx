@@ -1,15 +1,13 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, CheckCircle2, Eye, EyeOff } from "lucide-react";
-import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import Button from "@/src/components/ui/button";
 import InputField from "@/src/components/ui/InputField";
-import { useNotification } from "@/src/components/ui/NotificationProvider";
 import { useForgotPasswordForm } from "@/src/hooks/forms/useForgotPasswordForm";
 import { useRouter } from "@/src/i18n/navigation";
-import { forgotPassword, resetPassword } from "@/src/utils/api";
+import {} from /* forgotPassword, resetPassword */ "@/src/utils/api";
 
 const ForgotPassword = () => {
   const t = useTranslations("auth");

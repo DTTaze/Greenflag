@@ -38,32 +38,45 @@ function ExchangeMarketContent({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <main className="mx-auto max-w-screen-xl px-4 py-6 sm:px-6">
+      <main className="mx-auto max-w-screen-xl px-4 py-6 sm:px-6 lg:py-8">
         <ItemCatalogSkeleton />
       </main>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <main className="mx-auto max-w-screen-xl px-4 py-6 sm:px-6">
+    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.18),_transparent_34%),linear-gradient(180deg,#f0fdf4_0%,#f8fafc_42%,#ffffff_100%)] dark:bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.1),_transparent_40%),linear-gradient(180deg,#020617_0%,#0f172a_42%,#020617_100%)]">
+      <div className="pointer-events-none absolute -top-28 right-8 h-72 w-72 rounded-full bg-emerald-300/30 blur-3xl dark:bg-emerald-500/10" />
+      <div className="pointer-events-none absolute top-72 -left-32 h-80 w-80 rounded-full bg-lime-200/40 blur-3xl dark:bg-lime-500/10" />
+      <div className="pointer-events-none absolute right-0 bottom-0 h-72 w-72 rounded-full bg-teal-200/30 blur-3xl dark:bg-teal-500/10" />
+
+      <main className="relative mx-auto max-w-screen-xl px-4 py-6 sm:px-6 lg:py-8">
         <CatalogHeader userCoins={user?.coins?.amount || 0} />
         <MarketViewNavigation />
-        <div className="flex flex-col rounded-lg bg-white p-4 shadow-sm">
+
+        <section className="relative overflow-hidden rounded-[1.75rem] border border-white/70 bg-white/85 p-4 shadow-[0_24px_70px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-5 lg:p-6 dark:border-slate-800/70 dark:bg-slate-900/80 dark:shadow-[0_24px_70px_rgba(0,0,0,0.3)]">
+          <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-emerald-300/70 to-transparent dark:via-emerald-500/40" />
+
           {error && (
-            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4">
-              <p className="text-red-600">{error}</p>
+            <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-red-200 bg-red-50/90 p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between dark:border-red-900/30 dark:bg-red-950/20">
+              <p className="text-sm font-semibold text-red-700 dark:text-red-400">
+                {error}
+              </p>
               <button
                 onClick={() => setError(null)}
-                className="mt-2 rounded bg-red-100 px-3 py-1 text-red-800 hover:bg-red-200"
+                className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-red-700 shadow-sm ring-1 ring-red-100 transition hover:bg-red-100 active:scale-95 dark:bg-slate-800 dark:text-red-400 dark:ring-red-900/50 dark:hover:bg-slate-700"
               >
                 Đóng
               </button>
             </div>
           )}
+
           {transactionStatus === "processing" && (
-            <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-4">
-              <p className="text-blue-600">Đang xử lý giao dịch...</p>
+            <div className="mb-5 flex items-center gap-3 rounded-2xl border border-blue-200 bg-blue-50/90 p-4 shadow-sm dark:border-blue-900/30 dark:bg-blue-950/20">
+              <span className="h-2.5 w-2.5 animate-ping rounded-full bg-blue-500" />
+              <p className="text-sm font-semibold text-blue-700">
+                Đang xử lý giao dịch...
+              </p>
             </div>
           )}
 
@@ -89,7 +102,7 @@ function ExchangeMarketContent({ children }: { children: React.ReactNode }) {
                 transactionStatus: transactionStatus,
               },
             )}
-        </div>
+        </section>
       </main>
     </div>
   );

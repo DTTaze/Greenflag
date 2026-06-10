@@ -5,7 +5,6 @@ import {
   CreateDeliveryOrderPayload,
   CreateReceiverInfoPayload,
   UpdateDeliveryAccountPayload,
-  UpdateDeliveryOrderPayload,
   UpdateReceiverInfoPayload,
 } from "@/src/types/delivery/delivery.payload";
 

@@ -109,11 +109,11 @@ const EventList = ({ userInfo }) => {
   }, [activeTab]);
 
   return (
-    <div className="mb-6 overflow-hidden rounded-2xl border border-gray-200/60 bg-white shadow-2xs">
-      <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
-        <h2 className="flex items-center text-base font-extrabold tracking-wider text-gray-800 uppercase">
+    <div className="mb-6 overflow-hidden rounded-2xl border border-gray-200/60 bg-white shadow-2xs dark:border-slate-700/70 dark:bg-slate-900/80">
+      <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-slate-800">
+        <h2 className="flex items-center text-base font-extrabold tracking-wider text-gray-800 uppercase dark:text-slate-100">
           <svg
-            className="mr-2 h-5 w-5 text-emerald-600"
+            className="mr-2 h-5 w-5 text-emerald-600 dark:text-emerald-300"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -131,13 +131,13 @@ const EventList = ({ userInfo }) => {
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-100 bg-gray-50/40 px-3.5 py-1.5">
+      <div className="border-b border-gray-100 bg-gray-50/40 px-3.5 py-1.5 dark:border-slate-800 dark:bg-slate-800/60">
         <div className="flex gap-1">
           <button
             className={`flex-1 cursor-pointer rounded-xl py-2.5 text-center text-xs font-bold transition-all duration-300 ${
               activeTab === "hot"
-                ? "text-red-650 border border-red-100/50 bg-red-50 shadow-2xs"
-                : "text-gray-500 hover:bg-gray-100/50 hover:text-gray-900"
+                ? "text-red-650 border border-red-100/50 bg-red-50 shadow-2xs dark:border-red-400/30 dark:bg-red-400/10 dark:text-red-200"
+                : "text-gray-500 hover:bg-gray-100/50 hover:text-gray-900 dark:text-slate-300 dark:hover:bg-slate-700/70 dark:hover:text-white"
             }`}
             onClick={() => setActiveTab("hot")}
           >
@@ -162,8 +162,8 @@ const EventList = ({ userInfo }) => {
           <button
             className={`flex-1 cursor-pointer rounded-xl py-2.5 text-center text-xs font-bold transition-all duration-300 ${
               activeTab === "current"
-                ? "border border-emerald-100/50 bg-emerald-50 text-emerald-700 shadow-2xs"
-                : "text-gray-500 hover:bg-gray-100/50 hover:text-gray-900"
+                ? "border border-emerald-100/50 bg-emerald-50 text-emerald-700 shadow-2xs dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-200"
+                : "text-gray-500 hover:bg-gray-100/50 hover:text-gray-900 dark:text-slate-300 dark:hover:bg-slate-700/70 dark:hover:text-white"
             }`}
             onClick={() => setActiveTab("current")}
           >
@@ -188,8 +188,8 @@ const EventList = ({ userInfo }) => {
           <button
             className={`flex-1 cursor-pointer rounded-xl py-2.5 text-center text-xs font-bold transition-all duration-300 ${
               activeTab === "completed"
-                ? "text-blue-650 border border-blue-100/50 bg-blue-50 shadow-2xs"
-                : "text-gray-500 hover:bg-gray-100/50 hover:text-gray-900"
+                ? "text-blue-650 border border-blue-100/50 bg-blue-50 shadow-2xs dark:border-blue-400/30 dark:bg-blue-400/10 dark:text-blue-200"
+                : "text-gray-500 hover:bg-gray-100/50 hover:text-gray-900 dark:text-slate-300 dark:hover:bg-slate-700/70 dark:hover:text-white"
             }`}
             onClick={() => setActiveTab("completed")}
           >
@@ -228,7 +228,7 @@ const EventList = ({ userInfo }) => {
             ))}
           </div>
         ) : (
-          <div className="text-gray-405 py-8 text-center text-sm font-medium">
+          <div className="text-gray-405 py-8 text-center text-sm font-medium dark:text-slate-300">
             Không có sự kiện nào trong mục này.
           </div>
         )}

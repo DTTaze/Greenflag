@@ -19,7 +19,7 @@ export const uploadUserAvatar = async (userId: string | number, file: File) => {
 
 export const updateUserAvatar = uploadUserAvatar;
 
-export const getUserAvatarById = async (userId: string | number) => {
+export const getUserAvatarById = async (_userId: string | number) => {
   try {
     // Attempt to get the latest profile info from NestJS auth/whoami
     const res = await axiosClient.get<any>("/auth/whoami");
@@ -33,7 +33,7 @@ export const getUserAvatarById = async (userId: string | number) => {
       },
       avatar_url: avatarUrl,
     };
-  } catch (e) {
+  } catch {
     return {
       success: true,
       data: {

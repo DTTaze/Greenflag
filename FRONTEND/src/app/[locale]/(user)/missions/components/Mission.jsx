@@ -90,7 +90,7 @@ function Mission() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/50 pb-16">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-white pb-16 transition-colors duration-300 dark:from-slate-950 dark:via-emerald-950/25 dark:to-slate-900">
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -142,16 +142,16 @@ function Mission() {
             />
 
             {/* Task List */}
-            <div className="rounded-b-2xl border-x border-b border-gray-200 bg-white p-6 shadow-2xs">
+            <div className="rounded-b-2xl border-x border-b border-gray-200 bg-white p-6 shadow-2xs transition-colors duration-300 dark:border-slate-700/70 dark:bg-slate-900/80 dark:shadow-emerald-950/20 dark:backdrop-blur">
               {selectedTab === "daily" && dailyTasks.length === 0 ? (
                 <div className="py-12 text-center">
-                  <p className="text-sm font-semibold text-gray-400">
+                  <p className="text-sm font-semibold text-slate-400">
                     Không có nhiệm vụ hàng ngày nào
                   </p>
                 </div>
               ) : selectedTab === "other" && otherTasks.length === 0 ? (
                 <div className="py-12 text-center">
-                  <p className="text-sm font-semibold text-gray-400">
+                  <p className="text-sm font-semibold text-slate-400">
                     Không có nhiệm vụ phụ nào
                   </p>
                 </div>
@@ -198,9 +198,9 @@ function Mission() {
             />
 
             {/* Ranking Component */}
-            <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xs">
-              <div className="border-b border-gray-100 bg-gray-50/50 p-4">
-                <h2 className="text-sm font-extrabold tracking-wider text-gray-800 uppercase">
+            <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xs transition-colors duration-300 dark:border-slate-700/70 dark:bg-slate-900/80 dark:shadow-emerald-950/20 dark:backdrop-blur">
+              <div className="border-b border-gray-100 bg-gray-50/50 p-4 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-800/60">
+                <h2 className="text-sm font-extrabold tracking-wider text-gray-800 uppercase dark:text-slate-100">
                   Bảng Xếp Hạng
                 </h2>
               </div>
@@ -210,26 +210,26 @@ function Mission() {
             </div>
 
             {/* Stats Card */}
-            <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-2xs">
-              <h2 className="mb-4 text-sm font-extrabold tracking-wider text-gray-800 uppercase">
+            <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-2xs transition-colors duration-300 dark:border-slate-700/70 dark:bg-slate-900/80 dark:shadow-emerald-950/20 dark:backdrop-blur">
+              <h2 className="mb-4 text-sm font-extrabold tracking-wider text-gray-800 uppercase dark:text-slate-100">
                 Thống Kê Hoạt Động
               </h2>
               <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-xl border border-blue-100/50 bg-blue-50/50 p-4 text-center">
-                  <p className="text-2xl font-black text-blue-600">
+                <div className="rounded-xl border border-blue-100/50 bg-blue-50/50 p-4 text-center transition-colors duration-300 dark:border-blue-400/20 dark:bg-blue-500/10">
+                  <p className="text-2xl font-black text-blue-600 dark:text-blue-300">
                     {completedTasks.length}
                   </p>
-                  <p className="mt-1 text-[10px] leading-snug font-bold tracking-wide text-blue-800 uppercase">
+                  <p className="mt-1 text-[10px] leading-snug font-bold tracking-wide text-blue-800 uppercase dark:text-blue-200/80">
                     Nhiệm vụ đã xong
                   </p>
                 </div>
-                <div className="rounded-xl border border-emerald-100/50 bg-emerald-50/50 p-4 text-center">
-                  <p className="text-2xl font-black text-emerald-600">
+                <div className="rounded-xl border border-emerald-100/50 bg-emerald-50/50 p-4 text-center transition-colors duration-300 dark:border-emerald-400/20 dark:bg-emerald-500/10">
+                  <p className="text-2xl font-black text-emerald-600 dark:text-emerald-300">
                     {completedTasks.reduce((sum, task) => {
                       return sum + (task.coin || task.coins || 0);
                     }, 0)}
                   </p>
-                  <p className="mt-1 text-[10px] leading-snug font-bold tracking-wide text-emerald-800 uppercase">
+                  <p className="mt-1 text-[10px] leading-snug font-bold tracking-wide text-emerald-800 uppercase dark:text-emerald-200/80">
                     Xu đã nhận
                   </p>
                 </div>

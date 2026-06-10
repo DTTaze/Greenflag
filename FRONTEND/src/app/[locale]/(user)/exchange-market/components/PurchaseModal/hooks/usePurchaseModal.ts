@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 
-import { socket } from "@/src/lib/socket";
 import { useAuthStore } from "@/src/store/auth/authStore";
 import {
   getReceiverInfoByUserId,
@@ -125,20 +124,8 @@ export default function usePurchaseModal({
   }, [isOpen, user?.id]);
 
   useEffect(() => {
-    socket.emit("join-item-room", item.id);
-
-    socket.on("stock-update", (data: any) => {
-      if (data.itemId === item.id) {
-        console.log("Stock update received:", data);
-        setCurrentStock(data.stock);
-      }
-    });
-
-    return () => {
-      socket.emit("leave-item-room", item.id);
-      socket.off("stock-update");
-    };
-  }, [item.id]);
+    setCurrentStock(item.stock);
+  }, [item.stock]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

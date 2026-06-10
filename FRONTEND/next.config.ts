@@ -27,10 +27,6 @@ const nextConfig: NextConfig = {
         source: "/nestjs/:path*",
         destination: `${nestjsApiUrl}/:path*`,
       },
-      {
-        source: "/socket.io/:path*",
-        destination: `${backendUrl}/socket.io/:path*`,
-      },
     ];
   },
 };

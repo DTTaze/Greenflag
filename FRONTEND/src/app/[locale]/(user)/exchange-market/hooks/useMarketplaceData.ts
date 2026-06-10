@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import { socket } from "@/src/lib/socket";
 import {
   getAllAvailableProducts,
   getAllItems,
@@ -83,25 +82,6 @@ export function useMarketplaceData(userId?: number | string) {
           height: item.height,
         }));
         setItems(mappedItems as unknown as MarketplaceItem[]);
-
-        // Join socket room for real-time updates
-        rawItems.forEach((item) => {
-          socket.emit("join-item-room", item.id);
-        });
-
-        // Listen for stock updates
-        socket.on(
-          "stock-update",
-          (data: { itemId: number; stock: number; status: string }) => {
-            setItems((prevItems) =>
-              prevItems.map((prevItem) =>
-                prevItem.id === data.itemId
-                  ? { ...prevItem, stock: data.stock, postStatus: data.status }
-                  : prevItem,
-              ),
-            );
-          },
-        );
       }
     } catch (error) {
       console.error("Lỗi khi lấy sản phẩm cho tab đổi quà:", error);

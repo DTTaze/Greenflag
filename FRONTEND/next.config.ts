@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
   env: {
     VITE_BACKEND_URL: process.env.VITE_BACKEND_URL || "http://localhost:6060",
     NEXT_PUBLIC_NESTJS_API_URL:
-      process.env.NEXT_PUBLIC_NESTJS_API_URL || "http://localhost:3000",
+      process.env.NEXT_PUBLIC_NESTJS_API_URL || "http://localhost:3030",
     VITE_GOOGLE_CLIENT_ID: process.env.VITE_GOOGLE_CLIENT_ID || "",
     VITE_GOOGLE_REDIRECT_URI: process.env.VITE_GOOGLE_REDIRECT_URI || "",
     VITE_GOOGLE_SCOPE: process.env.VITE_GOOGLE_SCOPE || "",
@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
   async rewrites() {
     const backendUrl = process.env.VITE_BACKEND_URL || "http://localhost:6060";
     const nestjsApiUrl =
-      process.env.NEXT_PUBLIC_NESTJS_API_URL || "http://localhost:3000";
+      process.env.NEXT_PUBLIC_NESTJS_API_URL || "http://localhost:3030";
     return [
       {
         source: "/api/:path*",

@@ -1,4 +1,5 @@
-import axiosClient from "@/src/services";
+import { getCookie } from "cookies-next/client";
+import axiosClient, { ACCESS_TOKEN } from "@/src/services";
 import axios from "@/src/utils/axios.customize";
 
 import { whoAmI } from "./auth";
@@ -26,6 +27,14 @@ export const mapUserToStore = (user: any): any => {
 };
 
 export const getUser = async () => {
+  const token = getCookie(ACCESS_TOKEN);
+  if (!token) {
+    return {
+      status: 401,
+      error: "No access token found",
+    };
+  }
+
   try {
     const res = await whoAmI();
     if (res.success) {

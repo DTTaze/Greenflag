@@ -26,7 +26,8 @@ COPY package.json yarn.lock ./
 # Install production-only dependencies
 RUN yarn install --frozen-lockfile --production && yarn cache clean
 
-# Copy compiled build output
+# Copy compiled build output & templates
+COPY --from=builder /app/templates ./templates
 COPY --from=builder /app/dist ./dist
 
 # Expose backend port

@@ -6,7 +6,7 @@ function AdminQueue() {
   return (
     <div style={{ height: "60vh" }}>
       <iframe
-        src="http://localhost:6060/api/admin/queues"
+        src={`${process.env.NEXT_PUBLIC_NESTJS_API_URL || "http://localhost:3030"}/api/admin/queues`}
         title="Admin Queue Dashboard"
         style={{ width: "100%", height: "100%", border: "none" }}
       ></iframe>

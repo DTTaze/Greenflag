@@ -7,18 +7,9 @@ const nextIntlPlugin = createNextIntlPlugin();
 const nextConfig: NextConfig = {
   pageExtensions: ["tsx", "ts"],
   env: {
-    NEXT_PUBLIC_NESTJS_API_URL:
-      process.env.NEXT_PUBLIC_NESTJS_API_URL || "http://localhost:3030",
-  },
-  async rewrites() {
-    const nestjsApiUrl =
-      process.env.NEXT_PUBLIC_NESTJS_API_URL || "http://localhost:3030";
-    return [
-      {
-        source: "/nestjs/:path*",
-        destination: `${nestjsApiUrl}/:path*`,
-      },
-    ];
+    NEXT_PUBLIC_ENV: process.env.NEXT_PUBLIC_ENV || "development",
+    NEXT_PUBLIC_API_BASE_URL:
+      process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3030/api/v1",
   },
 };
 

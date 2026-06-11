@@ -3,8 +3,8 @@ import {
   ArrowLeftRight,
   Home,
   LayoutDashboard,
-  ShoppingBag,
   MessageSquare,
+  ShoppingBag,
   Target,
 } from "lucide-react";
 import { useTranslations } from "next-intl";

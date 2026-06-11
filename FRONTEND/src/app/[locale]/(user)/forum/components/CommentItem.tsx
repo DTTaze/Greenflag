@@ -1,4 +1,10 @@
+/* eslint-disable max-lines */
 "use client";
+
+import { MoreHorizontal, Trash2 } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 import {
   useCreateComment,
@@ -7,31 +13,28 @@ import {
 } from "@/src/hooks/useForum";
 import { useProfile } from "@/src/hooks/useProfile";
 import { ForumComment } from "@/src/types/forum/forum.type";
-import { toast } from "react-toastify";
 
-import { MoreHorizontal, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
 import CommentInput from "./CommentInput";
 
-const renderRoleBadge = (role: "admin" | "partner" | "user") => {
+const renderRoleBadge = (role: "admin" | "partner" | "user", t: any) => {
   switch (role) {
     case "admin":
       return (
-        <span className="shrink-0 rounded-full border border-rose-100 bg-rose-50 px-2 py-0.5 text-[11px] font-semibold text-rose-600 dark:border-rose-900/30 dark:bg-rose-950/40 dark:text-rose-400">
-          Quản trị viên
+        <span className="dark:text-rose-455 shrink-0 rounded-full border border-rose-100 bg-rose-50 px-2 py-0.5 text-[11px] font-semibold text-rose-600 dark:border-rose-900/30 dark:bg-rose-950/40">
+          {t("admin")}
         </span>
       );
     case "partner":
       return (
-        <span className="shrink-0 rounded-full border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-600 dark:border-indigo-900/30 dark:bg-indigo-950/40 dark:text-indigo-400">
-          Đối tác
+        <span className="dark:text-indigo-405 shrink-0 rounded-full border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-600 dark:border-indigo-900/30 dark:bg-indigo-950/40">
+          {t("partner")}
         </span>
       );
     case "user":
     default:
       return (
-        <span className="shrink-0 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-slate-600 dark:border-slate-700/30 dark:bg-slate-800/40 dark:text-slate-400">
-          Thành viên
+        <span className="dark:text-slate-405 shrink-0 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-slate-600 dark:border-slate-700/30 dark:bg-slate-800/40">
+          {t("user")}
         </span>
       );
   }
@@ -46,6 +49,9 @@ export default function CommentItem({
   comment,
   isReply = false,
 }: CommentItemProps) {
+  const t = useTranslations("forum");
+  const locale = useLocale();
+
   const [vote, setVote] = useState<"up" | "down" | null>(
     comment.userVote || null,
   );
@@ -136,12 +142,15 @@ export default function CommentItem({
     });
   };
 
-  const formattedDate = new Intl.DateTimeFormat("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(comment.createdAt));
+  const formattedDate = new Intl.DateTimeFormat(
+    locale === "en" ? "en-US" : "vi-VN",
+    {
+      day: "2-digit",
+      month: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    },
+  ).format(new Date(comment.createdAt));
 
   const isAuthor = profile?.id === comment.author.id;
   const isAdmin = profile?.role === "admin";
@@ -156,19 +165,19 @@ export default function CommentItem({
           "https://res.cloudinary.com/ptquanh/image/upload/v1779947161/default-avatar.png"
         }
         alt={comment.author.name}
-        className={`${isReply ? "h-8 w-8" : "h-10 w-10"} shrink-0 rounded-full object-cover`}
+        className={`${isReply ? "h-8 w-8" : "h-10 w-10"} shrink-0 rounded-full border border-gray-100 object-cover dark:border-gray-800`}
       />
 
       {/* Content Area */}
       <div className="flex-1">
         <div className="group relative">
-          <div className="rounded-2xl bg-[#F0F2F5] px-4 py-3 dark:bg-gray-800">
+          <div className="dark:border-gray-750/30 rounded-2xl border border-transparent bg-[#F0F2F5] px-4 py-3 shadow-xs dark:bg-gray-800">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-[14px] font-[600] text-[#1B1B1B] dark:text-gray-100">
+                <span className="dark:text-gray-105 text-[14px] font-[600] text-[#1B1B1B]">
                   {comment.author.name}
                 </span>
-                {renderRoleBadge(comment.author.role)}
+                {renderRoleBadge(comment.author.role, t)}
               </div>
 
               {canDelete && (
@@ -179,8 +188,8 @@ export default function CommentItem({
                       e.stopPropagation();
                       setShowDropdown(!showDropdown);
                     }}
-                    aria-label="Thêm tùy chọn"
-                    className="rounded-full p-1 text-[#5C5C5C] opacity-0 transition-all group-hover:opacity-100 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700"
+                    aria-label={t("moreOptions")}
+                    className="cursor-pointer rounded-full p-1 text-[#5C5C5C] opacity-0 transition-all group-hover:opacity-100 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700"
                   >
                     <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
                   </button>
@@ -193,10 +202,10 @@ export default function CommentItem({
                           setShowDropdown(false);
                           setShowDeleteConfirm(true);
                         }}
-                        className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-50 dark:hover:bg-gray-800"
+                        className="text-red-650 flex w-full cursor-pointer items-center gap-2 px-4 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-gray-800"
                       >
                         <Trash2 className="h-4 w-4" />
-                        Xóa bình luận
+                        {t("deleteComment")}
                       </button>
                     </div>
                   )}
@@ -227,26 +236,26 @@ export default function CommentItem({
           <span>{formattedDate}</span>
           <button
             onClick={handleUpvote}
-            className={`flex items-center gap-0.5 transition-colors hover:text-[#2F9E44] dark:hover:text-green-400 ${vote === "up" ? "font-[600] text-[#2F9E44]" : ""}`}
+            className={`flex cursor-pointer items-center gap-0.5 transition-colors hover:text-[#2F9E44] dark:hover:text-green-400 ${vote === "up" ? "font-[600] text-[#2F9E44]" : ""}`}
           >
-            <span>👍 Hữu ích</span>
+            <span>{t("helpful")}</span>
             <span>({displayedUpvotes})</span>
           </button>
 
           <button
             onClick={handleDownvote}
-            className={`flex items-center gap-0.5 transition-colors hover:text-[#E53935] dark:hover:text-red-400 ${vote === "down" ? "font-[600] text-[#E53935]" : ""}`}
+            className={`flex cursor-pointer items-center gap-0.5 transition-colors hover:text-[#E53935] dark:hover:text-red-400 ${vote === "down" ? "font-[600] text-[#E53935]" : ""}`}
           >
-            <span>👎 Không hữu ích</span>
+            <span>{t("notHelpful")}</span>
             <span>({displayedDownvotes})</span>
           </button>
 
           {!isReply && (
             <button
               onClick={() => setShowReplyInput(!showReplyInput)}
-              className="transition-colors hover:text-[#2F9E44] dark:hover:text-green-400"
+              className="cursor-pointer transition-colors hover:text-[#2F9E44] dark:hover:text-green-400"
             >
-              Phản hồi
+              {t("reply")}
             </button>
           )}
         </div>
@@ -255,7 +264,9 @@ export default function CommentItem({
         {showReplyInput && (
           <div className="mt-3">
             <CommentInput
-              placeholder={`Viết phản hồi cho ${comment.author.name}…`}
+              placeholder={t("writeReplyPlaceholder", {
+                name: comment.author.name,
+              })}
               isPending={createCommentMutation.isPending}
               onSubmit={handleReplySubmit}
             />
@@ -277,8 +288,9 @@ export default function CommentItem({
                     onClick={() => setVisibleRepliesCount((prev) => prev + 5)}
                     className="cursor-pointer text-[12px] font-[600] text-[#2F9E44] transition-colors hover:text-[#1F6F2E] hover:underline dark:text-green-400 dark:hover:text-green-300"
                   >
-                    Hiển thị thêm phản hồi (
-                    {comment.replies.length - visibleRepliesCount})
+                    {t("showMoreReplies", {
+                      count: comment.replies.length - visibleRepliesCount,
+                    })}
                   </button>
                 )}
                 {visibleRepliesCount > 3 && (
@@ -286,7 +298,7 @@ export default function CommentItem({
                     onClick={() => setVisibleRepliesCount(3)}
                     className="cursor-pointer text-[12px] font-[500] text-[#5C5C5C] transition-colors hover:text-[#1B1B1B] hover:underline dark:text-gray-400 dark:hover:text-gray-200"
                   >
-                    Thu gọn
+                    {t("collapse")}
                   </button>
                 )}
               </div>
@@ -299,40 +311,39 @@ export default function CommentItem({
       {showDeleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/55 backdrop-blur-sm"
             onClick={() => setShowDeleteConfirm(false)}
           />
           <div className="relative z-10 w-full max-w-md rounded-2xl border border-gray-100 bg-white p-6 shadow-xl dark:border-gray-800 dark:bg-gray-900">
             <h3 className="text-lg font-bold text-gray-950 dark:text-white">
-              Xác nhận xóa bình luận
+              {t("confirmDeleteCommentTitle")}
             </h3>
             <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              Bạn có chắc chắn muốn xóa bình luận này không? Thao tác này không
-              thể hoàn tác.
+              {t("confirmDeleteCommentDesc")}
             </p>
             <div className="mt-6 flex justify-end gap-3">
               <button
                 type="button"
                 onClick={() => setShowDeleteConfirm(false)}
-                className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                className="cursor-pointer rounded-xl border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
               >
-                Hủy
+                {t("cancel")}
               </button>
               <button
                 type="button"
                 onClick={async () => {
                   try {
                     await deleteCommentMutation.mutateAsync(comment.id);
-                    toast.success("Đã xóa bình luận thành công.");
+                    toast.success(t("deleteCommentSuccess"));
                   } catch (err: any) {
-                    toast.error(err.message || "Xóa bình luận thất bại.");
+                    toast.error(err.message || t("deleteCommentFailed"));
                   } finally {
                     setShowDeleteConfirm(false);
                   }
                 }}
-                className="rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+                className="bg-red-650 focus-visible:outline-red-650 cursor-pointer rounded-xl px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               >
-                Xóa
+                {t("delete")}
               </button>
             </div>
           </div>

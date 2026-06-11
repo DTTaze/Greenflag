@@ -1,11 +1,6 @@
 import axiosClient from "@/src/services";
 import { ApiResponse as BaseResponse } from "@/src/types/api";
 import {
-  ForumComment,
-  ForumPost,
-  ForumUser,
-} from "@/src/types/forum/forum.type";
-import {
   CreateCommentPayload,
   CreatePostPayload,
   GetCommentsParams,
@@ -13,6 +8,11 @@ import {
   UpdateCommentPayload,
   UpdatePostPayload,
 } from "@/src/types/forum/forum.payload";
+import {
+  ForumComment,
+  ForumPost,
+  ForumUser,
+} from "@/src/types/forum/forum.type";
 
 // Mapping helper for User structures from backend to frontend ForumUser
 export const mapUserToForumUser = (user: any): ForumUser => {

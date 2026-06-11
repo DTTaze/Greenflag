@@ -20,13 +20,13 @@ function ModerationDetail({ selectedPost, formatDate, handleModerate }) {
         <img
           src={selectedPost.author?.avatarUrl || "/images/default-avatar.jpg"}
           alt="Avatar"
-          className="h-10 w-10 rounded-full object-cover border border-gray-100 dark:border-zinc-800"
+          className="h-10 w-10 rounded-full border border-gray-100 object-cover dark:border-zinc-800"
         />
         <div>
           <h4 className="font-bold text-gray-900 dark:text-white">
             {selectedPost.author?.name || "Thành viên GreenFlag"}
           </h4>
-          <p className="text-[10px] text-gray-400 dark:text-zinc-500 uppercase">
+          <p className="text-[10px] text-gray-400 uppercase dark:text-zinc-500">
             {selectedPost.author?.role || "Thành viên"}
           </p>
         </div>
@@ -84,7 +84,7 @@ function ModerationDetail({ selectedPost, formatDate, handleModerate }) {
                 <img
                   src={img}
                   alt={`Attach preview ${idx + 1}`}
-                  className="h-full w-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                  className="h-full w-full cursor-pointer object-cover transition-opacity hover:opacity-90"
                   onClick={() => window.open(img, "_blank")}
                 />
               </div>
@@ -95,7 +95,7 @@ function ModerationDetail({ selectedPost, formatDate, handleModerate }) {
 
       {selectedPost.flaggedReason && (
         <div className="rounded-lg bg-red-50 p-3 text-red-800 dark:bg-red-950/30 dark:text-red-400">
-          <span className="block text-[10px] font-bold uppercase tracking-wider">
+          <span className="block text-[10px] font-bold tracking-wider uppercase">
             Lý do vi phạm (AI cảnh báo):
           </span>
           <p className="mt-1 leading-relaxed">{selectedPost.flaggedReason}</p>

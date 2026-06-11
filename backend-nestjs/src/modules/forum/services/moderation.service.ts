@@ -20,11 +20,18 @@ export class ModerationService {
     const groqApiKey = this.configService.get<string>(ENV_KEY.GROQ_API_KEY);
     const groqModel = this.configService.get<string>(ENV_KEY.GROQ_MODEL_NAME);
 
-    this.chatModel = new ChatGroq({
-      apiKey: groqApiKey,
-      model: groqModel,
-      temperature: 0.1,
-    });
+    if (groqApiKey && groqApiKey.trim() !== '') {
+      this.chatModel = new ChatGroq({
+        apiKey: groqApiKey,
+        model: groqModel,
+        temperature: 0.1,
+      });
+    } else {
+      this.logger.warn(
+        'GROQ_API_KEY is not configured or empty. AI/LLM moderation will be bypassed.',
+      );
+      this.chatModel = null;
+    }
   }
 
   async moderatePostContent(
@@ -70,8 +77,9 @@ export class ModerationService {
     }
 
     // 2. Implement chatModel (LLM Moderation) if text check passes
-    try {
-      let prompt = `You are an AI content moderator for a Vietnamese agricultural forum. 
+    if (this.chatModel) {
+      try {
+        let prompt = `You are an AI content moderator for a Vietnamese agricultural forum. 
 Evaluate the following post for NSFW, violence, spam, scams, or malicious content.
 
 CRITICAL INSTRUCTIONS:
@@ -89,32 +97,37 @@ Post Content:
 ${content}
 """`;
 
-      if (images && images.length > 0) {
-        prompt += `\n\nAttached Images URLs for context:\n${images.map((url, i) => `${i + 1}. ${url}`).join('\n')}`;
-      }
-
-      const response = await this.chatModel.invoke(prompt);
-      const rawOutput = response.content as string;
-
-      // Cleanup fallback in case LLM still outputs markdown tags
-      const cleanJson = rawOutput
-        .replace(/```json/gi, '')
-        .replace(/```/g, '')
-        .trim();
-      const result = JSON.parse(cleanJson);
-
-      if (result && typeof result.isSafe === 'boolean') {
-        if (!result.isSafe) {
-          return {
-            isSafe: false,
-            reason:
-              result.reason ||
-              'Bị từ chối bởi bộ lọc AI do vi phạm tiêu chuẩn cộng đồng.',
-          };
+        if (images && images.length > 0) {
+          prompt += `\n\nAttached Images URLs for context:\n${images.map((url, i) => `${i + 1}. ${url}`).join('\n')}`;
         }
+
+        const response = await this.chatModel.invoke(prompt);
+        const rawOutput = response.content as string;
+
+        // Cleanup fallback in case LLM still outputs markdown tags
+        const cleanJson = rawOutput
+          .replace(/```json/gi, '')
+          .replace(/```/g, '')
+          .trim();
+        const result = JSON.parse(cleanJson);
+
+        if (result && typeof result.isSafe === 'boolean') {
+          if (!result.isSafe) {
+            return {
+              isSafe: false,
+              reason:
+                result.reason ||
+                'Bị từ chối bởi bộ lọc AI do vi phạm tiêu chuẩn cộng đồng.',
+            };
+          }
+        }
+      } catch (err) {
+        this.logger.error(`Error during LLM moderation: ${err.message}`);
       }
-    } catch (err) {
-      this.logger.error(`Error during LLM moderation: ${err.message}`);
+    } else {
+      this.logger.debug(
+        'Bypassing LLM moderation because chatModel is not initialized.',
+      );
     }
 
     // 3. Fallback Image safety check

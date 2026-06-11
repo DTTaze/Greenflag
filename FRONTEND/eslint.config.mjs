@@ -15,7 +15,7 @@ export default tseslint.config(
   // Next.js config
   // This replaces the old `extends: ["next/core-web-vitals", "next/typescript"]`
   // The default export from `eslint-config-next` is expected to be a flat config object/array.
-  nextPlugin,
+  ...nextPlugin,
 
   // User's custom configurations
   {

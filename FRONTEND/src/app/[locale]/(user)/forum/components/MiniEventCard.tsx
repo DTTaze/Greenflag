@@ -1,8 +1,10 @@
 "use client";
 
-import React from "react";
-import { EventType } from "@/src/types/event/event.type";
 import { X } from "lucide-react";
+import { useTranslations } from "next-intl";
+import React from "react";
+
+import { EventType } from "@/src/types/event/event.type";
 
 interface MiniEventCardProps {
   event: EventType;
@@ -10,6 +12,8 @@ interface MiniEventCardProps {
 }
 
 export default function MiniEventCard({ event, onRemove }: MiniEventCardProps) {
+  const t = useTranslations("forum");
+
   if (!event) return null;
 
   const imageUrl =
@@ -33,9 +37,9 @@ export default function MiniEventCard({ event, onRemove }: MiniEventCardProps) {
         </div>
         <div>
           <p className="text-[11px] font-semibold text-gray-400 dark:text-gray-500">
-            Đã đính kèm sự kiện:
+            {t("attachedEventConfirm")}
           </p>
-          <p className="text-[14px] font-bold text-[#1F6F2E] dark:text-emerald-400">
+          <p className="dark:text-emerald-455 text-[14px] font-bold text-[#1F6F2E]">
             {event.title}
           </p>
         </div>
@@ -43,8 +47,8 @@ export default function MiniEventCard({ event, onRemove }: MiniEventCardProps) {
       <button
         type="button"
         onClick={onRemove}
-        className="rounded-full p-1 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-700 dark:hover:bg-gray-800"
-        title="Gỡ bỏ đính kèm sự kiện"
+        className="cursor-pointer rounded-full p-1 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-700 dark:hover:bg-gray-800"
+        title={t("removeAttachedEvent")}
       >
         <X className="h-4 w-4" />
       </button>

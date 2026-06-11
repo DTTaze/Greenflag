@@ -1,30 +1,35 @@
+/* eslint-disable max-lines */
 "use client";
 
-import PostStatusBadge from "../../../forum/components/PostStatusBadge";
-import { useDeletePost, useMyPosts } from "@/src/hooks/useForum";
-import { forumService } from "@/src/services/forum.service";
-import { ForumPost } from "@/src/types/forum/forum.type";
-import { toast } from "react-toastify";
 import {
   AlertTriangle,
   Calendar,
   Edit,
   Globe,
   History,
+  Loader2,
   MessageSquare,
   Search,
   Send,
   Tag,
   Trash2,
   X,
-  Loader2,
 } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+
+import { useDeletePost, useMyPosts } from "@/src/hooks/useForum";
+import { forumService } from "@/src/services/forum.service";
+import { ForumPost } from "@/src/types/forum/forum.type";
+
+import PostStatusBadge from "../../../forum/components/PostStatusBadge";
 
 type StatusTab = "ALL" | "DRAFT" | "PENDING" | "APPROVED" | "REJECTED";
 
 export default function MyPostsPage() {
+  const t = useTranslations("forum");
   const [activeTab, setActiveTab] = useState<StatusTab>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -83,10 +88,10 @@ export default function MyPostsPage() {
     if (!deleteConfirmId) return;
     try {
       await deletePostMutation.mutateAsync(deleteConfirmId);
-      toast.success("Xóa bài viết thành công!");
+      toast.success(t("deleteSuccess"));
       refetch();
     } catch (err: any) {
-      toast.error(err.message || "Không thể xóa bài viết.");
+      toast.error(err.message || t("deleteFailed"));
     } finally {
       setDeleteConfirmId(null);
     }
@@ -103,7 +108,7 @@ export default function MyPostsPage() {
   const handleSaveDraftOnly = async () => {
     if (!editingPost) return;
     if (!editContent.trim()) {
-      toast.error("Nội dung bài viết không được để trống!");
+      toast.error(t("emptyContentError"));
       return;
     }
 
@@ -114,11 +119,11 @@ export default function MyPostsPage() {
         category: editCategory,
         tags: editTags,
       });
-      toast.success("Đã lưu bản nháp thành công!");
+      toast.success(t("draftSavedSuccess"));
       setEditingPost(null);
       refetch();
     } catch (err: any) {
-      toast.error(err.message || "Lỗi khi lưu bản nháp.");
+      toast.error(err.message || t("draftSavedFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -127,7 +132,7 @@ export default function MyPostsPage() {
   const handlePublishDraft = async () => {
     if (!editingPost) return;
     if (!editContent.trim()) {
-      toast.error("Nội dung bài viết không được để trống!");
+      toast.error(t("emptyContentError"));
       return;
     }
 
@@ -144,18 +149,18 @@ export default function MyPostsPage() {
 
       if (result.success && result.data?.status === "rejected") {
         toast.warning(
-          `Bài đăng bị từ chối tự động: ${result.data.flaggedReason}`,
+          t("publishDraftRejected", { reason: result.data.flaggedReason }),
         );
       } else if (result.success) {
-        toast.success("Đã gửi đăng bài viết thành công! Đang chờ kiểm duyệt.");
+        toast.success(t("publishSuccess"));
       } else {
-        toast.error(result.message || "Lỗi khi đăng bài viết.");
+        toast.error(result.message || t("publishDraftFailed"));
       }
 
       setEditingPost(null);
       refetch();
     } catch (err: any) {
-      toast.error(err.message || "Lỗi khi đăng bài viết.");
+      toast.error(err.message || t("publishDraftFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -181,62 +186,61 @@ export default function MyPostsPage() {
       {/* Header */}
       <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-center">
         <div>
-          <h1 className="text-[24px] font-[700] text-[#1B1B1B] dark:text-gray-100">
-            Bài viết của tôi
+          <h1 className="text-[26px] font-[800] tracking-tight text-[#1B1B1B] dark:text-gray-100">
+            {t("myPosts")}
           </h1>
-          <p className="text-[14px] text-[#5C5C5C] dark:text-gray-400">
-            Xem lịch sử đăng bài, quản lý bản nháp và theo dõi trạng thái kiểm
-            duyệt bài viết.
+          <p className="text-[14px] leading-relaxed text-[#5C5C5C] dark:text-gray-400">
+            {t("myHistoryDesc")}
           </p>
         </div>
 
         {/* Search Input */}
-        <div className="relative w-full shrink-0 md:w-[250px]">
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[#9E9E9E]">
+        <div className="group relative w-full shrink-0 md:w-[250px]">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[#9E9E9E] transition-colors duration-200 group-focus-within:text-[#2F9E44]">
             <Search className="h-4 w-4" aria-hidden="true" />
           </div>
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Tìm kiếm bài viết…"
-            aria-label="Tìm kiếm bài viết của tôi"
-            className="w-full rounded-full border border-[#E0E0E0] bg-white py-2 pr-4 pl-9 text-[13px] text-[#1B1B1B] placeholder-[#9E9E9E] focus:border-[#2F9E44] focus:ring-1 focus:ring-[#2F9E44] focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+            placeholder={t("searchPlaceholder")}
+            aria-label={t("searchAriaLabel")}
+            className="dark:placeholder-gray-550 w-full rounded-full border border-[#E0E0E0] bg-white py-2 pr-4 pl-9 text-[13px] text-[#1B1B1B] placeholder-[#9E9E9E] shadow-xs hover:border-[#CCCCCC] hover:shadow-sm focus:border-[#2F9E44] focus:ring-2 focus:ring-[#2F9E44]/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:border-gray-600 dark:focus:border-[#2F9E44]"
           />
         </div>
       </div>
 
       {/* Segmented Control Navigation */}
-      <div className="mb-6 flex rounded-xl bg-gray-100 p-1 dark:bg-gray-800">
+      <div className="mb-6 flex rounded-xl border border-transparent bg-gray-100 p-1 shadow-xs dark:border-gray-700/50 dark:bg-gray-800">
         <Link
           href="/forum"
-          className="flex flex-1 items-center justify-center gap-2 rounded-lg py-2.5 text-center font-medium text-gray-600 transition hover:text-[#2F9E44] focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none dark:text-gray-400 dark:hover:text-green-400"
+          className="flex flex-1 items-center justify-center gap-2 rounded-lg py-2.5 text-center font-semibold text-gray-600 transition hover:bg-gray-50/50 hover:text-[#2F9E44] focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none dark:text-gray-400 dark:hover:bg-gray-800/30 dark:hover:text-green-400"
         >
           <Globe className="h-4 w-4" aria-hidden="true" />
-          <span>Diễn đàn chung</span>
+          <span>{t("generalForum")}</span>
         </Link>
         <Link
           href="/forum/my-posts"
-          className="dark:bg-gray-750 flex flex-1 items-center justify-center gap-2 rounded-lg bg-white py-2.5 text-center font-bold text-[#2F9E44] shadow-xs focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none dark:text-green-400"
+          className="dark:bg-gray-750 flex flex-1 transform items-center justify-center gap-2 rounded-lg bg-white py-2.5 text-center font-bold text-[#2F9E44] shadow-sm transition-all duration-205 hover:scale-[1.01] focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none dark:text-green-400"
         >
           <History className="h-4 w-4" aria-hidden="true" />
-          <span>Bài viết của tôi</span>
+          <span>{t("myPosts")}</span>
         </Link>
       </div>
 
       {/* Tabs */}
       <div className="mb-6 border-b border-gray-200 dark:border-gray-800">
         <nav
-          className="-mb-px flex space-x-6 overflow-x-auto"
+          className="scrollbar-hide -mb-px flex space-x-6 overflow-x-auto"
           aria-label="Tabs"
         >
           {(
             [
-              { key: "ALL", label: "Tất cả" },
-              { key: "DRAFT", label: "Bản nháp" },
-              { key: "PENDING", label: "Chờ duyệt" },
-              { key: "APPROVED", label: "Đã đăng" },
-              { key: "REJECTED", label: "Bị từ chối" },
+              { key: "ALL", label: t("all") },
+              { key: "DRAFT", label: t("statusDraft") },
+              { key: "PENDING", label: t("statusPending") },
+              { key: "APPROVED", label: t("statusApproved") },
+              { key: "REJECTED", label: t("rejected") },
             ] as const
           ).map((tab) => {
             const isActive = activeTab === tab.key;
@@ -244,7 +248,7 @@ export default function MyPostsPage() {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`border-b-2 px-1 pb-4 text-sm font-semibold whitespace-nowrap transition-colors focus:outline-none ${
+                className={`cursor-pointer border-b-2 px-1 pb-4 text-sm font-semibold whitespace-nowrap transition-colors focus:outline-none ${
                   isActive
                     ? "border-[#2F9E44] text-[#2F9E44]"
                     : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
@@ -261,19 +265,21 @@ export default function MyPostsPage() {
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-20">
           <Loader2 className="h-8 w-8 animate-spin text-[#2F9E44]" />
-          <p className="mt-2 text-sm text-gray-500">Đang tải bài viết…</p>
+          <p className="mt-2 text-sm font-medium text-gray-500">
+            {t("loading")}
+          </p>
         </div>
       ) : posts.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#E0E0E0] bg-white py-16 text-center dark:border-gray-800 dark:bg-gray-900">
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#E0E0E0] bg-white px-4 py-16 text-center shadow-xs dark:border-gray-800 dark:bg-gray-900">
           <MessageSquare
-            className="h-10 w-10 text-gray-300 dark:text-gray-700"
+            className="h-10 w-10 text-gray-300 opacity-80 dark:text-gray-700"
             aria-hidden="true"
           />
-          <h3 className="mt-4 text-[15px] font-semibold text-gray-900 dark:text-white">
-            Không tìm thấy bài viết nào
+          <h3 className="mt-4 text-[15px] font-bold text-gray-950 dark:text-white">
+            {t("noPostsTitle")}
           </h3>
-          <p className="mt-1 text-[13px] text-[#5C5C5C]">
-            Bạn chưa có bài viết nào thuộc mục này.
+          <p className="mt-1 text-[13px] text-[#5C5C5C] dark:text-gray-400">
+            {t("noOwnPostsDesc")}
           </p>
         </div>
       ) : (
@@ -281,18 +287,18 @@ export default function MyPostsPage() {
           {posts.map((post: ForumPost) => (
             <div
               key={post.id}
-              className="group overflow-hidden rounded-xl border border-[#E0E0E0] bg-white p-5 transition-all hover:border-[#2F9E44]/30 dark:border-gray-800 dark:bg-gray-900"
+              className="group overflow-hidden rounded-xl border border-[#E0E0E0] bg-white p-5 shadow-xs transition-all duration-300 hover:border-[#2F9E44]/45 hover:shadow-md dark:border-gray-800 dark:bg-gray-900"
             >
               {/* Header Info */}
               <div className="flex items-start justify-between gap-4">
-                <div className="flex gap-2.5 text-[12px] text-gray-500">
+                <div className="flex gap-2.5 text-[12px] text-gray-500 dark:text-gray-400">
                   <span className="flex items-center gap-1">
                     <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
                     {new Date(post.createdAt).toLocaleDateString("vi-VN")}
                   </span>
                   <span>•</span>
                   {post.category && (
-                    <span className="inline-flex items-center gap-1 font-semibold text-emerald-600">
+                    <span className="dark:text-emerald-450 inline-flex items-center gap-1 font-semibold text-emerald-600">
                       <Tag className="h-3 w-3" aria-hidden="true" />
                       {post.category}
                     </span>
@@ -317,7 +323,7 @@ export default function MyPostsPage() {
                   {post.tags.map((t, idx) => (
                     <span
                       key={idx}
-                      className="dark:bg-gray-850 inline-block rounded border border-gray-100 bg-gray-50 px-2 py-0.5 text-[11px] font-medium text-gray-600 dark:border-gray-800 dark:text-gray-300"
+                      className="dark:bg-gray-850 text-gray-655 inline-block rounded border border-gray-100 bg-gray-50 px-2 py-0.5 text-[11px] font-medium dark:border-gray-800 dark:text-gray-300"
                     >
                       {t}
                     </span>
@@ -331,13 +337,13 @@ export default function MyPostsPage() {
                   {post.images.map((imgUrl, idx) => (
                     <div
                       key={idx}
-                      className="relative aspect-video w-full cursor-pointer overflow-hidden rounded-lg border border-gray-100 dark:border-gray-800"
+                      className="relative aspect-video w-full cursor-pointer overflow-hidden rounded-lg border border-gray-100 transition-opacity hover:opacity-95 dark:border-gray-800"
                       onClick={() => window.open(imgUrl, "_blank")}
                     >
                       <img
                         src={imgUrl}
                         alt="Preview"
-                        className="h-full w-full object-cover transition-opacity hover:opacity-95"
+                        className="h-full w-full object-cover"
                       />
                     </div>
                   ))}
@@ -346,15 +352,12 @@ export default function MyPostsPage() {
 
               {/* Reject reason overlay */}
               {post.status === "rejected" && post.flaggedReason && (
-                <div className="mt-3 flex items-start gap-1.5 rounded-lg border border-rose-100/50 bg-rose-50/50 p-3 text-[12px] text-rose-800">
+                <div className="mt-3 flex items-start gap-2 rounded-lg border border-rose-100/60 bg-rose-50/50 p-3 text-[12px] text-rose-800 dark:border-rose-950/20 dark:bg-rose-950/10 dark:text-rose-400">
                   <AlertTriangle
-                    className="mt-0.5 h-3.5 w-3.5 shrink-0 text-rose-500"
+                    className="mt-0.5 h-4 w-4 shrink-0 text-rose-500"
                     aria-hidden="true"
                   />
-                  <div>
-                    <span className="font-bold">Lý do từ chối:</span>{" "}
-                    {post.flaggedReason}
-                  </div>
+                  <div>{t("rejectReason", { reason: post.flaggedReason })}</div>
                 </div>
               )}
 
@@ -364,19 +367,19 @@ export default function MyPostsPage() {
                   <button
                     type="button"
                     onClick={() => handleEditClick(post)}
-                    className="flex items-center gap-1 rounded-lg bg-[#E6F4EA] px-3 py-1.5 text-[12px] font-bold text-[#2F9E44] transition hover:bg-[#D4EDDA] focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none dark:bg-emerald-950/20 dark:text-emerald-400"
+                    className="dark:text-emerald-450 flex transform cursor-pointer items-center gap-1.5 rounded-lg bg-[#E6F4EA] px-3.5 py-1.5 text-[12px] font-bold text-[#2F9E44] transition-all hover:scale-[1.02] hover:bg-[#D4EDDA] focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none active:scale-[0.98] dark:bg-emerald-950/30"
                   >
-                    <Edit className="h-3.5 w-3.5" aria-hidden="true" /> Chỉnh
-                    sửa & Đăng bài
+                    <Edit className="h-3.5 w-3.5" aria-hidden="true" />
+                    <span>{t("editAndPublish")}</span>
                   </button>
                 )}
                 <button
                   type="button"
                   onClick={() => setDeleteConfirmId(post.id)}
-                  className="flex items-center gap-1 rounded-lg px-3 py-1.5 text-[12px] font-bold text-rose-600 transition hover:bg-rose-50 focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-1 focus-visible:outline-none dark:hover:bg-rose-950/10"
+                  className="flex cursor-pointer items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-[12px] font-bold text-rose-600 transition hover:bg-rose-50 focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-1 focus-visible:outline-none dark:hover:bg-rose-950/15"
                 >
-                  <Trash2 className="h-3.5 w-3.5" aria-hidden="true" /> Xóa bài
-                  viết
+                  <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span>{t("deletePost")}</span>
                 </button>
               </div>
             </div>
@@ -389,7 +392,7 @@ export default function MyPostsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 bg-black/55 backdrop-blur-sm transition-opacity"
             onClick={() => setEditingPost(null)}
           />
 
@@ -400,13 +403,13 @@ export default function MyPostsPage() {
               <div className="flex items-center gap-2 text-[#2F9E44]">
                 <Edit className="h-5 w-5" aria-hidden="true" />
                 <span className="text-[16px] font-bold">
-                  Chỉnh sửa bản nháp bài viết
+                  {t("editDraftTitle")}
                 </span>
               </div>
               <button
                 type="button"
                 onClick={() => setEditingPost(null)}
-                className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                className="hover:text-gray-655 dark:hover:bg-gray-850 cursor-pointer rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 dark:hover:text-gray-200"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -419,7 +422,7 @@ export default function MyPostsPage() {
                   htmlFor="edit-category-select"
                   className="mb-1.5 block text-[13px] font-[600] text-gray-700 dark:text-gray-300"
                 >
-                  Thể loại bài đăng
+                  {t("categoryLabel")}
                 </label>
                 <select
                   id="edit-category-select"
@@ -438,15 +441,15 @@ export default function MyPostsPage() {
                   htmlFor="edit-content-input"
                   className="mb-1.5 block text-[13px] font-[600] text-gray-700 dark:text-gray-300"
                 >
-                  Nội dung bài viết
+                  {t("newPostContent")}
                 </label>
                 <textarea
                   id="edit-content-input"
                   rows={5}
                   value={editContent}
                   onChange={(e) => setEditContent(e.target.value)}
-                  placeholder="Nhập nội dung chia sẻ hoặc thắc mắc của bạn…"
-                  className="w-full rounded-lg border border-[#E0E0E0] bg-white p-3 text-sm text-[#1B1B1B] placeholder-[#9E9E9E] outline-none focus:border-[#2F9E44] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+                  placeholder={t("editContentPlaceholder")}
+                  className="dark:placeholder-gray-550 w-full rounded-lg border border-[#E0E0E0] bg-white p-3 text-sm text-[#1B1B1B] placeholder-[#9E9E9E] outline-none focus:border-[#2F9E44] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                 />
               </div>
 
@@ -456,7 +459,7 @@ export default function MyPostsPage() {
                   htmlFor="edit-tags-input"
                   className="mb-1.5 block text-[13px] font-[600] text-gray-700 dark:text-gray-300"
                 >
-                  Nhãn chủ đề (Ấn Enter để lưu nhãn)
+                  {t("editTagsLabel")}
                 </label>
                 <input
                   id="edit-tags-input"
@@ -464,8 +467,8 @@ export default function MyPostsPage() {
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyDown={handleAddTag}
-                  placeholder="Ví dụ: sống xanh, tái chế…"
-                  className="w-full rounded-lg border border-[#E0E0E0] bg-white px-3 py-2 text-sm text-[#1B1B1B] placeholder-[#9E9E9E] outline-none focus:border-[#2F9E44] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+                  placeholder={t("editTagsPlaceholder")}
+                  className="dark:placeholder-gray-550 w-full rounded-lg border border-[#E0E0E0] bg-white px-3 py-2 text-sm text-[#1B1B1B] placeholder-[#9E9E9E] outline-none focus:border-[#2F9E44] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                 />
                 <div className="mt-2.5 flex flex-wrap gap-1.5">
                   {editTags.map((tag) => (
@@ -478,7 +481,7 @@ export default function MyPostsPage() {
                         type="button"
                         onClick={() => handleRemoveTag(tag)}
                         aria-label={`Xóa nhãn ${tag}`}
-                        className="font-extrabold hover:text-rose-600 focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none"
+                        className="cursor-pointer font-extrabold hover:text-rose-600 focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none"
                       >
                         ✕
                       </button>
@@ -493,23 +496,23 @@ export default function MyPostsPage() {
               <button
                 type="button"
                 onClick={() => setEditingPost(null)}
-                className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                className="text-gray-750 cursor-pointer rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
               >
-                Hủy
+                {t("cancel")}
               </button>
               <button
                 type="button"
                 disabled={isSaving}
                 onClick={handleSaveDraftOnly}
-                className="rounded-lg border border-[#2F9E44] px-4 py-2 text-sm font-semibold text-[#2F9E44] transition-colors hover:bg-emerald-50 disabled:opacity-50 dark:hover:bg-emerald-950/20"
+                className="cursor-pointer rounded-lg border border-[#2F9E44] px-4 py-2 text-sm font-semibold text-[#2F9E44] transition-colors hover:bg-emerald-50 disabled:opacity-50 dark:hover:bg-emerald-950/25"
               >
-                Lưu bản nháp
+                {t("saveDraftBtn")}
               </button>
               <button
                 type="button"
                 disabled={isSaving}
                 onClick={handlePublishDraft}
-                className="flex items-center gap-1.5 rounded-lg bg-[#2F9E44] px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-[#1F6F2E] disabled:opacity-50"
+                className="flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#2F9E44] px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-[#1F6F2E] disabled:opacity-50"
               >
                 {isSaving ? (
                   <Loader2
@@ -519,7 +522,7 @@ export default function MyPostsPage() {
                 ) : (
                   <Send className="h-4 w-4" aria-hidden="true" />
                 )}
-                <span>Đăng công khai</span>
+                <span>{t("publishDraftBtn")}</span>
               </button>
             </div>
           </div>
@@ -530,31 +533,30 @@ export default function MyPostsPage() {
       {deleteConfirmId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/55 backdrop-blur-sm"
             onClick={() => setDeleteConfirmId(null)}
           />
           <div className="relative z-10 w-full max-w-md rounded-2xl border border-gray-100 bg-white p-6 shadow-xl dark:border-gray-800 dark:bg-gray-900">
             <h3 className="text-lg font-bold text-gray-950 dark:text-white">
-              Xác nhận xóa bài viết
+              {t("confirmDeleteTitle")}
             </h3>
             <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              Bạn có chắc chắn muốn xóa bài viết này không? Thao tác này không
-              thể hoàn tác.
+              {t("deleteConfirmDesc")}
             </p>
             <div className="mt-6 flex justify-end gap-3">
               <button
                 type="button"
                 onClick={() => setDeleteConfirmId(null)}
-                className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                className="text-gray-750 cursor-pointer rounded-xl border border-gray-200 px-4 py-2 text-sm font-semibold hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
               >
-                Hủy
+                {t("cancel")}
               </button>
               <button
                 type="button"
                 onClick={handleConfirmDelete}
-                className="rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+                className="bg-red-650 focus-visible:outline-red-650 cursor-pointer rounded-xl px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               >
-                Xóa
+                {t("delete")}
               </button>
             </div>
           </div>

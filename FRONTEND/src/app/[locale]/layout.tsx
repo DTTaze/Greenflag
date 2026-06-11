@@ -1,15 +1,18 @@
 import "../../styles/index.css";
 
 import type { Metadata } from "next";
-import { Inter, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Inter } from "next/font/google";
 import { notFound } from "next/navigation";
 import Script from "next/script";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
+import { Toaster } from "sonner";
 
+import { NotificationProvider } from "@/src/components/ui/NotificationProvider";
+import { TooltipProvider } from "@/src/components/ui/tooltip";
 import { routing } from "@/src/i18n/routing";
-
-import Providers from "./providers";
+import QueryProvider from "@/src/providers/QueryProvider";
+import { ThemeProvider } from "@/src/providers/ThemeProvider";
 
 const inter = Inter({
   subsets: ["vietnamese", "latin"],
@@ -56,7 +59,19 @@ export default async function RootLayout({
       </head>
       <body className="antialiased">
         <NextIntlClientProvider messages={messages} locale={locale}>
-          <Providers>{children}</Providers>
+          <QueryProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <NotificationProvider>
+                <TooltipProvider>{children}</TooltipProvider>
+                <Toaster richColors closeButton position="top-right" />
+              </NotificationProvider>
+            </ThemeProvider>
+          </QueryProvider>
         </NextIntlClientProvider>
         <Script
           src="https://unpkg.com/html5-qrcode"

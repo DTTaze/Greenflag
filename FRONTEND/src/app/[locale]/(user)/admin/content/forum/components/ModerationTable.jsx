@@ -80,7 +80,7 @@ function ModerationTable({
                   <span className="block truncate font-semibold text-gray-900 dark:text-white">
                     {post.author?.name || "Ẩn danh"}
                   </span>
-                  <span className="block truncate text-[10px] text-gray-400 dark:text-zinc-500 uppercase">
+                  <span className="block truncate text-[10px] text-gray-400 uppercase dark:text-zinc-500">
                     {post.author?.role || "Thành viên"}
                   </span>
                 </div>

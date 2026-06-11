@@ -1,6 +1,8 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React from "react";
+
 import { FORUM_CATEGORIES } from "@/src/constants/forum.constants";
 
 interface CategoryTopicSelectsProps {
@@ -16,6 +18,7 @@ export default function CategoryTopicSelects({
   selectedTopic,
   onTopicChange,
 }: CategoryTopicSelectsProps) {
+  const t = useTranslations("forum");
   const categories = Object.keys(FORUM_CATEGORIES);
   const topics = FORUM_CATEGORIES[selectedCategory] || [];
 
@@ -39,17 +42,17 @@ export default function CategoryTopicSelects({
           htmlFor="category-select"
           className="text-[12px] font-semibold text-[#5C5C5C] dark:text-gray-400"
         >
-          Thể loại
+          {t("categorySelectLabel")}
         </label>
         <select
           id="category-select"
           value={selectedCategory}
           onChange={handleCategoryChange}
-          className="w-full rounded-lg border border-[#E0E0E0] bg-[#F7F7F7] px-3 py-1.5 text-[13px] font-bold text-[#2F9E44] focus:border-[#2F9E44] focus:ring-1 focus:ring-[#2F9E44] focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-emerald-400"
+          className="dark:text-emerald-450 w-full cursor-pointer rounded-lg border border-[#E0E0E0] bg-[#F7F7F7] px-3 py-2 text-[13px] font-bold text-[#2F9E44] focus:border-[#2F9E44] focus:ring-1 focus:ring-[#2F9E44] focus:outline-none dark:border-gray-700 dark:bg-gray-800"
         >
           {categories.map((cat) => (
             <option key={cat} value={cat}>
-              {cat}
+              {t(`categories.${cat}`, { defaultValue: cat })}
             </option>
           ))}
         </select>
@@ -61,17 +64,17 @@ export default function CategoryTopicSelects({
           htmlFor="topic-select"
           className="text-[12px] font-semibold text-[#5C5C5C] dark:text-gray-400"
         >
-          Chủ đề con
+          {t("topicSelectLabel")}
         </label>
         <select
           id="topic-select"
           value={selectedTopic}
           onChange={(e) => onTopicChange(e.target.value)}
-          className="w-full rounded-lg border border-[#E0E0E0] bg-[#F7F7F7] px-3 py-1.5 text-[13px] font-semibold text-[#5C5C5C] focus:border-[#2F9E44] focus:ring-1 focus:ring-[#2F9E44] focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+          className="w-full cursor-pointer rounded-lg border border-[#E0E0E0] bg-[#F7F7F7] px-3 py-2 text-[13px] font-semibold text-[#5C5C5C] focus:border-[#2F9E44] focus:ring-1 focus:ring-[#2F9E44] focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
         >
           {topics.map((top) => (
             <option key={top} value={top}>
-              {top}
+              {t(`categories.${top}`, { defaultValue: top })}
             </option>
           ))}
         </select>

@@ -1,15 +1,20 @@
 "use client";
 
-import { EventType, EVENT_STATUS } from "@/src/types/event/event.type";
-import { Calendar, MapPin, ArrowRight, Coins } from "lucide-react";
+import { ArrowRight, Calendar, Coins, MapPin } from "lucide-react";
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import React from "react";
+
+import { EVENT_STATUS, EventType } from "@/src/types/event/event.type";
 
 interface EventEmbeddedCardProps {
   event: EventType;
 }
 
 export default function EventEmbeddedCard({ event }: EventEmbeddedCardProps) {
+  const t = useTranslations("forum");
+  const locale = useLocale();
+
   if (!event) return null;
 
   const publicId = event.publicId || (event as any).public_id || event.id;
@@ -25,7 +30,7 @@ export default function EventEmbeddedCard({ event }: EventEmbeddedCardProps) {
   // Format date elegantly
   const formatEventDate = (dateStr: string) => {
     if (!dateStr) return "";
-    return new Intl.DateTimeFormat("vi-VN", {
+    return new Intl.DateTimeFormat(locale === "en" ? "en-US" : "vi-VN", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -40,27 +45,27 @@ export default function EventEmbeddedCard({ event }: EventEmbeddedCardProps) {
     switch (statusStr) {
       case EVENT_STATUS.UPCOMING:
         return (
-          <span className="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-blue-600 dark:border-blue-900/30 dark:bg-blue-950/40 dark:text-blue-400">
-            Sắp diễn ra
+          <span className="dark:text-blue-405 inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-blue-600 dark:border-blue-900/30 dark:bg-blue-950/40">
+            {t("eventStatusUpcoming")}
           </span>
         );
       case EVENT_STATUS.ONGOING:
         return (
-          <span className="inline-flex items-center rounded-full border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-600 dark:border-emerald-900/30 dark:bg-emerald-950/40 dark:text-emerald-400">
-            Đang diễn ra
+          <span className="dark:text-emerald-405 inline-flex items-center rounded-full border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-600 dark:border-emerald-900/30 dark:bg-emerald-950/40">
+            {t("eventStatusOngoing")}
           </span>
         );
       case EVENT_STATUS.FINISHED:
         return (
-          <span className="border-gray-150 inline-flex items-center rounded-full border bg-gray-50 px-2 py-0.5 text-[11px] font-semibold text-gray-500 dark:border-gray-700/30 dark:bg-gray-800/40 dark:text-gray-400">
-            Đã kết thúc
+          <span className="border-gray-150 text-gray-505 inline-flex items-center rounded-full border bg-gray-50 px-2 py-0.5 text-[11px] font-semibold dark:border-gray-700/30 dark:bg-gray-800/40 dark:text-gray-400">
+            {t("eventStatusFinished")}
           </span>
         );
       case "cancelled":
       case "canceled":
         return (
-          <span className="inline-flex items-center rounded-full border border-rose-100 bg-rose-50 px-2 py-0.5 text-[11px] font-semibold text-rose-600 dark:border-rose-900/30 dark:bg-rose-950/40 dark:text-rose-400">
-            Đã hủy
+          <span className="dark:text-rose-455 inline-flex items-center rounded-full border border-rose-100 bg-rose-50 px-2 py-0.5 text-[11px] font-semibold text-rose-600 dark:border-rose-900/30 dark:bg-rose-950/40">
+            {t("eventStatusCancelled")}
           </span>
         );
       default:
@@ -106,8 +111,8 @@ export default function EventEmbeddedCard({ event }: EventEmbeddedCardProps) {
         <div>
           <div className="mb-1.5 flex flex-wrap items-center gap-2">
             {getStatusBadge(status)}
-            <span className="text-[11px] font-medium text-gray-400 dark:text-gray-500">
-              Sự kiện đính kèm
+            <span className="dark:text-gray-505 text-[11px] font-medium text-gray-400">
+              {t("attachedEventLabel")}
             </span>
           </div>
 
@@ -139,10 +144,10 @@ export default function EventEmbeddedCard({ event }: EventEmbeddedCardProps) {
 
           <Link
             href={`/events/${publicId}`}
-            className="inline-flex items-center gap-1 text-[13px] font-bold text-emerald-600 transition-all hover:translate-x-0.5 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300"
+            className="inline-flex cursor-pointer items-center gap-1 text-[13px] font-bold text-emerald-600 transition-all hover:translate-x-0.5 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300"
             onClick={(e) => e.stopPropagation()}
           >
-            <span>Chi tiết sự kiện</span>
+            <span>{t("eventDetail")}</span>
             <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>

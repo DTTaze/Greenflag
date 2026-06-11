@@ -63,16 +63,28 @@ export class PostService implements OnModuleInit {
     const groqApiKey = this.configService.get<string>(ENV_KEY.GROQ_API_KEY);
     const groqModel = this.configService.get<string>(ENV_KEY.GROQ_MODEL_NAME);
 
-    this.chatModel = new ChatGroq({
-      apiKey: groqApiKey,
-      model: groqModel,
-      temperature: 0.4,
-      maxTokens: 4096,
-      maxRetries: 3,
-    } as any);
+    if (groqApiKey && groqApiKey.trim() !== '') {
+      this.chatModel = new ChatGroq({
+        apiKey: groqApiKey,
+        model: groqModel,
+        temperature: 0.4,
+        maxTokens: 4096,
+        maxRetries: 3,
+      } as any);
+    } else {
+      this.chatModel = null;
+    }
   }
 
   async aiEnhanceContent(content: string) {
+    if (!this.chatModel) {
+      return {
+        enhancedContent: content,
+        hashtags: ['Sống xanh', 'Môi trường'],
+        category: 'Thảo luận chung',
+      };
+    }
+
     const systemPrompt = `You are a strict editorial assistant for an ENVIRONMENTAL PROTECTION & GREEN LIVING (Bảo vệ môi trường & Sống xanh) forum named Greenflag.
 The user will provide a raw, often misspelled draft.
 

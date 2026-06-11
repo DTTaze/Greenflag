@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { forumService } from "@/src/services/forum.service";
 import {
   CreateCommentPayload,
@@ -11,7 +12,7 @@ const handleApiError = (
 ) => {
   const msg =
     error?.response?.data?.message || error?.message || defaultMessage;
-  message.error(msg);
+  toast.error(msg);
 };
 import {
   useInfiniteQuery,
@@ -19,7 +20,8 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { message } from "antd";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { toast, Toaster } from "sonner";
 
 export function useForumPosts(params?: GetPostsParams) {
   return useInfiniteQuery({
@@ -56,7 +58,7 @@ export function useCreatePost() {
       } else {
         isDraft = !!variables.isDraft;
       }
-      message.success(
+      toast.success(
         isDraft ? "Lưu bản nháp thành công!" : "Đăng bài viết thành công!",
       );
     },
@@ -216,9 +218,7 @@ export function useCreateComment(postId: string) {
       } else {
         isReply = !!variables.parentId;
       }
-      message.success(
-        isReply ? "Phản hồi thành công!" : "Bình luận thành công!",
-      );
+      toast.success(isReply ? "Phản hồi thành công!" : "Bình luận thành công!");
     },
     onError: (error, variables) => {
       let isReply = false;
@@ -344,7 +344,7 @@ export function useDeletePost() {
     mutationFn: (id: string) => forumService.deletePost(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["forum-posts"] });
-      message.success("Xóa bài viết thành công.");
+      toast.success("Xóa bài viết thành công.");
     },
     onError: (error) => {
       handleApiError(error, "Xóa bài viết thất bại.");
@@ -360,7 +360,7 @@ export function useDeleteComment(postId: string) {
       queryClient.invalidateQueries({ queryKey: ["forum-comments", postId] });
       queryClient.invalidateQueries({ queryKey: ["forum-posts"] });
       queryClient.invalidateQueries({ queryKey: ["forum-post", postId] });
-      message.success("Xóa bình luận thành công.");
+      toast.success("Xóa bình luận thành công.");
     },
     onError: (error) => {
       handleApiError(error, "Xóa bình luận thất bại.");
@@ -384,7 +384,7 @@ export function useModeratePost() {
       queryClient.invalidateQueries({ queryKey: ["forum-posts"] });
       const actionText =
         variables.status === "approved" ? "Phê duyệt" : "Từ chối";
-      message.success(`${actionText} bài viết thành công.`);
+      toast.success(`${actionText} bài viết thành công.`);
     },
     onError: (error, variables) => {
       const actionText =

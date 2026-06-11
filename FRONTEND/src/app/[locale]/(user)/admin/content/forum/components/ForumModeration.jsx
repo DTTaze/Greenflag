@@ -97,14 +97,18 @@ function ForumModeration() {
   return (
     <div className="flex-1 space-y-6">
       {/* Title */}
-      <div className="flex items-center justify-between border-b border-gray-100 dark:border-zinc-800 pb-4">
+      <div className="flex items-center justify-between border-b border-gray-100 pb-4 dark:border-zinc-800">
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight text-gray-950 dark:text-white">
-            <ShieldCheck size={26} className="text-emerald-600 dark:text-emerald-500" />
+            <ShieldCheck
+              size={26}
+              className="text-emerald-600 dark:text-emerald-500"
+            />
             Kiểm duyệt bài viết diễn đàn
           </h1>
           <p className="text-sm text-gray-500 dark:text-zinc-400">
-            Phê duyệt hoặc ẩn các bài viết chia sẻ hoạt động sống xanh, bảo vệ môi trường của thành viên.
+            Phê duyệt hoặc ẩn các bài viết chia sẻ hoạt động sống xanh, bảo vệ
+            môi trường của thành viên.
           </p>
         </div>
         <button
@@ -167,7 +171,7 @@ function ForumModeration() {
 
         {/* Details preview */}
         <div className="space-y-4 rounded-xl border border-gray-100 bg-white p-5 shadow-sm lg:col-span-1 dark:border-zinc-800 dark:bg-zinc-950">
-          <h3 className="border-b border-gray-100 dark:border-zinc-800 pb-2 text-sm font-bold text-gray-900 dark:text-white">
+          <h3 className="border-b border-gray-100 pb-2 text-sm font-bold text-gray-900 dark:border-zinc-800 dark:text-white">
             Chi tiết bài viết
           </h3>
           <ModerationDetail

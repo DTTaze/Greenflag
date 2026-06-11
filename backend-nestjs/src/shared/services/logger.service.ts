@@ -55,10 +55,33 @@ export class PinoLogger implements LoggerService {
   }
 
   error(message: any, ...optionalParams: any[]) {
-    const context = optionalParams[0] || 'Application';
-    const traceStack = optionalParams[1];
-    const msgString =
-      typeof message === 'object' ? JSON.stringify(message) : message;
+    let msgString = message;
+    let errorStack = '';
+
+    if (message instanceof Error) {
+      msgString = message.message;
+      errorStack = message.stack || '';
+    } else if (typeof message === 'object' && message !== null) {
+      msgString = message.message || JSON.stringify(message);
+      if (message.stack) {
+        errorStack = message.stack;
+      }
+    }
+
+    let context = 'Application';
+    let traceStack = errorStack;
+
+    if (optionalParams.length === 1) {
+      const param = optionalParams[0];
+      if (typeof param === 'string' && param.includes('\n')) {
+        traceStack = param;
+      } else {
+        context = param || 'Application';
+      }
+    } else if (optionalParams.length >= 2) {
+      traceStack = optionalParams[0] || traceStack;
+      context = optionalParams[1] || 'Application';
+    }
 
     this.logger.error(
       { ...this.getTraceContext(), context, trace: traceStack },

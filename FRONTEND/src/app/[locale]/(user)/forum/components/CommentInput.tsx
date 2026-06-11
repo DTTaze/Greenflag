@@ -1,8 +1,9 @@
 "use client";
 
-import { toast } from "react-toastify";
 import { Camera, Loader2, Send, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
 
 interface CommentInputProps {
   placeholder?: string;
@@ -14,12 +15,17 @@ interface CommentInputProps {
 }
 
 export default function CommentInput({
-  placeholder = "Viết bình luận của bạn…",
+  placeholder,
   isPending = false,
   onSubmit,
   avatarUrl,
-  profileName = "Thành viên",
+  profileName,
 }: CommentInputProps) {
+  const t = useTranslations("forum");
+
+  const defaultPlaceholder = placeholder || t("writeCommentPlaceholder");
+  const defaultProfileName = profileName || t("user");
+
   const [content, setContent] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -44,13 +50,13 @@ export default function CommentInput({
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("Ảnh vượt quá dung lượng 5MB cho phép!");
+      toast.error(t("commentImageSizeError"));
       return;
     }
 
     const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
     if (!allowedTypes.includes(file.type)) {
-      toast.error("Định dạng tệp không được hỗ trợ!");
+      toast.error(t("commentImageTypeError"));
       return;
     }
 
@@ -79,7 +85,7 @@ export default function CommentInput({
     if (!trimmed && !image) return;
 
     if (trimmed.length > 1000) {
-      toast.error("Nội dung không được vượt quá 1000 ký tự!");
+      toast.error(t("commentLengthError"));
       return;
     }
 
@@ -105,8 +111,8 @@ export default function CommentInput({
           <button
             type="button"
             onClick={removeImage}
-            className="absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-rose-600 focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none"
-            aria-label="Hủy ảnh đính kèm"
+            className="absolute top-1 right-1 flex h-5 w-5 cursor-pointer items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-rose-600 focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none"
+            aria-label={t("cancelAttachedImage")}
           >
             <X className="h-3 w-3" />
           </button>
@@ -118,10 +124,10 @@ export default function CommentInput({
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder={placeholder}
+            placeholder={defaultPlaceholder}
             maxLength={1000}
-            aria-label={placeholder}
-            className="w-full resize-none rounded-xl border border-[#E0E0E0] bg-[#F7F7F7] p-3 pr-12 pb-8 text-[14px] placeholder-[#9E9E9E] focus:border-[#2F9E44] focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+            aria-label={t("commentInputAria")}
+            className="dark:bg-gray-850 w-full resize-none rounded-xl border border-[#E0E0E0] bg-[#F7F7F7] p-3 pr-12 pb-8 text-[14px] text-gray-900 placeholder-[#9E9E9E] focus:border-[#2F9E44] focus:ring-1 focus:ring-[#2F9E44] focus:outline-none dark:border-gray-700 dark:text-gray-100 dark:placeholder-gray-500"
             rows={1}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
@@ -147,8 +153,8 @@ export default function CommentInput({
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            aria-label="Đính kèm ảnh"
-            className="absolute top-2 right-2 rounded-lg p-1.5 text-gray-400 hover:bg-gray-200 hover:text-green-600 focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:outline-none dark:hover:bg-gray-700"
+            aria-label={t("cameraAria")}
+            className="absolute top-2 right-2 cursor-pointer rounded-lg p-1.5 text-gray-400 hover:bg-gray-200 hover:text-green-600 focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:outline-none dark:hover:bg-gray-700"
           >
             <Camera className="h-4 w-4" />
           </button>
@@ -158,7 +164,7 @@ export default function CommentInput({
           type="button"
           onClick={handleSubmitClick}
           disabled={(!content.trim() && !image) || isPending}
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#2F9E44] p-3 text-white transition-colors hover:bg-[#1F6F2E] focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none disabled:opacity-50"
+          className="flex h-11 w-11 shrink-0 transform cursor-pointer items-center justify-center rounded-xl bg-[#2F9E44] p-3 text-white transition-colors hover:bg-[#1F6F2E] focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none active:scale-95 disabled:opacity-50"
         >
           {isPending ? (
             <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
@@ -178,8 +184,8 @@ export default function CommentInput({
             avatarUrl ||
             "https://res.cloudinary.com/ptquanh/image/upload/v1779947161/default-avatar.png"
           }
-          alt={profileName}
-          className="h-10 w-10 shrink-0 rounded-full object-cover"
+          alt={defaultProfileName}
+          className="border-gray-105 h-10 w-10 shrink-0 rounded-full border object-cover dark:border-gray-800"
         />
         {inputArea}
       </div>

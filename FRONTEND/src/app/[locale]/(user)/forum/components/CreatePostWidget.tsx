@@ -1,10 +1,5 @@
+/* eslint-disable max-lines */
 "use client";
-
-import { ACCESS_TOKEN } from "@/src/services";
-import { useProfile } from "@/src/hooks/useProfile";
-import { forumService } from "@/src/services/forum.service";
-import { EventType } from "@/src/types/event/event.type";
-import { toast } from "react-toastify";
 
 import { getCookie } from "cookies-next";
 import {
@@ -13,23 +8,30 @@ import {
   Paperclip,
   Send,
   Sparkles,
-  X,
   Tag,
+  X,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
 
 // Use absolute import or local hook since we already have useCreatePost in hook file
 import { useCreatePost as useCreatePostHook } from "@/src/hooks/useForum";
+import { useProfile } from "@/src/hooks/useProfile";
+import { ACCESS_TOKEN } from "@/src/services";
+import { forumService } from "@/src/services/forum.service";
+import { searchUsers } from "@/src/services/user.service";
+import { EventType } from "@/src/types/event/event.type";
 
 import CategoryTopicSelects from "./CategoryTopicSelects";
-import MiniEventCard from "./MiniEventCard";
 import EventSelectionModal from "./EventSelectionModal";
-import * as userService from "@/src/services/user.service";
+import MiniEventCard from "./MiniEventCard";
 
 // 1. Các chủ đề cố định (Gợi ý chip)
 const STATIC_TAGS = ["Hỏi đáp", "Chia sẻ", "Tái chế", "Trồng cây", "Sống xanh"];
 
 export default function CreatePostWidget() {
+  const t = useTranslations("forum");
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
@@ -71,7 +73,7 @@ export default function CreatePostWidget() {
       return;
     }
     try {
-      const res = await userService.searchUsers(text);
+      const res = await searchUsers(text);
       if (res.success && Array.isArray(res.data)) {
         setUserList(res.data);
       }
@@ -105,7 +107,7 @@ export default function CreatePostWidget() {
 
     for (const file of newFiles) {
       if (file.size > 5 * 1024 * 1024) {
-        toast.error(`Ảnh ${file.name} vượt quá dung lượng 5MB cho phép!`);
+        toast.error(t("imageSizeError", { name: file.name }));
         continue;
       }
 
@@ -116,7 +118,7 @@ export default function CreatePostWidget() {
         "image/webp",
       ];
       if (!allowedTypes.includes(file.type)) {
-        toast.error(`Định dạng tệp ${file.name} không hỗ trợ!`);
+        toast.error(t("imageTypeError", { name: file.name }));
         continue;
       }
 
@@ -125,7 +127,7 @@ export default function CreatePostWidget() {
     }
 
     if (images.length + validFiles.length > 4) {
-      toast.warning("Bạn chỉ được chọn tối đa 4 ảnh cho mỗi bài viết.");
+      toast.warning(t("imageMaxCount"));
       newPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
       return;
     }
@@ -143,7 +145,7 @@ export default function CreatePostWidget() {
   const { profile } = useProfile();
   const createPostMutation = useCreatePostHook();
 
-  const profileName = profile?.fullName || profile?.username || "Thành viên";
+  const profileName = profile?.fullName || profile?.username || t("user");
   const avatarUrl = profile?.avatarUrl || "";
 
   // Core normalization function: lowercase and strip spaces/hashes for case-insensitive duplicate check
@@ -194,9 +196,7 @@ export default function CreatePostWidget() {
   const handleAiEnhance = async () => {
     const trimmed = content.trim();
     if (!trimmed) {
-      toast.warning(
-        "Bạn vui lòng nhập nội dung nháp trước khi nhờ AI hỗ trợ nhé!",
-      );
+      toast.warning(t("aiWarning"));
       return;
     }
 
@@ -219,7 +219,7 @@ export default function CreatePostWidget() {
           setTags(hashtags);
         }
 
-        toast.success("Trợ lý AI đã tối ưu và phân loại bài đăng xong!");
+        toast.success(t("aiSuccess"));
       } else {
         throw new Error("API response error");
       }
@@ -228,7 +228,7 @@ export default function CreatePostWidget() {
       setTags(["Sống xanh", "Môi trường"]);
       setCategory("Sống xanh");
       setTopic("Tái chế");
-      toast.info("Trợ lý AI đang bận. Đã tự động gán thẻ phân loại mặc định!");
+      toast.info(t("aiFailed"));
     } finally {
       setIsEnhancing(false);
     }
@@ -239,12 +239,12 @@ export default function CreatePostWidget() {
     if (!trimmed) return;
 
     if (trimmed.length < 10) {
-      toast.error("Nội dung bài viết phải chứa ít nhất 10 ký tự!");
+      toast.error(t("contentMinLength"));
       return;
     }
 
     if (trimmed.length > 5000) {
-      toast.error("Nội dung bài viết không được vượt quá 5000 ký tự!");
+      toast.error(t("contentMaxLength"));
       return;
     }
 
@@ -386,7 +386,7 @@ export default function CreatePostWidget() {
   }
 
   return (
-    <div className="rounded-xl border border-[#E0E0E0] bg-white p-4 shadow-sm transition-all dark:border-gray-800 dark:bg-gray-900">
+    <div className="rounded-xl border border-[#E0E0E0] bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-md dark:border-gray-800 dark:bg-gray-900">
       {/* 1. Profile information */}
       <div className="mb-3 flex items-center justify-between border-b border-[#E0E0E0] pb-3 dark:border-gray-800">
         <div className="flex items-center gap-3">
@@ -403,7 +403,7 @@ export default function CreatePostWidget() {
               {profileName}
             </span>
             <p className="text-[11px] text-[#9E9E9E] dark:text-gray-500">
-              Đăng bài viết mới
+              {t("postNew")}
             </p>
           </div>
         </div>
@@ -432,10 +432,10 @@ export default function CreatePostWidget() {
             const target = e.target as HTMLTextAreaElement;
             handleTextareaChange(target.value, target.selectionStart);
           }}
-          placeholder="Nhập nội dung... Gõ @ để nhắc đến ai đó"
+          placeholder={t("postDraftPlaceholder")}
           maxLength={5000}
-          aria-label="Nội dung bài viết mới"
-          className="min-h-[120px] w-full resize-none rounded-lg border border-[#E0E0E0] bg-[#F7F7F7] p-3 pb-14 text-[14px] text-[#1B1B1B] placeholder-[#9E9E9E] focus:border-[#2F9E44] focus:ring-1 focus:ring-[#2F9E44] focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+          aria-label={t("newPostContent")}
+          className="dark:bg-gray-850 min-h-[120px] w-full resize-none rounded-lg border border-[#E0E0E0] bg-[#F7F7F7] p-3 pb-14 text-[14px] text-[#1B1B1B] placeholder-[#9E9E9E] transition-all focus:border-[#2F9E44] focus:shadow-sm focus:ring-1 focus:ring-[#2F9E44] focus:outline-none dark:border-gray-700 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-emerald-500 dark:focus:ring-emerald-500"
           rows={4}
         />
 
@@ -453,7 +453,7 @@ export default function CreatePostWidget() {
                   type="button"
                   onClick={() => selectMention(user.username)}
                   onMouseEnter={() => setActiveUserIndex(idx)}
-                  className={`flex w-full flex-col px-4 py-2 text-left text-sm transition-colors ${
+                  className={`flex w-full cursor-pointer flex-col px-4 py-2 text-left text-sm transition-colors ${
                     isActive
                       ? "bg-gray-100 dark:bg-gray-800"
                       : "dark:hover:bg-gray-850 hover:bg-gray-50"
@@ -462,7 +462,7 @@ export default function CreatePostWidget() {
                   <span className="font-semibold text-gray-800 dark:text-gray-200">
                     {fullName}
                   </span>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-gray-550 text-xs">
                     @{user.username} • {user.email}
                   </span>
                 </button>
@@ -472,14 +472,14 @@ export default function CreatePostWidget() {
         )}
 
         <div className="absolute right-2 bottom-2 z-10 flex items-center gap-2.5">
-          <span className="mr-1 text-[11px] font-medium text-[#9E9E9E] dark:text-gray-500">
+          <span className="dark:text-gray-505 mr-1 text-[11px] font-medium text-[#9E9E9E]">
             {content.length}/5000
           </span>
           <button
             type="button"
             onClick={handleAiEnhance}
             disabled={isEnhancing || !content.trim()}
-            className="flex animate-pulse items-center gap-1.5 rounded-lg border border-[#2F9E44]/20 bg-emerald-50 px-3 py-1.5 text-[12px] font-semibold text-[#2F9E44] transition-all hover:bg-[#E6F4EA] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-emerald-950/10 dark:hover:bg-emerald-950/20"
+            className="flex transform cursor-pointer items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-50/50 px-3 py-1.5 text-[12px] font-semibold text-[#2F9E44] transition-all hover:scale-[1.02] hover:bg-emerald-100/60 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-emerald-950/20 dark:text-emerald-400 dark:hover:bg-emerald-950/30"
           >
             {isEnhancing ? (
               <Loader2
@@ -488,11 +488,11 @@ export default function CreatePostWidget() {
               />
             ) : (
               <Sparkles
-                className="h-3.5 w-3.5 text-[#2F9E44]"
+                className="h-3.5 w-3.5 animate-pulse text-[#2F9E44] dark:text-emerald-400"
                 aria-hidden="true"
               />
             )}
-            <span>Cải thiện bằng AI</span>
+            <span>{t("aiEnhance")}</span>
           </button>
         </div>
       </div>
@@ -522,7 +522,7 @@ export default function CreatePostWidget() {
               <button
                 type="button"
                 onClick={() => removeImage(idx)}
-                className="absolute top-1.5 right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-rose-600 focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none"
+                className="absolute top-1.5 right-1.5 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-rose-600 focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none"
                 aria-label="Xóa ảnh này"
               >
                 <X className="h-3.5 w-3.5" />
@@ -532,12 +532,12 @@ export default function CreatePostWidget() {
         </div>
       )}
 
-      {/* 3. Suggested chips area using natural language Vietnamese tags */}
-      <div className="mt-4 space-y-2.5 border-t border-dashed border-gray-100 pt-3 dark:border-gray-800">
+      {/* 3. Suggested chips area using natural language tags */}
+      <div className="border-gray-105 mt-4 space-y-2.5 border-t border-dashed pt-3 dark:border-gray-800">
         <div className="flex items-center gap-1.5">
           <Tag className="h-4 w-4 text-[#2F9E44]" aria-hidden="true" />
           <span className="text-[13px] font-semibold text-[#5C5C5C] dark:text-gray-400">
-            Chủ đề bài đăng:
+            {t("tagTitle")}
           </span>
         </div>
 
@@ -545,7 +545,7 @@ export default function CreatePostWidget() {
         <div className="flex min-h-[32px] flex-wrap gap-2 rounded-lg border border-emerald-500/5 bg-emerald-50/10 p-2 dark:bg-emerald-950/5">
           {tags.length === 0 ? (
             <span className="text-[12px] text-gray-400 italic">
-              Chưa chọn chủ đề nào…
+              {t("noTags")}
             </span>
           ) : (
             tags.map((tag, idx) => (
@@ -554,7 +554,7 @@ export default function CreatePostWidget() {
                 type="button"
                 onClick={() => toggleTag(tag)}
                 aria-pressed="true"
-                className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-emerald-500/10 bg-[#E6F4EA] px-3 py-1.5 text-[13px] font-bold text-[#2F9E44] shadow-xs transition-colors hover:bg-rose-50 hover:text-rose-600 focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none dark:bg-emerald-950/40 dark:text-emerald-400"
+                className="hover:text-rose-650 inline-flex cursor-pointer items-center gap-1 rounded-md border border-emerald-500/10 bg-[#E6F4EA] px-3 py-1.5 text-[13px] font-bold text-[#2F9E44] shadow-xs transition-colors hover:border-rose-200 hover:bg-rose-50 focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none dark:bg-emerald-950/40 dark:text-emerald-400"
                 title="Bấm để xóa thẻ này"
               >
                 {tag}
@@ -572,7 +572,7 @@ export default function CreatePostWidget() {
         {/* Suggested unselected tags collection */}
         <div className="space-y-1">
           <p className="text-[11px] font-medium text-gray-400 dark:text-gray-500">
-            Gợi ý nhấp chọn nhanh:
+            {t("suggestedQuick")}
           </p>
           <div className="flex flex-wrap gap-2">
             {suggestedTags
@@ -583,7 +583,7 @@ export default function CreatePostWidget() {
                   type="button"
                   onClick={() => toggleTag(tag)}
                   aria-pressed={isTagExists(tag)}
-                  className="dark:border-gray-850 inline-block cursor-pointer rounded-md border border-gray-100 bg-[#F7F7F7] px-3 py-1.5 text-[13px] font-semibold text-[#5C5C5C] transition-all hover:bg-[#E6F4EA] hover:text-[#2F9E44] focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-[#2F9E44]/20"
+                  className="dark:border-gray-850 inline-block cursor-pointer rounded-md border border-gray-100 bg-[#F7F7F7] px-3 py-1.5 text-[13px] font-semibold text-[#5C5C5C] transition-all hover:bg-[#E6F4EA] hover:text-[#2F9E44] focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-[#2F9E44]/25"
                 >
                   + {tag}
                 </button>
@@ -598,16 +598,16 @@ export default function CreatePostWidget() {
             value={customTagInput}
             onChange={(e) => setCustomTagInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAddCustomTag(e)}
-            placeholder="Nhập chủ đề khác (Ví dụ: tái chế, trồng cây)…"
-            aria-label="Nhập chủ đề tùy chỉnh"
+            placeholder={t("customTagPlaceholder")}
+            aria-label={t("customTagAria")}
             className="flex-1 rounded-lg border border-[#E0E0E0] bg-[#F7F7F7] px-3 py-1.5 text-[13px] text-[#1B1B1B] placeholder-[#9E9E9E] outline-none focus:border-[#2F9E44] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-emerald-500"
           />
           <button
             type="button"
             onClick={handleAddCustomTag}
-            className="rounded-lg bg-[#2F9E44]/10 px-4 py-1.5 text-[13px] font-semibold text-[#2F9E44] transition hover:bg-[#2F9E44]/20 dark:bg-emerald-950/20 dark:text-emerald-400 dark:hover:bg-emerald-950/30"
+            className="dark:text-emerald-450 cursor-pointer rounded-lg bg-[#2F9E44]/10 px-4 py-1.5 text-[13px] font-semibold text-[#2F9E44] transition hover:bg-[#2F9E44]/20 dark:bg-emerald-950/20 dark:hover:bg-emerald-950/30"
           >
-            Thêm
+            {t("add")}
           </button>
         </div>
       </div>
@@ -626,22 +626,24 @@ export default function CreatePostWidget() {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-[13px] font-[600] text-[#5C5C5C] transition-colors hover:bg-[#F0F2F5] hover:text-[#2F9E44] focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none dark:text-gray-400 dark:hover:bg-gray-800"
+            className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-1.5 text-[13px] font-[600] text-[#5C5C5C] transition-colors hover:bg-[#F0F2F5] hover:text-[#2F9E44] focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none dark:text-gray-400 dark:hover:bg-gray-800"
           >
             <ImageIcon className="h-4 w-5" aria-hidden="true" />
-            <span>Thêm ảnh {images.length > 0 && `(${images.length}/4)`}</span>
+            <span>
+              {t("addImage")} {images.length > 0 && `(${images.length}/4)`}
+            </span>
           </button>
 
           <button
             type="button"
             onClick={() => setShowEventModal(true)}
-            className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-[13px] font-[600] text-[#5C5C5C] transition-colors hover:bg-[#F0F2F5] hover:text-[#2F9E44] focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none dark:text-gray-400 dark:hover:bg-gray-800"
+            className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-1.5 text-[13px] font-[600] text-[#5C5C5C] transition-colors hover:bg-[#F0F2F5] hover:text-[#2F9E44] focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none dark:text-gray-400 dark:hover:bg-gray-800"
           >
             <Paperclip
               className="h-4 w-5 animate-pulse text-emerald-600"
               aria-hidden="true"
             />
-            <span>{attachedEvent ? "Đổi sự kiện" : "Đính kèm sự kiện"}</span>
+            <span>{attachedEvent ? t("changeEvent") : t("attachEvent")}</span>
           </button>
         </div>
 
@@ -653,9 +655,9 @@ export default function CreatePostWidget() {
             disabled={
               !content.trim() || createPostMutation.isPending || isEnhancing
             }
-            className="dark:text-gray-250 rounded-lg bg-gray-100 px-4 py-2 text-[14px] font-semibold text-gray-700 transition hover:bg-gray-200 focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-800 dark:hover:bg-gray-700"
+            className="dark:text-gray-250 cursor-pointer rounded-lg bg-gray-100 px-4 py-2 text-[14px] font-semibold text-gray-700 transition hover:bg-gray-200 focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-800 dark:hover:bg-gray-700"
           >
-            Lưu nháp
+            {t("saveDraft")}
           </button>
 
           {/* Button 2: Publish */}
@@ -665,14 +667,14 @@ export default function CreatePostWidget() {
             disabled={
               !content.trim() || createPostMutation.isPending || isEnhancing
             }
-            className="flex items-center gap-2 rounded-lg bg-[#2F9E44] px-5 py-2 text-[14px] font-bold text-white shadow-xs transition hover:bg-[#1F6F2E] focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex transform cursor-pointer items-center gap-2 rounded-lg bg-[#2F9E44] px-5 py-2 text-[14px] font-bold text-white shadow-xs transition hover:bg-[#1F6F2E] focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {createPostMutation.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
             ) : (
               <Send className="h-4 w-4" aria-hidden="true" />
             )}
-            <span>Đăng bài</span>
+            <span>{t("publish")}</span>
           </button>
         </div>
       </div>

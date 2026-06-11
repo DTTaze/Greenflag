@@ -13,7 +13,7 @@ const MissionTabs = ({ selectedTab, setSelectedTab }) => {
   ];
 
   return (
-    <div className="mb-6 max-w-2xl rounded-xl border border-emerald-200/70 bg-emerald-100/60 p-1.5 shadow-lg backdrop-blur-md">
+    <div className="mb-6 max-w-2xl rounded-xl border border-emerald-200/70 dark:border-zinc-800 bg-emerald-100/60 dark:bg-zinc-900/60 p-1.5 shadow-lg backdrop-blur-md">
       <div className="flex gap-1">
         {tabs.map(({ id, label, icon: Icon }) => {
           const isActive = selectedTab === id;
@@ -22,13 +22,13 @@ const MissionTabs = ({ selectedTab, setSelectedTab }) => {
               key={id}
               className={`relative z-10 flex flex-1 cursor-pointer items-center justify-center gap-2.5 rounded-lg py-3 text-center text-xs font-bold transition-colors duration-300 sm:text-sm ${
                 isActive
-                  ? "text-[#0B6E4F]"
-                  : "text-gray-500 hover:text-gray-900"
+                  ? "text-[#0B6E4F] dark:text-emerald-400"
+                  : "text-gray-500 hover:text-gray-900 dark:text-zinc-400 dark:hover:text-white"
               }`}
               onClick={() => setSelectedTab(id)}
             >
               <Icon
-                className={`h-4.5 w-4.5 transition-transform duration-300 ${isActive ? "scale-110 text-[#0B6E4F]" : "text-gray-400"}`}
+                className={`h-4.5 w-4.5 transition-transform duration-300 ${isActive ? "scale-110 text-[#0B6E4F] dark:text-emerald-400" : "text-gray-400 dark:text-zinc-500"}`}
               />
               <span className="hidden md:inline">{label}</span>
               <span className="inline md:hidden">
@@ -41,7 +41,7 @@ const MissionTabs = ({ selectedTab, setSelectedTab }) => {
               {isActive && (
                 <motion.span
                   layoutId="activeMissionTab"
-                  className="absolute inset-0 -z-10 rounded-lg border border-gray-200/20 bg-white shadow-xs"
+                  className="absolute inset-0 -z-10 rounded-lg border border-gray-200/20 dark:border-zinc-800 bg-white dark:bg-zinc-950/80 shadow-xs dark:shadow-none"
                   transition={{ type: "spring", stiffness: 350, damping: 25 }}
                 />
               )}

@@ -283,4 +283,16 @@ Table comment_votes {
   type varchar(10) [not null]
 }
 
+Table notifications {
+  id uuid [pk]
+  recipient_id uuid [ref: > users.id, not null]
+  sender_id uuid [ref: > users.id]
+  type varchar(50) [not null]
+  content text [not null]
+  link varchar(255)
+  is_read boolean [not null, default: false]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
 

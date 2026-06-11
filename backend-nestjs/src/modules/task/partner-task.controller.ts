@@ -32,7 +32,7 @@ import { TaskService } from './services/task.service';
 @ApiBearerAuth()
 @Controller('partner/tasks')
 @UseGuards(AuthGuard, RolesGuard)
-@Roles(ROLE.PARTNER)
+@Roles(ROLE.PARTNER, ROLE.ADMIN)
 export class PartnerTaskController {
   constructor(
     private readonly taskService: TaskService,
@@ -42,7 +42,8 @@ export class PartnerTaskController {
   @Get()
   @ApiOperation({ summary: 'Get all tasks created by the current partner' })
   async getMyTasks(@RequestUser() reqUser: any): Promise<HttpResponse> {
-    return this.taskService.getAllTasksOfCustomer(reqUser.id);
+    const isAdmin = reqUser.role === ROLE.ADMIN;
+    return this.taskService.getAllTasksOfCustomer(reqUser.id, isAdmin);
   }
 
   @Get('submissions')
@@ -50,7 +51,11 @@ export class PartnerTaskController {
   async getMyTaskSubmissions(
     @RequestUser() reqUser: any,
   ): Promise<HttpResponse> {
-    return this.taskSubmitService.getTaskSubmitByCustomerId(reqUser.id);
+    const isAdmin = reqUser.role === ROLE.ADMIN;
+    return this.taskSubmitService.getTaskSubmitByCustomerId(
+      reqUser.id,
+      isAdmin,
+    );
   }
 
   @Post()
@@ -69,7 +74,8 @@ export class PartnerTaskController {
     @Body() dto: UpdateTaskDto,
     @RequestUser() reqUser: any,
   ): Promise<HttpResponse> {
-    return this.taskService.updateTask(id, dto, reqUser.id, false);
+    const isAdmin = reqUser.role === ROLE.ADMIN;
+    return this.taskService.updateTask(id, dto, reqUser.id, isAdmin);
   }
 
   @Delete(':id')
@@ -78,7 +84,8 @@ export class PartnerTaskController {
     @Param('id') id: string,
     @RequestUser() reqUser: any,
   ): Promise<HttpResponse> {
-    return this.taskService.deleteTask(id, reqUser.id, false);
+    const isAdmin = reqUser.role === ROLE.ADMIN;
+    return this.taskService.deleteTask(id, reqUser.id, isAdmin);
   }
 
   @Patch(':id/status')
@@ -88,7 +95,13 @@ export class PartnerTaskController {
     @Body() dto: ChangeTaskStatusDto,
     @RequestUser() reqUser: any,
   ): Promise<HttpResponse> {
-    return this.taskService.changeTaskStatus(id, dto.status, reqUser.id, false);
+    const isAdmin = reqUser.role === ROLE.ADMIN;
+    return this.taskService.changeTaskStatus(
+      id,
+      dto.status,
+      reqUser.id,
+      isAdmin,
+    );
   }
 
   @Put('submissions/:id/decision')
@@ -100,11 +113,12 @@ export class PartnerTaskController {
     @Body() dto: DecisionTaskSubmitDto,
     @RequestUser() reqUser: any,
   ): Promise<HttpResponse> {
+    const isAdmin = reqUser.role === ROLE.ADMIN;
     return this.taskService.updateDecisionTaskSubmit(
       id,
       dto.decision,
       reqUser.id,
-      false,
+      isAdmin,
     );
   }
 }

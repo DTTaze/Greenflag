@@ -14,13 +14,6 @@ export const loginUser = (data: any): Promise<any> => {
 };
 
 export const logoutUser = async (): Promise<any> => {
-  // Try calling backend logout if available, but don't fail if it errors
-  try {
-    await axiosClient.post("/auth/logout");
-  } catch (err) {
-    // ignore backend logout errors
-  }
-
   // Remove access token cookie used by axiosClient interceptors
   try {
     deleteCookie(ACCESS_TOKEN, { path: "/" });

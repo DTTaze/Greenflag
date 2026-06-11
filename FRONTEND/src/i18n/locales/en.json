@@ -4,7 +4,7 @@
     "missions": "Missions",
     "exchange": "Market",
     "forum": "Forum",
-    "customer": "Customer",
+    "customer": "Partner",
     "partner": "Partner",
     "admin": "Admin",
     "login": "Log In",
@@ -347,6 +347,7 @@
       "shipping": "Shipping",
       "queues": "Queues",
       "notifications": "Notifications",
+      "partnerSpace": "Partner Space",
       "settings": "Settings",
       "logout": "Log Out"
     },
@@ -357,6 +358,9 @@
       "tasksCompleted": "Tasks Completed",
       "totalItems": "Total Items",
       "totalRevenue": "Total Revenue",
+      "activeEvents": "Active Events",
+      "pendingPosts": "Pending Posts",
+      "totalCoins": "Total Coins Issued",
       "activityOverview": "Activity Overview",
       "viewDetails": "View Details",
       "sinceLastMonth": "Since last month",
@@ -642,6 +646,19 @@
       "Câu chuyện xanh": "Green Stories",
       "Mẹo sống xanh": "Green Tips",
       "Review sản phẩm thân thiện": "Sustainable Product Reviews"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllAsRead": "Mark all as read",
+    "noNotifications": "No notifications",
+    "viewAll": "View all",
+    "justNow": "Just now",
+    "minutesAgo": "{count}m ago",
+    "hoursAgo": "{count}h ago",
+    "daysAgo": "{count}d ago",
+    "errors": {
+      "notification_not_found": "Notification not found or access denied."
     }
   }
 }

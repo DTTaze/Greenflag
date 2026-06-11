@@ -12,7 +12,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { StorageService } from '@modules/storage/storage.service';
 import { SystemConfigService } from '@modules/system-config/system-config.service';
 
-import { VOTE_CONFIG, getStorageFolder } from '@shared/constants';
+import { EVENT_KEYS, VOTE_CONFIG, getStorageFolder } from '@shared/constants';
 import {
   FORUM_POST_STATUS,
   FORUM_VOTE_TYPE,
@@ -135,7 +135,25 @@ export class CommentService {
     });
 
     if (savedComment.status === FORUM_POST_STATUS.PENDING) {
-      this.eventEmitter.emit('comment.created', { commentId: savedComment.id });
+      this.eventEmitter.emit(EVENT_KEYS.COMMENT_CREATED, {
+        commentId: savedComment.id,
+      });
+    } else if (savedComment.status === FORUM_POST_STATUS.APPROVED) {
+      try {
+        const post = await this.dataSource
+          .getRepository(Post)
+          .findOne({ where: { id: postId } });
+        if (post && post.authorId !== authorId) {
+          this.eventEmitter.emit(EVENT_KEYS.NOTIFICATION_NEW_COMMENT, {
+            recipientId: post.authorId,
+            senderId: authorId,
+            postId: post.id,
+            commentId: savedComment.id,
+          });
+        }
+      } catch (err) {
+        console.error('Error sending comment notification:', err);
+      }
     }
 
     return savedComment;

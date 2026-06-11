@@ -7,20 +7,20 @@ function MarketEmptyState({ marketView, marketStatusFilter, handleAddItem }) {
       initial={{ opacity: 0, scale: 0.95, y: 16 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className="shadow-3xs mx-auto max-w-lg rounded-3xl border border-dashed border-emerald-200/60 bg-gradient-to-br from-emerald-50/90 to-white py-16 text-center"
+      className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-10 flex flex-col items-center justify-center mx-auto max-w-lg text-center"
     >
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.12 }}
       >
-        <Leaf className="mx-auto mb-5 h-14 w-14 text-emerald-300" />
+        <Leaf className="mx-auto mb-1 h-14 w-14 text-emerald-500/80 dark:text-emerald-400/80 animate-bounce" />
       </motion.div>
 
-      <h3 className="mb-2 text-lg font-extrabold tracking-wide text-emerald-900 uppercase">
+      <h3 className="text-xl font-bold text-gray-900 dark:text-zinc-100 mt-4">
         Không có sản phẩm nào
       </h3>
-      <p className="mx-auto mb-8 max-w-sm text-sm leading-relaxed font-medium text-slate-600">
+      <p className="text-sm text-gray-500 dark:text-zinc-400 mt-2 max-w-sm mx-auto mb-8 font-medium leading-relaxed">
         {marketView === "my_items"
           ? "Bạn chưa có sản phẩm nào với trạng thái này."
           : "Hiện chưa có sản phẩm nào trong danh mục này."}

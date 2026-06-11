@@ -435,7 +435,7 @@ export default function CreatePostWidget() {
           placeholder={t("postDraftPlaceholder")}
           maxLength={5000}
           aria-label={t("newPostContent")}
-          className="dark:bg-gray-850 min-h-[120px] w-full resize-none rounded-lg border border-[#E0E0E0] bg-[#F7F7F7] p-3 pb-14 text-[14px] text-[#1B1B1B] placeholder-[#9E9E9E] transition-all focus:border-[#2F9E44] focus:shadow-sm focus:ring-1 focus:ring-[#2F9E44] focus:outline-none dark:border-gray-700 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-emerald-500 dark:focus:ring-emerald-500"
+          className="min-h-[120px] w-full resize-none rounded-lg border border-gray-200 bg-white p-3 pb-14 text-[14px] text-gray-900 placeholder-gray-500 shadow-sm transition-all focus:border-green-500 focus:ring-2 focus:ring-green-500/50 focus:outline-none dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder-zinc-500"
           rows={4}
         />
 
@@ -600,7 +600,7 @@ export default function CreatePostWidget() {
             onKeyDown={(e) => e.key === "Enter" && handleAddCustomTag(e)}
             placeholder={t("customTagPlaceholder")}
             aria-label={t("customTagAria")}
-            className="flex-1 rounded-lg border border-[#E0E0E0] bg-[#F7F7F7] px-3 py-1.5 text-[13px] text-[#1B1B1B] placeholder-[#9E9E9E] outline-none focus:border-[#2F9E44] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-emerald-500"
+            className="flex-1 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-[13px] text-gray-900 placeholder-gray-500 outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder-zinc-500"
           />
           <button
             type="button"

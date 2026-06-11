@@ -48,3 +48,4 @@ export * from "./event/eventHandlers";
 export * from "./media";
 export * from "./user";
 export * from "./user/userHandlers";
+export * from "./notification.service";

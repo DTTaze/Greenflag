@@ -55,15 +55,19 @@ export class TaskSubmitService extends BaseCRUDService<TaskSubmit> {
 
   async getTaskSubmitByCustomerId(
     customerId: string,
+    isAdmin: boolean = false,
   ): Promise<OperationResult<any[]>> {
-    const submits = await this.taskSubmitRepository.find({
-      where: {
-        taskUser: {
-          task: {
-            creatorId: customerId,
+    const whereCondition = isAdmin
+      ? {}
+      : {
+          taskUser: {
+            task: {
+              creatorId: customerId,
+            },
           },
-        },
-      },
+        };
+    const submits = await this.taskSubmitRepository.find({
+      where: whereCondition,
       relations: ['taskUser', 'taskUser.task'],
       order: { submittedAt: 'DESC' },
     });

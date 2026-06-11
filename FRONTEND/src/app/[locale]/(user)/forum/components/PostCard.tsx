@@ -2,7 +2,7 @@
 "use client";
 
 import { MessageSquare, MoreHorizontal, Share2, Trash2 } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/src/i18n/navigation";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -66,7 +66,7 @@ export default function PostCard({ post }: PostCardProps) {
             {prefix}
             <Link
               href={`/profile/${username}`}
-              className="text-blue-650 font-semibold hover:underline dark:text-blue-400"
+              className="text-blue-650 font-medium hover:underline dark:text-blue-400"
               onClick={(e) => e.stopPropagation()}
             >
               @{username}
@@ -161,8 +161,8 @@ export default function PostCard({ post }: PostCardProps) {
     <div
       className={`rounded-xl border p-4 shadow-sm transition-all duration-300 hover:shadow-md ${
         post.isAdminPost
-          ? "border-emerald-500 bg-emerald-50/10 shadow-[0_0_12px_rgba(16,185,129,0.15)] hover:shadow-[0_0_16px_rgba(16,185,129,0.25)] dark:border-emerald-500 dark:bg-emerald-950/10"
-          : "border-[#E0E0E0] bg-white dark:border-gray-800 dark:bg-gray-900"
+          ? "border-emerald-500 bg-emerald-50/5 shadow-[0_0_12px_rgba(16,185,129,0.15)] hover:shadow-[0_0_16px_rgba(16,185,129,0.25)] dark:border-emerald-500 dark:bg-emerald-950/10"
+          : "border-gray-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"
       }`}
     >
       {/* Header */}
@@ -174,11 +174,11 @@ export default function PostCard({ post }: PostCardProps) {
               "https://res.cloudinary.com/ptquanh/image/upload/v1779947161/default-avatar.png"
             }
             alt={post.author.name}
-            className="h-10 w-10 rounded-full border border-gray-100 object-cover dark:border-gray-800"
+            className="h-10 w-10 rounded-full border border-gray-100 object-cover dark:border-zinc-800"
           />
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="dark:text-gray-105 font-[600] text-[#1B1B1B]">
+              <span className="font-semibold text-gray-900 dark:text-zinc-300">
                 {post.author.name}
               </span>
               {renderRoleBadge(post.author.role, t)}
@@ -188,7 +188,7 @@ export default function PostCard({ post }: PostCardProps) {
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-2 text-[12px] text-[#757575] dark:text-gray-400">
+            <div className="flex items-center gap-2 text-[12px] text-gray-500 dark:text-zinc-500">
               <span>{formattedDate}</span>
               {post.author.location && (
                 <>
@@ -209,20 +209,20 @@ export default function PostCard({ post }: PostCardProps) {
                 setShowDropdown(!showDropdown);
               }}
               aria-label={t("moreOptions")}
-              className="cursor-pointer rounded-lg p-2 text-[#5C5C5C] transition-colors hover:bg-[#F0F2F5] dark:text-gray-400 dark:hover:bg-gray-800"
+              className="cursor-pointer rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 dark:text-zinc-500 dark:hover:bg-zinc-800"
             >
               <MoreHorizontal className="h-5 w-5" aria-hidden="true" />
             </button>
 
             {showDropdown && (
-              <div className="absolute right-0 z-10 mt-1 w-44 rounded-lg border border-gray-100 bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-none dark:border-gray-800 dark:bg-gray-900">
+              <div className="absolute right-0 z-10 mt-1 w-44 rounded-lg border border-gray-200 bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-none dark:border-zinc-800 dark:bg-zinc-900">
                 <button
                   type="button"
                   onClick={() => {
                     setShowDropdown(false);
                     setShowDeleteConfirm(true);
                   }}
-                  className="flex w-full cursor-pointer items-center gap-2 px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-50 dark:hover:bg-gray-800"
+                  className="flex w-full cursor-pointer items-center gap-2 px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-50 dark:hover:bg-zinc-800"
                 >
                   <Trash2 className="h-4 w-4" />
                   {t("deletePost")}
@@ -234,7 +234,7 @@ export default function PostCard({ post }: PostCardProps) {
       </div>
 
       {/* Content */}
-      <div className="mt-3">
+      <div className="mt-3 font-sans">
         <div
           onClick={(e) => {
             const target = e.target as HTMLElement;
@@ -246,13 +246,13 @@ export default function PostCard({ post }: PostCardProps) {
               router.push(`/forum/post/${post.id}`);
             }
           }}
-          className="cursor-pointer text-[15px] leading-relaxed text-[#1B1B1B] hover:text-[#1F6F2E] dark:text-gray-300 dark:hover:text-emerald-400"
+          className="cursor-pointer text-[15px] leading-relaxed text-gray-900 hover:text-emerald-700 dark:text-zinc-300 dark:hover:text-emerald-400"
         >
           <div>{renderContent(post.content)}</div>
         </div>
 
         {post.images && post.images.length > 0 && (
-          <div className="relative mt-3 max-h-[400px] w-full overflow-hidden rounded-lg border border-[#E0E0E0] dark:border-gray-800">
+          <div className="relative mt-3 max-h-[400px] w-full overflow-hidden rounded-lg border border-gray-200 dark:border-zinc-800">
             <img
               src={post.images[0]}
               alt="Post attachment"
@@ -267,7 +267,7 @@ export default function PostCard({ post }: PostCardProps) {
             {post.tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-md border border-transparent bg-[#F0F2F5] px-2 py-1 text-[12px] text-[#5C5C5C] dark:border-gray-700/40 dark:bg-gray-800 dark:text-gray-300"
+                className="rounded-md border border-transparent bg-gray-100 px-2 py-1 text-[12px] text-gray-600 dark:border-zinc-800 dark:bg-zinc-800 dark:text-zinc-300"
               >
                 {tag}
               </span>
@@ -279,12 +279,12 @@ export default function PostCard({ post }: PostCardProps) {
 
         {/* Top Forum Solution Highlight (Sneak Peek) */}
         {post.topComment && (
-          <div className="mt-4 rounded-xl border border-emerald-500/20 bg-emerald-50/10 p-4 transition-all duration-200 hover:bg-[#E6F4EA]/60 dark:border-green-900/40 dark:bg-green-950/20 dark:hover:bg-green-950/30">
+          <div className="mt-4 rounded-xl border border-emerald-500/20 bg-emerald-50/5 p-4 transition-all duration-200 hover:bg-emerald-50/10 dark:border-green-900/40 dark:bg-green-950/20 dark:hover:bg-green-950/30">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-              <span className="inline-flex items-center gap-1 rounded-full bg-[#2F9E44] px-2.5 py-1 text-[11px] font-[600] text-white dark:bg-green-700">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[#2F9E44] px-2.5 py-1 text-[11px] font-semibold text-white dark:bg-green-700">
                 {t("highlightedSolution")}
               </span>
-              <span className="text-[12px] font-[600] text-[#2F9E44] dark:text-green-400">
+              <span className="text-[12px] font-semibold text-[#2F9E44] dark:text-green-400">
                 {t("ratingScore", {
                   score: post.topComment.upvotes - post.topComment.downvotes,
                 })}
@@ -298,16 +298,16 @@ export default function PostCard({ post }: PostCardProps) {
                   "https://res.cloudinary.com/ptquanh/image/upload/v1779947161/default-avatar.png"
                 }
                 alt={post.topComment.author.name}
-                className="dark:border-gray-850 h-8 w-8 shrink-0 rounded-full border border-gray-50 object-cover"
+                className="h-8 w-8 shrink-0 rounded-full border border-gray-100 object-cover dark:border-zinc-800"
               />
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-[13px] font-[600] text-[#1B1B1B] dark:text-gray-200">
+                  <span className="text-[13px] font-semibold text-gray-900 dark:text-zinc-300">
                     {post.topComment.author.name}
                   </span>
                   {renderRoleBadge(post.topComment.author.role, t)}
                 </div>
-                <p className="mt-1 text-[13px] leading-relaxed text-[#333333] dark:text-gray-400">
+                <p className="mt-1 text-[13px] leading-relaxed text-gray-700 dark:text-zinc-400">
                   {post.topComment.content}
                 </p>
               </div>
@@ -317,15 +317,15 @@ export default function PostCard({ post }: PostCardProps) {
       </div>
 
       {/* Actions */}
-      <div className="mt-4 flex items-center justify-between border-t border-[#E0E0E0] pt-3 dark:border-gray-800">
+      <div className="border-gray-250/60 mt-4 flex items-center justify-between border-t pt-3 dark:border-zinc-800">
         <div className="flex items-center gap-2">
           {/* Upvote Button */}
           <button
             onClick={handleUpvote}
-            className={`flex transform cursor-pointer items-center gap-1.5 rounded-full border px-4 py-1.5 text-[13px] font-[600] transition-all duration-200 active:scale-95 ${
+            className={`flex transform cursor-pointer items-center gap-1.5 rounded-full border px-4 py-1.5 text-[13px] font-semibold transition-all duration-200 active:scale-95 ${
               vote === "up"
-                ? "border-[#2F9E44] bg-[#2F9E44] text-white shadow-sm hover:bg-[#1F6F2E]"
-                : "border-[#E0E0E0] bg-white text-[#5C5C5C] hover:border-[#CCCCCC] hover:bg-[#F7F7F7] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                ? "border-green-600 bg-green-600 text-white shadow-sm dark:border-green-500 dark:bg-green-500"
+                : "dark:text-zinc-450 border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:bg-gray-50 dark:border-zinc-800 dark:bg-zinc-800 dark:hover:bg-zinc-700"
             }`}
           >
             <span>{t("helpful")}</span>
@@ -335,10 +335,10 @@ export default function PostCard({ post }: PostCardProps) {
           {/* Downvote Button */}
           <button
             onClick={handleDownvote}
-            className={`flex transform cursor-pointer items-center gap-1.5 rounded-full border px-4 py-1.5 text-[13px] font-[600] transition-all duration-200 active:scale-95 ${
+            className={`flex transform cursor-pointer items-center gap-1.5 rounded-full border px-4 py-1.5 text-[13px] font-semibold transition-all duration-200 active:scale-95 ${
               vote === "down"
-                ? "border-[#FCA5A5] bg-[#FEE2E2] text-[#991B1B] shadow-sm hover:bg-[#FECACA] dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-400"
-                : "border-[#E0E0E0] bg-white text-[#5C5C5C] hover:border-[#CCCCCC] hover:bg-[#F7F7F7] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                ? "border-red-600 bg-red-600 text-white shadow-sm dark:border-red-500 dark:bg-red-500"
+                : "dark:text-zinc-450 border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:bg-gray-50 dark:border-zinc-800 dark:bg-zinc-800 dark:hover:bg-zinc-700"
             }`}
           >
             <span>{t("notHelpful")}</span>
@@ -349,14 +349,14 @@ export default function PostCard({ post }: PostCardProps) {
         <div className="flex gap-2">
           <button
             onClick={() => setShowComments(!showComments)}
-            className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-1.5 text-[14px] font-[500] text-[#5C5C5C] transition-colors hover:bg-[#F0F2F5] dark:text-gray-400 dark:hover:bg-gray-800"
+            className="flex transform cursor-pointer items-center gap-2 rounded-lg px-3 py-1.5 text-[14px] font-semibold text-gray-500 transition-all duration-200 hover:bg-gray-100 active:scale-95 dark:text-zinc-400 dark:hover:bg-zinc-800"
           >
             <MessageSquare className="h-4 w-4" aria-hidden="true" />
             <span>{t("commentCount", { count: post.commentCount })}</span>
           </button>
           <button
             onClick={handleShare}
-            className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-1.5 text-[14px] font-[500] text-[#5C5C5C] transition-colors hover:bg-[#F0F2F5] dark:text-gray-400 dark:hover:bg-gray-800"
+            className="flex transform cursor-pointer items-center gap-2 rounded-lg px-3 py-1.5 text-[14px] font-semibold text-gray-500 transition-all duration-200 hover:bg-gray-100 active:scale-95 dark:text-zinc-400 dark:hover:bg-zinc-800"
           >
             <Share2 className="h-4 w-4" aria-hidden="true" />
             <span>{t("share")}</span>

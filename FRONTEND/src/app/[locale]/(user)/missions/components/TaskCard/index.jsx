@@ -29,11 +29,11 @@ const TaskCard = React.memo(
     return (
       <>
         <div
-          className={`task-card flex flex-col rounded-2xl border bg-white dark:bg-slate-800/90 ${
+          className={`task-card flex flex-col rounded-3xl border bg-white dark:bg-zinc-900 ${
             isCompleted
-              ? "border-emerald-200 shadow-emerald-50/50 dark:border-emerald-500/40"
-              : "border-gray-200 dark:border-slate-700"
-          } group overflow-hidden shadow-2xs transition-all duration-300 hover:translate-y-[-3px] hover:border-gray-300 hover:shadow-md dark:hover:border-emerald-500/50 ${
+              ? "border-emerald-200 shadow-xs dark:border-emerald-500/40"
+              : "border-gray-200 dark:border-zinc-800"
+          } group overflow-hidden shadow-sm transition-all duration-300 hover:translate-y-[-4px] hover:shadow-md dark:hover:border-green-500/50 ${
             isLoading ? "opacity-70" : ""
           }`}
         >
@@ -78,25 +78,25 @@ const TaskCard = React.memo(
                   </span>
                 </div>
                 {/* Coins reward badge */}
-                <div className="task-coin-reward flex shrink-0 items-center rounded-lg border border-amber-100 bg-amber-50 px-2 py-1 text-xs font-black text-amber-700 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-200">
+                <div className="task-coin-reward flex shrink-0 items-center rounded-full bg-amber-50 text-amber-600 dark:bg-amber-950/30 dark:text-amber-400 font-bold px-3 py-1.5 text-xs">
                   <span className="coin-value mr-1 font-extrabold">
                     +{task.coins || 0}
                   </span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
+                    width="16"
+                    height="16"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="animate-spin-slow h-4.5 w-4.5 text-amber-600 dark:text-amber-300"
+                    className="animate-spin-slow h-3.5 w-3.5 text-amber-600 dark:text-amber-400"
                   >
-                    <circle cx="8" cy="8" r="6"></circle>
-                    <path d="M18.09 10.37A6 6 0 1 1 10.34 18"></path>
-                    <path d="M7 6h1v4"></path>
+                    <circle cx="12" cy="12" r="8"></circle>
+                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
                   </svg>
                 </div>
               </div>
@@ -123,19 +123,19 @@ const TaskCard = React.memo(
                     setIsDetailModalOpen(true);
                   }
                 }}
-                disabled={task.completed_at || isLoading}
-                className={`w-full cursor-pointer rounded-xl py-2.5 text-xs font-bold text-white transition-all duration-300 active:scale-98 ${
-                  isUserTask
-                    ? "bg-gradient-to-r from-emerald-600 to-green-600 shadow-sm shadow-emerald-500/10 hover:from-emerald-700 hover:to-green-700 hover:shadow-md"
-                    : "bg-gradient-to-r from-blue-500 to-indigo-500 shadow-sm shadow-blue-500/10 hover:from-blue-600 hover:to-indigo-600 hover:shadow-md"
-                } ${
-                  task.completed_at || isLoading
-                    ? "cursor-not-allowed opacity-50 shadow-none hover:from-current hover:shadow-none"
-                    : ""
+                disabled={task.completed_at || task.isPending || isLoading}
+                className={`w-full cursor-pointer rounded-xl py-2.5 text-xs font-bold transition-all duration-300 active:scale-98 flex items-center justify-center gap-1.5 ${
+                  isLoading
+                    ? "bg-green-600 text-white opacity-75 cursor-not-allowed"
+                    : task.completed_at
+                      ? "bg-blue-50 text-blue-600 dark:bg-blue-950/20 dark:text-blue-400 border border-blue-100 dark:border-blue-900/30 cursor-not-allowed shadow-none"
+                      : task.isPending
+                        ? "bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 border border-amber-200 dark:border-amber-900/30 cursor-not-allowed shadow-none"
+                        : "bg-green-600 hover:bg-green-700 text-white shadow-sm shadow-emerald-500/10 hover:shadow-md"
                 }`}
               >
                 {isLoading ? (
-                  <span className="flex items-center justify-center gap-1.5">
+                  <>
                     <svg
                       className="h-4.5 w-4.5 animate-spin text-white"
                       xmlns="http://www.w3.org/2000/svg"
@@ -158,13 +158,31 @@ const TaskCard = React.memo(
                       ></path>
                     </svg>
                     Đang xử lý...
-                  </span>
+                  </>
                 ) : task.completed_at ? (
-                  "✓ Đã hoàn thành"
+                  <>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-4 w-4"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Đã hoàn thành
+                  </>
+                ) : task.isPending ? (
+                  "Chờ xác nhận"
                 ) : isCompleted ? (
                   "Nhận thưởng"
                 ) : isUserTask ? (
-                  "Thực hiện"
+                  "Thực hiện ngay"
                 ) : (
                   "Tham gia"
                 )}

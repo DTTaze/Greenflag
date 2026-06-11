@@ -34,7 +34,7 @@ function MarketFilterButtons({
             ? statusColors[filterKey] || statusColors.all
             : isActive
               ? "bg-[#0B6E4F] border-[#0B6E4F] text-white shadow-lg shadow-emerald-500/20"
-              : "border-emerald-100 bg-white/70 text-slate-700 hover:bg-emerald-50/60 hover:text-slate-900 hover:border-emerald-200";
+              : "border-emerald-100 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/65 text-slate-700 dark:text-zinc-300 hover:bg-emerald-50/60 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-white hover:border-emerald-200 dark:hover:border-zinc-700";
 
         return (
           <motion.button

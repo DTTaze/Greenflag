@@ -145,8 +145,10 @@ export class DeliveryAccountService extends BaseCRUDService<DeliveryAccount> {
 
   public async getAllDeliveryAccounts(
     userId: string,
+    isAdmin: boolean = false,
   ): Promise<OperationResult<DeliveryAccount[]>> {
-    return this.findAll({ userId });
+    const whereCondition = isAdmin ? {} : { userId };
+    return this.findAll(whereCondition);
   }
 
   public async getDeliveryAccountById(

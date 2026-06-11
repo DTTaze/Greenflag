@@ -75,6 +75,8 @@ export default function useMission() {
               progress_count: ut.progressCount || 0,
               isUserTask: true,
               taskUserId: ut.id,
+              isPending:
+                ut.submits?.some((s: any) => s.status === "pending") || false,
             }
           : null;
       })
@@ -108,6 +110,8 @@ export default function useMission() {
               progress_count: ut.progressCount || 0,
               isUserTask: true,
               taskUserId: ut.id,
+              isPending:
+                ut.submits?.some((s: any) => s.status === "pending") || false,
             }
           : null;
       })
@@ -141,6 +145,8 @@ export default function useMission() {
               progress_count: ut.progressCount,
               isUserTask: true,
               taskUserId: ut.id,
+              isPending:
+                ut.submits?.some((s: any) => s.status === "pending") || false,
             }
           : null;
       })

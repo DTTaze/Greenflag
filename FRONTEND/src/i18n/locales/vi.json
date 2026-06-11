@@ -4,7 +4,7 @@
     "missions": "Nhiệm vụ",
     "exchange": "Trao đổi",
     "forum": "Diễn đàn",
-    "customer": "Khách hàng",
+    "customer": "Đối tác",
     "partner": "Đối tác",
     "admin": "Quản trị",
     "login": "Đăng nhập",
@@ -347,6 +347,7 @@
       "shipping": "Vận chuyển",
       "queues": "Hàng đợi",
       "notifications": "Thông báo",
+      "partnerSpace": "Không gian Đối tác",
       "settings": "Cài đặt",
       "logout": "Đăng xuất"
     },
@@ -357,6 +358,9 @@
       "tasksCompleted": "Nhiệm vụ hoàn thành",
       "totalItems": "Tổng số vật phẩm",
       "totalRevenue": "Tổng doanh thu",
+      "activeEvents": "Sự kiện đang chạy",
+      "pendingPosts": "Bài viết chờ duyệt",
+      "totalCoins": "Tổng xu đã phát hành",
       "activityOverview": "Tổng quan hoạt động",
       "viewDetails": "Xem chi tiết",
       "sinceLastMonth": "So với tháng trước",
@@ -642,6 +646,19 @@
       "Câu chuyện xanh": "Câu chuyện xanh",
       "Mẹo sống xanh": "Mẹo sống xanh",
       "Review sản phẩm thân thiện": "Review sản phẩm thân thiện"
+    }
+  },
+  "notifications": {
+    "title": "Thông báo",
+    "markAllAsRead": "Đánh dấu tất cả đã đọc",
+    "noNotifications": "Không có thông báo nào",
+    "viewAll": "Xem tất cả",
+    "justNow": "Vừa xong",
+    "minutesAgo": "{count} phút trước",
+    "hoursAgo": "{count} giờ trước",
+    "daysAgo": "{count} ngày trước",
+    "errors": {
+      "notification_not_found": "Không tìm thấy thông báo hoặc bạn không có quyền."
     }
   }
 }

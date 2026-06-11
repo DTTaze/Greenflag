@@ -48,10 +48,10 @@ const ProgressBar = React.memo(({ completed, total, level }) => {
         </span>
       </div>
       <div
-        className={`h-2.5 w-full overflow-hidden rounded-full ${trackBgClass(level)} border border-gray-100 dark:border-slate-700`}
+        className="h-2.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-zinc-800 border border-transparent"
       >
         <div
-          className={`h-full rounded-full bg-gradient-to-r ${getGradientClass(level)} shadow-[inset_0_1px_2px_rgba(0,0,0,0.1)] transition-all duration-700 ease-out`}
+          className="h-full rounded-full bg-green-500 shadow-[inset_0_1px_2px_rgba(0,0,0,0.1)] transition-all duration-700 ease-out"
           style={{ width: `${percentage}%` }}
         />
       </div>

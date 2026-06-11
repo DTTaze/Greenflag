@@ -1,12 +1,17 @@
 import { Sparkles } from "lucide-react";
 import React from "react";
 
-import CoinBalance from "@/src/app/[locale]/(user)/exchange-market/components/CoinBalance";
+import GlobalSearchBar from "@/src/components/common/GlobalSearchBar";
 
 /**
  * Header component for the mission page
  */
-const MissionHeader = ({ userInfo, loading }) => {
+const MissionHeader = ({
+  userInfo,
+  loading,
+  searchQuery,
+  setSearchQuery,
+}) => {
   if (loading) {
     return (
       <div className="mb-8 flex animate-pulse flex-col items-center justify-between rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-500 p-7 text-white shadow-lg sm:flex-row">
@@ -15,7 +20,7 @@ const MissionHeader = ({ userInfo, loading }) => {
           <div className="h-4 w-80 rounded bg-white/20"></div>
         </div>
         <div className="mt-4 flex items-center sm:mt-0">
-          <div className="h-16 w-64 rounded-xl bg-white/20"></div>
+          <div className="h-10 w-64 rounded-full bg-white/20"></div>
         </div>
       </div>
     );
@@ -40,13 +45,13 @@ const MissionHeader = ({ userInfo, loading }) => {
         </p>
       </div>
 
-      <div className="flex w-full justify-center sm:w-auto">
-        <div className="min-w-[220px] rounded-2xl border border-white/15 bg-white/5 p-4 shadow-inner backdrop-blur-md">
-          <span className="mb-1.5 block text-center text-[10px] font-bold tracking-wider text-emerald-200/80 uppercase">
-            Số dư tài khoản
-          </span>
-          <CoinBalance coins={userInfo?.coins || 0} />
-        </div>
+      <div className="flex w-full justify-center sm:w-auto sm:min-w-[320px]">
+        <GlobalSearchBar
+          value={searchQuery}
+          onChange={setSearchQuery}
+          placeholder="Tìm kiếm nhiệm vụ xanh..."
+          aria-label="Tìm kiếm nhiệm vụ"
+        />
       </div>
     </div>
   );

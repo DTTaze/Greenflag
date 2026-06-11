@@ -69,9 +69,13 @@ export class EventService extends BaseCRUDService<Event> {
     return generateSuccessResult(mapped);
   }
 
-  async getEventsOfCreator(creatorId: string): Promise<OperationResult<any[]>> {
+  async getEventsOfCreator(
+    creatorId: string,
+    isAdmin: boolean = false,
+  ): Promise<OperationResult<any[]>> {
+    const whereCondition = isAdmin ? {} : { creatorId };
     const events = await this.eventRepository.find({
-      where: { creatorId },
+      where: whereCondition,
       relations: ['creator'],
       order: { createdAt: 'DESC' },
     });

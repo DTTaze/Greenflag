@@ -84,13 +84,14 @@ Danh sách Use Case chính:
 - UC07: Xem bảng Rank và số dư Coin.
 - UC08: Xem danh sách sự kiện và đăng ký tham gia.
 - UC09: Check-in/check-out sự kiện bằng QR.
-- UC10: Tạo bài viết forum, bình luận, vote và xóa mềm.
+- UC10: Tạo bài viết forum, bình luận, vote, xóa mềm và kiểm duyệt bài viết diễn đàn (Forum Moderation).
 - UC11: Dùng AI enhance để cải thiện nội dung bài viết.
 - UC12: Mua vật phẩm bằng Coin trên exchange market.
 - UC13: Tạo transaction, xử lý queue, tạo delivery order.
 - UC14: Partner tạo product/item/task/event.
-- UC15: Admin kiểm duyệt nội dung, quản lý người dùng và giao dịch.
+- UC15: Admin kiểm duyệt nội dung (duyệt/từ chối bài viết forum), quản lý người dùng và giao dịch.
 - UC16: Theo dõi health, logs, metrics và traces hệ thống.
+- UC17: Nhận thông báo thời gian thực (Realtime Notifications) qua WebSocket khi có tương tác (bình luận, duyệt bài, cộng coin, hoàn tiền).
 
 Các class/entity chính của hệ thống:
 
@@ -100,11 +101,12 @@ Các class/entity chính của hệ thống:
 - Nhóm forum: `Post`, `PostVote`, `Comment`, `CommentVote`.
 - Nhóm commerce: `Product`, `Item`, `Transaction`.
 - Nhóm delivery: `DeliveryAccount`, `ReceiverInformation`, `DeliveryOrder`.
+- Nhóm thông báo: `Notification`.
 - Nhóm cấu hình: `SystemConfig`.
 
 Các module backend thực tế:
 
-- `AuthModule`, `UserModule`, `TaskModule`, `EventModule`, `ForumModule`, `CommerceModule`, `DeliveryModule`, `CloudinaryModule`, `MediaModule`, `StorageModule`, `SystemConfigModule`, `GlobalModule`, `HealthModule`, `EmailModule`.
+- `AuthModule`, `UserModule`, `TaskModule`, `EventModule`, `ForumModule`, `CommerceModule`, `DeliveryModule`, `CloudinaryModule`, `MediaModule`, `StorageModule`, `SystemConfigModule`, `GlobalModule`, `HealthModule`, `EmailModule`, `NotificationModule`.
 
 ### 2.3. Thiết kế cơ sở dữ liệu
 
@@ -128,6 +130,7 @@ Lược đồ ERD được mô tả trong `docs/erd.dbml`, khai báo database ty
 - `receiver_informations`: địa chỉ nhận hàng của user.
 - `delivery_accounts`: tài khoản giao vận của seller/partner, carrier mặc định `ghn`, api config.
 - `delivery_orders`: đơn giao vận gắn 1-1 với transaction.
+- `notifications`: lưu trữ thông báo cho người dùng, gồm recipient, sender, type (NEW_COMMENT, POST_APPROVED, POST_REJECTED, MENTION, COIN_RECEIVED, ORDER_REFUNDED), content, link, isRead.
 - `system_configs`: cấu hình runtime như moderation, auto approve hoặc role policy.
 
 Quan hệ dữ liệu quan trọng:
@@ -154,6 +157,7 @@ Backend chính:
 - PostgreSQL driver `pg`.
 - JWT/Passport cho xác thực.
 - BullMQ và Redis cho queue.
+- Socket.IO WebSockets (`@nestjs/websockets`, `@nestjs/platform-socket.io`, `socket.io`).
 - Swagger/OpenAPI qua `@nestjs/swagger`.
 - class-validator/class-transformer cho validation DTO.
 - Axios/NestJS Axios cho gọi API bên ngoài.
@@ -170,6 +174,7 @@ Frontend:
 - `next-intl` cho đa ngôn ngữ.
 - `@tanstack/react-query` cho server state.
 - Zustand cho client state.
+- Socket.IO client (`socket.io-client`).
 - Axios cho HTTP client.
 - MUI, Ant Design, shadcn/base-ui, Tailwind CSS 4 cho UI.
 - Framer Motion cho animation.
@@ -376,10 +381,11 @@ Vấn đề được ghi nhận:
 - Xây dựng được kiến trúc fullstack gồm Next.js frontend, NestJS backend, PostgreSQL, Redis/BullMQ và Docker.
 - Hoàn thiện backend modular theo domain: Auth, User, Task, Event, Forum, Commerce, Delivery, Storage, System Config.
 - Thiết kế ERD tương đối đầy đủ trong `docs/erd.dbml`, bao phủ user, coin, rank, task, event, forum, commerce và delivery.
-- Hoàn thành module Forum với post, comment, vote, moderation fields, AI enhance và test E2E.
+- Hoàn thành module Forum kết nối API thực tế cho post, comment, vote, moderation fields, AI enhance, quản lý và kiểm duyệt bài viết diễn đàn phía Admin (Forum Moderation) hoàn toàn bằng HTML5/Tailwind, loại bỏ module Cộng đồng cũ.
+- Xây dựng hệ thống thông báo thời gian thực (Realtime Notifications) qua WebSocket cho 6 sự kiện cốt lõi (bình luận mới, duyệt/từ chối bài đăng, cộng xu hoàn thành nhiệm vụ, hoàn tiền đơn hàng SAGA). Tích hợp đồng bộ lại khi mất kết nối (Auto-Reconnect Sync) và tối ưu hóa bộ nhớ (giới hạn 50 thông báo ở client).
 - Tích hợp luồng commerce dùng Coin, transaction, stock lock, BullMQ worker và bù trừ SAGA khi lỗi giao vận.
 - Tích hợp delivery strategy với GHN, delivery account, receiver information và delivery order.
-- Hoàn thiện nhiều bề mặt frontend: missions, forum, exchange market, profile, admin dashboard, customer/partner workspace, QR scanner.
+- Hoàn thiện nhiều bề mặt frontend: missions, forum, exchange market, profile, admin dashboard, customer/partner workspace, QR scanner, và chuông thông báo trực quan trên Header.
 - Có Docker Compose cho app và infra; có observability stack phục vụ demo/staging.
 - Có kiểm thử Jest/Supertest cho các nghiệp vụ trọng yếu như transaction refund, vote logic, commerce API và forum API.
 

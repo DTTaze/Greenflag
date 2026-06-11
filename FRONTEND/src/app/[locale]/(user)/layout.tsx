@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 
 import UserHeader from "@/src/components/layout/Header";
 import Loader from "@/src/components/ui/Loader";
+import { useSocket } from "@/src/hooks/useSocket";
 import { useAuthStore } from "@/src/store/auth/authStore";
 import { getUser } from "@/src/utils/api";
 
@@ -14,6 +15,9 @@ export default function MainLayout({
 }) {
   const { dispatch } = useAuthStore();
   const [appLoading, setAppLoading] = useState(true);
+
+  // Initialize WebSockets realtime connection for authenticated users
+  useSocket();
 
   useEffect(() => {
     const initializeAuth = async () => {

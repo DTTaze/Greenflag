@@ -127,7 +127,7 @@ export default function CommentInput({
             placeholder={defaultPlaceholder}
             maxLength={1000}
             aria-label={t("commentInputAria")}
-            className="dark:bg-gray-850 w-full resize-none rounded-xl border border-[#E0E0E0] bg-[#F7F7F7] p-3 pr-12 pb-8 text-[14px] text-gray-900 placeholder-[#9E9E9E] focus:border-[#2F9E44] focus:ring-1 focus:ring-[#2F9E44] focus:outline-none dark:border-gray-700 dark:text-gray-100 dark:placeholder-gray-500"
+            className="w-full resize-none rounded-xl border border-gray-200 bg-white p-3 pr-12 pb-8 text-[14px] text-gray-900 placeholder-gray-500 focus:border-green-500 focus:ring-2 focus:ring-green-500/50 focus:outline-none dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder-zinc-500"
             rows={1}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {

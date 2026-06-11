@@ -1,10 +1,13 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Gift, Leaf, Sparkles } from "lucide-react";
-import React from "react";
+import React, { useContext } from "react";
 
-import CoinBalance from "../CoinBalance";
+import GlobalSearchBar from "@/src/components/common/GlobalSearchBar";
+import { MarketplaceContext } from "../../layout";
 
 function CatalogHeader({ userCoins }) {
+  const { marketSearchText, setMarketSearchText } = useContext(MarketplaceContext) || {};
+
   return (
     <motion.header
       initial={{ opacity: 0, y: 18 }}
@@ -56,14 +59,14 @@ function CatalogHeader({ userCoins }) {
           </div>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, x: 18 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.18, duration: 0.45 }}
-          className="rounded-3xl border border-white/15 bg-white/10 p-3 shadow-2xl backdrop-blur-xl"
-        >
-          <CoinBalance coins={userCoins} />
-        </motion.div>
+        <div className="flex w-full sm:min-w-[320px]">
+          <GlobalSearchBar
+            value={marketSearchText || ""}
+            onChange={setMarketSearchText}
+            placeholder="Tìm sản phẩm xanh, người bán..."
+            aria-label="Tìm kiếm sản phẩm"
+          />
+        </div>
       </div>
     </motion.header>
   );

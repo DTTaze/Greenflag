@@ -87,6 +87,7 @@ export const ERR_CODE = {
   TRANSACTION_NOT_FOUND: 'transaction_not_found',
   CARRIER_CONFIG_INVALID: 'carrier_config_invalid',
   ITEM_ALREADY_SOLD: 'item_already_sold',
+  NOTIFICATION_NOT_FOUND: 'notification_not_found',
 };
 
 export const APP_ACTION = {
@@ -177,6 +178,9 @@ export const EVENT_KEYS = {
   COMMENT_CREATED: 'comment.created',
   ADMIN_ALERT_VIOLATION: 'admin.alert_violation',
   POST_MODERATED: 'post.moderated',
+  NOTIFICATION_NEW_COMMENT: 'notification.new_comment',
+  NOTIFICATION_COIN_RECEIVED: 'notification.coin_received',
+  NOTIFICATION_ORDER_REFUNDED: 'notification.order_refunded',
 };
 
 export const DEFAULT_MAX_CONCURRENT_CALL = 1;

@@ -18,6 +18,7 @@ import { ForumModule } from '@modules/forum/forum.module';
 import { GlobalModule } from '@modules/global/global.module';
 import { HealthModule } from '@modules/health/health.module';
 import { MediaModule } from '@modules/media/media.module';
+import { NotificationModule } from '@modules/notification/notification.module';
 import { StorageModule } from '@modules/storage/storage.module';
 import { SystemConfigModule } from '@modules/system-config/system-config.module';
 import { TaskModule } from '@modules/task/task.module';
@@ -73,6 +74,7 @@ import configs from './configs';
     MediaModule,
     StorageModule,
     ForumModule,
+    NotificationModule,
   ],
 })
 export class AppModule {}

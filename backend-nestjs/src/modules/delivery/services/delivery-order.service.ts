@@ -352,8 +352,10 @@ export class DeliveryOrderService extends BaseCRUDService<DeliveryOrder> {
 
   public async getDeliveryOrdersBySeller(
     sellerId: string,
+    isAdmin: boolean = false,
   ): Promise<OperationResult<DeliveryOrder[]>> {
-    return this.findAll({ sellerId });
+    const whereCondition = isAdmin ? {} : { sellerId };
+    return this.findAll(whereCondition);
   }
 
   public async getDeliveryOrdersByBuyer(

@@ -12,6 +12,7 @@ export {
   deleteRole,
   deleteUser,
   getAdminDashboardStats,
+  getAdminMacroStats,
   getAllPermissions,
   getAllRoles,
   getAllRolesPermissions,

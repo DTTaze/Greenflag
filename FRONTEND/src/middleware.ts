@@ -5,13 +5,7 @@ import { routing } from "./i18n/routing";
 
 export const PUBLIC_ROUTES = ["/login", "/register", "/forgot-password"];
 
-export const PROTECTED_ROUTES = [
-  "/user",
-  "/admin",
-  "/customer",
-  "/forum",
-  "/partner",
-];
+export const PROTECTED_ROUTES = ["/user", "/admin", "/forum", "/partner"];
 
 function stripLocalePrefix(
   pathname: string,
@@ -52,12 +46,43 @@ function isTokenValid(token: string): boolean {
   }
 }
 
+function getTokenPayload(token: string): any {
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+    return JSON.parse(atob(parts[1].replace(/-/g, "+").replace(/_/g, "/")));
+  } catch {
+    return null;
+  }
+}
+
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const { locales, defaultLocale } = routing;
 
+  // Redirect legacy customer routes to partner routes
+  const cleanPathForLegacy = stripLocalePrefix(pathname, locales);
+  if (cleanPathForLegacy.startsWith("/customer")) {
+    const localePrefix = pathname.split("/")[1];
+    const hasLocale = (locales as readonly string[]).includes(localePrefix);
+    const newPath = cleanPathForLegacy.replace("/customer", "/partner");
+    const targetUrl = new URL(
+      hasLocale ? `/${localePrefix}${newPath}` : newPath,
+      req.url,
+    );
+    return NextResponse.redirect(targetUrl);
+  }
+
   const currentLocale = req.cookies.get("NEXT_LOCALE")?.value || defaultLocale;
   const token = req.cookies.get("access_token")?.value;
+  const payload = token ? getTokenPayload(token) : null;
+  const userRole = payload?.role;
+
+  // Bypass redirects for Admin users accessing partner routes
+  const cleanPath = stripLocalePrefix(pathname, locales);
+  if (cleanPath.startsWith("/partner") && userRole === "admin") {
+    return createMiddleware(routing)(req);
+  }
 
   const hasValidToken = token ? isTokenValid(token) : false;
 

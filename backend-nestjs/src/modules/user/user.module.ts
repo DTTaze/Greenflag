@@ -6,6 +6,7 @@ import { CommerceModule } from '@modules/commerce/commerce.module';
 import { TaskModule } from '@modules/task/task.module';
 
 import { AdminCoinController } from './controllers/admin-coin.controller';
+import { AdminDashboardController } from './controllers/admin-dashboard.controller';
 import { AdminRankController } from './controllers/admin-rank.controller';
 import { AdminUserController } from './controllers/admin-user.controller';
 import { CoinController } from './controllers/coin.controller';
@@ -42,6 +43,7 @@ import { UserService } from './services/user.service';
     AdminUserController,
     AdminCoinController,
     AdminRankController,
+    AdminDashboardController,
   ],
   providers: [
     UserService,

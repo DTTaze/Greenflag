@@ -75,7 +75,7 @@ Source code được tổ chức trong thư mục `src/`, phân tách rõ ràng 
 
 
 * 
-**`middleware.ts`**: Middleware của Next.js dùng để xử lý auth guard và redirect.
+**`proxy.ts`**: Proxy của Next.js dùng để xử lý auth guard và redirect.
 
 
 
@@ -252,7 +252,7 @@ Authentication được quản lý tập trung (centralized):
 
 
 * 
-**Middleware:** Bảo vệ các Protected Routes và điều hướng các Public Routes trực tiếp từ Next.js middleware.
+**Proxy:** Bảo vệ các Protected Routes và điều hướng các Public Routes trực tiếp từ Next.js proxy.
 
 
 * 

@@ -1,5 +1,6 @@
 import "react-toastify/dist/ReactToastify.css";
 
+import { useTranslations } from "next-intl";
 import React from "react";
 import { ToastContainer } from "react-toastify";
 
@@ -17,6 +18,7 @@ import TasksList from "./TasksList/index.jsx";
 import TaskSubmissionModal from "./TaskSubmissionModal/index.jsx";
 
 function Mission() {
+  const t = useTranslations("missions.list");
   const {
     userInfo,
     loading,
@@ -186,13 +188,13 @@ function Mission() {
               {selectedTab === "daily" && dailyTasks.length === 0 ? (
                 <div className="py-12 text-center">
                   <p className="text-sm font-semibold text-slate-400">
-                    Không có nhiệm vụ hàng ngày nào
+                    {t("noDaily")}
                   </p>
                 </div>
               ) : selectedTab === "other" && otherTasks.length === 0 ? (
                 <div className="py-12 text-center">
                   <p className="text-sm font-semibold text-slate-400">
-                    Không có nhiệm vụ phụ nào
+                    {t("noOther")}
                   </p>
                 </div>
               ) : (
@@ -241,13 +243,14 @@ function Mission() {
             <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm transition-colors duration-300 dark:border-zinc-800 dark:bg-zinc-900">
               <div className="border-b border-gray-150 bg-gray-50/50 p-4 transition-colors duration-300 dark:border-zinc-850 dark:bg-zinc-800/30">
                 <h2 className="text-sm font-extrabold tracking-wider text-emerald-900 uppercase dark:text-slate-100">
-                  Bảng Xếp Hạng
+                  {t("ranking")}
                 </h2>
               </div>
               <div className="p-4">
                 <Ranking />
               </div>
             </div>
+
           </div>
         </div>
       </div>

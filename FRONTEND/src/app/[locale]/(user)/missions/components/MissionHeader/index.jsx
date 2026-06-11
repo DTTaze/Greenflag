@@ -1,4 +1,5 @@
 import { Sparkles } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 import GlobalSearchBar from "@/src/components/common/GlobalSearchBar";
@@ -12,6 +13,7 @@ const MissionHeader = ({
   searchQuery,
   setSearchQuery,
 }) => {
+  const t = useTranslations("missions.header");
   if (loading) {
     return (
       <div className="mb-8 flex animate-pulse flex-col items-center justify-between rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-500 p-7 text-white shadow-lg sm:flex-row">
@@ -37,11 +39,10 @@ const MissionHeader = ({
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/20 backdrop-blur-md">
             <Sparkles className="h-5 w-5 animate-pulse text-emerald-200" />
           </div>
-          Nhiệm Vụ Của Bạn
+          {t("title")}
         </h1>
         <p className="max-w-md text-sm leading-relaxed font-medium text-emerald-100/90 md:text-[0.95rem]">
-          Hoàn thành các thử thách xanh để tích lũy xu và chung tay bảo vệ môi
-          trường mỗi ngày.
+          {t("subtitle")}
         </p>
       </div>
 

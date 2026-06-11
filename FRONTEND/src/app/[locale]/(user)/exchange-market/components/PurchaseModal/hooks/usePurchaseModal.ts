@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
 import { useAuthStore } from "@/src/store/auth/authStore";
@@ -21,6 +22,7 @@ export default function usePurchaseModal({
   userCoins,
   onConfirm,
 }: UsePurchaseModalProps) {
+  const t = useTranslations("exchangeMarket");
   const [quantity, setQuantity] = useState<number>(1);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [shippingInfo, setShippingInfo] = useState<any>(null);
@@ -184,7 +186,7 @@ export default function usePurchaseModal({
 
   const handleConfirm = () => {
     if (!shippingInfo) {
-      alert("Vui lòng chọn thông tin giao hàng!");
+      alert(t("alerts.selectShipping"));
       return;
     }
     if (
@@ -192,7 +194,7 @@ export default function usePurchaseModal({
       !shippingInfo.to_district_name ||
       !shippingInfo.id
     ) {
-      alert("Thông tin giao hàng thiếu phường/xã, quận/huyện hoặc ID!");
+      alert(t("alerts.missingShippingFields"));
       return;
     }
     setIsProcessing(true);

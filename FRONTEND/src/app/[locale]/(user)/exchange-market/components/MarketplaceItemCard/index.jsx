@@ -10,6 +10,7 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useContext, useEffect, useState } from "react";
 
 import DeleteConfirmModal from "@/src/components/common/DeleteConfirmModal";
@@ -39,17 +40,6 @@ const getStatusClass = (status) => {
   return statusClasses[status] || statusClasses.draft;
 };
 
-const getCategoryDisplayName = (key) => {
-  const categories = {
-    handicraft: "Đồ thủ công",
-    recycled: "Đồ tái chế",
-    organic: "Sản phẩm hữu cơ",
-    plants: "Cây trồng",
-    other: "Khác",
-  };
-  return categories[key] || "Không xác định";
-};
-
 const MarketplaceItemCard = ({
   item,
   onEdit,
@@ -57,6 +47,7 @@ const MarketplaceItemCard = ({
   viewMode = "all_items",
   fetchItems,
 }) => {
+  const t = useTranslations("exchangeMarket");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -91,7 +82,7 @@ const MarketplaceItemCard = ({
   const handleDetailsClick = () => {
     if (viewMode === "redeem") {
       if (!user) {
-        alert("Vui lòng đăng nhập để thực hiện giao dịch!");
+        alert(t("errors.loginRequired"));
         return;
       }
       handlePurchase(item);
@@ -135,7 +126,9 @@ const MarketplaceItemCard = ({
             {item.name}
           </h3>
           <span className="mt-2 inline-block rounded-xl border border-emerald-100 dark:border-zinc-800 bg-gradient-to-r from-emerald-50 to-emerald-50/70 dark:from-zinc-800 dark:to-zinc-800/70 px-2.5 py-1 text-[10px] font-extrabold tracking-wide text-[#0B6E4F] dark:text-emerald-400 uppercase shadow-sm">
-            {getCategoryDisplayName(item.category)}
+            {item.category
+              ? t("categories." + item.category)
+              : t("categories.unknown")}
           </span>
           <p className="mt-3 line-clamp-2 min-h-[32px] text-xs leading-relaxed font-medium text-slate-600 dark:text-zinc-400">
             {item.description}
@@ -151,7 +144,7 @@ const MarketplaceItemCard = ({
             <Coins className="h-4 w-4 text-amber-600 dark:text-amber-400" />
           </div>
           <span className="text-[10px] font-bold tracking-wider text-slate-400 dark:text-zinc-500 uppercase">
-            Còn: {currentStock}
+            {t("list.remaining", { count: currentStock })}
           </span>
         </div>
 
@@ -161,7 +154,7 @@ const MarketplaceItemCard = ({
             onClick={handleDetailsClick}
             className="absolute bottom-0 left-0 right-0 z-20 w-full cursor-pointer bg-green-600 hover:bg-green-700 dark:bg-emerald-600 dark:hover:bg-emerald-500 py-3 text-center text-xs font-bold text-white transition-all duration-300 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
           >
-            {viewMode === "redeem" ? "Đổi ngay" : "Chi tiết"}
+            {viewMode === "redeem" ? t("list.redeemBtn") : t("list.detailsBtn")}
           </button>
         )}
 
@@ -192,8 +185,8 @@ const MarketplaceItemCard = ({
           isOpen={showDeleteModal}
           onClose={cancelDelete}
           onConfirm={confirmDelete}
-          title="Xóa sản phẩm"
-          message="Bạn có chắc chắn muốn xóa sản phẩm này? Hành động này không thể hoàn tác."
+          title={t("list.deleteTitle")}
+          message={t("list.deleteMessage")}
         />
       )}
 
@@ -218,7 +211,6 @@ const MarketplaceItemCard = ({
           isOpen={showDetailsModal}
           onClose={() => setShowDetailsModal(false)}
           item={item}
-          getCategoryDisplayName={getCategoryDisplayName}
           isEditMode={viewMode === "my_items"}
           onEdit={onEdit}
           onPurchase={() => {

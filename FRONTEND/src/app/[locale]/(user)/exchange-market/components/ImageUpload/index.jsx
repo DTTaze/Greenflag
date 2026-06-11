@@ -1,7 +1,10 @@
 import { Upload, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 export default function ImageUpload({ image, onImageChange, onRemoveImage }) {
+  const t = useTranslations("exchangeMarket");
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -13,7 +16,7 @@ export default function ImageUpload({ image, onImageChange, onRemoveImage }) {
   return (
     <div className="space-y-2">
       <label className="text-sm font-semibold text-slate-300">
-        Hình ảnh sản phẩm
+        {t("imageUpload.label")}
       </label>
       <div className="flex items-center gap-4 rounded-xl border border-slate-800 bg-slate-950/20 p-4">
         {image ? (
@@ -37,7 +40,9 @@ export default function ImageUpload({ image, onImageChange, onRemoveImage }) {
             className="flex h-20 w-20 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-800 bg-slate-950/40 text-slate-500 transition-all duration-200 hover:border-emerald-500/40 hover:text-emerald-400"
           >
             <Upload className="mb-1 h-5 w-5" />
-            <span className="text-[10px] font-medium">Tải ảnh</span>
+            <span className="text-[10px] font-medium">
+              {t("imageUpload.uploadText")}
+            </span>
           </label>
         )}
         <div className="flex-grow space-y-1.5">
@@ -52,11 +57,9 @@ export default function ImageUpload({ image, onImageChange, onRemoveImage }) {
             htmlFor="image-upload"
             className="inline-block cursor-pointer rounded-lg border border-slate-700/50 bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-200 transition-all duration-150 hover:bg-slate-700"
           >
-            Chọn ảnh
+            {t("imageUpload.chooseBtn")}
           </label>
-          <p className="text-[11px] text-slate-500">
-            Hỗ trợ định dạng PNG, JPG lên tới 5MB
-          </p>
+          <p className="text-[11px] text-slate-500">{t("imageUpload.hint")}</p>
         </div>
       </div>
     </div>

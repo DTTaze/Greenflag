@@ -1,4 +1,5 @@
 import { Coins } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 export default function TransactionSummary({
@@ -9,13 +10,14 @@ export default function TransactionSummary({
   userCoins,
   canPurchase,
 }) {
+  const t = useTranslations("exchangeMarket");
   const finalBalance = userCoins - totalCost;
 
   return (
     <div className="space-y-3 rounded-xl border border-slate-800/80 bg-slate-950/50 p-4">
       {/* Product Cost */}
       <div className="flex items-center justify-between text-xs">
-        <span className="text-slate-400">Giá sản phẩm:</span>
+        <span className="text-slate-400">{t("summary.productPrice")}</span>
         <div className="flex items-center font-semibold text-slate-200">
           <span>{item.price * quantity}</span>
           <Coins className="ml-1 h-3.5 w-3.5 text-amber-400" />
@@ -24,7 +26,7 @@ export default function TransactionSummary({
 
       {/* Shipping Fee */}
       <div className="flex items-center justify-between text-xs">
-        <span className="text-slate-400">Phí giao hàng:</span>
+        <span className="text-slate-400">{t("summary.shippingFee")}</span>
         <span className="font-semibold text-slate-200">
           {shippingFee.toLocaleString()} VND
         </span>
@@ -36,7 +38,7 @@ export default function TransactionSummary({
       {/* Total Coin Cost */}
       <div className="flex items-center justify-between text-xs">
         <span className="font-medium text-slate-400">
-          Tổng giá sản phẩm (Xu):
+          {t("summary.totalCost")}
         </span>
         <div className="flex items-center font-bold text-emerald-400">
           <span>{totalCost}</span>
@@ -46,7 +48,7 @@ export default function TransactionSummary({
 
       {/* Current Balance */}
       <div className="flex items-center justify-between text-xs">
-        <span className="text-slate-400">Số dư hiện tại:</span>
+        <span className="text-slate-400">{t("summary.currentBalance")}</span>
         <div className="flex items-center font-semibold text-slate-200">
           <span>{userCoins}</span>
           <Coins className="ml-1 h-3.5 w-3.5 text-amber-400" />
@@ -58,7 +60,9 @@ export default function TransactionSummary({
 
       {/* Balance After Purchase */}
       <div className="flex items-center justify-between text-sm">
-        <span className="font-medium text-slate-300">Số dư sau giao dịch:</span>
+        <span className="font-medium text-slate-300">
+          {t("summary.balanceAfter")}
+        </span>
         <div
           className={`flex items-center font-bold ${
             canPurchase ? "text-emerald-400" : "text-rose-500"

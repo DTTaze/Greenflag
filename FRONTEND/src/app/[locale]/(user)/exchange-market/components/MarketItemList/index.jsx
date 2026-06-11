@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Coins } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import ItemActions from "../ItemActions";
 import MarketplaceItemCard from "../MarketplaceItemCard";
@@ -13,9 +14,10 @@ function MarketItemList({
   handlePurchase,
   getCategoryDisplayName,
   statusColors,
-  statusConfig,
   fetchItems,
 }) {
+  const t = useTranslations("exchangeMarket");
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -38,27 +40,27 @@ function MarketItemList({
               <thead className="bg-slate-900/50 backdrop-blur-sm">
                 <tr>
                   <th className="px-6 py-4.5 text-left text-xs font-semibold tracking-wider text-slate-400 uppercase">
-                    Sản phẩm
+                    {t("list.thProduct")}
                   </th>
                   <th className="px-6 py-4.5 text-left text-xs font-semibold tracking-wider text-slate-400 uppercase">
-                    Danh mục
+                    {t("list.thCategory")}
                   </th>
                   <th className="px-6 py-4.5 text-left text-xs font-semibold tracking-wider text-slate-400 uppercase">
-                    Giá
+                    {t("list.thPrice")}
                   </th>
                   {marketView === "my_items" && (
                     <th className="px-6 py-4.5 text-left text-xs font-semibold tracking-wider text-slate-400 uppercase">
-                      Trạng thái
+                      {t("list.thStatus")}
                     </th>
                   )}
                   <th className="px-6 py-4.5 text-left text-xs font-semibold tracking-wider text-slate-400 uppercase">
-                    Người bán
+                    {t("list.thSeller")}
                   </th>
                   <th className="px-6 py-4.5 text-left text-xs font-semibold tracking-wider text-slate-400 uppercase">
-                    Ngày đăng
+                    {t("list.thDate")}
                   </th>
                   <th className="px-6 py-4.5 text-right text-xs font-semibold tracking-wider text-slate-400 uppercase">
-                    Thao tác
+                    {t("list.thActions")}
                   </th>
                 </tr>
               </thead>
@@ -89,7 +91,9 @@ function MarketItemList({
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-xs text-slate-300">
-                        {getCategoryDisplayName(item.category)}
+                        {item.category
+                          ? t("categories." + item.category)
+                          : t("categories.unknown")}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -105,8 +109,9 @@ function MarketItemList({
                             statusColors[item.postStatus] || statusColors.draft
                           }`}
                         >
-                          {statusConfig[item.postStatus]?.name ||
-                            statusConfig.draft.name}
+                          {item.postStatus
+                            ? t("statuses." + item.postStatus)
+                            : t("statuses.draft")}
                         </span>
                       </td>
                     )}

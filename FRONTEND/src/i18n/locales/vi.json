@@ -660,5 +660,241 @@
     "errors": {
       "notification_not_found": "Không tìm thấy thông báo hoặc bạn không có quyền."
     }
+  },
+  "missions": {
+    "eventBanner": {
+      "featuredTag": "Sự kiện môi trường nổi bật",
+      "joinButton": "Đăng ký tham gia",
+      "ticketDetail": "Chi tiết vé",
+      "loadListError": "Không thể tải danh sách sự kiện",
+      "loadInfoError": "Không thể tải thông tin sự kiện",
+      "prevEvent": "Sự kiện trước",
+      "nextEvent": "Sự kiện tiếp theo",
+      "goToSlide": "Chuyển sang trang {index}"
+    },
+    "header": {
+      "title": "Nhiệm Vụ Của Bạn",
+      "subtitle": "Hoàn thành các thử thách xanh để tích lũy xu và chung tay bảo vệ môi trường mỗi ngày.",
+      "balance": "Số dư tài khoản"
+    },
+    "tabs": {
+      "daily": "Nhiệm Vụ Hàng Ngày",
+      "other": "Nhiệm Vụ Khác",
+      "completed": "Đã Hoàn Thành",
+      "dailyShort": "Hàng ngày",
+      "otherShort": "Nhiệm vụ khác",
+      "completedShort": "Đã xong"
+    },
+    "filters": {
+      "searchPlaceholder": "Tìm kiếm nhiệm vụ...",
+      "sortBy": "Sắp xếp:",
+      "default": "Mặc định",
+      "coinsDesc": "Xu cao nhất",
+      "coinsAsc": "Xu thấp nhất",
+      "activityType": "Loại hoạt động",
+      "all": "Tất cả",
+      "planting": "Trồng cây",
+      "recycling": "Tái chế / Thu gom",
+      "saving": "Tiết kiệm",
+      "other": "Khác",
+      "difficulty": "Độ khó",
+      "easy": "Dễ",
+      "medium": "Trung bình",
+      "hard": "Khó"
+    },
+    "list": {
+      "noDaily": "Không có nhiệm vụ hàng ngày nào",
+      "noOther": "Không có nhiệm vụ phụ nào",
+      "completedTasks": "Nhiệm vụ đã xong",
+      "coinsReceived": "Xu đã nhận",
+      "ranking": "Bảng Xếp Hạng",
+      "stats": "Thống Kê Hoạt Động"
+    },
+    "eventList": {
+      "title": "Sự Kiện Môi Trường",
+      "noEvents": "Không có sự kiện nào trong mục này.",
+      "loadInfoError": "Không thể tải thông tin sự kiện",
+      "tabs": {
+        "hot": "Sự Kiện Hot",
+        "current": "Đang Diễn Ra",
+        "completed": "Đã Tham Gia"
+      }
+    }
+  },
+  "exchangeMarket": {
+    "categories": {
+      "all": "Tất cả",
+      "recycled": "Đồ tái chế",
+      "handicraft": "Đồ thủ công",
+      "organic": "Sản phẩm hữu cơ",
+      "plants": "Cây trồng",
+      "other": "Khác",
+      "unknown": "Không xác định"
+    },
+    "statuses": {
+      "all": "Tất cả",
+      "public": "Đang hiển thị",
+      "pending": "Chờ duyệt",
+      "rejected": "Bị từ chối",
+      "hidden": "Đã ẩn",
+      "private": "Đã ẩn",
+      "draft": "Tin nháp",
+      "unknown": "Không xác định"
+    },
+    "conditions": {
+      "new": "Mới",
+      "like-new": "Như mới",
+      "used": "Đã qua sử dụng",
+      "refurbished": "Tân trang"
+    },
+    "common": {
+      "close": "Đóng",
+      "cancel": "Hủy",
+      "edit": "Chỉnh sửa",
+      "delete": "Xóa",
+      "save": "Lưu",
+      "confirm": "Xác nhận",
+      "processing": "Đang xử lý...",
+      "processingTx": "Đang xử lý giao dịch..."
+    },
+    "layout": {
+      "closeBtn": "Đóng"
+    },
+    "errors": {
+      "loadUserFailed": "Không thể tải dữ liệu người dùng",
+      "loadUserError": "Lỗi khi tải dữ liệu người dùng",
+      "loadRedeemFailed": "Có lỗi xảy ra khi tải danh sách sản phẩm đổi quà",
+      "loadMyItemsFailed": "Có lỗi xảy ra khi tải danh sách sản phẩm của bạn",
+      "loadAllItemsFailed": "Có lỗi xảy ra khi tải danh sách sản phẩm chợ trao đổi",
+      "invalidItem": "Mặt hàng không hợp lệ",
+      "loginRequired": "Vui lòng đăng nhập để thực hiện giao dịch",
+      "insufficientCoins": "Bạn không có đủ số coins để giao dịch",
+      "noItemSelected": "Không có sản phẩm được chọn",
+      "insufficientCoinsTx": "Bạn không có đủ số coins để thực hiện giao dịch",
+      "txNoCode": "Không nhận được mã giao dịch",
+      "txFailed": "Giao dịch thất bại: {message}",
+      "missingEditInfo": "Không thể sửa sản phẩm do thiếu thông tin!",
+      "missingDeleteInfo": "Không thể xóa sản phẩm do thiếu thông tin!",
+      "missingSubmitFields": "Vui lòng điền đầy đủ các trường bắt buộc!",
+      "priceMin": "Giá sản phẩm phải lớn hơn hoặc bằng 1!",
+      "stockMin": "Số lượng sản phẩm phải lớn hơn hoặc bằng 1!",
+      "missingUpdateInfo": "Không thể cập nhật sản phẩm do thiếu thông tin!"
+    },
+    "alerts": {
+      "txSuccess": "Giao dịch {quantity} {name} đã được khởi tạo thành công!",
+      "deleteSuccess": "Sản phẩm đã được xóa thành công!",
+      "deleteFailed": "Xóa sản phẩm thất bại!",
+      "updateSuccess": "Cập nhật sản phẩm thành công!",
+      "updateFailed": "Cập nhật sản phẩm thất bại!",
+      "createSuccess": "Thêm sản phẩm mới thành công!",
+      "createFailed": "Thêm sản phẩm thất bại!",
+      "selectShipping": "Vui lòng chọn thông tin giao hàng!",
+      "missingShippingFields": "Thông tin giao hàng thiếu phường/xã, quận/huyện hoặc ID!"
+    },
+    "header": {
+      "subtitleTag": "Đổi coin xanh - nhận quà bền vững",
+      "title": "Trung tâm trao đổi xanh",
+      "desc": "Khám phá vật phẩm thân thiện môi trường, quản lý sản phẩm của bạn và đổi coins tích lũy trong vài thao tác đơn giản.",
+      "tagGift": "Quà xanh chọn lọc",
+      "tagEasy": "Giao dịch dễ dàng",
+      "yourBalance": "Số dư của bạn",
+      "coins": "Xu"
+    },
+    "nav": {
+      "redeem": "Đổi quà",
+      "myItems": "Sản phẩm của tôi",
+      "allItems": "Chợ trao đổi"
+    },
+    "emptyState": {
+      "title": "Không có sản phẩm nào",
+      "myItemsDesc": "Bạn chưa có sản phẩm nào với trạng thái này.",
+      "allItemsDesc": "Hiện chưa có sản phẩm nào trong danh mục này.",
+      "myItemsAllDesc": " Hãy thử thêm sản phẩm mới!",
+      "addBtn": "Thêm sản phẩm mới",
+      "searchPlaceholder": "Tìm sản phẩm xanh, vật liệu, người bán..."
+    },
+    "list": {
+      "thProduct": "Sản phẩm",
+      "thCategory": "Danh mục",
+      "thPrice": "Giá",
+      "thStatus": "Trạng thái",
+      "thSeller": "Người bán",
+      "thDate": "Ngày đăng",
+      "thActions": "Thao tác",
+      "editBtn": "Sửa",
+      "deleteBtn": "Xóa",
+      "detailsBtn": "Chi tiết",
+      "viewDetailsBtn": "Xem chi tiết",
+      "redeemBtn": "Đổi quà",
+      "outOfStockBtn": "Hết hàng",
+      "deleteTitle": "Xóa sản phẩm",
+      "deleteMessage": "Bạn có chắc chắn muốn xóa sản phẩm này? Hành động này không thể hoàn tác.",
+      "remaining": "Còn: {count}"
+    },
+    "detailsModal": {
+      "title": "Chi tiết sản phẩm",
+      "priceLabel": "Giá đổi:",
+      "statusLabel": "Trạng thái:",
+      "sellerLabel": "Người bán:",
+      "dateLabel": "Ngày đăng:",
+      "buyBtn": "Mua"
+    },
+    "createModal": {
+      "titleEdit": "Chỉnh sửa sản phẩm",
+      "titleCreate": "Thêm sản phẩm mới",
+      "desc": "Điền đầy đủ thông tin để đăng sản phẩm lên thị trường trao đổi.",
+      "fieldName": "Tên sản phẩm",
+      "fieldPrice": "Giá",
+      "fieldStock": "Số lượng",
+      "fieldDesc": "Mô tả sản phẩm",
+      "fieldCategory": "Danh mục",
+      "fieldCondition": "Tình trạng",
+      "placeholderName": "Nhập tên sản phẩm",
+      "placeholderDesc": "Mô tả chi tiết về sản phẩm của bạn",
+      "errorNameRequired": "Tên sản phẩm là bắt buộc",
+      "errorDescRequired": "Mô tả sản phẩm là bắt buộc",
+      "errorPriceRequired": "Giá sản phẩm là bắt buộc",
+      "errorPricePositive": "Giá phải là số dương",
+      "errorStockRequired": "Số lượng sản phẩm là bắt buộc",
+      "errorStockInteger": "Số lượng phải là số nguyên dương",
+      "btnUpdate": "Cập nhật sản phẩm",
+      "btnCreate": "Đăng sản phẩm"
+    },
+    "imageUpload": {
+      "label": "Hình ảnh sản phẩm",
+      "uploadText": "Tải ảnh",
+      "chooseBtn": "Chọn ảnh",
+      "hint": "Hỗ trợ định dạng PNG, JPG lên tới 5MB"
+    },
+    "purchaseModal": {
+      "txConfirmTitle": "Xác nhận trao đổi",
+      "txConfirmDesc": "Vui lòng xác nhận thông tin giao dịch của bạn",
+      "remainingLabel": "Còn lại: {count} sản phẩm",
+      "quantityLabel": "Số lượng:",
+      "btnProcessing": "Đang xử lý...",
+      "btnIneligible": "Không đủ điều kiện",
+      "btnSelectShipping": "Chọn thông tin giao hàng",
+      "btnConfirm": "Xác nhận"
+    },
+    "shipping": {
+      "title": "Thông tin nhận hàng",
+      "btnChange": "Thay đổi",
+      "empty": "Chưa có thông tin giao hàng",
+      "modalTitle": "Chọn thông tin giao hàng",
+      "emptySaved": "Chưa có thông tin giao hàng nào được lưu.",
+      "defaultBadge": "Mặc định",
+      "phonePrefix": "SĐT: {phone}",
+      "typePrefix": "Loại: {type}"
+    },
+    "summary": {
+      "productPrice": "Giá sản phẩm:",
+      "shippingFee": "Phí giao hàng:",
+      "totalCost": "Tổng giá sản phẩm (Xu):",
+      "currentBalance": "Số dư hiện tại:",
+      "balanceAfter": "Số dư sau giao dịch:"
+    },
+    "userItems": {
+      "addProductBtn": "Thêm sản phẩm"
+    }
   }
 }

@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import { Calendar, Coins, Tag, User, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { statusConfig } from "../MarketplaceItemCard";
 
@@ -7,17 +8,18 @@ export default function DetailsModal({
   isOpen,
   onClose,
   item,
-  getCategoryDisplayName,
   isEditMode,
   onEdit,
   onPurchase,
 }) {
+  const t = useTranslations("exchangeMarket");
+
   if (!isOpen) return null;
 
   const handleEdit = () => {
     if (!item || !item.id) {
       console.error("Invalid item or item ID:", item);
-      alert("Không thể sửa sản phẩm do thiếu thông tin!");
+      alert(t("errors.missingEditInfo"));
       return;
     }
     onEdit(item);
@@ -49,7 +51,7 @@ export default function DetailsModal({
 
           {/* Title */}
           <h3 className="bg-gradient-to-r from-emerald-600 to-teal-500 dark:from-emerald-450 dark:to-teal-300 bg-clip-text pr-8 text-xl font-bold text-transparent">
-            Chi tiết sản phẩm
+            {t("detailsModal.title")}
           </h3>
 
           <div className="mt-5 space-y-5">
@@ -72,7 +74,9 @@ export default function DetailsModal({
                 <div className="mt-1 flex items-center gap-2">
                   <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-650 dark:text-emerald-400">
                     <Tag size={12} />
-                    {getCategoryDisplayName(item.category)}
+                    {item.category
+                      ? t("categories." + item.category)
+                      : t("categories.unknown")}
                   </span>
                 </div>
               </div>
@@ -85,7 +89,9 @@ export default function DetailsModal({
               {/* Price & Status */}
               <div className="flex items-center justify-between rounded-xl border border-gray-200/50 bg-gray-50/50 dark:border-zinc-800/50 dark:bg-zinc-950/40 p-3">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-slate-500 dark:text-zinc-400">Giá đổi:</span>
+                  <span className="text-sm text-slate-500 dark:text-zinc-400">
+                    {t("detailsModal.priceLabel")}
+                  </span>
                   <div className="flex items-center gap-1">
                     <span className="text-lg font-bold text-amber-600 dark:text-amber-400">
                       {item.price}
@@ -96,14 +102,18 @@ export default function DetailsModal({
 
                 {isEditMode && item.postStatus && (
                   <div className="flex items-center gap-1.5">
-                    <span className="text-xs text-slate-500 dark:text-zinc-400">Trạng thái:</span>
+                    <span className="text-xs text-slate-500 dark:text-zinc-400">
+                      {t("detailsModal.statusLabel")}
+                    </span>
                     <span
                       className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
                         statusConfig[item.postStatus]?.color ||
                         "bg-slate-800 text-slate-400"
                       }`}
                     >
-                      {statusConfig[item.postStatus]?.name || "Không xác định"}
+                      {item.postStatus
+                        ? t("statuses." + item.postStatus)
+                        : t("statuses.unknown")}
                     </span>
                   </div>
                 )}
@@ -114,16 +124,16 @@ export default function DetailsModal({
                 <div className="flex items-center gap-1.5">
                   <User size={13} className="text-emerald-600/70 dark:text-emerald-400/70" />
                   <span>
-                    Người bán:{" "}
+                    {t("detailsModal.sellerLabel")}{" "}
                     <strong className="font-semibold text-slate-700 dark:text-zinc-350">
-                      {item.seller || "Không xác định"}
+                      {item.seller || t("categories.unknown")}
                     </strong>
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Calendar size={13} className="text-emerald-600/70 dark:text-emerald-400/70" />
                   <span>
-                    Ngày đăng:{" "}
+                    {t("detailsModal.dateLabel")}{" "}
                     <strong className="font-semibold text-slate-700 dark:text-zinc-350">
                       {item.createdAt &&
                         format(new Date(item.createdAt), "dd/MM/yyyy")}
@@ -141,7 +151,7 @@ export default function DetailsModal({
               className="inline-flex justify-center rounded-xl border border-gray-200 bg-white dark:border-zinc-800 dark:bg-zinc-950/80 px-4 py-2 text-sm font-semibold text-slate-600 dark:text-zinc-300 transition-all duration-200 hover:bg-gray-50 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-white"
               onClick={onClose}
             >
-              Đóng
+              {t("common.close")}
             </button>
             {isEditMode ? (
               <button
@@ -149,7 +159,7 @@ export default function DetailsModal({
                 className="inline-flex justify-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition-all duration-200 hover:bg-blue-500 active:scale-95"
                 onClick={handleEdit}
               >
-                Chỉnh sửa
+                {t("common.edit")}
               </button>
             ) : (
               <button
@@ -162,7 +172,7 @@ export default function DetailsModal({
                 }`}
                 onClick={onPurchase}
               >
-                {item.stock <= 0 ? "Đang chờ nhập thêm hàng" : "Đổi quà"}
+                {item.stock <= 0 ? t("list.outOfStockBtn") : t("list.redeemBtn")}
               </button>
             )}
           </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React from "react";
 
 function MissionFilters({
@@ -17,6 +18,8 @@ function MissionFilters({
   setDailyCurrentPage,
   setOtherCurrentPage,
 }) {
+  const t = useTranslations("missions.filters");
+
   return (
     <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl p-5 mb-6 shadow-md transition-colors duration-300">
       {/* Flex container chia 2 nửa: Trái (Filters) - Phải (Sort) */}
@@ -27,15 +30,15 @@ function MissionFilters({
           {/* Group 1: Loại hoạt động */}
           <div className="flex flex-col gap-3">
             <span className="text-xs font-semibold text-gray-500 dark:text-zinc-400 uppercase tracking-wider">
-              Loại hoạt động
+              {t("activityType")}
             </span>
             <div className="flex flex-wrap gap-2">
               {[
-                { value: "all", label: "Tất cả" },
-                { value: "planting", label: "Trồng cây" },
-                { value: "recycling", label: "Tái chế / Thu gom" },
-                { value: "saving", label: "Tiết kiệm" },
-                { value: "other", label: "Khác" },
+                { value: "all", label: t("all") },
+                { value: "planting", label: t("planting") },
+                { value: "recycling", label: t("recycling") },
+                { value: "saving", label: t("saving") },
+                { value: "other", label: t("other") },
               ].map((cat) => (
                 <button
                   key={cat.value}
@@ -59,14 +62,14 @@ function MissionFilters({
           {/* Group 2: Độ khó */}
           <div className="flex flex-col gap-3">
             <span className="text-xs font-semibold text-gray-500 dark:text-zinc-400 uppercase tracking-wider">
-              Độ khó
+              {t("difficulty")}
             </span>
             <div className="flex flex-wrap gap-2">
               {[
-                { value: "all", label: "Tất cả" },
-                { value: "easy", label: "Dễ" },
-                { value: "medium", label: "Trung bình" },
-                { value: "hard", label: "Khó" },
+                { value: "all", label: t("all") },
+                { value: "easy", label: t("easy") },
+                { value: "medium", label: t("medium") },
+                { value: "hard", label: t("hard") },
               ].map((diff) => {
                 const isDaily = selectedTab === "daily";
                 const activeFilter = isDaily
@@ -103,7 +106,7 @@ function MissionFilters({
         {/* NỬA PHẢI: Nút Sắp xếp */}
         <div className="flex items-center gap-3 lg:shrink-0 mt-4 lg:mt-0 lg:self-start">
           <span className="text-xs font-semibold text-gray-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">
-            Sắp xếp:
+            {t("sortBy")}
           </span>
           <select
             value={sortByCoins}
@@ -114,12 +117,11 @@ function MissionFilters({
             }}
             className="bg-gray-50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-zinc-100 text-sm rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-green-500/50 cursor-pointer transition-all duration-200"
           >
-            <option value="none">Mặc định</option>
-            <option value="desc">Xu cao nhất</option>
-            <option value="asc">Xu thấp nhất</option>
+            <option value="none">{t("default")}</option>
+            <option value="desc">{t("coinsDesc")}</option>
+            <option value="asc">{t("coinsAsc")}</option>
           </select>
         </div>
-
       </div>
     </div>
   );

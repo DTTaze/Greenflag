@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
 import { Grid2X2, LayoutList } from "lucide-react";
+import React from "react";
 
 function MarketSearchBar({
   marketListView,

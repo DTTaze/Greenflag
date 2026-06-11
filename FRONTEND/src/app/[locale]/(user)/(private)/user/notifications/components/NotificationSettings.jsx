@@ -23,7 +23,7 @@ export default function NotificationSettings() {
     if (stored) {
       try {
         setSettings(JSON.parse(stored));
-      } catch (error) {
+      } catch {
         setSettings(defaultSettings);
       }
     }
@@ -46,12 +46,12 @@ export default function NotificationSettings() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="rounded-3xl border border-emerald-200/70 bg-white p-8 shadow-xl shadow-emerald-100/50 dark:border-slate-800 dark:bg-slate-900/80">
+      <div className="rounded-3xl border border-emerald-200/70 bg-white p-8 shadow-xl shadow-emerald-100/50 dark:border-zinc-800 dark:bg-zinc-900/80">
         <div className="mb-8">
-          <h1 className="text-3xl font-extrabold text-slate-950 dark:text-slate-100">
+          <h1 className="text-3xl font-extrabold text-zinc-950 dark:text-zinc-100">
             Cài đặt thông báo
           </h1>
-          <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-zinc-650 mt-2 max-w-2xl text-sm dark:text-zinc-400">
             Quản lý thông báo qua email, nhắc nhở sự kiện và cập nhật nhiệm vụ.
           </p>
         </div>
@@ -84,14 +84,14 @@ export default function NotificationSettings() {
           ].map((item) => (
             <div
               key={item.field}
-              className="flex flex-col gap-3 rounded-3xl border border-slate-200 bg-slate-50 p-5 dark:border-slate-700 dark:bg-slate-950/50"
+              className="flex flex-col gap-3 rounded-3xl border border-zinc-200 bg-zinc-50 p-5 dark:border-zinc-800 dark:bg-zinc-950/50"
             >
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+                  <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
                     {item.label}
                   </h2>
-                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                  <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
                     {item.description}
                   </p>
                 </div>
@@ -101,7 +101,7 @@ export default function NotificationSettings() {
                   className={`inline-flex h-11 w-20 items-center rounded-full px-1.5 transition-all duration-200 ${
                     settings[item.field]
                       ? "bg-emerald-600"
-                      : "bg-slate-300 dark:bg-slate-700"
+                      : "bg-zinc-300 dark:bg-zinc-800"
                   }`}
                   aria-pressed={settings[item.field]}
                 >

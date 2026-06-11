@@ -185,7 +185,13 @@
     "purchaseOrders": "Đơn mua",
     "activityHistory": "Lịch sử hoạt động & Giao dịch xu",
     "notLoggedIn": "Người dùng chưa đăng nhập.",
-    "noEmail": "Không có email khả dụng"
+    "noEmail": "Không có email khả dụng",
+    "qrCodeBtn": "Mã QR",
+    "accountId": "Mã tài khoản",
+    "userRole": "Người dùng",
+    "profileHint": "Nhấn Chỉnh sửa để cập nhật thông tin và giữ hồ sơ luôn chính xác.",
+    "copyBtn": "Sao chép",
+    "notifications": "Thông báo"
   },
   "partner": {
     "dashboard": {

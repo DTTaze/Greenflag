@@ -4,7 +4,7 @@ import { Calendar, Coins, Mail, Shield, User, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React from "react";
 
-import { AdminUserDTO } from "@/types/admin";
+import { AdminUserDTO } from "@/src/types/admin";
 
 import { StatusBadge } from "../../components/StatusBadge";
 

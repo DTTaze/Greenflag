@@ -176,30 +176,29 @@ function PersonalInformation() {
   return (
     <div
       id="profile-form"
-      className={`transform overflow-hidden rounded-3xl bg-white p-6 shadow-xl transition-all duration-300 dark:bg-slate-950 ${
+      className={`transform overflow-hidden rounded-3xl bg-white p-6 shadow-xl transition-all duration-300 dark:bg-zinc-950 ${
         mounted ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
       }`}
     >
-      <div className="mb-6 flex flex-col gap-4 rounded-3xl bg-slate-50 p-6 sm:flex-row sm:items-center sm:justify-between dark:bg-slate-900">
+      <div className="mb-6 flex flex-col gap-4 rounded-3xl bg-zinc-50 p-6 sm:flex-row sm:items-center sm:justify-between dark:bg-zinc-900">
         <div className="space-y-3">
           <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-200">
             <ShieldCheck size={16} />
             {t("profileTitle")}
           </div>
           <div className="space-y-2">
-            <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
-              {t("profileSubtitle")}
+            <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+              {t("profileTitle")}
             </h1>
-            <p className="max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-400">
-              {t("profileSubtitle") ||
-                "Quản lý thông tin cá nhân và tài khoản của bạn."}
+            <p className="max-w-2xl text-sm leading-6 text-zinc-600 dark:text-zinc-400">
+              {t("profileSubtitle")}
             </p>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           <Button
-            text={t("qrCodeBtn") || "QR Code"}
+            text={t("qrCodeBtn")}
             variant="secondary"
             size="lg"
             onClick={generateQRCode}
@@ -225,65 +224,61 @@ function PersonalInformation() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[minmax(280px,320px)_1fr]">
-        <aside className="space-y-4 rounded-3xl bg-slate-50 p-5 ring-1 ring-slate-200 dark:bg-slate-950 dark:ring-slate-700">
+        <aside className="space-y-4 rounded-3xl bg-zinc-50 p-5 ring-1 ring-zinc-200 dark:bg-zinc-950 dark:ring-zinc-800">
           <div className="flex items-center gap-4">
             <div className="grid h-14 w-14 place-items-center rounded-3xl bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-200">
               <UserCircle2 size={26} />
             </div>
             <div>
-              <p className="text-xs tracking-[0.24em] text-slate-500 uppercase dark:text-slate-400">
+              <p className="text-xs tracking-[0.24em] text-zinc-500 uppercase dark:text-zinc-400">
                 {tAuth("username")}
               </p>
-              <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
+              <p className="mt-1 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
                 {user.username || "-"}
               </p>
             </div>
           </div>
 
           <div className="grid gap-3">
-            <div className="rounded-3xl bg-white p-4 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
-              <p className="text-xs tracking-[0.24em] text-slate-500 uppercase dark:text-slate-400">
-                {t("accountId") || "Mã tài khoản"}
+            <div className="rounded-3xl bg-white p-4 ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800">
+              <p className="text-xs tracking-[0.24em] text-zinc-500 uppercase dark:text-zinc-400">
+                {t("accountId")}
               </p>
-              <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
+              <p className="mt-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                 {originalUser?.public_id || "-"}
               </p>
             </div>
 
-            <div className="rounded-3xl bg-white p-4 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
-              <p className="text-xs tracking-[0.24em] text-slate-500 uppercase dark:text-slate-400">
-                {t("role") || "Vai trò"}
+            <div className="rounded-3xl bg-white p-4 ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800">
+              <p className="text-xs tracking-[0.24em] text-zinc-500 uppercase dark:text-zinc-400">
+                {t("role")}
               </p>
-              <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
+              <p className="mt-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                 {originalUser?.role ||
                   originalUser?.roles?.name ||
-                  t("userRole") ||
-                  "Người dùng"}
+                  t("userRole")}
               </p>
             </div>
 
-            <div className="rounded-3xl bg-white p-4 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700">
-              <p className="text-xs tracking-[0.24em] text-slate-500 uppercase dark:text-slate-400">
-                {t("phone") || "Số điện thoại"}
+            <div className="rounded-3xl bg-white p-4 ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800">
+              <p className="text-xs tracking-[0.24em] text-zinc-500 uppercase dark:text-zinc-400">
+                {t("phone")}
               </p>
-              <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
+              <p className="mt-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                 {user.phone_number || "-"}
               </p>
             </div>
           </div>
 
-          <div className="rounded-3xl bg-slate-100 p-4 text-sm text-slate-600 dark:bg-slate-900 dark:text-slate-300">
-            <p className="font-semibold text-slate-900 dark:text-slate-100">
-              {t("profileSubtitle") || "Thông tin cá nhân"}
+          <div className="text-zinc-650 rounded-3xl bg-zinc-100 p-4 text-sm dark:bg-zinc-900 dark:text-zinc-300">
+            <p className="font-semibold text-zinc-900 dark:text-zinc-100">
+              {t("profileTitle")}
             </p>
-            <p className="mt-2 leading-6">
-              {t("profileHint") ||
-                "Nhấn Chỉnh sửa để cập nhật thông tin và giữ hồ sơ luôn chính xác."}
-            </p>
+            <p className="mt-2 leading-6">{t("profileHint")}</p>
           </div>
         </aside>
 
-        <section className="rounded-3xl bg-white p-6 ring-1 ring-slate-200 dark:bg-slate-950 dark:ring-slate-700">
+        <section className="rounded-3xl bg-white p-6 ring-1 ring-zinc-200 dark:bg-zinc-950 dark:ring-zinc-800">
           {status.message && (
             <div
               role="status"
@@ -310,8 +305,8 @@ function PersonalInformation() {
                   disabled={!isEditing || saving}
                   className={`transition-colors duration-150 ${
                     isEditing
-                      ? "bg-white dark:bg-slate-950"
-                      : "cursor-not-allowed bg-slate-100 text-slate-500 dark:bg-slate-900 dark:text-slate-400"
+                      ? "bg-white dark:bg-zinc-950"
+                      : "cursor-not-allowed bg-zinc-100 text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400"
                   }`}
                 />
               ))}
@@ -337,7 +332,7 @@ function PersonalInformation() {
                   />
                 </>
               ) : (
-                <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+                <div className="text-zinc-650 rounded-3xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
                   {t("lastUpdated")
                     ? `${t("lastUpdated")}: ${originalUser?.updated_at || "-"}`
                     : ""}
@@ -349,33 +344,31 @@ function PersonalInformation() {
       </div>
 
       <Dialog open={showQrDialog} onOpenChange={setShowQrDialog}>
-        <DialogContent className="min-w-[min(95vw,420px)] rounded-3xl bg-white p-6 shadow-2xl dark:bg-slate-950">
+        <DialogContent className="min-w-[min(95vw,420px)] rounded-3xl bg-white p-6 shadow-2xl dark:bg-zinc-950">
           <DialogHeader>
-            <DialogTitle>{t("qrCodeBtn") || "QR Code"}</DialogTitle>
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-              {t("qrCodeDescription") || "Quét mã QR để chia sẻ hồ sơ của bạn."}
+            <DialogTitle>{t("qrDialogTitle")}</DialogTitle>
+            <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+              {t("qrDialogDesc")}
             </p>
           </DialogHeader>
 
           <div className="mt-6 flex flex-col items-center gap-4">
             {qrCode ? (
               <img
-                className="h-64 w-64 rounded-3xl border border-slate-200 object-contain dark:border-slate-700"
-                alt={t("qrCodeBtn") || "QR Code"}
+                className="h-64 w-64 rounded-3xl border border-zinc-200 object-contain dark:border-zinc-800"
+                alt={t("qrCodeBtn")}
                 src={`data:image/png;base64,${qrCode}`}
               />
             ) : (
-              <div className="flex h-64 w-64 items-center justify-center rounded-3xl bg-slate-100 text-sm text-slate-500 dark:bg-slate-900 dark:text-slate-400">
-                {t("loading") || "Đang tạo mã QR..."}
+              <div className="flex h-64 w-64 items-center justify-center rounded-3xl bg-zinc-100 text-sm text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400">
+                {t("generatingQr")}
               </div>
             )}
 
             <div className="grid w-full gap-3">
-              <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
-                <div className="font-semibold">
-                  {t("accountId") || "Mã tài khoản"}
-                </div>
-                <div className="mt-2 text-sm break-all text-slate-600 dark:text-slate-400">
+              <div className="rounded-3xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200">
+                <div className="font-semibold">{t("accountId")}</div>
+                <div className="mt-2 text-sm break-all text-zinc-600 dark:text-zinc-400">
                   {user.public_id || "-"}
                 </div>
               </div>
@@ -383,14 +376,14 @@ function PersonalInformation() {
 
             <DialogFooter className="mt-0 flex flex-col gap-3 sm:flex-row sm:justify-end">
               <Button
-                text={t("copyBtn") || "Sao chép"}
+                text={t("copyBtn")}
                 variant="secondary"
                 size="lg"
                 icon={<Copy size={16} />}
                 onClick={() => copyToClipboard(user.public_id || "")}
               />
               <Button
-                text={t("close") || "Đóng"}
+                text={t("close")}
                 variant="outline"
                 size="lg"
                 onClick={() => setShowQrDialog(false)}

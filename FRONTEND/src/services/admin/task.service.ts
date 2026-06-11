@@ -1,4 +1,5 @@
-import axios from "@/src/lib/axios";
+import axiosClient from "@/src/services";
+const axios = axiosClient;
 import {
   ActivityCategoryDTO,
   AdminTaskDTO,
@@ -6,7 +7,7 @@ import {
   TaskSubmissionDecisionDTO,
   TaskTypeDTO,
 } from "@/src/types/admin/task.type";
-import { ApiResponse } from "@/src/types/common.type";
+import { ApiResponse } from "@/src/types/api";
 
 const BASE_URL = "/admin/tasks";
 

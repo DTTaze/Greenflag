@@ -185,7 +185,13 @@
     "purchaseOrders": "Purchase Orders",
     "activityHistory": "Activity & Coins History",
     "notLoggedIn": "User not logged in.",
-    "noEmail": "No email available"
+    "noEmail": "No email available",
+    "qrCodeBtn": "QR Code",
+    "accountId": "Account ID",
+    "userRole": "User",
+    "profileHint": "Click Edit to update your information and keep your profile accurate.",
+    "copyBtn": "Copy",
+    "notifications": "Notifications"
   },
   "partner": {
     "dashboard": {

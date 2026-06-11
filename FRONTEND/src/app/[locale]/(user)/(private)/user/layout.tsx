@@ -25,7 +25,7 @@ export default function UserLayout({
 
   return (
     <ProtectedRoute requiredRole={undefined}>
-      <div className="min-h-screen w-screen bg-gradient-to-b from-white to-[#f7f8fa] transition-colors dark:from-gray-900 dark:to-gray-800">
+      <div className="min-h-screen w-screen bg-gradient-to-b from-white to-[#f7f8fa] transition-colors dark:from-zinc-950 dark:to-zinc-900">
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
             <aside className="lg:col-span-4">
@@ -43,7 +43,7 @@ export default function UserLayout({
             </aside>
 
             <main className="lg:col-span-8">
-              <div className="transform rounded-lg bg-white/60 p-6 shadow-sm backdrop-blur-sm transition-all duration-300 dark:bg-gray-900/50">
+              <div className="transform rounded-lg bg-white/60 p-6 shadow-sm backdrop-blur-sm transition-all duration-300 dark:bg-zinc-900/50">
                 <div className="transition-opacity duration-300">
                   {children}
                 </div>

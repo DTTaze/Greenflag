@@ -8,11 +8,11 @@ import { commerceServices } from "@/src/services/commerce";
 import { UserService } from "@/src/services/user";
 
 export default function PartnerInventoryPage() {
-  const [items, setItems] = React.useState([]);
+  const [items, setItems] = React.useState<any[]>([]);
   const [form, setForm] = React.useState({ name: "", stock: 0, points: 0 });
   const [loading, setLoading] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
-  const [userId, setUserId] = React.useState(null);
+  const [userId, setUserId] = React.useState<string | null>(null);
   const [error, setError] = React.useState("");
 
   async function loadItems() {
@@ -22,7 +22,7 @@ export default function PartnerInventoryPage() {
       const res = await commerceServices.getAllItems();
       const data = res || [];
       const myItems = userId
-        ? data.filter((it) => it.creator?.id === userId)
+        ? data.filter((it: any) => it.creator?.id === userId)
         : data;
       setItems(myItems);
     } catch (err) {
@@ -44,14 +44,16 @@ export default function PartnerInventoryPage() {
         console.error(err);
       }
     })();
-    return () => (mounted = false);
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   React.useEffect(() => {
     if (userId !== null) loadItems();
   }, [userId]);
 
-  async function handleAdd(e) {
+  async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
     setError("");
@@ -65,7 +67,11 @@ export default function PartnerInventoryPage() {
       await commerceServices.partnerCreateItem({
         name: form.name,
         stock: Number(form.stock),
-        points: Number(form.points),
+        price: Number(form.points),
+        weight: 1,
+        length: 1,
+        width: 1,
+        height: 1,
       });
       setForm({ name: "", stock: 0, points: 0 });
       await loadItems();
@@ -77,7 +83,7 @@ export default function PartnerInventoryPage() {
     }
   }
 
-  async function handleDelete(id) {
+  async function handleDelete(id: string) {
     try {
       await commerceServices.partnerDeleteItem(id);
       await loadItems();
@@ -88,7 +94,7 @@ export default function PartnerInventoryPage() {
   }
 
   const totalStock = items.reduce(
-    (sum, item) => sum + Number(item.stock || 0),
+    (sum: number, item: any) => sum + Number(item.stock || 0),
     0,
   );
 

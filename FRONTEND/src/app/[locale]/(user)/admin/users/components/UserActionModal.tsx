@@ -4,7 +4,7 @@ import { AlertTriangle, Lock, Trash2, Unlock, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-import { AdminUserDTO } from "@/types/admin";
+import { AdminUserDTO } from "@/src/types/admin";
 
 interface UserActionModalProps {
   user: AdminUserDTO;

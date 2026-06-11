@@ -1,5 +1,6 @@
-import axios from "@/src/lib/axios";
-import { ApiResponse } from "@/src/types/common.type";
+import axiosClient from "@/src/services";
+const axios = axiosClient;
+import { ApiResponse } from "@/src/types/api";
 import {
   AdminProductDTO,
   UpdateProductDTO,

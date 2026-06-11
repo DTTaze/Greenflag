@@ -20,8 +20,8 @@ type DashboardCardsProps = {
 export function DashboardCards({ items }: DashboardCardsProps) {
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-      {items.map((item) => (
-        <DashboardCard key={item.key} {...item} />
+      {items.map(({ key, ...props }) => (
+        <DashboardCard key={key} {...props} />
       ))}
     </div>
   );

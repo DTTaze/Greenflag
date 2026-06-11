@@ -3,7 +3,8 @@ import {
   AdminUserDTO,
   LockAccountPayload,
   PaginatedResponse,
-} from "@/types/admin";
+} from "@/src/types/admin";
+import { UserRole, UserStatus } from "@/src/types/user/user.type";
 
 // Mock API client - replace with actual axios/fetch implementation
 const apiClient = {
@@ -73,8 +74,8 @@ export const mockUsers: AdminUserDTO[] = [
     id: "1",
     email: "admin@greenflag.com",
     username: "admin",
-    role: "ADMIN",
-    status: "ACTIVE",
+    role: UserRole.ADMIN,
+    status: UserStatus.ACTIVE,
     avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=admin",
     profile: {
       fullName: "System Admin",
@@ -90,8 +91,8 @@ export const mockUsers: AdminUserDTO[] = [
     id: "2",
     email: "user1@example.com",
     username: "eco_warrior",
-    role: "USER",
-    status: "ACTIVE",
+    role: UserRole.USER,
+    status: UserStatus.ACTIVE,
     avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=eco_warrior",
     profile: {
       fullName: "John Doe",
@@ -107,8 +108,8 @@ export const mockUsers: AdminUserDTO[] = [
     id: "3",
     email: "partner@green.org",
     username: "green_partner",
-    role: "PARTNER",
-    status: "ACTIVE",
+    role: UserRole.PARTNER,
+    status: UserStatus.ACTIVE,
     avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=green_partner",
     profile: {
       fullName: "Eco Organization",
@@ -124,8 +125,8 @@ export const mockUsers: AdminUserDTO[] = [
     id: "4",
     email: "inactive@example.com",
     username: "sleepy_user",
-    role: "USER",
-    status: "INACTIVE",
+    role: UserRole.USER,
+    status: UserStatus.INACTIVE,
     avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=sleepy_user",
     profile: {
       fullName: "Jane Smith",
@@ -141,8 +142,8 @@ export const mockUsers: AdminUserDTO[] = [
     id: "5",
     email: "suspended@example.com",
     username: "rule_breaker",
-    role: "USER",
-    status: "SUSPENDED",
+    role: UserRole.USER,
+    status: UserStatus.SUSPENDED,
     avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=rule_breaker",
     profile: {
       fullName: "Bad User",
@@ -159,8 +160,8 @@ export const mockUsers: AdminUserDTO[] = [
     id: "6",
     email: "newbie@example.com",
     username: "new_green",
-    role: "USER",
-    status: "ACTIVE",
+    role: UserRole.USER,
+    status: UserStatus.ACTIVE,
     avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=new_green",
     profile: {
       fullName: "New User",

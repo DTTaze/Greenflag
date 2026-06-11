@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import { Calendar, CalendarRange, Check, Flame } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
@@ -134,39 +135,87 @@ const EventList = ({ userInfo }) => {
             <TabsTrigger
               value="hot"
               className={cn(
-                "data-active:text-red-650 flex-1 cursor-pointer rounded-xl py-2.5 text-center text-xs font-bold transition-all duration-300 data-active:border-red-100/50 data-active:bg-red-50 dark:data-active:border-red-400/30 dark:data-active:bg-red-400/10 dark:data-active:text-red-200",
-                activeTab !== "hot" &&
-                  "text-gray-500 hover:bg-gray-100/50 hover:text-gray-900 dark:text-slate-300 dark:hover:bg-slate-700/70 dark:hover:text-white",
+                "group relative flex-1 cursor-pointer rounded-xl py-2.5 text-center text-xs font-bold transition-all duration-300",
+                "border-transparent bg-transparent shadow-none after:hidden group-data-horizontal/tabs:after:hidden data-active:border-transparent data-active:bg-transparent data-active:shadow-none dark:data-active:border-transparent dark:data-active:bg-transparent",
+                activeTab === "hot"
+                  ? "text-red-650 dark:text-red-200"
+                  : "hover:text-red-650 text-gray-500 hover:bg-red-50/40 dark:text-slate-300 dark:hover:bg-red-950/20 dark:hover:text-red-200",
               )}
             >
-              <div className="flex items-center justify-center gap-1.5">
-                <Flame className="h-4 w-4" />
+              {activeTab === "hot" && (
+                <motion.span
+                  layoutId="activeEventTab"
+                  className="border-red-150 absolute inset-0 -z-10 rounded-xl border bg-red-50/90 shadow-[0_10px_30px_rgba(239,68,68,0.08)] dark:border-red-900/40 dark:bg-red-950/30"
+                  transition={{ type: "spring", stiffness: 360, damping: 28 }}
+                />
+              )}
+              <div className="relative z-10 flex items-center justify-center gap-1.5">
+                <Flame
+                  className={cn(
+                    "h-4 w-4 transition-colors",
+                    activeTab === "hot"
+                      ? "text-red-650 dark:text-red-400"
+                      : "dark:group-hover:text-red-350 text-red-500/70 group-hover:text-red-600 dark:text-red-400/70",
+                  )}
+                />
                 {t("tabs.hot")}
               </div>
             </TabsTrigger>
             <TabsTrigger
               value="current"
               className={cn(
-                "flex-1 cursor-pointer rounded-xl py-2.5 text-center text-xs font-bold transition-all duration-300 data-active:border-emerald-100/50 data-active:bg-emerald-50 data-active:text-emerald-700 dark:data-active:border-emerald-400/30 dark:data-active:bg-emerald-400/10 dark:data-active:text-emerald-200",
-                activeTab !== "current" &&
-                  "text-gray-500 hover:bg-gray-100/50 hover:text-gray-900 dark:text-slate-300 dark:hover:bg-slate-700/70 dark:hover:text-white",
+                "group relative flex-1 cursor-pointer rounded-xl py-2.5 text-center text-xs font-bold transition-all duration-300",
+                "border-transparent bg-transparent shadow-none after:hidden group-data-horizontal/tabs:after:hidden data-active:border-transparent data-active:bg-transparent data-active:shadow-none dark:data-active:border-transparent dark:data-active:bg-transparent",
+                activeTab === "current"
+                  ? "dark:text-emerald-250 text-emerald-700"
+                  : "text-gray-500 hover:bg-emerald-50/40 hover:text-emerald-700 dark:text-slate-300 dark:hover:bg-emerald-950/20 dark:hover:text-emerald-200",
               )}
             >
-              <div className="flex items-center justify-center gap-1.5">
-                <CalendarRange className="h-4 w-4" />
+              {activeTab === "current" && (
+                <motion.span
+                  layoutId="activeEventTab"
+                  className="border-emerald-150 absolute inset-0 -z-10 rounded-xl border bg-emerald-50/90 shadow-[0_10px_30px_rgba(16,185,129,0.08)] dark:border-emerald-900/40 dark:bg-emerald-950/30"
+                  transition={{ type: "spring", stiffness: 360, damping: 28 }}
+                />
+              )}
+              <div className="relative z-10 flex items-center justify-center gap-1.5">
+                <CalendarRange
+                  className={cn(
+                    "h-4 w-4 transition-colors",
+                    activeTab === "current"
+                      ? "dark:text-emerald-450 text-emerald-600"
+                      : "dark:text-emerald-450/70 text-emerald-500/70 group-hover:text-emerald-600 dark:group-hover:text-emerald-400",
+                  )}
+                />
                 {t("tabs.current")}
               </div>
             </TabsTrigger>
             <TabsTrigger
               value="completed"
               className={cn(
-                "data-active:text-blue-650 flex-1 cursor-pointer rounded-xl py-2.5 text-center text-xs font-bold transition-all duration-300 data-active:border-blue-100/50 data-active:bg-blue-50 dark:data-active:border-blue-400/30 dark:data-active:bg-blue-400/10 dark:data-active:text-blue-200",
-                activeTab !== "completed" &&
-                  "text-gray-500 hover:bg-gray-100/50 hover:text-gray-900 dark:text-slate-300 dark:hover:bg-slate-700/70 dark:hover:text-white",
+                "group relative flex-1 cursor-pointer rounded-xl py-2.5 text-center text-xs font-bold transition-all duration-300",
+                "border-transparent bg-transparent shadow-none after:hidden group-data-horizontal/tabs:after:hidden data-active:border-transparent data-active:bg-transparent data-active:shadow-none dark:data-active:border-transparent dark:data-active:bg-transparent",
+                activeTab === "completed"
+                  ? "text-blue-650 dark:text-blue-200"
+                  : "hover:text-blue-650 text-gray-500 hover:bg-blue-50/40 dark:text-slate-300 dark:hover:bg-blue-950/20 dark:hover:text-blue-200",
               )}
             >
-              <div className="flex items-center justify-center gap-1.5">
-                <Check className="h-4 w-4" />
+              {activeTab === "completed" && (
+                <motion.span
+                  layoutId="activeEventTab"
+                  className="border-blue-150 absolute inset-0 -z-10 rounded-xl border bg-blue-50/90 shadow-[0_10px_30px_rgba(59,130,246,0.08)] dark:border-blue-900/40 dark:bg-blue-950/30"
+                  transition={{ type: "spring", stiffness: 360, damping: 28 }}
+                />
+              )}
+              <div className="relative z-10 flex items-center justify-center gap-1.5">
+                <Check
+                  className={cn(
+                    "h-4 w-4 transition-colors",
+                    activeTab === "completed"
+                      ? "text-blue-600 dark:text-blue-400"
+                      : "dark:group-hover:text-blue-350 text-blue-500/70 group-hover:text-blue-600 dark:text-blue-400/70",
+                  )}
+                />
                 {t("tabs.completed")}
               </div>
             </TabsTrigger>

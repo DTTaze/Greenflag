@@ -45,5 +45,6 @@ export * from "./delivery";
 export * from "./delivery/deliveryHandlers";
 export * from "./event";
 export * from "./event/eventHandlers";
+export * from "./media";
 export * from "./user";
 export * from "./user/userHandlers";

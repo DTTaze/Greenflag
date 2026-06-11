@@ -102,7 +102,7 @@ function UserHeader() {
   ];
 
   if (isAuthenticated && user?.roles?.id === 3) {
-    pages.push({ key: "customer", label: t("customer"), icon: ShoppingBag });
+    pages.push({ key: "partner", label: t("partner"), icon: ShoppingBag });
   }
 
   if (isAuthenticated && user?.roles?.id === 1) {

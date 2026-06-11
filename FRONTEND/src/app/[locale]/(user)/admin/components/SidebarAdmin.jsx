@@ -12,17 +12,15 @@ import {
   LayoutDashboard,
   ListPlus,
   LogOut,
-  Menu,
   MessageSquare,
   Settings,
   ShieldCheck,
   ShoppingCart,
   Truck,
   Users,
-  X,
+  X
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import React from "react";
 
 import LocaleSwitcher from "@/src/components/layout/LocaleSwitcher";
 import ThemeSwitcher from "@/src/components/layout/ThemeSwitcher";
@@ -165,7 +163,7 @@ export default function SidebarAdmin({
         />
       )}
 
-      {/* Sidebar Container */}
+      {/* Drawer Content */}
       <aside
         className={`fixed inset-y-0 left-0 z-50 flex flex-col border-r border-gray-200 bg-white transition-all duration-300 md:sticky md:top-0 md:translate-x-0 dark:border-zinc-800 dark:bg-zinc-950 ${
           isCollapsed ? "w-16" : "w-72"

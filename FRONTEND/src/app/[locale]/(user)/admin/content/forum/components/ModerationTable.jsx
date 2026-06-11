@@ -40,7 +40,7 @@ function ModerationTable({
   return (
     <Table className="text-xs">
       <TableHeader>
-        <TableRow className="border-b border-gray-100 bg-gray-50/50 font-semibold text-gray-400 hover:bg-transparent dark:border-zinc-800 dark:bg-zinc-900/50">
+        <TableRow className="border-b border-emerald-100 bg-gray-50/50 font-semibold text-gray-400 hover:bg-transparent dark:border-emerald-500/10 dark:bg-zinc-900/50">
           <TableHead className="h-auto px-4 py-3.5 text-gray-400 dark:text-zinc-400">
             Tác giả
           </TableHead>
@@ -58,7 +58,7 @@ function ModerationTable({
           </TableHead>
         </TableRow>
       </TableHeader>
-      <TableBody className="divide-y divide-gray-50 font-medium text-gray-600 dark:divide-zinc-900 dark:text-zinc-400">
+      <TableBody className="divide-y divide-emerald-100/30 font-medium text-gray-600 dark:divide-emerald-500/10 dark:text-zinc-400">
         {posts.map((post) => (
           <TableRow
             key={post.id}
@@ -74,7 +74,7 @@ function ModerationTable({
                 <img
                   src={post.author?.avatarUrl || "/images/default-avatar.jpg"}
                   alt="avatar"
-                  className="h-8 w-8 shrink-0 rounded-full border border-gray-100 object-cover dark:border-zinc-800"
+                  className="h-8 w-8 shrink-0 rounded-full border border-emerald-100 object-cover dark:border-emerald-500/15"
                 />
                 <div className="max-w-[120px] overflow-hidden">
                   <span className="block truncate font-semibold text-gray-900 dark:text-white">

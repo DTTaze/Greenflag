@@ -21,10 +21,12 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import { useDeletePost, useMyPosts } from "@/src/hooks/useForum";
+import { useCurrentUserQuery } from "@/src/queries/user/useUserQueries";
 import { forumService } from "@/src/services/forum.service";
 import { ForumPost } from "@/src/types/forum/forum.type";
 
 import PostStatusBadge from "../../../forum/components/PostStatusBadge";
+import ForumHeader from "../../../forum/components/ForumHeader";
 
 type StatusTab = "ALL" | "DRAFT" | "PENDING" | "APPROVED" | "REJECTED";
 
@@ -33,6 +35,9 @@ export default function MyPostsPage() {
   const [activeTab, setActiveTab] = useState<StatusTab>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Fetch current user query to display coins
+  const { data: userInfo, isLoading: isUserLoading } = useCurrentUserQuery();
 
   // Edit / Publish Draft Modal
   const [editingPost, setEditingPost] = useState<ForumPost | null>(null);
@@ -185,21 +190,36 @@ export default function MyPostsPage() {
 
   return (
     <div className="mx-auto max-w-[800px] flex-col gap-6 pt-6 pb-20">
-      {/* Header */}
-      <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-center">
-        <div>
-          <h1 className="text-[26px] font-[800] tracking-tight text-[#1B1B1B] dark:text-gray-100">
-            {t("myPosts")}
-          </h1>
-          <p className="text-[14px] leading-relaxed text-[#5C5C5C] dark:text-gray-400">
-            {t("myHistoryDesc")}
-          </p>
+      <ForumHeader
+        title={t("myPosts")}
+        subtitle={t("myHistoryDesc")}
+        userCoins={userInfo?.coins || 0}
+        loading={isUserLoading}
+      />
+
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        {/* Segmented Control Navigation */}
+        <div className="flex flex-1 rounded-xl border border-transparent bg-gray-100 p-1 shadow-xs dark:border-emerald-500/15 dark:bg-gray-800">
+          <Link
+            href="/forum"
+            className="flex flex-1 items-center justify-center gap-2 rounded-lg py-2.5 text-center font-semibold text-gray-600 transition hover:bg-gray-50/50 hover:text-[#2F9E44] focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none dark:text-gray-400 dark:hover:bg-gray-800/30 dark:hover:text-green-400"
+          >
+            <Globe className="h-4 w-4" aria-hidden="true" />
+            <span>{t("generalForum")}</span>
+          </Link>
+          <Link
+            href="/forum/my-posts"
+            className="dark:bg-gray-750 flex flex-1 transform items-center justify-center gap-2 rounded-lg bg-white py-2.5 text-center font-bold text-[#2F9E44] shadow-sm transition-all duration-205 hover:scale-[1.01] focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none dark:text-green-400"
+          >
+            <History className="h-4 w-4" aria-hidden="true" />
+            <span>{t("myPosts")}</span>
+          </Link>
         </div>
 
         {/* Search Input */}
-        <div className="group relative w-full shrink-0 md:w-[250px]">
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[#9E9E9E] transition-colors duration-200 group-focus-within:text-[#2F9E44]">
-            <Search className="h-4 w-4" aria-hidden="true" />
+        <div className="group relative w-full shrink-0 sm:w-[260px]">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#9E9E9E] transition-colors duration-200 group-focus-within:text-[#2F9E44]">
+            <Search className="h-5 w-5" aria-hidden="true" />
           </div>
           <input
             type="text"
@@ -207,31 +227,13 @@ export default function MyPostsPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t("searchPlaceholder")}
             aria-label={t("searchAriaLabel")}
-            className="dark:placeholder-gray-550 w-full rounded-full border border-[#E0E0E0] bg-white py-2 pr-4 pl-9 text-[13px] text-[#1B1B1B] placeholder-[#9E9E9E] shadow-xs hover:border-[#CCCCCC] hover:shadow-sm focus:border-[#2F9E44] focus:ring-2 focus:ring-[#2F9E44]/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:border-gray-600 dark:focus:border-[#2F9E44]"
+            className="w-full rounded-full border border-emerald-250/70 bg-white py-2.5 pr-4 pl-11 text-[14px] text-[#1B1B1B] placeholder-[#9E9E9E] shadow-xs transition-all duration-300 hover:border-emerald-400 hover:shadow-sm focus:border-emerald-600 focus:shadow-md focus:ring-2 focus:ring-emerald-500/20 focus:outline-none dark:border-emerald-500/15 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:hover:border-emerald-500/25 dark:focus:border-[#2F9E44] dark:focus:ring-[#2F9E44]/30"
           />
         </div>
       </div>
 
-      {/* Segmented Control Navigation */}
-      <div className="mb-6 flex rounded-xl border border-transparent bg-gray-100 p-1 shadow-xs dark:border-gray-700/50 dark:bg-gray-800">
-        <Link
-          href="/forum"
-          className="flex flex-1 items-center justify-center gap-2 rounded-lg py-2.5 text-center font-semibold text-gray-600 transition hover:bg-gray-50/50 hover:text-[#2F9E44] focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none dark:text-gray-400 dark:hover:bg-gray-800/30 dark:hover:text-green-400"
-        >
-          <Globe className="h-4 w-4" aria-hidden="true" />
-          <span>{t("generalForum")}</span>
-        </Link>
-        <Link
-          href="/forum/my-posts"
-          className="dark:bg-gray-750 flex flex-1 transform items-center justify-center gap-2 rounded-lg bg-white py-2.5 text-center font-bold text-[#2F9E44] shadow-sm transition-all duration-205 hover:scale-[1.01] focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none dark:text-green-400"
-        >
-          <History className="h-4 w-4" aria-hidden="true" />
-          <span>{t("myPosts")}</span>
-        </Link>
-      </div>
-
       {/* Tabs */}
-      <div className="mb-6 border-b border-gray-200 dark:border-gray-800">
+      <div className="mb-6 border-b border-emerald-100 dark:border-emerald-500/15">
         <nav
           className="scrollbar-hide -mb-px flex space-x-6 overflow-x-auto"
           aria-label="Tabs"
@@ -272,7 +274,7 @@ export default function MyPostsPage() {
           </p>
         </div>
       ) : posts.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#E0E0E0] bg-white px-4 py-16 text-center shadow-xs dark:border-gray-800 dark:bg-gray-900">
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-emerald-250/80 bg-white px-4 py-16 text-center shadow-xs dark:border-emerald-500/15 dark:bg-gray-900">
           <MessageSquare
             className="h-10 w-10 text-gray-300 opacity-80 dark:text-gray-700"
             aria-hidden="true"
@@ -289,7 +291,7 @@ export default function MyPostsPage() {
           {posts.map((post: ForumPost) => (
             <div
               key={post.id}
-              className="group overflow-hidden rounded-xl border border-[#E0E0E0] bg-white p-5 shadow-xs transition-all duration-300 hover:border-[#2F9E44]/45 hover:shadow-md dark:border-gray-800 dark:bg-gray-900"
+              className="group overflow-hidden rounded-xl border border-emerald-250/50 bg-white p-5 shadow-xs transition-all duration-300 hover:border-emerald-350 hover:shadow-md dark:border-emerald-500/15 dark:bg-gray-900"
             >
               {/* Header Info */}
               <div className="flex items-start justify-between gap-4">
@@ -325,7 +327,7 @@ export default function MyPostsPage() {
                   {post.tags.map((t, idx) => (
                     <span
                       key={idx}
-                      className="dark:bg-gray-850 text-gray-655 inline-block rounded border border-gray-100 bg-gray-50 px-2 py-0.5 text-[11px] font-medium dark:border-gray-800 dark:text-gray-300"
+                      className="dark:bg-gray-850 text-gray-655 inline-block rounded border border-emerald-100 bg-gray-50 px-2 py-0.5 text-[11px] font-medium dark:border-emerald-500/15 dark:text-gray-300"
                     >
                       {t}
                     </span>
@@ -339,7 +341,7 @@ export default function MyPostsPage() {
                   {post.images.map((imgUrl, idx) => (
                     <div
                       key={idx}
-                      className="relative aspect-video w-full cursor-pointer overflow-hidden rounded-lg border border-gray-100 transition-opacity hover:opacity-95 dark:border-gray-800"
+                      className="relative aspect-video w-full cursor-pointer overflow-hidden rounded-lg border border-emerald-100 transition-opacity hover:opacity-95 dark:border-emerald-500/15"
                       onClick={() => window.open(imgUrl, "_blank")}
                     >
                       <img
@@ -364,7 +366,7 @@ export default function MyPostsPage() {
               )}
 
               {/* Footer controls */}
-              <div className="mt-4 flex items-center justify-end gap-2.5 border-t border-dashed border-gray-100 pt-3 dark:border-gray-800">
+              <div className="mt-4 flex items-center justify-end gap-2.5 border-t border-dashed border-emerald-100 pt-3 dark:border-emerald-500/15">
                 {post.status === "draft" && (
                   <button
                     type="button"
@@ -399,9 +401,9 @@ export default function MyPostsPage() {
           />
 
           {/* Modal Container */}
-          <div className="relative z-10 w-full max-w-xl transform overflow-hidden rounded-2xl border border-gray-100 bg-white p-6 shadow-2xl transition-all dark:border-gray-800 dark:bg-gray-900">
+          <div className="relative z-10 w-full max-w-xl transform overflow-hidden rounded-2xl border border-emerald-200 bg-white p-6 shadow-2xl transition-all dark:border-emerald-500/15 dark:bg-gray-900">
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800">
+            <div className="flex items-center justify-between border-b border-emerald-100 pb-3 dark:border-emerald-500/15">
               <div className="flex items-center gap-2 text-[#2F9E44]">
                 <Edit className="h-5 w-5" aria-hidden="true" />
                 <span className="text-[16px] font-bold">
@@ -430,7 +432,7 @@ export default function MyPostsPage() {
                   id="edit-category-select"
                   value={editCategory}
                   onChange={(e) => setEditCategory(e.target.value)}
-                  className="w-full rounded-lg border border-[#E0E0E0] bg-white px-3 py-2 text-sm text-[#1B1B1B] outline-none focus:border-[#2F9E44] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                  className="w-full rounded-lg border border-emerald-200 bg-white px-3 py-2 text-sm text-[#1B1B1B] outline-none focus:border-[#2F9E44] dark:border-emerald-500/15 dark:bg-gray-800 dark:text-gray-100"
                 >
                   <option value="Hỏi đáp">Hỏi đáp</option>
                   <option value="Kinh nghiệm">Kinh nghiệm</option>
@@ -451,7 +453,7 @@ export default function MyPostsPage() {
                   value={editContent}
                   onChange={(e) => setEditContent(e.target.value)}
                   placeholder={t("editContentPlaceholder")}
-                  className="dark:placeholder-gray-550 w-full rounded-lg border border-[#E0E0E0] bg-white p-3 text-sm text-[#1B1B1B] placeholder-[#9E9E9E] outline-none focus:border-[#2F9E44] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                  className="dark:placeholder-gray-550 w-full rounded-lg border border-emerald-200 bg-white p-3 text-sm text-[#1B1B1B] placeholder-[#9E9E9E] outline-none focus:border-[#2F9E44] dark:border-emerald-500/15 dark:bg-gray-800 dark:text-gray-100"
                 />
               </div>
 
@@ -470,7 +472,7 @@ export default function MyPostsPage() {
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyDown={handleAddTag}
                   placeholder={t("editTagsPlaceholder")}
-                  className="dark:placeholder-gray-550 w-full rounded-lg border border-[#E0E0E0] bg-white px-3 py-2 text-sm text-[#1B1B1B] placeholder-[#9E9E9E] outline-none focus:border-[#2F9E44] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                  className="dark:placeholder-gray-550 w-full rounded-lg border border-emerald-200 bg-white px-3 py-2 text-sm text-[#1B1B1B] placeholder-[#9E9E9E] outline-none focus:border-[#2F9E44] dark:border-emerald-500/15 dark:bg-gray-800 dark:text-gray-100"
                 />
                 <div className="mt-2.5 flex flex-wrap gap-1.5">
                   {editTags.map((tag) => (
@@ -494,11 +496,11 @@ export default function MyPostsPage() {
             </div>
 
             {/* Modal Footer */}
-            <div className="flex justify-end gap-3 border-t border-gray-100 pt-4 dark:border-gray-800">
+            <div className="flex justify-end gap-3 border-t border-emerald-100 pt-4 dark:border-emerald-500/15">
               <button
                 type="button"
                 onClick={() => setEditingPost(null)}
-                className="text-gray-750 cursor-pointer rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                className="text-gray-750 cursor-pointer rounded-lg border border-emerald-200 px-4 py-2 text-sm font-semibold transition-colors hover:bg-gray-50 dark:border-emerald-500/15 dark:text-gray-300 dark:hover:bg-gray-800"
               >
                 {t("cancel")}
               </button>
@@ -538,7 +540,7 @@ export default function MyPostsPage() {
             className="fixed inset-0 bg-black/55 backdrop-blur-sm"
             onClick={() => setDeleteConfirmId(null)}
           />
-          <div className="relative z-10 w-full max-w-md rounded-2xl border border-gray-100 bg-white p-6 shadow-xl dark:border-gray-800 dark:bg-gray-900">
+          <div className="relative z-10 w-full max-w-md rounded-2xl border border-emerald-200 bg-white p-6 shadow-xl dark:border-emerald-500/15 dark:bg-gray-900">
             <h3 className="text-lg font-bold text-gray-950 dark:text-white">
               {t("confirmDeleteTitle")}
             </h3>
@@ -549,7 +551,7 @@ export default function MyPostsPage() {
               <button
                 type="button"
                 onClick={() => setDeleteConfirmId(null)}
-                className="text-gray-750 cursor-pointer rounded-xl border border-gray-200 px-4 py-2 text-sm font-semibold hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                className="text-gray-750 cursor-pointer rounded-xl border border-emerald-200 px-4 py-2 text-sm font-semibold hover:bg-gray-50 dark:border-emerald-500/15 dark:text-gray-300 dark:hover:bg-gray-800"
               >
                 {t("cancel")}
               </button>

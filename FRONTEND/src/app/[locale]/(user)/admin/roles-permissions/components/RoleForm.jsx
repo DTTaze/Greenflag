@@ -56,7 +56,7 @@ export default function RoleForm({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
-      <DialogContent className="rounded-xl border border-gray-100 bg-white p-6 shadow-lg sm:max-w-[450px]">
+      <DialogContent className="rounded-xl border border-emerald-200 bg-white p-6 shadow-lg sm:max-w-[450px] dark:border-emerald-500/15 dark:bg-slate-900">
         <DialogHeader className="mb-4">
           <DialogTitle className="text-lg font-bold text-gray-900">
             {mode === "add" ? "Add New Role" : "Edit Role"}

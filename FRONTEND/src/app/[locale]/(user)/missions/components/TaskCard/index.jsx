@@ -29,25 +29,22 @@ const TaskCard = React.memo(
     return (
       <>
         <div
-          className={`task-card flex flex-col rounded-3xl border bg-white dark:bg-zinc-900 ${
-            isCompleted
-              ? "border-emerald-200 shadow-xs dark:border-emerald-500/40"
-              : "border-gray-200 dark:border-zinc-800"
-          } group overflow-hidden shadow-sm transition-all duration-300 hover:translate-y-[-4px] hover:shadow-md dark:hover:border-green-500/50 ${
-            isLoading ? "opacity-70" : ""
-          }`}
+          className={`task-card flex flex-col rounded-3xl border bg-white dark:bg-zinc-900 ${isCompleted
+              ? "border-emerald-200 shadow-emerald-50/50 dark:border-emerald-500/40"
+              : "border-gray-200 dark:border-emerald-500/15"
+            } group overflow-hidden shadow-2xs transition-all duration-300 hover:translate-y-[-3px] hover:border-gray-300 hover:shadow-md dark:hover:border-emerald-500/50 ${isLoading ? "opacity-70" : ""
+            }`}
         >
           {/* Difficulty border at top */}
           <div
-            className={`h-1.5 w-full bg-gradient-to-r ${
-              task.difficulty === "easy"
+            className={`h-1.5 w-full bg-gradient-to-r ${task.difficulty === "easy"
                 ? "from-green-400 to-emerald-500"
                 : task.difficulty === "medium"
                   ? "from-blue-400 to-indigo-500"
                   : task.difficulty === "hard"
                     ? "from-amber-400 to-orange-500"
                     : "from-rose-500 to-red-600"
-            }`}
+              }`}
           ></div>
 
           <div className="flex flex-grow flex-col justify-between gap-4 p-4">
@@ -55,11 +52,10 @@ const TaskCard = React.memo(
               {/* Header inside card */}
               <div className="flex items-start gap-2.5">
                 <div
-                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border bg-gray-50/50 p-1.5 dark:bg-slate-700/70 ${
-                    isCompleted
+                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border bg-gray-50/50 p-1.5 dark:bg-slate-700/70 ${isCompleted
                       ? "bg-emerald-55/30 border-emerald-200 text-emerald-600 dark:border-emerald-400/40 dark:text-emerald-300"
-                      : "border-gray-200 text-gray-500 dark:border-slate-600 dark:text-slate-300"
-                  }`}
+                      : "border-gray-200 text-gray-500 dark:border-emerald-500/15 dark:text-slate-300"
+                    }`}
                 >
                   <img
                     src={imgScr}
@@ -124,15 +120,14 @@ const TaskCard = React.memo(
                   }
                 }}
                 disabled={task.completed_at || task.isPending || isLoading}
-                className={`w-full cursor-pointer rounded-xl py-2.5 text-xs font-bold transition-all duration-300 active:scale-98 flex items-center justify-center gap-1.5 ${
-                  isLoading
+                className={`w-full cursor-pointer rounded-xl py-2.5 text-xs font-bold transition-all duration-300 active:scale-98 flex items-center justify-center gap-1.5 ${isLoading
                     ? "bg-green-600 text-white opacity-75 cursor-not-allowed"
                     : task.completed_at
                       ? "bg-blue-50 text-blue-600 dark:bg-blue-950/20 dark:text-blue-400 border border-blue-100 dark:border-blue-900/30 cursor-not-allowed shadow-none"
                       : task.isPending
                         ? "bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 border border-amber-200 dark:border-amber-900/30 cursor-not-allowed shadow-none"
                         : "bg-green-600 hover:bg-green-700 text-white shadow-sm shadow-emerald-500/10 hover:shadow-md"
-                }`}
+                  }`}
               >
                 {isLoading ? (
                   <>

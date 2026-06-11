@@ -86,7 +86,7 @@ export default function CategoriesManagement() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mb-8 rounded-3xl border border-slate-200 bg-white p-8 shadow-lg shadow-slate-200/50 dark:border-slate-800 dark:bg-slate-900/80">
+      <div className="mb-8 rounded-3xl border border-emerald-200/60 bg-white p-8 shadow-lg shadow-emerald-100/55 dark:border-emerald-500/15 dark:bg-slate-900/80">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-3xl font-extrabold text-slate-950 dark:text-slate-100">
@@ -106,7 +106,7 @@ export default function CategoriesManagement() {
             {categories.map((category) => (
               <div
                 key={category.id}
-                className="rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950/60"
+                className="rounded-3xl border border-emerald-200/60 bg-slate-50 p-6 shadow-sm dark:border-emerald-500/15 dark:bg-slate-950/60"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -143,7 +143,7 @@ export default function CategoriesManagement() {
             ))}
           </div>
 
-          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950/60">
+          <div className="rounded-3xl border border-emerald-200/60 bg-slate-50 p-6 shadow-sm dark:border-emerald-500/15 dark:bg-slate-950/60">
             <div className="mb-6 flex items-center justify-between gap-4">
               <div>
                 <h2 className="text-xl font-semibold text-slate-950 dark:text-slate-100">
@@ -169,7 +169,7 @@ export default function CategoriesManagement() {
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   required
-                  className="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 transition outline-none focus:border-emerald-500 focus:ring-emerald-500/30 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+                  className="mt-2 w-full rounded-2xl border border-emerald-200 bg-white px-4 py-3 text-sm text-slate-900 transition outline-none focus:border-emerald-500 focus:ring-emerald-500/30 dark:border-emerald-500/15 dark:bg-slate-950 dark:text-slate-100"
                   placeholder="Ví dụ: Nhóm sản phẩm tái chế"
                 />
               </label>
@@ -180,7 +180,7 @@ export default function CategoriesManagement() {
                   onChange={(event) => setDescription(event.target.value)}
                   rows={4}
                   required
-                  className="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 transition outline-none focus:border-emerald-500 focus:ring-emerald-500/30 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+                  className="mt-2 w-full rounded-2xl border border-emerald-200 bg-white px-4 py-3 text-sm text-slate-900 transition outline-none focus:border-emerald-500 focus:ring-emerald-500/30 dark:border-emerald-500/15 dark:bg-slate-950 dark:text-slate-100"
                   placeholder="Mô tả nội dung và cách sử dụng danh mục"
                 />
               </label>

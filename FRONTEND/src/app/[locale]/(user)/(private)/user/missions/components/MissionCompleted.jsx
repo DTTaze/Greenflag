@@ -70,20 +70,20 @@ function MissionCompleted() {
   ];
 
   return (
-    <div className="w-full rounded-lg bg-white p-4 shadow-md">
-      <h2 className="text-xl font-bold">Danh sách nhiệm vụ đã hoàn thành</h2>
+    <div className="transform overflow-hidden rounded-3xl border border-emerald-200/60 bg-white p-6 shadow-xl transition-all duration-300 dark:border-emerald-500/15 dark:bg-zinc-950">
+      <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Danh sách nhiệm vụ đã hoàn thành</h2>
 
       {loading ? (
-        <div className="p-4 text-center text-gray-500">Đang tải...</div>
+        <div className="p-8 text-center text-zinc-500 dark:text-zinc-400">Đang tải...</div>
       ) : userCompletedTasks.length > 0 ? (
         <div className="mt-4 overflow-x-auto">
-          <table className="min-w-full border-collapse border border-gray-200">
+          <table className="min-w-full border-collapse border border-emerald-100 dark:border-emerald-500/10">
             <thead>
-              <tr className="bg-gray-100">
+              <tr className="bg-emerald-50/50 dark:bg-zinc-900/50">
                 {columns.map(({ key, label }) => (
                   <th
                     key={key}
-                    className="cursor-pointer border p-2"
+                    className="cursor-pointer border border-emerald-100 p-3 text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:border-emerald-500/10 dark:text-zinc-300 hover:bg-emerald-100/50 dark:hover:bg-zinc-800/50 transition-colors"
                     onClick={() => requestSort(key)}
                   >
                     {label}
@@ -93,13 +93,13 @@ function MissionCompleted() {
             </thead>
             <tbody>
               {sortedTasks.map((task) => (
-                <tr key={task.id} className="border">
-                  <td className="border p-2 font-mono text-xs">{task.id}</td>
-                  <td className="border p-2">{task.name}</td>
-                  <td className="border p-2 text-center font-medium">
+                <tr key={task.id} className="border-b border-emerald-100 dark:border-emerald-500/10 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/20 transition-colors">
+                  <td className="border border-emerald-100 p-3 font-mono text-xs text-zinc-600 dark:border-emerald-500/10 dark:text-zinc-400">{task.id}</td>
+                  <td className="border border-emerald-100 p-3 text-sm text-zinc-800 dark:border-emerald-500/10 dark:text-zinc-200">{task.name}</td>
+                  <td className="border border-emerald-100 p-3 text-center font-bold text-emerald-600 dark:border-emerald-500/10 dark:text-emerald-400">
                     +{task.points}
                   </td>
-                  <td className="border p-2 text-right">
+                  <td className="border border-emerald-100 p-3 text-right text-xs text-zinc-500 dark:border-emerald-500/10 dark:text-zinc-400">
                     {formatDate(task.completedAt)}
                   </td>
                 </tr>
@@ -108,7 +108,7 @@ function MissionCompleted() {
           </table>
         </div>
       ) : (
-        <div className="p-4 text-center text-gray-500">
+        <div className="p-8 text-center text-zinc-500 dark:text-zinc-400">
           Không có nhiệm vụ nào
         </div>
       )}

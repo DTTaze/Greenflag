@@ -1,21 +1,25 @@
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React from "react";
 
-import GlobalSearchBar from "@/src/components/common/GlobalSearchBar";
-import PageHeader from "@/src/components/common/PageHeader";
+import CoinBalance from "@/src/app/[locale]/(user)/exchange-market/components/CoinBalance";
 
-/**
- * Header component for the mission page
- */
-const MissionHeader = ({
-  userInfo,
+interface ForumHeaderProps {
+  userCoins: number;
+  loading?: boolean;
+  title?: string;
+  subtitle?: string;
+}
+
+const ForumHeader: React.FC<ForumHeaderProps> = ({
+  userCoins,
   loading,
-  searchQuery,
-  setSearchQuery,
+  title,
+  subtitle,
 }) => {
-  const t = useTranslations("missions.header");
+  const t = useTranslations("forum");
+  const tMissions = useTranslations("missions.header");
 
   if (loading) {
     return (
@@ -25,7 +29,7 @@ const MissionHeader = ({
           <div className="h-4 w-80 rounded bg-white/20"></div>
         </div>
         <div className="mt-4 flex items-center sm:mt-0">
-          <div className="h-10 w-64 rounded-full bg-white/20"></div>
+          <div className="h-16 w-64 rounded-xl bg-white/20"></div>
         </div>
       </div>
     );
@@ -46,26 +50,25 @@ const MissionHeader = ({
       <div className="relative z-10 flex-1 text-center sm:text-left">
         <h1 className="mb-2 flex items-center justify-center gap-2.5 text-2xl font-extrabold tracking-tight sm:justify-start md:text-3xl">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/20 backdrop-blur-md">
-            <Sparkles className="h-5 w-5 animate-pulse text-emerald-200" />
+            <MessageSquare className="h-5 w-5 animate-pulse text-emerald-200" />
           </div>
-          {t("title")}
+          {title || t("title")}
         </h1>
         <p className="max-w-md text-sm leading-relaxed font-medium text-emerald-100/90 md:text-[0.95rem]">
-          {t("subtitle")}
+          {subtitle || t("subtitle")}
         </p>
       </div>
 
       <div className="relative z-10 flex w-full justify-center sm:w-auto">
         <div className="min-w-[220px] rounded-2xl border border-white/15 bg-white/5 p-4 shadow-inner backdrop-blur-md">
           <span className="mb-1.5 block text-center text-[10px] font-bold tracking-wider text-emerald-200/80 uppercase">
-            {t("balance")}
+            {tMissions("balance")}
           </span>
-          <CoinBalance coins={userInfo?.coins || 0} />
+          <CoinBalance coins={userCoins} />
         </div>
       </div>
     </motion.div>
   );
 };
 
-export default MissionHeader;
-
+export default ForumHeader;

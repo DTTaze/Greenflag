@@ -101,7 +101,7 @@ function ForumModeration() {
   return (
     <div className="flex-1 space-y-6">
       {/* Title */}
-      <div className="flex items-center justify-between border-b border-gray-100 pb-4 dark:border-zinc-800">
+      <div className="flex items-center justify-between border-b border-emerald-100 pb-4 dark:border-emerald-500/10">
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight text-gray-950 dark:text-white">
             <ShieldCheck
@@ -117,14 +117,14 @@ function ForumModeration() {
         </div>
         <button
           onClick={fetchPosts}
-          className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 transition-colors hover:bg-gray-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800/80"
+          className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-emerald-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 transition-colors hover:bg-gray-50 dark:border-emerald-500/15 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800/80"
         >
           <RefreshCw size={14} /> Làm mới
         </button>
       </div>
 
       {/* Filter bar */}
-      <div className="flex flex-col justify-between gap-4 rounded-xl border border-gray-100 bg-white p-4 shadow-2xs sm:flex-row dark:border-zinc-800 dark:bg-zinc-950">
+      <div className="flex flex-col justify-between gap-4 rounded-xl border border-emerald-200/60 bg-white p-4 shadow-2xs sm:flex-row dark:border-emerald-500/15 dark:bg-zinc-950">
         {/* Search */}
         <div className="relative w-full sm:max-w-xs">
           <Search className="absolute top-2.5 left-3 h-4 w-4 text-gray-400 dark:text-zinc-500" />
@@ -133,7 +133,7 @@ function ForumModeration() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Tìm kiếm tác giả, nội dung..."
-            className="w-full rounded-lg border border-gray-200 bg-gray-50/50 py-2 pr-4 pl-9 text-xs focus:ring-2 focus:ring-emerald-600 focus:outline-none dark:border-zinc-800 dark:bg-zinc-900 dark:text-white dark:focus:ring-emerald-500"
+            className="w-full rounded-lg border border-emerald-200 bg-gray-50/50 py-2 pr-4 pl-9 text-xs focus:ring-2 focus:ring-emerald-600 focus:outline-none dark:border-emerald-500/15 dark:bg-zinc-900 dark:text-white dark:focus:ring-emerald-500"
           />
         </div>
 
@@ -162,7 +162,7 @@ function ForumModeration() {
       {/* Content grid */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Table list */}
-        <div className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm lg:col-span-2 dark:border-zinc-800 dark:bg-zinc-950">
+        <div className="overflow-hidden rounded-xl border border-emerald-200/60 bg-white shadow-sm lg:col-span-2 dark:border-emerald-500/15 dark:bg-zinc-950">
           <ModerationTable
             posts={filteredPosts}
             selectedPost={selectedPost}
@@ -174,8 +174,8 @@ function ForumModeration() {
         </div>
 
         {/* Details preview */}
-        <div className="space-y-4 rounded-xl border border-gray-100 bg-white p-5 shadow-sm lg:col-span-1 dark:border-zinc-800 dark:bg-zinc-950">
-          <h3 className="border-b border-gray-100 pb-2 text-sm font-bold text-gray-900 dark:border-zinc-800 dark:text-white">
+        <div className="space-y-4 rounded-xl border border-emerald-200/60 bg-white p-5 shadow-sm lg:col-span-1 dark:border-emerald-500/15 dark:bg-zinc-950">
+          <h3 className="border-b border-emerald-100 pb-2 text-sm font-bold text-gray-900 dark:border-emerald-500/10 dark:text-white">
             Chi tiết bài viết
           </h3>
           <ModerationDetail

@@ -92,7 +92,7 @@ function Mission() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-zinc-950 pt-20 pb-10 transition-colors duration-300">
+    <div className="min-h-screen pb-16 transition-colors duration-300">
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -240,8 +240,8 @@ function Mission() {
             />
 
             {/* Ranking Component */}
-            <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm transition-colors duration-300 dark:border-zinc-800 dark:bg-zinc-900">
-              <div className="border-b border-gray-150 bg-gray-50/50 p-4 transition-colors duration-300 dark:border-zinc-850 dark:bg-zinc-800/30">
+            <div className="overflow-hidden rounded-2xl border border-emerald-200/70 bg-emerald-50/80 shadow-2xl shadow-emerald-200/30 transition-colors duration-300 dark:border-emerald-500/20 dark:bg-slate-900/80 dark:shadow-emerald-950/20 dark:backdrop-blur">
+              <div className="border-b border-emerald-100 bg-teal-50/70 p-4 transition-colors duration-300 dark:border-emerald-500/20 dark:bg-[#064E3B]/20">
                 <h2 className="text-sm font-extrabold tracking-wider text-emerald-900 uppercase dark:text-slate-100">
                   {t("ranking")}
                 </h2>
@@ -251,13 +251,39 @@ function Mission() {
               </div>
             </div>
 
+            {/* Stats Card */}
+            <div className="rounded-2xl border border-emerald-200/70 bg-emerald-50/90 p-5 shadow-2xl shadow-emerald-200/30 transition-colors duration-300 dark:border-emerald-500/20 dark:bg-slate-900/80 dark:shadow-emerald-950/20 dark:backdrop-blur">
+              <h2 className="mb-4 text-sm font-extrabold tracking-wider text-emerald-900 uppercase dark:text-slate-100">
+                {t("stats")}
+              </h2>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-xl border border-emerald-200/60 bg-emerald-100/70 p-4 text-center transition-colors duration-300 dark:border-emerald-500/15 dark:bg-emerald-500/10">
+                  <p className="text-2xl font-black text-emerald-700 dark:text-emerald-300">
+                    {completedTasks.length}
+                  </p>
+                  <p className="mt-1 text-[10px] leading-snug font-bold tracking-wide text-emerald-800 uppercase dark:text-emerald-200/80">
+                    {t("completedTasks")}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-emerald-200/60 bg-emerald-100/70 p-4 text-center transition-colors duration-300 dark:border-emerald-500/15 dark:bg-emerald-500/10">
+                  <p className="text-2xl font-black text-emerald-700 dark:text-emerald-300">
+                    {completedTasks.reduce((sum, task) => {
+                      return sum + (task.coin || task.coins || 0);
+                    }, 0)}
+                  </p>
+                  <p className="mt-1 text-[10px] leading-snug font-bold tracking-wide text-emerald-800 uppercase dark:text-emerald-200/80">
+                    {t("coinsReceived")}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Task Submission Modal */}
       {selectedTask && renderTaskModal()}
-    </main>
+    </div>
   );
 }
 

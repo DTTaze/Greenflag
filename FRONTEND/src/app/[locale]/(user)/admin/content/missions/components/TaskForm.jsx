@@ -65,7 +65,7 @@ export default function TaskForm({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
-      <DialogContent className="rounded-xl border border-gray-100 bg-white p-6 shadow-lg sm:max-w-[450px]">
+      <DialogContent className="rounded-xl border border-emerald-200 bg-white p-6 shadow-lg sm:max-w-[450px] dark:border-emerald-500/15 dark:bg-slate-900">
         <DialogHeader className="mb-4">
           <DialogTitle className="text-lg font-bold text-gray-900">
             {mode === "add" ? "Add New Task" : "Edit Task"}
@@ -95,7 +95,7 @@ export default function TaskForm({
               required
               rows={3}
               placeholder="Mô tả chi tiết nhiệm vụ..."
-              className="w-full resize-none rounded-lg border border-gray-200 bg-transparent p-2.5 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+              className="w-full resize-none rounded-lg border border-emerald-200 bg-transparent p-2.5 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-emerald-500/15 dark:bg-slate-800"
             />
           </div>
 
@@ -120,7 +120,7 @@ export default function TaskForm({
                 value={formData.difficulty}
                 onChange={handleChange}
                 required
-                className="h-8 w-full rounded-lg border border-gray-200 bg-transparent px-2.5 py-1 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+                className="h-8 w-full rounded-lg border border-emerald-200 bg-transparent px-2.5 py-1 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-emerald-500/15 dark:bg-slate-800"
               >
                 <option value="">Chọn độ khó</option>
                 <option value="easy">Dễ</option>
@@ -142,7 +142,7 @@ export default function TaskForm({
             />
           </div>
 
-          <DialogFooter className="mt-6 border-t pt-4">
+          <DialogFooter className="mt-6 border-t border-emerald-100 pt-4 dark:border-emerald-500/10">
             <Button
               type="button"
               variant="outline"

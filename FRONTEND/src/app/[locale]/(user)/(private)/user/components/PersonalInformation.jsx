@@ -176,7 +176,7 @@ function PersonalInformation() {
   return (
     <div
       id="profile-form"
-      className={`transform overflow-hidden rounded-3xl bg-white p-6 shadow-xl transition-all duration-300 dark:bg-zinc-950 ${
+      className={`transform overflow-hidden rounded-3xl border border-emerald-200/60 bg-white p-6 shadow-xl transition-all duration-300 dark:border-emerald-500/15 dark:bg-zinc-950 ${
         mounted ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
       }`}
     >
@@ -224,7 +224,7 @@ function PersonalInformation() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[minmax(280px,320px)_1fr]">
-        <aside className="space-y-4 rounded-3xl bg-zinc-50 p-5 ring-1 ring-zinc-200 dark:bg-zinc-950 dark:ring-zinc-800">
+        <aside className="space-y-4 rounded-3xl bg-zinc-50 p-5 ring-1 ring-emerald-200/60 dark:bg-zinc-950 dark:ring-emerald-500/15">
           <div className="flex items-center gap-4">
             <div className="grid h-14 w-14 place-items-center rounded-3xl bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-200">
               <UserCircle2 size={26} />
@@ -240,7 +240,7 @@ function PersonalInformation() {
           </div>
 
           <div className="grid gap-3">
-            <div className="rounded-3xl bg-white p-4 ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800">
+            <div className="rounded-3xl bg-white p-4 ring-1 ring-emerald-200/50 dark:bg-zinc-900 dark:ring-emerald-500/10">
               <p className="text-xs tracking-[0.24em] text-zinc-500 uppercase dark:text-zinc-400">
                 {t("accountId")}
               </p>
@@ -249,7 +249,7 @@ function PersonalInformation() {
               </p>
             </div>
 
-            <div className="rounded-3xl bg-white p-4 ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800">
+            <div className="rounded-3xl bg-white p-4 ring-1 ring-emerald-200/50 dark:bg-zinc-900 dark:ring-emerald-500/10">
               <p className="text-xs tracking-[0.24em] text-zinc-500 uppercase dark:text-zinc-400">
                 {t("role")}
               </p>
@@ -260,7 +260,7 @@ function PersonalInformation() {
               </p>
             </div>
 
-            <div className="rounded-3xl bg-white p-4 ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800">
+            <div className="rounded-3xl bg-white p-4 ring-1 ring-emerald-200/50 dark:bg-zinc-900 dark:ring-emerald-500/10">
               <p className="text-xs tracking-[0.24em] text-zinc-500 uppercase dark:text-zinc-400">
                 {t("phone")}
               </p>
@@ -270,7 +270,7 @@ function PersonalInformation() {
             </div>
           </div>
 
-          <div className="text-zinc-650 rounded-3xl bg-zinc-100 p-4 text-sm dark:bg-zinc-900 dark:text-zinc-300">
+          <div className="text-zinc-600 rounded-3xl bg-zinc-100 p-4 text-sm dark:bg-zinc-900 dark:text-zinc-300">
             <p className="font-semibold text-zinc-900 dark:text-zinc-100">
               {t("profileTitle")}
             </p>
@@ -278,7 +278,7 @@ function PersonalInformation() {
           </div>
         </aside>
 
-        <section className="rounded-3xl bg-white p-6 ring-1 ring-zinc-200 dark:bg-zinc-950 dark:ring-zinc-800">
+        <section className="rounded-3xl bg-white p-6 ring-1 ring-emerald-200/60 dark:bg-zinc-950 dark:ring-emerald-500/15">
           {status.message && (
             <div
               role="status"
@@ -332,7 +332,7 @@ function PersonalInformation() {
                   />
                 </>
               ) : (
-                <div className="text-zinc-650 rounded-3xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
+                <div className="text-zinc-600 rounded-3xl border border-emerald-200/50 bg-zinc-50 px-4 py-3 text-sm dark:border-emerald-500/15 dark:bg-zinc-900 dark:text-zinc-300">
                   {t("lastUpdated")
                     ? `${t("lastUpdated")}: ${originalUser?.updated_at || "-"}`
                     : ""}
@@ -355,7 +355,7 @@ function PersonalInformation() {
           <div className="mt-6 flex flex-col items-center gap-4">
             {qrCode ? (
               <img
-                className="h-64 w-64 rounded-3xl border border-zinc-200 object-contain dark:border-zinc-800"
+                className="h-64 w-64 rounded-3xl border border-emerald-200/60 object-contain dark:border-emerald-500/15"
                 alt={t("qrCodeBtn")}
                 src={`data:image/png;base64,${qrCode}`}
               />
@@ -366,7 +366,7 @@ function PersonalInformation() {
             )}
 
             <div className="grid w-full gap-3">
-              <div className="rounded-3xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200">
+              <div className="rounded-3xl border border-emerald-200/50 bg-zinc-50 px-4 py-3 text-sm text-zinc-700 dark:border-emerald-500/15 dark:bg-zinc-900 dark:text-zinc-200">
                 <div className="font-semibold">{t("accountId")}</div>
                 <div className="mt-2 text-sm break-all text-zinc-600 dark:text-zinc-400">
                   {user.public_id || "-"}

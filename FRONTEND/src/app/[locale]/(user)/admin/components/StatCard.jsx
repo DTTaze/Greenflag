@@ -11,9 +11,19 @@ export default function StatCard({
   textColorClass = "",
 }) {
   return (
-    <div className="group rounded-3xl border border-gray-200 bg-white p-6 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900">
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-semibold text-gray-500 dark:text-zinc-400">
+    <div
+      className={`relative flex h-40 flex-col justify-between rounded-xl border border-emerald-250 bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-md dark:border-emerald-500/20 dark:bg-slate-950 ${bgClassName}`}
+    >
+      {/* Top action button */}
+      <div className="absolute top-3 right-3">
+        <button className="rounded-full p-1 text-gray-500 transition-colors duration-150 hover:bg-black/5">
+          <MoreVertical size={16} />
+        </button>
+      </div>
+
+      {/* Main card content */}
+      <div className="flex flex-col gap-1">
+        <span className="truncate pr-6 text-sm font-medium text-gray-600">
           {title}
         </span>
         {IconComponent && (

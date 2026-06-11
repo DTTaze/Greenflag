@@ -31,11 +31,11 @@ export const statusConfig = {
 const getStatusClass = (status) => {
   const statusClasses = {
     public:
-      "border-gray-250 bg-white hover:border-emerald-250 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-green-500/50",
-    private: "border-gray-200 bg-gray-50/50 dark:border-zinc-800/80 dark:bg-zinc-900/50",
-    pending: "border-amber-100 bg-amber-50/20 dark:border-amber-900/30 dark:bg-zinc-900",
-    rejected: "border-red-100 bg-red-50/20 dark:border-red-900/30 dark:bg-zinc-900",
-    draft: "border-slate-200 bg-slate-50/40 dark:border-zinc-850 dark:bg-zinc-900",
+      "border-emerald-200 bg-white hover:border-emerald-350 hover:shadow-emerald-50/50 dark:border-emerald-500/15 dark:bg-slate-900/60 dark:hover:border-emerald-500/25",
+    private: "border-emerald-100 bg-gray-50/50 dark:border-emerald-500/10 dark:bg-slate-900/40",
+    pending: "border-amber-150 bg-amber-50/10 dark:border-amber-500/20 dark:bg-amber-950/10",
+    rejected: "border-red-150 bg-red-50/10 dark:border-red-500/20 dark:bg-red-950/10",
+    draft: "border-emerald-200 bg-slate-50/40 dark:border-emerald-500/10 dark:bg-slate-900/40",
   };
   return statusClasses[status] || statusClasses.draft;
 };
@@ -125,11 +125,16 @@ const MarketplaceItemCard = ({
           <h3 className="truncate text-sm leading-snug font-bold text-slate-800 dark:text-zinc-200 transition-colors group-hover:text-emerald-700 dark:group-hover:text-emerald-400">
             {item.name}
           </h3>
-          <span className="mt-2 inline-block rounded-xl border border-emerald-100 dark:border-zinc-800 bg-gradient-to-r from-emerald-50 to-emerald-50/70 dark:from-zinc-800 dark:to-zinc-800/70 px-2.5 py-1 text-[10px] font-extrabold tracking-wide text-[#0B6E4F] dark:text-emerald-400 uppercase shadow-sm">
+          <motion.span
+            initial={{ scale: 0.92, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.15 }}
+            className="mt-2 inline-block rounded-xl border border-emerald-100 bg-gradient-to-r from-emerald-50 to-emerald-50/70 px-2.5 py-1 text-[10px] font-extrabold tracking-wide text-[#0B6E4F] uppercase shadow-sm dark:border-emerald-500/20 dark:from-emerald-950/35 dark:to-emerald-900/10 dark:text-emerald-300"
+          >
             {item.category
               ? t("categories." + item.category)
               : t("categories.unknown")}
-          </span>
+          </motion.span>
           <p className="mt-3 line-clamp-2 min-h-[32px] text-xs leading-relaxed font-medium text-slate-600 dark:text-zinc-400">
             {item.description}
           </p>
@@ -138,46 +143,59 @@ const MarketplaceItemCard = ({
 
       <div className={`p-5 ${(viewMode === "all_items" || viewMode === "redeem") ? "pb-14" : ""}`}>
         {/* Price and stock row */}
-        <div className="flex items-center justify-between border-t border-emerald-100/40 dark:border-zinc-800/80 pt-4">
-          <div className="flex items-center gap-1.5 rounded-xl border border-amber-100 dark:border-amber-900/40 bg-gradient-to-r from-amber-50 to-amber-50/60 dark:from-amber-950/20 dark:to-amber-950/10 px-3 py-1.5 text-xs font-black text-amber-700 dark:text-amber-400 shadow-sm">
+        <motion.div
+          className={`flex items-center justify-between border-t border-emerald-100 dark:border-emerald-500/10 pt-4 transition-all duration-300 ${viewMode === "all_items" || viewMode === "redeem"
+            ? "group-hover:blur-xs"
+            : ""
+            } ${showPurchaseModal || showDetailsModal ? "blur-sm" : ""}`}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <div className="flex items-center gap-1.5 rounded-xl border border-amber-200 bg-gradient-to-r from-amber-50 to-amber-50/60 px-3 py-1.5 text-xs font-black text-amber-700 shadow-sm dark:border-amber-500/20 dark:from-amber-950/30 dark:to-amber-900/10 dark:text-amber-400">
             <span className="coin-value font-extrabold">{item.price}</span>
             <Coins className="h-4 w-4 text-amber-600 dark:text-amber-400" />
           </div>
           <span className="text-[10px] font-bold tracking-wider text-slate-400 dark:text-zinc-500 uppercase">
             {t("list.remaining", { count: currentStock })}
           </span>
-        </div>
+        </motion.div>
+      </div>
 
-        {/* Hover action slide-up button for all_items/redeem */}
-        {(viewMode === "all_items" || viewMode === "redeem") && (
+      {/* Hover action slide-up button (Được mang ra làm con trực tiếp của motion.div cha ngoài cùng) */}
+      {(viewMode === "all_items" || viewMode === "redeem") && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100 backdrop-blur-[1px]">
           <button
             onClick={handleDetailsClick}
-            className="absolute bottom-0 left-0 right-0 z-20 w-full cursor-pointer bg-green-600 hover:bg-green-700 dark:bg-emerald-600 dark:hover:bg-emerald-500 py-3 text-center text-xs font-bold text-white transition-all duration-300 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
+            className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-emerald-250 bg-white px-5 py-3 text-xs font-bold text-[#0B6E4F] shadow-md transition-all hover:bg-emerald-50 active:scale-95 dark:border-emerald-500/15 dark:bg-slate-900 dark:text-emerald-400 dark:hover:bg-slate-800"
           >
-            {viewMode === "redeem" ? t("list.redeemBtn") : t("list.detailsBtn")}
+            <Eye size={15} />
+            {viewMode === "redeem"
+              ? t("list.redeemBtn")
+              : t("list.detailsBtn")}
           </button>
-        )}
+        </div>
+      )}
 
-        {/* Edit/Delete Buttons for my_items */}
-        {viewMode === "my_items" && (
-          <div className="mt-3.5 flex items-center justify-end gap-2.5 border-t border-gray-100 dark:border-zinc-800/80 pt-3">
-            <button
-              onClick={handleEditClick}
-              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/85 text-blue-600 dark:text-blue-400 shadow-2xs transition-all hover:bg-gray-50 dark:hover:bg-zinc-800 hover:text-blue-800 dark:hover:text-blue-300 active:scale-90"
-              aria-label="Edit item"
-            >
-              <Pencil size={14} />
-            </button>
-            <button
-              onClick={handleDeleteClick}
-              className="text-red-650 dark:text-red-400 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/85 shadow-2xs transition-all hover:bg-gray-50 dark:hover:bg-zinc-800 hover:text-red-800 dark:hover:text-red-300 active:scale-90"
-              aria-label="Delete item"
-            >
-              <Trash2 size={14} />
-            </button>
-          </div>
-        )}
-      </div>
+      {/* Edit/Delete Buttons for my_items */}
+      {viewMode === "my_items" && (
+        <div className="mx-5 mb-5 flex items-center justify-end gap-2.5 border-t border-emerald-100 pt-3 dark:border-emerald-500/10">
+          <button
+            onClick={handleEditClick}
+            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-emerald-200 bg-white text-blue-600 shadow-sm transition-all hover:bg-emerald-50/15 hover:text-blue-800 active:scale-90 dark:border-emerald-500/15 dark:bg-slate-900"
+            aria-label="Edit item"
+          >
+            <Pencil size={14} />
+          </button>
+          <button
+            onClick={handleDeleteClick}
+            className="text-red-650 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-emerald-200 bg-white shadow-sm transition-all hover:bg-emerald-50/15 hover:text-red-800 active:scale-90 dark:border-emerald-500/15 dark:bg-slate-900"
+            aria-label="Delete item"
+          >
+            <Trash2 size={14} />
+          </button>
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (

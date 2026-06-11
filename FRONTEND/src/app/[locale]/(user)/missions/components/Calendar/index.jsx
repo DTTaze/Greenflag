@@ -55,7 +55,7 @@ const Calendar = ({ streak = 0, lastLogin = null }) => {
   }, []);
 
   return (
-    <div className="calendar-container overflow-hidden rounded-xl border border-gray-200/60 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs">
+    <div className="calendar-container overflow-hidden rounded-xl border border-emerald-200/70 bg-white shadow-xs dark:border-emerald-500/20 dark:bg-slate-900/80">
       <div className="flex items-center justify-between bg-gradient-to-r from-[#0B6E4F] to-[#0D7F5C] p-4 text-white">
         <button
           type="button"
@@ -103,7 +103,7 @@ const Calendar = ({ streak = 0, lastLogin = null }) => {
       </div>
 
       {/* Streak indicator */}
-      <div className="streak-indicator flex items-center border-b border-emerald-100/30 dark:border-zinc-800 bg-emerald-50/50 dark:bg-zinc-950/35 p-4">
+      <div className="streak-indicator flex items-center border-b border-emerald-100/30 bg-emerald-50/50 p-4 dark:border-emerald-500/10 dark:bg-slate-900/40">
         <div className="mr-3">
           <div className="text-[10px] font-bold tracking-wider text-gray-400 dark:text-zinc-500 uppercase">
             Chuỗi hoạt động
@@ -119,7 +119,7 @@ const Calendar = ({ streak = 0, lastLogin = null }) => {
               className={`flex h-6.5 w-6.5 items-center justify-center rounded-lg text-[10px] font-extrabold transition-all duration-300 ${
                 i < streak
                   ? "bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-2xs"
-                  : "bg-gray-100 dark:bg-zinc-800 text-gray-400 dark:text-zinc-500"
+                  : "bg-gray-100 text-gray-400 dark:bg-slate-800 dark:text-slate-500"
               }`}
             >
               {i + 1}
@@ -128,10 +128,10 @@ const Calendar = ({ streak = 0, lastLogin = null }) => {
         </div>
       </div>
 
-      <div className="week-container grid grid-cols-7 border-b border-gray-100 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-950/20">
+      <div className="week-container grid grid-cols-7 border-b border-gray-100 bg-gray-50/50 dark:border-slate-800/60 dark:bg-slate-900/60">
         {weekDays.map((d) => (
           <div
-            className="flex h-8 items-center justify-center text-center text-[10px] font-extrabold tracking-wider text-emerald-800 dark:text-emerald-450 uppercase"
+            className="flex h-8 items-center justify-center text-center text-[10px] font-extrabold tracking-wider text-emerald-800 uppercase dark:text-emerald-400"
             key={d}
           >
             {d}
@@ -139,10 +139,10 @@ const Calendar = ({ streak = 0, lastLogin = null }) => {
         ))}
       </div>
 
-      <div className="day-container grid grid-cols-7 gap-1 bg-white dark:bg-zinc-900 p-2">
+      <div className="day-container grid grid-cols-7 gap-1 bg-white p-2 dark:bg-slate-900/80">
         {range(weekDayObjOf1).map((i) => (
           <div
-            className="flex h-9 items-center justify-center text-xs text-gray-300 dark:text-zinc-600 opacity-30 select-none"
+            className="flex h-9 items-center justify-center text-xs text-gray-300 opacity-30 select-none dark:text-slate-650"
             key={i}
           >
             {dayObjOf1.subtract(weekDayObjOf1 - i, "day").date()}
@@ -163,8 +163,8 @@ const Calendar = ({ streak = 0, lastLogin = null }) => {
                 isToday
                   ? "bg-emerald-600 font-extrabold text-white shadow-sm shadow-emerald-600/20"
                   : inStreak
-                    ? "border border-emerald-100/50 dark:border-emerald-900/30 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/30"
-                    : "text-gray-750 dark:text-zinc-300 hover:bg-gray-50 dark:hover:bg-zinc-800"
+                    ? "border border-emerald-100/50 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:text-emerald-300 dark:hover:bg-emerald-900/30"
+                    : "text-gray-700 hover:bg-gray-50 dark:text-slate-200 dark:hover:bg-slate-800"
               }`}
               key={i}
             >
@@ -178,7 +178,7 @@ const Calendar = ({ streak = 0, lastLogin = null }) => {
 
         {range(6 - weekDayObjOfLast).map((i) => (
           <div
-            className="flex h-9 items-center justify-center text-xs text-gray-300 dark:text-zinc-600 opacity-30 select-none"
+            className="flex h-9 items-center justify-center text-xs text-gray-300 opacity-30 select-none dark:text-slate-650"
             key={i}
           >
             {dayObjOfLast.add(i + 1, "day").date()}
@@ -187,9 +187,9 @@ const Calendar = ({ streak = 0, lastLogin = null }) => {
       </div>
 
       {/* Streak tips */}
-      <div className="streak-tips flex justify-between border-t border-gray-100 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-950/20 p-3 text-[10px] font-bold tracking-wider text-gray-400 dark:text-zinc-500 uppercase">
+      <div className="streak-tips flex justify-between border-t border-gray-100 bg-gray-50/50 p-3 text-[10px] font-bold tracking-wider text-gray-400 uppercase dark:border-slate-800/60 dark:bg-slate-900/60">
         <div className="flex items-center">
-          <div className="mr-1.5 h-2 w-2 rounded border border-emerald-200 dark:border-emerald-900/30 bg-emerald-50 dark:bg-emerald-950/20"></div>
+          <div className="mr-1.5 h-2 w-2 rounded border border-emerald-200 bg-emerald-50 dark:border-emerald-500/30 dark:bg-emerald-950/45"></div>
           <span>Đã hoạt động</span>
         </div>
         <div className="flex items-center">

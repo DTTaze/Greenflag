@@ -75,14 +75,14 @@ export default function DataTable({
     paginatedRows.every((r) => selectedIds.has(r.id));
 
   return (
-    <div className="mb-6 w-full rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+    <div className="mb-6 w-full bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden">
       {/* Header section */}
-      <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-        <h3 className="text-lg font-bold text-gray-900">{title}</h3>
+      <div className="flex flex-col items-start justify-between gap-4 border-b border-gray-100 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 p-6 sm:flex-row sm:items-center">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-zinc-100">{title}</h3>
         <div className="flex w-full items-center gap-3 sm:w-auto">
           {/* Search Input */}
           <div className="relative flex-1 sm:w-64 sm:flex-none">
-            <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+            <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 dark:text-zinc-500">
               <Search size={16} />
             </span>
             <input
@@ -90,7 +90,7 @@ export default function DataTable({
               placeholder="Search records..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 py-2 pr-4 pl-9 text-sm transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              className="w-full rounded-lg border border-gray-200 bg-transparent py-2 pr-4 pl-9 text-sm transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none dark:border-zinc-850 dark:bg-zinc-950 dark:text-zinc-200 dark:focus:border-emerald-500"
             />
           </div>
 
@@ -108,10 +108,10 @@ export default function DataTable({
       </div>
 
       {/* Table grid container */}
-      <div className="relative overflow-x-auto rounded-lg border border-gray-100 dark:border-zinc-800">
+      <div className="overflow-x-auto">
         <table className="w-full border-collapse text-left text-sm text-gray-500 dark:text-zinc-400">
-          <thead className="border-b border-gray-100 bg-gray-100 text-xs text-gray-700 uppercase dark:border-zinc-800 dark:bg-zinc-800 dark:text-zinc-300">
-            <tr>
+          <thead>
+            <tr className="bg-gray-50/80 dark:bg-zinc-900/50 border-b border-gray-200 dark:border-zinc-800">
               {/* Checkbox Column */}
               <th scope="col" className="w-4 p-4">
                 <div className="flex items-center">
@@ -125,22 +125,25 @@ export default function DataTable({
               </th>
 
               {/* Data Columns */}
-              {columns.map((col) => (
-                <th
-                  key={col.field}
-                  scope="col"
-                  className="px-6 py-4 font-semibold text-gray-650 dark:text-zinc-300"
-                  style={{ width: col.width }}
-                >
-                  {col.headerName}
-                </th>
-              ))}
+              {columns.map((col, index) => {
+                const headerText = col.header || col.headerName;
+                return (
+                  <th
+                    key={index}
+                    scope="col"
+                    className="py-4 px-6 text-xs uppercase tracking-wider font-semibold text-gray-500 dark:text-zinc-400 whitespace-nowrap"
+                    style={{ width: col.width }}
+                  >
+                    {headerText}
+                  </th>
+                );
+              })}
 
               {/* Actions Column */}
               {(onView || onEdit || onDelete) && (
                 <th
                   scope="col"
-                  className="w-[150px] px-6 py-4 text-right font-semibold text-gray-650 dark:text-zinc-300"
+                  className="w-[150px] py-4 px-6 text-right text-xs uppercase tracking-wider font-semibold text-gray-500 dark:text-zinc-400 whitespace-nowrap"
                 >
                   Thao tác
                 </th>
@@ -148,7 +151,7 @@ export default function DataTable({
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-gray-150 dark:divide-zinc-800">
+          <tbody>
             {loading ? (
               <tr>
                 <td colSpan={columns.length + 2} className="py-20 text-center">
@@ -164,7 +167,7 @@ export default function DataTable({
               <tr>
                 <td
                   colSpan={columns.length + 2}
-                  className="py-16 text-center text-gray-400 dark:text-zinc-500"
+                  className="py-16 text-center text-gray-500 dark:text-zinc-400"
                 >
                   No records found
                 </td>
@@ -175,8 +178,8 @@ export default function DataTable({
                 return (
                   <tr
                     key={row.id || index}
-                    className={`transition-colors even:bg-gray-50/50 dark:even:bg-zinc-900/50 hover:bg-gray-100/50 dark:hover:bg-zinc-800/50 ${
-                      isSelected ? "bg-emerald-50/10 dark:bg-emerald-950/20" : ""
+                    className={`even:bg-gray-50/30 dark:even:bg-zinc-950/30 hover:bg-gray-100/50 dark:hover:bg-zinc-800/50 transition-colors duration-150 border-b border-gray-100 dark:border-zinc-800/50 last:border-0 ${
+                      isSelected ? "bg-emerald-50/10 dark:bg-emerald-950/20 even:bg-emerald-50/10 dark:even:bg-emerald-950/20" : ""
                     }`}
                   >
                     {/* Selection checkbox */}
@@ -186,39 +189,50 @@ export default function DataTable({
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => handleSelectRow(row.id)}
-                          className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-emerald-600 focus:ring-emerald-500"
+                          className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-emerald-600 focus:ring-emerald-500 dark:border-zinc-700 dark:bg-zinc-850"
                         />
                       </div>
                     </td>
 
                     {/* Data Cells */}
-                    {columns.map((col) => {
-                      const rawValue = row[col.field];
-                      const resolvedValue = col.valueGetter ? col.valueGetter(rawValue, row) : rawValue;
+                    {columns.map((col, colIndex) => {
+                      const fieldKey = col.field || col.accessorKey;
+                      const rawValue = fieldKey ? row[fieldKey] : undefined;
+                      
+                      let resolvedValue = rawValue;
+                      if (col.valueGetter) {
+                        resolvedValue = col.valueGetter(rawValue, row);
+                      }
+
+                      let cellContent;
+                      if (col.render) {
+                        cellContent = col.render(resolvedValue, row);
+                      } else if (col.cell) {
+                        cellContent = col.cell(row);
+                      } else if (col.field === "status") {
+                        cellContent = <StatusBadge status={resolvedValue} />;
+                      } else {
+                        cellContent = resolvedValue != null ? String(resolvedValue) : "";
+                      }
+
                       return (
                         <td
-                          key={col.field}
-                          className="max-w-xs truncate px-6 py-4 text-gray-700"
+                          key={colIndex}
+                          className="max-w-xs truncate py-4 px-6 text-sm text-gray-700 dark:text-zinc-300"
                         >
-                          {col.render ? (
-                            col.render(resolvedValue, row)
-                          ) : col.field === "status" ? (
-                            <StatusBadge status={resolvedValue} />
-                          ) : (
-                            resolvedValue != null ? String(resolvedValue) : ""
-                          )}
+                          {cellContent}
                         </td>
                       );
                     })}
 
                     {/* Actions Cell */}
                     {(onView || onEdit || onDelete) && (
-                      <td className="px-6 py-4 text-right">
+                      <td className="py-4 px-6 text-right">
                         <div className="inline-flex gap-2">
                           {onView && (
                             <button
                               onClick={() => onView(row)}
-                              className="rounded-md p-1.5 text-sky-600 transition-colors hover:bg-sky-50"
+                              className="rounded-md p-1.5 text-sky-600 transition-colors hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-500/10"
                               title="Chi tiết"
                             >
                               <Eye size={16} />
@@ -227,7 +241,7 @@ export default function DataTable({
                           {onEdit && (
                             <button
                               onClick={() => onEdit(row)}
-                              className="rounded-md p-1.5 text-emerald-600 transition-colors hover:bg-emerald-50"
+                              className="rounded-md p-1.5 text-emerald-600 transition-colors hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-500/10"
                               title="Chỉnh sửa"
                             >
                               <Pencil size={16} />
@@ -236,7 +250,7 @@ export default function DataTable({
                           {onDelete && (
                             <button
                               onClick={() => onDelete(row)}
-                              className="rounded-md p-1.5 text-rose-600 transition-colors hover:bg-rose-50"
+                              className="rounded-md p-1.5 text-rose-600 transition-colors hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10"
                               title="Xóa"
                             >
                               <Trash2 size={16} />
@@ -255,18 +269,18 @@ export default function DataTable({
 
       {/* Pagination Footer */}
       {!loading && filteredRows.length > 0 && (
-        <div className="mt-6 flex flex-col items-center justify-between gap-4 text-sm text-gray-500 sm:flex-row">
+        <div className="flex flex-col items-center justify-between gap-4 border-t border-gray-100 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 p-6 sm:flex-row text-sm text-gray-500 dark:text-zinc-400">
           <div>
             Showing{" "}
-            <span className="font-semibold text-gray-700">
+            <span className="font-semibold text-gray-700 dark:text-zinc-200">
               {(currentPage - 1) * pageSize + 1}
             </span>{" "}
             to{" "}
-            <span className="font-semibold text-gray-700">
+            <span className="font-semibold text-gray-700 dark:text-zinc-200">
               {Math.min(currentPage * pageSize, filteredRows.length)}
             </span>{" "}
             of{" "}
-            <span className="font-semibold text-gray-700">
+            <span className="font-semibold text-gray-700 dark:text-zinc-200">
               {filteredRows.length}
             </span>{" "}
             records
@@ -281,7 +295,7 @@ export default function DataTable({
                   setPageSize(Number(e.target.value));
                   setCurrentPage(1);
                 }}
-                className="rounded-lg border border-gray-200 px-2 py-1 text-gray-700 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+                className="rounded-lg border border-gray-200 bg-transparent px-2 py-1 text-gray-700 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-zinc-800 dark:text-zinc-300"
               >
                 {[5, 10, 25, 50].map((size) => (
                   <option key={size} value={size}>
@@ -295,17 +309,17 @@ export default function DataTable({
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(currentPage - 1)}
-                className="rounded-lg border border-gray-200 p-1.5 transition-colors hover:bg-gray-50 disabled:opacity-50 disabled:hover:bg-white"
+                className="rounded-lg border border-gray-200 p-1.5 transition-colors hover:bg-gray-50 disabled:opacity-50 disabled:hover:bg-white dark:border-zinc-800 dark:hover:bg-zinc-800/50 dark:disabled:hover:bg-transparent"
               >
                 <ChevronLeft size={16} />
               </button>
-              <span className="px-2 font-medium text-gray-700">
+              <span className="px-2 font-medium text-gray-700 dark:text-zinc-200">
                 Page {currentPage} of {totalPages}
               </span>
               <button
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage(currentPage + 1)}
-                className="rounded-lg border border-gray-200 p-1.5 transition-colors hover:bg-gray-50 disabled:opacity-50 disabled:hover:bg-white"
+                className="rounded-lg border border-gray-200 p-1.5 transition-colors hover:bg-gray-50 disabled:opacity-50 disabled:hover:bg-white dark:border-zinc-800 dark:hover:bg-zinc-800/50 dark:disabled:hover:bg-transparent"
               >
                 <ChevronRight size={16} />
               </button>

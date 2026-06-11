@@ -27,13 +27,13 @@ function AddressFormDialog({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-      <div className="w-full max-w-lg transform rounded-lg bg-white p-6 shadow-2xl transition-all">
-        <h4 className="mb-4 text-lg font-semibold">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 backdrop-blur-xs p-4">
+      <div className="w-full max-w-lg transform rounded-3xl border border-emerald-200/60 bg-white p-6 shadow-2xl transition-all dark:border-emerald-500/15 dark:bg-zinc-950">
+        <h4 className="mb-5 text-xl font-bold text-zinc-900 dark:text-zinc-100">
           {editingAddress ? "Cập nhật địa chỉ" : "Thêm địa chỉ mới"}
         </h4>
-        {isLoading && <p className="text-gray-500">Đang tải...</p>}
-        {errorMessage && <p className="mb-4 text-red-500">{errorMessage}</p>}
+        {isLoading && <p className="text-zinc-500 dark:text-zinc-400 text-sm mb-3">Đang tải...</p>}
+        {errorMessage && <p className="mb-4 text-sm text-rose-500 dark:text-rose-450">{errorMessage}</p>}
         <div className="mb-4 grid grid-cols-2 gap-4">
           <InputField
             id="fullName"
@@ -55,7 +55,7 @@ function AddressFormDialog({
         <div className="mb-4">
           <label
             htmlFor="province"
-            className="mb-2 block text-sm font-semibold"
+            className="mb-2 block text-xs font-bold tracking-wider text-zinc-500 dark:text-zinc-400 uppercase"
           >
             Tỉnh/Thành phố
           </label>
@@ -64,7 +64,7 @@ function AddressFormDialog({
             name="province"
             value={newAddress.province}
             onChange={handleInputChange}
-            className="w-full rounded-md border p-2"
+            className="w-full rounded-2xl border border-emerald-200/60 bg-white p-3 text-sm focus:ring-2 focus:ring-emerald-600 focus:outline-none dark:border-emerald-500/15 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-emerald-500"
             disabled={isLoading}
           >
             <option value="">Chọn Tỉnh/Thành phố</option>
@@ -78,13 +78,13 @@ function AddressFormDialog({
               ))}
           </select>
           {errors.province && (
-            <p className="text-sm text-red-500">{errors.province}</p>
+            <p className="text-xs text-rose-500 mt-1">{errors.province}</p>
           )}
         </div>
         <div className="mb-4">
           <label
             htmlFor="district"
-            className="mb-2 block text-sm font-semibold"
+            className="mb-2 block text-xs font-bold tracking-wider text-zinc-500 dark:text-zinc-400 uppercase"
           >
             Quận/Huyện
           </label>
@@ -93,7 +93,7 @@ function AddressFormDialog({
             name="district"
             value={newAddress.district}
             onChange={handleInputChange}
-            className="w-full rounded-md border p-2"
+            className="w-full rounded-2xl border border-emerald-200/60 bg-white p-3 text-sm focus:ring-2 focus:ring-emerald-600 focus:outline-none dark:border-emerald-500/15 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-emerald-500"
             disabled={!newAddress.province || isLoading}
           >
             <option value="">Chọn Quận/Huyện</option>
@@ -104,11 +104,11 @@ function AddressFormDialog({
             ))}
           </select>
           {errors.district && (
-            <p className="text-sm text-red-500">{errors.district}</p>
+            <p className="text-xs text-rose-500 mt-1">{errors.district}</p>
           )}
         </div>
         <div className="mb-4">
-          <label htmlFor="ward" className="mb-2 block text-sm font-semibold">
+          <label htmlFor="ward" className="mb-2 block text-xs font-bold tracking-wider text-zinc-500 dark:text-zinc-400 uppercase">
             Phường/Xã
           </label>
           <select
@@ -116,7 +116,7 @@ function AddressFormDialog({
             name="ward"
             value={newAddress.ward}
             onChange={handleInputChange}
-            className="w-full rounded-md border p-2"
+            className="w-full rounded-2xl border border-emerald-200/60 bg-white p-3 text-sm focus:ring-2 focus:ring-emerald-600 focus:outline-none dark:border-emerald-500/15 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:ring-emerald-500"
             disabled={!newAddress.district || isLoading}
           >
             <option value="">Chọn Phường/Xã</option>
@@ -126,7 +126,7 @@ function AddressFormDialog({
               </option>
             ))}
           </select>
-          {errors.ward && <p className="text-sm text-red-500">{errors.ward}</p>}
+          {errors.ward && <p className="text-xs text-rose-500 mt-1">{errors.ward}</p>}
         </div>
         <InputField
           id="specificAddress"
@@ -137,7 +137,7 @@ function AddressFormDialog({
           error={errors.specificAddress}
         />
         <div className="mb-4">
-          <label className="mt-2 mb-2 block text-sm font-semibold">
+          <label className="mb-2 block text-xs font-bold tracking-wider text-zinc-500 dark:text-zinc-400 uppercase">
             Loại địa chỉ
           </label>
           <div className="flex space-x-4">
@@ -145,10 +145,10 @@ function AddressFormDialog({
               type="button"
               value="home"
               onClick={handleTypeChange}
-              className={`rounded-md border px-4 py-2 font-medium ${
+              className={`rounded-2xl border px-5 py-2.5 text-sm font-semibold transition-all ${
                 newAddress.type === "home"
-                  ? "border-emerald-800"
-                  : "border-gray-300"
+                  ? "border-emerald-600 bg-emerald-50 text-emerald-800 dark:border-emerald-500 dark:bg-emerald-950/20 dark:text-emerald-300"
+                  : "border-emerald-200/60 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-emerald-500/10 dark:bg-zinc-900 dark:text-zinc-350 dark:hover:bg-zinc-800/50"
               }`}
             >
               Nhà riêng
@@ -157,25 +157,25 @@ function AddressFormDialog({
               type="button"
               value="office"
               onClick={handleTypeChange}
-              className={`rounded-md border px-4 py-2 font-medium ${
+              className={`rounded-2xl border px-5 py-2.5 text-sm font-semibold transition-all ${
                 newAddress.type === "office"
-                  ? "border-emerald-800"
-                  : "border-gray-300"
+                  ? "border-emerald-600 bg-emerald-50 text-emerald-800 dark:border-emerald-500 dark:bg-emerald-950/20 dark:text-emerald-300"
+                  : "border-emerald-200/60 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-emerald-500/10 dark:bg-zinc-900 dark:text-zinc-350 dark:hover:bg-zinc-800/50"
               }`}
             >
               Văn phòng
             </button>
           </div>
         </div>
-        <div className="mb-4 flex items-center">
+        <div className="mb-5 flex items-center">
           <input
             type="checkbox"
             id="isDefault"
             checked={newAddress.isDefault}
             onChange={handleDefaultChange}
-            className="mr-2 h-5 w-5"
+            className="mr-2.5 h-5 w-5 rounded border-emerald-200 text-emerald-600 focus:ring-emerald-500/30 focus:ring-offset-0 dark:border-emerald-500/20 dark:bg-zinc-900"
           />
-          <label htmlFor="isDefault" className="text-sm">
+          <label htmlFor="isDefault" className="text-sm font-medium text-zinc-700 dark:text-zinc-300 cursor-pointer">
             Đặt làm địa chỉ mặc định
           </label>
         </div>

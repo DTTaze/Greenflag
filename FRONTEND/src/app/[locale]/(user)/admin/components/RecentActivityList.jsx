@@ -8,7 +8,7 @@ export default function RecentActivityList({ recentActivities = [], loading }) {
     : recentActivities.slice(0, 5);
 
   return (
-    <div className="flex h-full min-h-100 flex-col rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-950">
+    <div className="flex h-full min-h-100 flex-col rounded-xl border border-emerald-200/60 bg-white p-6 shadow-sm dark:border-emerald-500/20 dark:bg-slate-950">
       {/* Header */}
       <div className="mb-4 flex items-center justify-between">
         <h3 className="text-lg font-semibold text-slate-950 dark:text-slate-100">
@@ -25,7 +25,7 @@ export default function RecentActivityList({ recentActivities = [], loading }) {
       </div>
 
       {/* List content */}
-      <div className="flex flex-1 flex-col gap-4 divide-y divide-gray-100 overflow-y-auto">
+      <div className="flex flex-1 flex-col gap-4 divide-y divide-emerald-100/50 dark:divide-emerald-500/10 overflow-y-auto">
         {loading ? (
           <p className="py-4 text-sm text-slate-500 dark:text-slate-400">
             Loading activities...

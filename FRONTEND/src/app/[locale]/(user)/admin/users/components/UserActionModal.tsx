@@ -73,9 +73,9 @@ export default function UserActionModal({
         />
 
         {/* Modal */}
-        <div className="relative z-50 w-full max-w-md rounded-xl bg-white shadow-xl dark:bg-slate-900">
+        <div className="relative z-50 w-full max-w-md rounded-xl border border-emerald-200 bg-white shadow-xl dark:border-emerald-500/15 dark:bg-slate-900">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-slate-800">
+          <div className="flex items-center justify-between border-b border-emerald-100 px-6 py-4 dark:border-emerald-500/10">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400">
                 <AlertTriangle size={20} />
@@ -105,7 +105,7 @@ export default function UserActionModal({
               </p>
 
               {/* User Info */}
-              <div className="mb-4 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
+              <div className="mb-4 rounded-lg border border-emerald-100 bg-gray-50 p-4 dark:border-emerald-500/10 dark:bg-slate-800/50">
                 <div className="flex items-center gap-3">
                   <img
                     src={user.avatarUrl}
@@ -133,7 +133,7 @@ export default function UserActionModal({
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
                     placeholder="Enter reason for locking account..."
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300"
+                    className="w-full rounded-lg border border-emerald-200 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500 dark:border-emerald-500/15 dark:bg-slate-800 dark:text-slate-300"
                     rows={3}
                   />
                 </div>
@@ -145,7 +145,7 @@ export default function UserActionModal({
               <button
                 type="button"
                 onClick={onCancel}
-                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
+                className="rounded-lg border border-emerald-200 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:border-emerald-500/15 dark:text-slate-300 dark:hover:bg-slate-700"
               >
                 Cancel
               </button>

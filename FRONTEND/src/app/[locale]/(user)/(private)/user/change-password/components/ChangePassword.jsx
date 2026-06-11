@@ -77,9 +77,9 @@ function ChangePassword() {
   };
 
   return (
-    <div className="rounded-lg border bg-white p-4 shadow-md">
-      <h4 className="text-lg font-semibold">{t("changePasswordTitle")}</h4>
-      <hr className="my-2 border-gray-300" />
+    <div className="transform overflow-hidden rounded-3xl border border-emerald-200/60 bg-white p-6 shadow-xl transition-all duration-300 dark:border-emerald-500/15 dark:bg-zinc-950">
+      <h4 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">{t("changePasswordTitle")}</h4>
+      <hr className="my-4 border-emerald-100 dark:border-emerald-500/10" />
 
       <form className="space-y-4" onSubmit={handleSubmit}>
         <InputField

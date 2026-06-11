@@ -122,12 +122,12 @@ export default function AdminDashboard() {
       {/* Charts and Recent Activities Grid */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {/* Charts */}
-        <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm md:col-span-2 dark:border-slate-700 dark:bg-slate-950 dark:shadow-none">
+        <div className="space-y-4 rounded-xl border border-emerald-200/60 bg-white p-6 shadow-sm md:col-span-2 dark:border-emerald-500/20 dark:bg-slate-950 dark:shadow-none">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-slate-950 dark:text-slate-100">
               {t("activityOverview")}
             </h3>
-            <button className="rounded-lg border border-slate-200 bg-white/90 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors duration-150 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">
+            <button className="rounded-lg border border-emerald-200/50 bg-white/90 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors duration-150 hover:bg-slate-50 dark:border-emerald-500/15 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">
               {t("viewDetails")}
             </button>
           </div>

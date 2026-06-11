@@ -37,7 +37,7 @@ function MenuItem({ text, path, hasSubmenu, isOpen, onClick, children }) {
           type="button"
           onClick={onClick}
           aria-expanded={isOpen}
-          className="flex w-full items-center justify-between rounded-3xl px-4 py-3 text-sm font-medium text-zinc-700 transition-colors duration-200 hover:bg-zinc-100 focus:ring-2 focus:ring-blue-300 focus:outline-none dark:text-zinc-200 dark:hover:bg-zinc-800"
+          className="flex w-full items-center justify-between rounded-3xl px-4 py-3 text-sm font-medium text-zinc-700 transition-colors duration-200 hover:bg-zinc-100 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none dark:text-zinc-200 dark:hover:bg-zinc-800/80"
         >
           <span className="flex-1 text-left">{text}</span>
           <svg
@@ -59,9 +59,9 @@ function MenuItem({ text, path, hasSubmenu, isOpen, onClick, children }) {
         <NavLink
           to={path}
           className={({ isActive }) =>
-            `flex items-center rounded-3xl px-4 py-3 text-sm font-medium transition-colors duration-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 ${
+            `flex items-center rounded-3xl px-4 py-3 text-sm font-medium transition-colors duration-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 ${
               isActive
-                ? "bg-blue-50 text-zinc-900 dark:bg-blue-900 dark:text-white"
+                ? "bg-emerald-50 text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300"
                 : "text-zinc-700 dark:text-zinc-300"
             }`
           }
@@ -88,10 +88,10 @@ function SubMenuItem({ text, path }) {
     <NavLink
       to={path}
       className={({ isActive }) =>
-        `block rounded-3xl px-4 py-2 text-sm transition-colors duration-150 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800 ${
+        `block rounded-3xl px-4 py-2 text-sm transition-colors duration-150 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800/80 ${
           isActive
-            ? "bg-blue-50 font-semibold dark:bg-blue-900 dark:text-white"
-            : "text-zinc-600"
+            ? "bg-emerald-50/50 font-semibold text-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300"
+            : "text-zinc-600 dark:text-zinc-400"
         }`
       }
     >
@@ -202,13 +202,13 @@ function ProfileCard() {
     <>
       <style>{`
         .avatar-focus-ring:focus {
-          box-shadow: 0 0 0 3px rgba(59,130,246,0.25);
+          box-shadow: 0 0 0 3px rgba(16,185,129,0.25);
           outline: none;
         }
       `}</style>
 
       <div
-        className={`mx-auto max-w-sm transform overflow-hidden rounded-3xl bg-white p-6 shadow-2xl transition-all duration-300 dark:border dark:border-zinc-800 dark:bg-zinc-900 ${
+        className={`mx-auto max-w-sm transform overflow-hidden rounded-3xl border border-emerald-200/60 bg-white p-6 shadow-2xl transition-all duration-300 dark:border-emerald-500/15 dark:bg-zinc-900/50 ${
           mounted ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
         }`}
       >
@@ -277,7 +277,7 @@ function ProfileCard() {
           </div>
         </div>
 
-        <div className="my-5 h-px bg-zinc-200 dark:bg-zinc-800" />
+        <div className="my-5 h-px bg-emerald-100/80 dark:bg-emerald-500/15" />
 
         <nav className="space-y-2" aria-label="User menu">
           {menuItems.map((item) => (

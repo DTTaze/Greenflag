@@ -14,7 +14,7 @@ export default function AdminTabs({ tabs }) {
 
   return (
     <Tabs defaultValue="0" className="w-full">
-      <div className="mb-6 border-b border-gray-200">
+      <div className="mb-6 border-b border-emerald-100 dark:border-emerald-500/10">
         <TabsList
           variant="line"
           className="flex h-auto gap-4 bg-transparent p-0"

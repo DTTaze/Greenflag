@@ -48,7 +48,7 @@ export default function PurchaseModal({
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
             ref={modalRef}
-            className="relative w-full max-w-md overflow-hidden rounded-2xl border border-slate-800/85 bg-slate-900/95 shadow-2xl"
+            className="relative w-full max-w-md overflow-hidden rounded-2xl border border-emerald-250 bg-white shadow-2xl dark:border-emerald-500/15 dark:bg-slate-900/95"
           >
             {/* Decorative Glow elements */}
             <div className="absolute -top-20 -left-20 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl" />
@@ -80,8 +80,8 @@ export default function PurchaseModal({
               />
 
               {/* Item Details */}
-              <div className="flex gap-4 border-b border-slate-800/80 pt-1 pb-5">
-                <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border border-slate-800 bg-slate-950">
+              <div className="flex gap-4 border-b border-emerald-100 pt-1 pb-5 dark:border-emerald-500/10">
+                <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border border-emerald-200 bg-slate-50 dark:border-emerald-500/15 dark:bg-slate-950">
                   <img
                     src={item.image || "/placeholder.svg"}
                     alt={item.name}
@@ -89,10 +89,10 @@ export default function PurchaseModal({
                   />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="truncate text-sm font-semibold text-white">
+                  <h3 className="truncate text-sm font-semibold text-slate-800 dark:text-white">
                     {item.name}
                   </h3>
-                  <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-slate-400">
+                  <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
                     {item.description}
                   </p>
                   <div className="mt-1.5 flex items-center justify-between">
@@ -110,14 +110,14 @@ export default function PurchaseModal({
               </div>
 
               {/* Quantity Selector */}
-              <div className="flex items-center justify-between rounded-lg border border-slate-800/50 bg-slate-950/40 px-3 py-2.5">
-                <span className="text-sm text-slate-300">
+              <div className="flex items-center justify-between rounded-lg border border-emerald-150 bg-emerald-50/10 px-3 py-2.5 dark:border-emerald-500/10 dark:bg-slate-950/40">
+                <span className="text-sm text-slate-600 dark:text-slate-300">
                   {t("purchaseModal.quantityLabel")}
                 </span>
-                <div className="flex items-center overflow-hidden rounded-md border border-slate-800 bg-slate-900">
+                <div className="flex items-center overflow-hidden rounded-md border border-emerald-200 bg-white dark:border-emerald-500/15 dark:bg-slate-900">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="flex h-8 w-8 items-center justify-center text-slate-400 transition-colors hover:bg-slate-800/80 hover:text-white"
+                    className="flex h-8 w-8 items-center justify-center text-slate-550 transition-colors hover:bg-emerald-50/50 hover:text-emerald-700 dark:text-slate-400 dark:hover:bg-slate-800/80 dark:hover:text-white"
                   >
                     -
                   </button>
@@ -125,7 +125,7 @@ export default function PurchaseModal({
                     type="number"
                     value={quantity}
                     onChange={handleQuantityChange}
-                    className="h-8 w-12 [appearance:textfield] border-x border-slate-800 bg-transparent text-center text-sm font-medium text-white focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    className="h-8 w-12 [appearance:textfield] border-x border-emerald-250 bg-transparent text-center text-sm font-medium text-slate-800 dark:border-emerald-500/15 dark:text-white focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                     min="1"
                     max={maxQuantity}
                   />
@@ -133,7 +133,7 @@ export default function PurchaseModal({
                     onClick={() =>
                       setQuantity(Math.min(maxQuantity, quantity + 1))
                     }
-                    className="flex h-8 w-8 items-center justify-center text-slate-400 transition-colors hover:bg-slate-800/80 hover:text-white"
+                    className="flex h-8 w-8 items-center justify-center text-slate-550 transition-colors hover:bg-emerald-50/50 hover:text-emerald-700 dark:text-slate-400 dark:hover:bg-slate-800/80 dark:hover:text-white"
                   >
                     +
                   </button>
@@ -153,7 +153,7 @@ export default function PurchaseModal({
               <div className="flex gap-3 pt-2">
                 <button
                   onClick={onClose}
-                  className="flex-1 rounded-lg border border-slate-800 bg-slate-950/80 py-2.5 text-sm font-medium text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white"
+                  className="flex-1 rounded-lg border border-emerald-250 bg-white py-2.5 text-sm font-medium text-slate-700 transition-all duration-200 hover:bg-emerald-50/30 dark:border-emerald-500/15 dark:bg-slate-950/80 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                 >
                   {t("common.cancel")}
                 </button>
@@ -163,7 +163,7 @@ export default function PurchaseModal({
                   className={`flex flex-1 items-center justify-center rounded-lg py-2.5 text-sm font-semibold text-white shadow-lg transition-all duration-200 ${
                     canPurchase && !isProcessing && shippingInfo
                       ? "bg-emerald-600 shadow-emerald-600/10 hover:bg-emerald-500 active:scale-[0.98]"
-                      : "cursor-not-allowed border border-slate-700/30 bg-slate-800 text-slate-500"
+                      : "cursor-not-allowed border border-emerald-500/10 bg-slate-800/50 text-slate-500 dark:border-slate-700/30 dark:bg-slate-800"
                   }`}
                 >
                   {isProcessing ? (

@@ -76,7 +76,7 @@ export default function DataTable({
     paginatedRows.every((r) => selectedIds.has(r.id));
 
   return (
-    <div className="mb-6 w-full rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+    <div className="mb-6 w-full rounded-xl border border-emerald-200 bg-white p-6 shadow-sm dark:border-emerald-500/15 dark:bg-slate-900">
       {/* Header section */}
       <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <h3 className="text-lg font-bold text-gray-900">{title}</h3>
@@ -91,7 +91,7 @@ export default function DataTable({
               placeholder="Search records..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 py-2 pr-4 pl-9 text-sm transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              className="w-full rounded-lg border border-emerald-200 bg-transparent py-2 pr-4 pl-9 text-sm transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500 focus:outline-none dark:border-emerald-500/15 dark:bg-slate-800 dark:text-slate-200 dark:focus:border-emerald-500"
             />
           </div>
 
@@ -109,9 +109,9 @@ export default function DataTable({
       </div>
 
       {/* Table grid container */}
-      <div className="relative overflow-x-auto rounded-lg border border-gray-100">
+      <div className="relative overflow-x-auto rounded-lg border border-emerald-100 dark:border-emerald-500/15">
         <table className="w-full border-collapse text-left text-sm text-gray-500">
-          <thead className="border-b border-gray-100 bg-gray-50/70 text-xs text-gray-700 uppercase">
+          <thead className="border-b border-emerald-100 bg-gray-50/70 text-xs text-gray-700 uppercase dark:border-emerald-500/15 dark:bg-slate-800/50 dark:text-slate-300">
             <tr>
               {/* Checkbox Column */}
               <th scope="col" className="w-4 p-4">
@@ -120,7 +120,7 @@ export default function DataTable({
                     type="checkbox"
                     checked={isAllSelected}
                     onChange={handleSelectAll}
-                    className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-emerald-600 focus:ring-emerald-500"
+                    className="h-4 w-4 rounded border-emerald-300 bg-gray-100 text-emerald-600 focus:ring-emerald-500 dark:border-emerald-500/30 dark:bg-slate-700 dark:ring-offset-slate-800 dark:focus:ring-emerald-500"
                   />
                 </div>
               </th>
@@ -149,7 +149,7 @@ export default function DataTable({
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-emerald-100/30 dark:divide-emerald-500/10">
             {loading ? (
               <tr>
                 <td colSpan={columns.length + 2} className="py-20 text-center">
@@ -187,7 +187,7 @@ export default function DataTable({
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => handleSelectRow(row.id)}
-                          className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-emerald-600 focus:ring-emerald-500"
+                          className="h-4 w-4 rounded border-emerald-300 bg-gray-100 text-emerald-600 focus:ring-emerald-500 dark:border-emerald-500/30 dark:bg-slate-700 dark:ring-offset-slate-800 dark:focus:ring-emerald-500"
                         />
                       </div>
                     </td>
@@ -279,7 +279,7 @@ export default function DataTable({
                   setPageSize(Number(e.target.value));
                   setCurrentPage(1);
                 }}
-                className="rounded-lg border border-gray-200 px-2 py-1 text-gray-700 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+                className="rounded-lg border border-emerald-200 px-2 py-1 text-gray-700 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-emerald-500/15 dark:bg-slate-800 dark:text-slate-300"
               >
                 {[5, 10, 25, 50].map((size) => (
                   <option key={size} value={size}>
@@ -293,7 +293,7 @@ export default function DataTable({
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(currentPage - 1)}
-                className="rounded-lg border border-gray-200 p-1.5 transition-colors hover:bg-gray-50 disabled:opacity-50 disabled:hover:bg-white"
+                className="rounded-lg border border-emerald-200 p-1.5 transition-colors hover:bg-gray-50 disabled:opacity-50 disabled:hover:bg-white dark:border-emerald-500/15 dark:hover:bg-slate-800 dark:disabled:hover:bg-slate-900"
               >
                 <ChevronLeft size={16} />
               </button>
@@ -303,7 +303,7 @@ export default function DataTable({
               <button
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage(currentPage + 1)}
-                className="rounded-lg border border-gray-200 p-1.5 transition-colors hover:bg-gray-50 disabled:opacity-50 disabled:hover:bg-white"
+                className="rounded-lg border border-emerald-200 p-1.5 transition-colors hover:bg-gray-50 disabled:opacity-50 disabled:hover:bg-white dark:border-emerald-500/15 dark:hover:bg-slate-800 dark:disabled:hover:bg-slate-900"
               >
                 <ChevronRight size={16} />
               </button>

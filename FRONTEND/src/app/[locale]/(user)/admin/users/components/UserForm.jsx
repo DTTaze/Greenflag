@@ -74,7 +74,7 @@ export default function UserForm({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
-      <DialogContent className="rounded-xl border border-gray-100 bg-white p-6 shadow-lg sm:max-w-[500px]">
+      <DialogContent className="rounded-xl border border-emerald-200 bg-white p-6 shadow-lg sm:max-w-[500px] dark:border-emerald-500/15 dark:bg-slate-900">
         <DialogHeader className="mb-4">
           <DialogTitle className="text-lg font-bold text-gray-900">
             {mode === "add" ? "Add New User" : "Edit User"}
@@ -155,7 +155,7 @@ export default function UserForm({
                     name="coins"
                     value={formData.coins}
                     disabled
-                    className="border-gray-200 bg-gray-50"
+                    className="border-emerald-200/60 bg-gray-50/50 dark:border-emerald-500/15 dark:bg-slate-800/50"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
@@ -165,7 +165,7 @@ export default function UserForm({
                     name="role_name"
                     value={formData.role_name}
                     disabled
-                    className="border-gray-200 bg-gray-50"
+                    className="border-emerald-200/60 bg-gray-50/50 dark:border-emerald-500/15 dark:bg-slate-800/50"
                   />
                 </div>
               </div>

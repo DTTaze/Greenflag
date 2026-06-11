@@ -2,7 +2,7 @@ import React from "react";
 
 export default function ProfileCardSkeleton() {
   return (
-    <div className="relative mx-auto max-w-sm overflow-hidden rounded-lg bg-white p-4 shadow-md dark:bg-zinc-900">
+    <div className="relative mx-auto max-w-sm overflow-hidden rounded-3xl border border-emerald-200/60 bg-white p-6 shadow-2xl dark:border-emerald-500/15 dark:bg-zinc-900/50">
       {/* Shimmer layer (light/dark friendly) */}
       <div className="pointer-events-none absolute inset-0">
         <div className="animate-shimmer absolute inset-0 bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 opacity-60 dark:from-zinc-800 dark:via-zinc-700 dark:to-zinc-800" />

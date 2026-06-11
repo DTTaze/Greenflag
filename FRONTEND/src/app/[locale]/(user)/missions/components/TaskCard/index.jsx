@@ -32,7 +32,7 @@ const TaskCard = React.memo(
           className={`task-card flex flex-col rounded-2xl border bg-white dark:bg-slate-800/90 ${
             isCompleted
               ? "border-emerald-200 shadow-emerald-50/50 dark:border-emerald-500/40"
-              : "border-gray-200 dark:border-slate-700"
+              : "border-gray-200 dark:border-emerald-500/15"
           } group overflow-hidden shadow-2xs transition-all duration-300 hover:translate-y-[-3px] hover:border-gray-300 hover:shadow-md dark:hover:border-emerald-500/50 ${
             isLoading ? "opacity-70" : ""
           }`}
@@ -58,7 +58,7 @@ const TaskCard = React.memo(
                   className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border bg-gray-50/50 p-1.5 dark:bg-slate-700/70 ${
                     isCompleted
                       ? "bg-emerald-55/30 border-emerald-200 text-emerald-600 dark:border-emerald-400/40 dark:text-emerald-300"
-                      : "border-gray-200 text-gray-500 dark:border-slate-600 dark:text-slate-300"
+                      : "border-gray-200 text-gray-500 dark:border-emerald-500/15 dark:text-slate-300"
                   }`}
                 >
                   <img

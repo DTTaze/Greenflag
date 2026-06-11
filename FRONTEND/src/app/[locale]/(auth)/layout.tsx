@@ -51,7 +51,7 @@ export default function AuthLayout({
   // If callback success page, render a cleaner centered loading layout
   if (isSuccessPage) {
     return (
-      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-50 dark:bg-zinc-950">
+      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-50 dark:bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.1),_transparent_40%),linear-gradient(180deg,#020617_0%,#0f172a_42%,#020617_100%)]">
         {/* Blurred background blobs */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-[40%] -left-[20%] h-[80%] w-[60%] rounded-full bg-emerald-500/10 blur-[120px] dark:bg-emerald-500/5" />
@@ -63,7 +63,7 @@ export default function AuthLayout({
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-50/60 dark:bg-zinc-950">
+    <div className="relative min-h-screen overflow-hidden bg-slate-50/60 dark:bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.1),_transparent_40%),linear-gradient(180deg,#020617_0%,#0f172a_42%,#020617_100%)]">
       <style>{`
         @keyframes float-blob-1 {
           0%, 100% { transform: translate(0px, 0px) scale(1); }

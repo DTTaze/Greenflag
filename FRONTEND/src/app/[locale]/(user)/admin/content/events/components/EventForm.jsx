@@ -112,7 +112,7 @@ export default function EventForm({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
-      <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-gray-100 bg-white p-6 shadow-lg sm:max-w-[700px]">
+      <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-emerald-200 bg-white p-6 shadow-lg sm:max-w-[700px] dark:border-emerald-500/15 dark:bg-slate-900">
         <DialogHeader className="mb-4">
           <DialogTitle className="text-lg font-bold text-gray-900">
             {mode === "add" ? "Thêm sự kiện mới" : "Chỉnh sửa sự kiện"}
@@ -142,7 +142,7 @@ export default function EventForm({
               required
               rows={4}
               placeholder="Mô tả nội dung, mục tiêu của sự kiện..."
-              className="w-full resize-none rounded-lg border border-gray-200 bg-transparent p-2.5 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+              className="w-full resize-none rounded-lg border border-emerald-200 bg-transparent p-2.5 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-emerald-500/15 dark:bg-slate-800"
             />
           </div>
 
@@ -219,7 +219,7 @@ export default function EventForm({
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="h-8 w-full rounded-lg border border-gray-200 bg-transparent px-2.5 py-1 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+              className="h-8 w-full rounded-lg border border-emerald-200 bg-transparent px-2.5 py-1 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-emerald-500/15 dark:bg-slate-800"
             >
               <option value="active">Hoạt động</option>
               <option value="inactive">Không hoạt động</option>
@@ -234,7 +234,7 @@ export default function EventForm({
               {previewUrls.map((url, index) => (
                 <div
                   key={index}
-                  className="relative h-24 w-24 overflow-hidden rounded-lg border border-gray-100 shadow-sm"
+                  className="relative h-24 w-24 overflow-hidden rounded-lg border border-emerald-100 shadow-sm dark:border-emerald-500/15"
                 >
                   <img
                     src={url}
@@ -253,7 +253,7 @@ export default function EventForm({
             </div>
 
             <div className="pt-1">
-              <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50">
+              <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-emerald-200 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 dark:border-emerald-500/15 dark:text-slate-300 dark:hover:bg-slate-800">
                 <Upload size={16} className="text-gray-500" />
                 <span>Tải ảnh lên</span>
                 <input
@@ -267,7 +267,7 @@ export default function EventForm({
             </div>
           </div>
 
-          <DialogFooter className="mt-6 border-t pt-4">
+          <DialogFooter className="mt-6 border-t border-emerald-100 pt-4 dark:border-emerald-500/10">
             <Button
               type="button"
               variant="outline"

@@ -31,11 +31,11 @@ export const statusConfig = {
 const getStatusClass = (status) => {
   const statusClasses = {
     public:
-      "border-emerald-100 bg-white hover:border-emerald-250 hover:shadow-emerald-50/50",
-    private: "border-gray-200 bg-gray-50/50",
-    pending: "border-amber-100 bg-amber-50/20",
-    rejected: "border-red-100 bg-red-50/20",
-    draft: "border-slate-200 bg-slate-50/40",
+      "border-emerald-200 bg-white hover:border-emerald-350 hover:shadow-emerald-50/50 dark:border-emerald-500/15 dark:bg-slate-900/60 dark:hover:border-emerald-500/25",
+    private: "border-emerald-100 bg-gray-50/50 dark:border-emerald-500/10 dark:bg-slate-900/40",
+    pending: "border-amber-150 bg-amber-50/10 dark:border-amber-500/20 dark:bg-amber-950/10",
+    rejected: "border-red-150 bg-red-50/10 dark:border-red-500/20 dark:bg-red-950/10",
+    draft: "border-emerald-200 bg-slate-50/40 dark:border-emerald-500/10 dark:bg-slate-900/40",
   };
   return statusClasses[status] || statusClasses.draft;
 };
@@ -138,7 +138,7 @@ const MarketplaceItemCard = ({
             initial={{ scale: 0.92, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.15 }}
-            className="mt-2 inline-block rounded-xl border border-emerald-100 bg-gradient-to-r from-emerald-50 to-emerald-50/70 px-2.5 py-1 text-[10px] font-extrabold tracking-wide text-[#0B6E4F] uppercase shadow-sm"
+            className="mt-2 inline-block rounded-xl border border-emerald-100 bg-gradient-to-r from-emerald-50 to-emerald-50/70 px-2.5 py-1 text-[10px] font-extrabold tracking-wide text-[#0B6E4F] uppercase shadow-sm dark:border-emerald-500/20 dark:from-emerald-950/35 dark:to-emerald-900/10 dark:text-emerald-300"
           >
             {item.category
               ? t("categories." + item.category)
@@ -153,7 +153,7 @@ const MarketplaceItemCard = ({
       <div>
         {/* Price and stock row */}
         <motion.div
-          className={`flex items-center justify-between border-t border-emerald-100/40 pt-4 transition-all duration-300 ${
+          className={`flex items-center justify-between border-t border-emerald-100 dark:border-emerald-500/10 pt-4 transition-all duration-300 ${
             viewMode === "all_items" || viewMode === "redeem"
               ? "group-hover:blur-sm"
               : ""
@@ -163,7 +163,7 @@ const MarketplaceItemCard = ({
           transition={{ delay: 0.2 }}
         >
           <motion.div
-            className="flex items-center gap-1.5 rounded-xl border border-amber-100 bg-gradient-to-r from-amber-50 to-amber-50/60 px-3 py-1.5 text-xs font-black text-amber-700 shadow-sm"
+            className="flex items-center gap-1.5 rounded-xl border border-amber-200 bg-gradient-to-r from-amber-50 to-amber-50/60 px-3 py-1.5 text-xs font-black text-amber-700 shadow-sm dark:border-amber-500/20 dark:from-amber-950/30 dark:to-amber-900/10 dark:text-amber-400"
             whileHover={{ scale: 1.05 }}
           >
             <span className="coin-value font-extrabold">{item.price}</span>
@@ -179,7 +179,7 @@ const MarketplaceItemCard = ({
           <div className="backdrop-blur-3xs absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-black/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
             <button
               onClick={handleDetailsClick}
-              className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-5 py-3 text-xs font-bold text-[#0B6E4F] shadow-md transition-all hover:bg-gray-50 active:scale-95"
+              className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-emerald-250 bg-white px-5 py-3 text-xs font-bold text-[#0B6E4F] shadow-md transition-all hover:bg-emerald-50/20 active:scale-95 dark:border-emerald-500/15 dark:bg-slate-900 dark:text-emerald-400 dark:hover:bg-slate-800"
             >
               <Eye size={15} />
               {viewMode === "redeem"
@@ -191,17 +191,17 @@ const MarketplaceItemCard = ({
 
         {/* Edit/Delete Buttons for my_items */}
         {viewMode === "my_items" && (
-          <div className="mt-3.5 flex items-center justify-end gap-2.5 border-t border-gray-100 pt-3">
+          <div className="mt-3.5 flex items-center justify-end gap-2.5 border-t border-emerald-100 pt-3 dark:border-emerald-500/10">
             <button
               onClick={handleEditClick}
-              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-gray-200 bg-white text-blue-600 shadow-2xs transition-all hover:bg-gray-50 hover:text-blue-800 active:scale-90"
+              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-emerald-200 bg-white text-blue-600 shadow-2xs transition-all hover:bg-emerald-50/15 hover:text-blue-800 active:scale-90 dark:border-emerald-500/15 dark:bg-slate-900"
               aria-label="Edit item"
             >
               <Pencil size={14} />
             </button>
             <button
               onClick={handleDeleteClick}
-              className="text-red-650 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-gray-200 bg-white shadow-2xs transition-all hover:bg-gray-50 hover:text-red-800 active:scale-90"
+              className="text-red-650 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-emerald-200 bg-white shadow-2xs transition-all hover:bg-emerald-50/15 hover:text-red-800 active:scale-90 dark:border-emerald-500/15 dark:bg-slate-900"
               aria-label="Delete item"
             >
               <Trash2 size={14} />

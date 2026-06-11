@@ -1,15 +1,26 @@
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React from "react";
 
 import CoinBalance from "@/src/app/[locale]/(user)/exchange-market/components/CoinBalance";
 
-/**
- * Header component for the mission page
- */
-const MissionHeader = ({ userInfo, loading }) => {
-  const t = useTranslations("missions.header");
+interface ForumHeaderProps {
+  userCoins: number;
+  loading?: boolean;
+  title?: string;
+  subtitle?: string;
+}
+
+const ForumHeader: React.FC<ForumHeaderProps> = ({
+  userCoins,
+  loading,
+  title,
+  subtitle,
+}) => {
+  const t = useTranslations("forum");
+  const tMissions = useTranslations("missions.header");
+
   if (loading) {
     return (
       <div className="mb-8 flex animate-pulse flex-col items-center justify-between rounded-[2rem] border border-emerald-200/40 bg-gradient-to-br from-[#064E3B] via-[#0B6E4F] to-[#10B981] p-7 text-white shadow-[0_24px_70px_rgba(6,78,59,0.24)] sm:flex-row">
@@ -39,26 +50,25 @@ const MissionHeader = ({ userInfo, loading }) => {
       <div className="relative z-10 flex-1 text-center sm:text-left">
         <h1 className="mb-2 flex items-center justify-center gap-2.5 text-2xl font-extrabold tracking-tight sm:justify-start md:text-3xl">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/20 backdrop-blur-md">
-            <Sparkles className="h-5 w-5 animate-pulse text-emerald-200" />
+            <MessageSquare className="h-5 w-5 animate-pulse text-emerald-200" />
           </div>
-          {t("title")}
+          {title || t("title")}
         </h1>
         <p className="max-w-md text-sm leading-relaxed font-medium text-emerald-100/90 md:text-[0.95rem]">
-          {t("subtitle")}
+          {subtitle || t("subtitle")}
         </p>
       </div>
 
       <div className="relative z-10 flex w-full justify-center sm:w-auto">
         <div className="min-w-[220px] rounded-2xl border border-white/15 bg-white/5 p-4 shadow-inner backdrop-blur-md">
           <span className="mb-1.5 block text-center text-[10px] font-bold tracking-wider text-emerald-200/80 uppercase">
-            {t("balance")}
+            {tMissions("balance")}
           </span>
-          <CoinBalance coins={userInfo?.coins || 0} />
+          <CoinBalance coins={userCoins} />
         </div>
       </div>
     </motion.div>
   );
 };
 
-export default MissionHeader;
-
+export default ForumHeader;

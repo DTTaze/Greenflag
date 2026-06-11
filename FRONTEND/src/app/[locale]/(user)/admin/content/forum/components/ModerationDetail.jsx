@@ -6,7 +6,7 @@ import React from "react";
 function ModerationDetail({ selectedPost, formatDate, handleModerate }) {
   if (!selectedPost) {
     return (
-      <div className="rounded-lg border-2 border-dashed border-gray-100 py-20 text-center dark:border-zinc-800">
+      <div className="rounded-lg border-2 border-dashed border-emerald-200/60 py-20 text-center dark:border-emerald-500/15">
         <p className="text-xs font-medium text-gray-400 dark:text-zinc-500">
           Chọn một bài đăng bên danh sách để xem chi tiết kiểm duyệt
         </p>
@@ -20,7 +20,7 @@ function ModerationDetail({ selectedPost, formatDate, handleModerate }) {
         <img
           src={selectedPost.author?.avatarUrl || "/images/default-avatar.jpg"}
           alt="Avatar"
-          className="h-10 w-10 rounded-full border border-gray-100 object-cover dark:border-zinc-800"
+          className="h-10 w-10 rounded-full border border-emerald-100 object-cover dark:border-emerald-500/15"
         />
         <div>
           <h4 className="font-bold text-gray-900 dark:text-white">
@@ -79,7 +79,7 @@ function ModerationDetail({ selectedPost, formatDate, handleModerate }) {
             {selectedPost.images.map((img, idx) => (
               <div
                 key={idx}
-                className="relative aspect-video w-full overflow-hidden rounded-lg border border-gray-100 dark:border-zinc-800"
+                className="relative aspect-video w-full overflow-hidden rounded-lg border border-emerald-100 dark:border-emerald-500/15"
               >
                 <img
                   src={img}

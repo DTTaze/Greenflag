@@ -47,16 +47,12 @@ function ExchangeMarketContent({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.18),_transparent_34%),linear-gradient(180deg,#f0fdf4_0%,#f8fafc_42%,#ffffff_100%)] dark:bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.1),_transparent_40%),linear-gradient(180deg,#020617_0%,#0f172a_42%,#020617_100%)]">
-      <div className="pointer-events-none absolute -top-28 right-8 h-72 w-72 rounded-full bg-emerald-300/30 blur-3xl dark:bg-emerald-500/10" />
-      <div className="pointer-events-none absolute top-72 -left-32 h-80 w-80 rounded-full bg-lime-200/40 blur-3xl dark:bg-lime-500/10" />
-      <div className="pointer-events-none absolute right-0 bottom-0 h-72 w-72 rounded-full bg-teal-200/30 blur-3xl dark:bg-teal-500/10" />
-
+    <div className="relative">
       <main className="relative mx-auto max-w-screen-xl px-4 py-6 sm:px-6 lg:py-8">
         <CatalogHeader userCoins={user?.coins?.amount || 0} />
         <MarketViewNavigation />
 
-        <section className="relative overflow-hidden rounded-[1.75rem] border border-white/70 bg-white/85 p-4 shadow-[0_24px_70px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-5 lg:p-6 dark:border-slate-800/70 dark:bg-slate-900/80 dark:shadow-[0_24px_70px_rgba(0,0,0,0.3)]">
+        <section className="relative overflow-hidden rounded-[1.75rem] border border-emerald-200/50 bg-white/85 p-4 shadow-[0_24px_70px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-5 lg:p-6 dark:border-emerald-500/20 dark:bg-slate-900/80 dark:shadow-[0_24px_70px_rgba(0,0,0,0.3)]">
           <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-emerald-300/70 to-transparent dark:via-emerald-500/40" />
 
           {error && (

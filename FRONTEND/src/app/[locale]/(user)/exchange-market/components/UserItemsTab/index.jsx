@@ -79,7 +79,7 @@ function UserItemsTab({ fetchItems }) {
       </div>
 
       {/* Controls Container */}
-      <div className="flex flex-col gap-4 rounded-2xl border border-slate-800/85 bg-slate-900/40 p-5 shadow-xl backdrop-blur-md">
+      <div className="flex flex-col gap-4 rounded-2xl border border-emerald-250/50 bg-white p-5 shadow-xl backdrop-blur-md dark:border-emerald-500/15 dark:bg-slate-900/40">
         <MarketSearchBar
           marketSearchText={marketSearchText}
           setMarketSearchText={setMarketSearchText}

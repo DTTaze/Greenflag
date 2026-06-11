@@ -46,7 +46,7 @@ const ShippingInfoModal = forwardRef(({ isOpen, onClose, onSelect }, ref) => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="relative w-full max-w-md overflow-hidden rounded-2xl border border-slate-800/85 bg-slate-900/95 shadow-2xl"
+            className="relative w-full max-w-md overflow-hidden rounded-2xl border border-emerald-250 bg-white shadow-2xl dark:border-emerald-500/15 dark:bg-slate-900/95"
           >
             {/* Decorative Glow */}
             <div className="absolute -top-20 -left-20 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl" />
@@ -70,9 +70,9 @@ const ShippingInfoModal = forwardRef(({ isOpen, onClose, onSelect }, ref) => {
             <div className="relative max-h-[50vh] space-y-3 overflow-y-auto p-6">
               {isLoading ? (
                 <div className="animate-pulse space-y-3">
-                  <div className="bg-slate-850/50 h-24 rounded-lg border border-slate-800/50"></div>
-                  <div className="bg-slate-850/50 h-24 rounded-lg border border-slate-800/50"></div>
-                  <div className="bg-slate-850/50 h-24 rounded-lg border border-slate-800/50"></div>
+                  <div className="h-24 rounded-lg border border-emerald-200/50 bg-slate-50/50 dark:border-emerald-500/10 dark:bg-slate-900/30"></div>
+                  <div className="h-24 rounded-lg border border-emerald-200/50 bg-slate-50/50 dark:border-emerald-500/10 dark:bg-slate-900/30"></div>
+                  <div className="h-24 rounded-lg border border-emerald-200/50 bg-slate-50/50 dark:border-emerald-500/10 dark:bg-slate-900/30"></div>
                 </div>
               ) : shippingOptions.length === 0 ? (
                 <p className="py-6 text-center text-sm text-slate-400">
@@ -84,10 +84,10 @@ const ShippingInfoModal = forwardRef(({ isOpen, onClose, onSelect }, ref) => {
                     <button
                       key={option.id}
                       onClick={() => handleSelect(option)}
-                      className="w-full rounded-xl border border-slate-800 bg-slate-950/40 p-4 text-left transition duration-200 hover:border-slate-700 hover:bg-slate-950/60"
+                      className="w-full rounded-xl border border-emerald-200/50 bg-white p-4 text-left transition duration-200 hover:border-emerald-450 hover:bg-emerald-50/10 dark:border-emerald-500/15 dark:bg-slate-950/40 dark:hover:border-emerald-500/25 dark:hover:bg-slate-900/60"
                     >
                       <div className="flex items-center justify-between">
-                        <p className="font-semibold text-white">
+                        <p className="font-semibold text-slate-850 dark:text-white">
                           {option.to_name}
                         </p>
                         {option.is_default && (
@@ -97,10 +97,10 @@ const ShippingInfoModal = forwardRef(({ isOpen, onClose, onSelect }, ref) => {
                           </span>
                         )}
                       </div>
-                      <p className="mt-2 text-xs leading-relaxed text-slate-300">
+                      <p className="mt-2 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
                         {option.to_address}
                       </p>
-                      <p className="mt-0.5 text-xs text-slate-400">
+                      <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                         {option.to_ward_name}, {option.to_district_name},{" "}
                         {option.to_province_name}
                       </p>
@@ -120,10 +120,10 @@ const ShippingInfoModal = forwardRef(({ isOpen, onClose, onSelect }, ref) => {
             </div>
 
             {/* Footer */}
-            <div className="relative border-t border-slate-800/60 p-6">
+            <div className="relative border-t border-emerald-100 p-6 dark:border-emerald-500/10">
               <button
                 onClick={onClose}
-                className="w-full rounded-lg border border-slate-800 bg-slate-950/80 py-2.5 text-sm font-medium text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white"
+                className="w-full rounded-lg border border-emerald-200 bg-white py-2.5 text-sm font-medium text-slate-700 transition-all duration-200 hover:bg-emerald-50/30 dark:border-emerald-500/15 dark:bg-slate-950/80 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
               >
                 {t("common.cancel")}
               </button>

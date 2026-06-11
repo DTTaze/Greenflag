@@ -84,7 +84,7 @@ export default function OrderForm({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
-      <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-gray-100 bg-white p-6 shadow-lg sm:max-w-[700px]">
+      <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-emerald-200 bg-white p-6 shadow-lg sm:max-w-[700px] dark:border-emerald-500/15 dark:bg-slate-900">
         <DialogHeader className="mb-4">
           <DialogTitle className="text-lg font-bold text-gray-900">
             {mode === "add" ? "Thêm đơn hàng mới" : "Chỉnh sửa đơn hàng"}
@@ -94,7 +94,7 @@ export default function OrderForm({
         <form onSubmit={onSubmit} className="space-y-6">
           {/* Section 1: Order Info */}
           <div className="space-y-4">
-            <h4 className="border-b pb-1 text-sm font-semibold text-emerald-700">
+            <h4 className="border-b border-emerald-100 pb-1 text-sm font-semibold text-emerald-700 dark:border-emerald-500/10">
               Thông tin đơn hàng
             </h4>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -105,7 +105,7 @@ export default function OrderForm({
                   name="order_code"
                   value={formData.order_code}
                   disabled
-                  className="border-gray-200 bg-gray-50"
+                  className="border-emerald-200/60 bg-gray-50/50 dark:border-emerald-500/15 dark:bg-slate-800/50"
                 />
               </div>
 
@@ -116,7 +116,7 @@ export default function OrderForm({
                   name="shipping_order_status"
                   value={formData.shipping_order_status}
                   onChange={handleChange}
-                  className="h-8 w-full rounded-lg border border-gray-200 bg-transparent px-2.5 py-1 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+                  className="h-8 w-full rounded-lg border border-emerald-200 bg-transparent px-2.5 py-1 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-emerald-500/15 dark:bg-slate-800"
                 >
                   <option value="ready_to_pick">Sẵn sàng lấy hàng</option>
                   <option value="picking">Đang lấy hàng</option>
@@ -137,7 +137,7 @@ export default function OrderForm({
                   name="shipping_fee"
                   value={formData.shipping_fee}
                   disabled
-                  className="border-gray-200 bg-gray-50"
+                  className="border-emerald-200/60 bg-gray-50/50 dark:border-emerald-500/15 dark:bg-slate-800/50"
                 />
               </div>
               <div className="flex flex-col gap-1.5">
@@ -147,7 +147,7 @@ export default function OrderForm({
                   name="service_fee"
                   value={formData.service_fee}
                   disabled
-                  className="border-gray-200 bg-gray-50"
+                  className="border-emerald-200/60 bg-gray-50/50 dark:border-emerald-500/15 dark:bg-slate-800/50"
                 />
               </div>
               <div className="flex flex-col gap-1.5">
@@ -157,7 +157,7 @@ export default function OrderForm({
                   name="insurance_fee"
                   value={formData.insurance_fee}
                   disabled
-                  className="border-gray-200 bg-gray-50"
+                  className="border-emerald-200/60 bg-gray-50/50 dark:border-emerald-500/15 dark:bg-slate-800/50"
                 />
               </div>
               <div className="flex flex-col gap-1.5">
@@ -167,7 +167,7 @@ export default function OrderForm({
                   name="total_fee"
                   value={formData.total_fee}
                   disabled
-                  className="border-gray-200 bg-gray-50 font-semibold"
+                  className="border-emerald-200/60 bg-gray-50/50 dark:border-emerald-500/15 dark:bg-slate-800/50 font-semibold"
                 />
               </div>
             </div>
@@ -175,7 +175,7 @@ export default function OrderForm({
 
           {/* Section 2: Buyer Info */}
           <div className="space-y-4">
-            <h4 className="border-b pb-1 text-sm font-semibold text-emerald-700">
+            <h4 className="border-b border-emerald-100 pb-1 text-sm font-semibold text-emerald-700 dark:border-emerald-500/10">
               Thông tin người mua
             </h4>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -186,7 +186,7 @@ export default function OrderForm({
                   name="buyer_name"
                   value={formData.buyer_name}
                   disabled
-                  className="border-gray-200 bg-gray-50"
+                  className="border-emerald-200/60 bg-gray-50/50 dark:border-emerald-500/15 dark:bg-slate-800/50"
                 />
               </div>
               <div className="flex flex-col gap-1.5">
@@ -196,7 +196,7 @@ export default function OrderForm({
                   name="buyer_phone"
                   value={formData.buyer_phone}
                   disabled
-                  className="border-gray-200 bg-gray-50"
+                  className="border-emerald-200/60 bg-gray-50/50 dark:border-emerald-500/15 dark:bg-slate-800/50"
                 />
               </div>
             </div>
@@ -208,14 +208,14 @@ export default function OrderForm({
                 value={formData.buyer_address}
                 disabled
                 rows={2}
-                className="w-full cursor-not-allowed resize-none rounded-lg border border-gray-200 bg-gray-50 p-2.5 text-sm focus:outline-none"
+                className="w-full cursor-not-allowed resize-none rounded-lg border border-emerald-200 bg-gray-50/50 p-2.5 text-sm focus:outline-none dark:border-emerald-500/15 dark:bg-slate-800/50"
               />
             </div>
           </div>
 
           {/* Section 3: Seller Info */}
           <div className="space-y-4">
-            <h4 className="border-b pb-1 text-sm font-semibold text-emerald-700">
+            <h4 className="border-b border-emerald-100 pb-1 text-sm font-semibold text-emerald-700 dark:border-emerald-500/10">
               Thông tin người bán
             </h4>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -226,7 +226,7 @@ export default function OrderForm({
                   name="seller_name"
                   value={formData.seller_name}
                   disabled
-                  className="border-gray-200 bg-gray-50"
+                  className="border-emerald-200/60 bg-gray-50/50 dark:border-emerald-500/15 dark:bg-slate-800/50"
                 />
               </div>
               <div className="flex flex-col gap-1.5">
@@ -236,7 +236,7 @@ export default function OrderForm({
                   name="seller_phone"
                   value={formData.seller_phone}
                   disabled
-                  className="border-gray-200 bg-gray-50"
+                  className="border-emerald-200/60 bg-gray-50/50 dark:border-emerald-500/15 dark:bg-slate-800/50"
                 />
               </div>
             </div>
@@ -248,14 +248,14 @@ export default function OrderForm({
                 value={formData.seller_address}
                 disabled
                 rows={2}
-                className="w-full cursor-not-allowed resize-none rounded-lg border border-gray-200 bg-gray-50 p-2.5 text-sm focus:outline-none"
+                className="w-full cursor-not-allowed resize-none rounded-lg border border-emerald-200 bg-gray-50/50 p-2.5 text-sm focus:outline-none dark:border-emerald-500/15 dark:bg-slate-800/50"
               />
             </div>
           </div>
 
           {/* Section 4: Notes */}
           <div className="space-y-4">
-            <h4 className="border-b pb-1 text-sm font-semibold text-emerald-700">
+            <h4 className="border-b border-emerald-100 pb-1 text-sm font-semibold text-emerald-700 dark:border-emerald-500/10">
               Ghi chú thêm
             </h4>
             <div className="flex flex-col gap-1.5">
@@ -267,12 +267,12 @@ export default function OrderForm({
                 onChange={handleChange}
                 rows={3}
                 placeholder="Ghi chú đơn hàng cho shipper hoặc hệ thống..."
-                className="w-full resize-none rounded-lg border border-gray-200 bg-transparent p-2.5 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+                className="w-full resize-none rounded-lg border border-emerald-200 bg-transparent p-2.5 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-emerald-500/15 dark:bg-slate-800"
               />
             </div>
           </div>
 
-          <DialogFooter className="mt-6 border-t pt-4">
+          <DialogFooter className="mt-6 border-t border-emerald-100 pt-4 dark:border-emerald-500/10">
             <Button
               type="button"
               variant="outline"

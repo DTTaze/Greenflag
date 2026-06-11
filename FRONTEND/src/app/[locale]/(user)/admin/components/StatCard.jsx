@@ -11,7 +11,7 @@ export default function StatCard({
 }) {
   return (
     <div
-      className={`relative flex h-40 flex-col justify-between rounded-xl border border-gray-100 bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-950 ${bgClassName}`}
+      className={`relative flex h-40 flex-col justify-between rounded-xl border border-emerald-250 bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-md dark:border-emerald-500/20 dark:bg-slate-950 ${bgClassName}`}
     >
       {/* Top action button */}
       <div className="absolute top-3 right-3">

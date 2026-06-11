@@ -21,7 +21,7 @@ function HistoryTabs({
 }) {
   if (activeTab === "all-activity") {
     return (
-      <div className="relative ml-3 space-y-6 border-l border-gray-100 py-2 pl-6">
+      <div className="relative ml-3 space-y-6 border-l border-emerald-250/60 py-2 pl-6 dark:border-emerald-500/15">
         {activityLogs.map((act) => (
           <div key={act.id} className="relative">
             <div
@@ -57,7 +57,7 @@ function HistoryTabs({
 
   if (activeTab === "coins") {
     return (
-      <div className="divide-y divide-gray-50">
+      <div className="divide-y divide-emerald-100/50 dark:divide-emerald-500/10">
         {coinLogs.map((log) => (
           <div
             key={log.id}
@@ -104,7 +104,7 @@ function HistoryTabs({
     return (
       <Table className="text-xs">
         <TableHeader>
-          <TableRow className="border-b border-gray-100 font-semibold text-gray-400 hover:bg-transparent">
+          <TableRow className="border-b border-emerald-100/70 font-semibold text-gray-400 hover:bg-transparent dark:border-emerald-500/10">
             <TableHead className="h-auto px-2 py-3 text-gray-400">
               Thời gian
             </TableHead>
@@ -122,7 +122,7 @@ function HistoryTabs({
             </TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody className="divide-y divide-gray-50 font-medium text-gray-600">
+        <TableBody className="divide-y divide-emerald-100/50 font-medium text-gray-600 dark:divide-emerald-500/10">
           {transactions.length > 0 ? (
             transactions.map((tr) => (
               <TableRow

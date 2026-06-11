@@ -15,7 +15,7 @@ export default function PartnerProfilePage() {
     address: "",
     description: "",
   });
-  const [files, setFiles] = React.useState([]);
+  const [files, setFiles] = React.useState<File[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
   const [message, setMessage] = React.useState("");
@@ -47,12 +47,12 @@ export default function PartnerProfilePage() {
     };
   }, []);
 
-  const onFileChange = (e) => {
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const list = Array.from(e.target.files || []);
     setFiles((prev) => [...prev, ...list]);
   };
 
-  const removeFile = (idx) => setFiles((s) => s.filter((_, i) => i !== idx));
+  const removeFile = (idx: number) => setFiles((s) => s.filter((_, i) => i !== idx));
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();

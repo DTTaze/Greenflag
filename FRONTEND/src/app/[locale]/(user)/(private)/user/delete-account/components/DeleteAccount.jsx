@@ -46,17 +46,17 @@ function DeleteAccount() {
 
   if (isSubmitted) {
     return (
-      <div className="rounded-lg border bg-white p-4 shadow-md">
-        <h4 className="text-lg font-semibold">Xóa tài khoản</h4>
-        <hr className="my-2 border-gray-300" />
+      <div className="transform overflow-hidden rounded-3xl border border-emerald-200/60 bg-white p-6 shadow-xl transition-all duration-300 dark:border-emerald-500/15 dark:bg-zinc-950">
+        <h4 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Xóa tài khoản</h4>
+        <hr className="my-4 border-emerald-100 dark:border-emerald-500/10" />
         <div className="py-8 text-center">
-          <p className="text-lg text-gray-700">
+          <p className="text-lg text-zinc-700 dark:text-zinc-300">
             Yêu cầu xóa tài khoản của bạn đã được gửi.
           </p>
-          <p className="text-lg text-gray-700">
+          <p className="text-lg text-zinc-700 dark:text-zinc-300">
             Tài khoản sẽ được xóa sau 15 ngày.
           </p>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
             Bạn có thể hủy yêu cầu này trong vòng 15 ngày bằng cách liên hệ hỗ
             trợ.
           </p>
@@ -66,15 +66,15 @@ function DeleteAccount() {
   }
 
   return (
-    <div className="rounded-lg border bg-white p-4 shadow-md">
-      <h4 className="text-lg font-semibold">Xóa tài khoản</h4>
-      <hr className="my-2 border-gray-300" />
+    <div className="transform overflow-hidden rounded-3xl border border-emerald-200/60 bg-white p-6 shadow-xl transition-all duration-300 dark:border-emerald-500/15 dark:bg-zinc-950">
+      <h4 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Xóa tài khoản</h4>
+      <hr className="my-4 border-emerald-100 dark:border-emerald-500/10" />
       <div className="my-4">
-        <p className="text-gray-700">
+        <p className="text-zinc-700 dark:text-zinc-300">
           Việc xóa tài khoản là không thể hoàn tác. Tài khoản của bạn sẽ được
           xóa sau 15 ngày kể từ khi yêu cầu được xác nhận.
         </p>
-        <p className="mt-2 text-gray-700">
+        <p className="mt-2 text-zinc-700 dark:text-zinc-300">
           Vui lòng nhập mật khẩu để xác nhận.
         </p>
       </div>

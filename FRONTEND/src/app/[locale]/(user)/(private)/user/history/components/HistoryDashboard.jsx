@@ -99,7 +99,7 @@ function HistoryDashboard() {
 
   if (loading) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-xl border border-gray-100 bg-white shadow-sm">
+      <div className="flex h-64 items-center justify-center rounded-xl border border-emerald-200/60 bg-white shadow-sm dark:border-emerald-500/15 dark:bg-zinc-900/40">
         <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
       </div>
     );
@@ -111,24 +111,24 @@ function HistoryDashboard() {
   const eventsCount = events.length || 1; // Fallback to 1 mock if empty
 
   return (
-    <div className="space-y-6 rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+    <div className="space-y-6 rounded-3xl border border-emerald-200/60 bg-white p-6 shadow-xl dark:border-emerald-500/15 dark:bg-zinc-950 transition-all duration-300">
       {/* Header */}
-      <div className="flex flex-col items-start justify-between gap-4 border-b border-gray-100 pb-5 sm:flex-row sm:items-center">
+      <div className="flex flex-col items-start justify-between gap-4 border-b border-emerald-100 pb-5 sm:flex-row sm:items-center dark:border-emerald-500/10">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">
+          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
             Nhật ký hoạt động xanh
           </h2>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">
             Xem lại hành trình bảo vệ môi trường và lịch sử tích lũy xu của bạn
           </p>
         </div>
-        <div className="flex items-center gap-2.5 rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-2 shadow-2xs">
+        <div className="flex items-center gap-2.5 rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-2 shadow-2xs dark:border-emerald-500/20 dark:bg-emerald-950/20">
           <Coins className="h-5 w-5 fill-amber-400 text-amber-500" />
           <div>
-            <span className="block text-xs leading-none font-semibold text-emerald-700">
+            <span className="block text-xs leading-none font-semibold text-emerald-700 dark:text-emerald-400">
               Ví xu tích lũy
             </span>
-            <span className="text-lg font-black text-[#0B6E4F]">
+            <span className="text-lg font-black text-[#0B6E4F] dark:text-emerald-400">
               {user?.coins?.amount || 0} xu
             </span>
           </div>
@@ -143,7 +143,7 @@ function HistoryDashboard() {
       />
 
       {/* Tabs list */}
-      <div className="flex gap-4 border-b border-gray-100">
+      <div className="flex gap-4 border-b border-emerald-100 dark:border-emerald-500/10">
         {[
           { id: "all-activity", label: "Tất cả hoạt động" },
           { id: "coins", label: "Lịch sử tích lũy xu" },
@@ -154,8 +154,8 @@ function HistoryDashboard() {
             onClick={() => setActiveTab(tab.id)}
             className={`cursor-pointer border-b-2 pb-3 text-xs font-semibold tracking-wide transition-all ${
               activeTab === tab.id
-                ? "border-[#0B6E4F] text-[#0B6E4F]"
-                : "border-transparent text-gray-500 hover:text-gray-900"
+                ? "border-[#0B6E4F] text-[#0B6E4F] dark:border-emerald-400 dark:text-emerald-400"
+                : "border-transparent text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
             }`}
           >
             {tab.label}

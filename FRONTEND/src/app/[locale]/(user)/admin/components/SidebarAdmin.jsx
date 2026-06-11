@@ -170,12 +170,12 @@ export default function TemporaryDrawer({ userInfo }) {
 
       {/* Drawer Content */}
       <div
-        className={`fixed top-0 left-0 z-50 flex h-full w-[280px] transform flex-col border-r border-gray-100 bg-white shadow-2xl transition-transform duration-300 ease-in-out dark:border-zinc-800 dark:bg-zinc-900 ${
+        className={`fixed top-0 left-0 z-50 flex h-full w-[280px] transform flex-col border-r border-emerald-100 bg-white shadow-2xl transition-transform duration-300 ease-in-out dark:border-emerald-500/15 dark:bg-zinc-900 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-100 bg-emerald-50/20 p-4 dark:border-zinc-800 dark:bg-zinc-950/10">
+        <div className="flex items-center justify-between border-b border-emerald-100 bg-emerald-50/20 p-4 dark:border-emerald-500/15 dark:bg-zinc-950/10">
           <span className="text-md font-bold text-[var(--primary-green)] dark:text-[var(--secondary-green)]">
             {t("title")}
           </span>
@@ -193,10 +193,10 @@ export default function TemporaryDrawer({ userInfo }) {
 
         {/* User Info Section */}
         {userInfo && userInfo.id !== 0 && (
-          <div className="flex items-center gap-3 border-b border-gray-100 bg-gray-50/30 p-4 dark:border-zinc-800 dark:bg-zinc-950/20">
+          <div className="flex items-center gap-3 border-b border-emerald-100 bg-gray-50/30 p-4 dark:border-emerald-500/15 dark:bg-zinc-950/20">
             {userInfo.avatar_url ? (
               <img
-                className="h-10 w-10 rounded-full border border-[var(--light-green)] object-cover dark:border-zinc-700"
+                className="h-10 w-10 rounded-full border border-[var(--light-green)] object-cover dark:border-emerald-500/15"
                 src={userInfo.avatar_url}
                 alt={userInfo.username || "Admin avatar"}
               />
@@ -258,7 +258,7 @@ export default function TemporaryDrawer({ userInfo }) {
         </div>
 
         {/* Footer Actions */}
-        <div className="border-t border-gray-100 bg-gray-50/30 p-3 dark:border-zinc-800 dark:bg-zinc-950/20">
+        <div className="border-t border-emerald-100 bg-gray-50/30 p-3 dark:border-emerald-500/15 dark:bg-zinc-950/20">
           <Link
             href="/user"
             onClick={() => setOpen(false)}

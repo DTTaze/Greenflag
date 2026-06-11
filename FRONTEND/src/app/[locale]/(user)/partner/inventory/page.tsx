@@ -8,7 +8,7 @@ import { commerceServices } from "@/src/services/commerce";
 import { UserService } from "@/src/services/user";
 
 export default function PartnerInventoryPage() {
-  const [items, setItems] = React.useState([]);
+  const [items, setItems] = React.useState<any[]>([]);
   const [form, setForm] = React.useState({ name: "", stock: 0, points: 0 });
   const [loading, setLoading] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
@@ -22,7 +22,7 @@ export default function PartnerInventoryPage() {
       const res = await commerceServices.getAllItems();
       const data = res || [];
       const myItems = userId
-        ? data.filter((it) => it.creator?.id === userId)
+        ? data.filter((it: any) => it.creator?.id === userId)
         : data;
       setItems(myItems);
     } catch (err) {
@@ -44,14 +44,16 @@ export default function PartnerInventoryPage() {
         console.error(err);
       }
     })();
-    return () => (mounted = false);
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   React.useEffect(() => {
     if (userId !== null) loadItems();
   }, [userId]);
 
-  async function handleAdd(e) {
+  async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
     setError("");
@@ -65,7 +67,11 @@ export default function PartnerInventoryPage() {
       await commerceServices.partnerCreateItem({
         name: form.name,
         stock: Number(form.stock),
-        points: Number(form.points),
+        price: Number(form.points),
+        weight: 100,
+        length: 10,
+        width: 10,
+        height: 10,
       });
       setForm({ name: "", stock: 0, points: 0 });
       await loadItems();
@@ -77,7 +83,7 @@ export default function PartnerInventoryPage() {
     }
   }
 
-  async function handleDelete(id) {
+  async function handleDelete(id: any) {
     try {
       await commerceServices.partnerDeleteItem(id);
       await loadItems();
@@ -235,7 +241,7 @@ export default function PartnerInventoryPage() {
                       {item.name}
                     </h3>
                     <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                      {item.points} pts • Tồn kho {item.stock}
+                      {item.price} pts • Tồn kho {item.stock}
                     </p>
                   </div>
                   <div className="flex gap-3">

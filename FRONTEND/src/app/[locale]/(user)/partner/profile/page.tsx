@@ -8,14 +8,14 @@ import mediaServices from "@/src/services/media";
 import { UserService } from "@/src/services/user";
 
 export default function PartnerProfilePage() {
-  const [profile, setProfile] = React.useState(null);
+  const [profile, setProfile] = React.useState<any>(null);
   const [partnerMeta, setPartnerMeta] = React.useState({
     organization: "",
     contactName: "",
     address: "",
     description: "",
   });
-  const [files, setFiles] = React.useState([]);
+  const [files, setFiles] = React.useState<File[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
   const [message, setMessage] = React.useState("");
@@ -42,17 +42,19 @@ export default function PartnerProfilePage() {
     }
 
     load();
-    return () => (mounted = false);
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  const onFileChange = (e) => {
-    const list = Array.from(e.target.files || []);
+  const onFileChange = (e: any) => {
+    const list = Array.from(e.target.files || []) as File[];
     setFiles((prev) => [...prev, ...list]);
   };
 
-  const removeFile = (idx) => setFiles((s) => s.filter((_, i) => i !== idx));
+  const removeFile = (idx: number) => setFiles((s) => s.filter((_, i) => i !== idx));
 
-  async function handleSave(e) {
+  async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     if (!profile) return;
     setSaving(true);
@@ -140,7 +142,7 @@ export default function PartnerProfilePage() {
                 <input
                   value={profile?.full_name || ""}
                   onChange={(e) =>
-                    setProfile((p) => ({ ...p, full_name: e.target.value }))
+                    setProfile((p: any) => ({ ...p, full_name: e.target.value }))
                   }
                   className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 transition outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100"
                 />
@@ -150,7 +152,7 @@ export default function PartnerProfilePage() {
                 <input
                   value={profile?.email || ""}
                   onChange={(e) =>
-                    setProfile((p) => ({ ...p, email: e.target.value }))
+                    setProfile((p: any) => ({ ...p, email: e.target.value }))
                   }
                   className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 transition outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100"
                 />
@@ -160,7 +162,7 @@ export default function PartnerProfilePage() {
                 <input
                   value={profile?.phone_number || ""}
                   onChange={(e) =>
-                    setProfile((p) => ({ ...p, phone_number: e.target.value }))
+                    setProfile((p: any) => ({ ...p, phone_number: e.target.value }))
                   }
                   className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 transition outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100"
                 />

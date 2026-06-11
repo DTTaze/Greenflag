@@ -6,6 +6,7 @@ import {
   Get,
   Param,
   Put,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -32,6 +33,12 @@ export class UserController {
     private readonly taskService: TaskService,
     private readonly transactionService: TransactionService,
   ) {}
+
+  @Get('search')
+  @UseGuards(AuthGuard)
+  async searchUsers(@Query('q') q: string): Promise<HttpResponse> {
+    return this.userService.searchUsers(q);
+  }
 
   @Get('me')
   @UseGuards(AuthGuard)

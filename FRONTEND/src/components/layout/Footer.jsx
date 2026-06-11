@@ -28,7 +28,7 @@ function Footer() {
     { label: tMenu("home"), href: "/" },
     { label: tMenu("missions"), href: "/missions" },
     { label: tMenu("exchange"), href: "/exchange-market" },
-    { label: tMenu("community"), href: "/community" },
+    { label: tMenu("forum"), href: "/forum" },
   ];
 
   return (

@@ -57,13 +57,13 @@ export class SystemConfigService
       },
       {
         key: SYSTEM_CONFIG_KEY.AI_MODERATION_POST_ROLES,
-        value: JSON.stringify(['FARMER']),
+        value: JSON.stringify(['USER']),
         description:
           'Danh sách các vai trò cần được AI lọc và kiểm duyệt trước khi đăng bài viết (JSON array)',
       },
       {
         key: SYSTEM_CONFIG_KEY.AI_MODERATION_COMMENT_ROLES,
-        value: JSON.stringify(['FARMER']),
+        value: JSON.stringify(['USER']),
         description:
           'Danh sách các vai trò cần được AI lọc và kiểm duyệt trước khi bình luận (JSON array)',
       },

@@ -234,3 +234,53 @@ Table system_configs {
   updated_at datetime [not null]
 }
 
+Table posts {
+  id uuid [pk]
+  event_id uuid [ref: > events.id]
+  author_id uuid [ref: > users.id, not null]
+  content text [not null]
+  images jsonb
+  tags jsonb
+  upvotes int [not null, default: 0]
+  downvotes int [not null, default: 0]
+  comment_count int [not null, default: 0]
+  score int [not null, default: 0]
+  status varchar(255) [not null, default: 'pending']
+  rejected_by varchar(20)
+  category varchar(255)
+  flagged_reason text
+  is_admin_post boolean [not null, default: false]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table post_votes {
+  id uuid [pk]
+  post_id uuid [ref: > posts.id, not null]
+  user_id uuid [ref: > users.id, not null]
+  type varchar(10) [not null]
+}
+
+Table comments {
+  id uuid [pk]
+  post_id uuid [ref: > posts.id, not null]
+  author_id uuid [ref: > users.id, not null]
+  parent_id uuid [ref: > comments.id]
+  content text [not null]
+  upvotes int [not null, default: 0]
+  downvotes int [not null, default: 0]
+  image_url varchar(255)
+  status varchar(255) [not null, default: 'approved']
+  rejected_by varchar(20)
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table comment_votes {
+  id uuid [pk]
+  comment_id uuid [ref: > comments.id, not null]
+  user_id uuid [ref: > users.id, not null]
+  type varchar(10) [not null]
+}
+
+

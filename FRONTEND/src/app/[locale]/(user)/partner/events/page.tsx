@@ -9,7 +9,7 @@ import { Button } from "@/src/components/ui/button";
 
 export default function PartnerEventsPage() {
   const [eventName, setEventName] = React.useState("");
-  const [qrSrc, setQrSrc] = React.useState(null);
+  const [qrSrc, setQrSrc] = React.useState<string | null>(null);
   const [generating, setGenerating] = React.useState(false);
   const [error, setError] = React.useState("");
   const t = useTranslations("partner");

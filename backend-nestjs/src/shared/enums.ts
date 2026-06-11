@@ -158,7 +158,7 @@ export enum PARTNER_AUTH_TYPE {
 }
 
 export enum SOCIAL_PROVIDER {
-  GOOGLE = 'google',
+  GOOGLE = 'GOOGLE',
 }
 
 export enum VERIFY_OTP_ACTION {
@@ -169,4 +169,18 @@ export enum VERIFY_OTP_ACTION {
 export enum EMAIL_TEMPLATE {
   EMAIL_VERIFICATION = 'email_verification',
   EMAIL_RESET_PASSWORD = 'email_reset_password',
+}
+
+export enum FORUM_POST_STATUS {
+  DRAFT = 'draft',
+  PENDING = 'pending',
+  APPROVED = 'approved',
+  REJECTED = 'rejected',
+  EXPIRED = 'expired',
+}
+
+export enum FORUM_VOTE_TYPE {
+  UP = 'up',
+  DOWN = 'down',
+  NONE = 'none',
 }

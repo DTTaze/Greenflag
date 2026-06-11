@@ -20,6 +20,9 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1065.0",
+    "@langchain/core": "^1.1.48",
+    "@langchain/groq": "^1.2.1",
     "@nestjs/axios": "^3.0.2",
     "@nestjs/bullmq": "^11.0.4",
     "@nestjs/cache-manager": "^3.1.2",

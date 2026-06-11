@@ -170,20 +170,20 @@ export class CommentService {
       .createQueryBuilder('comment')
       .leftJoinAndSelect('comment.author', 'author')
       .leftJoinAndSelect('author.profile', 'profile')
-      .where('comment.post_id = :postId', { postId })
-      .andWhere('comment.parent_id IS NULL')
+      .where('comment.postId = :postId', { postId })
+      .andWhere('comment.parentId IS NULL')
       .andWhere('comment.status = :approvedStatus', {
         approvedStatus: FORUM_POST_STATUS.APPROVED,
       });
 
     if (query.cursor) {
       const cursorCreatedAt = new Date(query.cursor);
-      queryBuilder.andWhere('comment.created_at > :cursorCreatedAt', {
+      queryBuilder.andWhere('comment.createdAt > :cursorCreatedAt', {
         cursorCreatedAt,
       });
     }
 
-    queryBuilder.orderBy('comment.created_at', 'ASC');
+    queryBuilder.orderBy('comment.createdAt', 'ASC');
     queryBuilder.take(limit + 1);
 
     if (currentUserId) {
@@ -237,11 +237,11 @@ export class CommentService {
       .createQueryBuilder('reply')
       .leftJoinAndSelect('reply.author', 'author')
       .leftJoinAndSelect('author.profile', 'profile')
-      .where('reply.parent_id = :parentId', { parentId: parentComment.id })
+      .where('reply.parentId = :parentId', { parentId: parentComment.id })
       .andWhere('reply.status = :approvedStatus', {
         approvedStatus: FORUM_POST_STATUS.APPROVED,
       })
-      .orderBy('reply.created_at', 'ASC');
+      .orderBy('reply.createdAt', 'ASC');
 
     if (currentUserId) {
       repliesQuery

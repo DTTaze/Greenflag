@@ -134,7 +134,7 @@ const MarketplaceItemCard = ({
             {item.category
               ? t("categories." + item.category)
               : t("categories.unknown")}
-          </span>
+          </motion.span>
           <p className="mt-3 line-clamp-2 min-h-[32px] text-xs leading-relaxed font-medium text-slate-600 dark:text-zinc-400">
             {item.description}
           </p>
@@ -144,62 +144,58 @@ const MarketplaceItemCard = ({
       <div className={`p-5 ${(viewMode === "all_items" || viewMode === "redeem") ? "pb-14" : ""}`}>
         {/* Price and stock row */}
         <motion.div
-          className={`flex items-center justify-between border-t border-emerald-100 dark:border-emerald-500/10 pt-4 transition-all duration-300 ${
-            viewMode === "all_items" || viewMode === "redeem"
-              ? "group-hover:blur-sm"
-              : ""
-          } ${showPurchaseModal || showDetailsModal ? "blur-sm" : ""}`}
+          className={`flex items-center justify-between border-t border-emerald-100 dark:border-emerald-500/10 pt-4 transition-all duration-300 ${viewMode === "all_items" || viewMode === "redeem"
+            ? "group-hover:blur-xs"
+            : ""
+            } ${showPurchaseModal || showDetailsModal ? "blur-sm" : ""}`}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <motion.div
-            className="flex items-center gap-1.5 rounded-xl border border-amber-200 bg-gradient-to-r from-amber-50 to-amber-50/60 px-3 py-1.5 text-xs font-black text-amber-700 shadow-sm dark:border-amber-500/20 dark:from-amber-950/30 dark:to-amber-900/10 dark:text-amber-400"
-            whileHover={{ scale: 1.05 }}
-          >
+          <div className="flex items-center gap-1.5 rounded-xl border border-amber-200 bg-gradient-to-r from-amber-50 to-amber-50/60 px-3 py-1.5 text-xs font-black text-amber-700 shadow-sm dark:border-amber-500/20 dark:from-amber-950/30 dark:to-amber-900/10 dark:text-amber-400">
             <span className="coin-value font-extrabold">{item.price}</span>
             <Coins className="h-4 w-4 text-amber-600 dark:text-amber-400" />
           </div>
           <span className="text-[10px] font-bold tracking-wider text-slate-400 dark:text-zinc-500 uppercase">
             {t("list.remaining", { count: currentStock })}
           </span>
-        </div>
-
-        {/* Hover action slide-up button for all_items/redeem */}
-        {(viewMode === "all_items" || viewMode === "redeem") && (
-          <div className="backdrop-blur-3xs absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-black/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-            <button
-              onClick={handleDetailsClick}
-              className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-emerald-250 bg-white px-5 py-3 text-xs font-bold text-[#0B6E4F] shadow-md transition-all hover:bg-emerald-50/20 active:scale-95 dark:border-emerald-500/15 dark:bg-slate-900 dark:text-emerald-400 dark:hover:bg-slate-800"
-            >
-              <Eye size={15} />
-              {viewMode === "redeem"
-                ? t("list.redeemBtn")
-                : t("list.detailsBtn")}
-            </button>
-          </div>
-        )}
-
-        {/* Edit/Delete Buttons for my_items */}
-        {viewMode === "my_items" && (
-          <div className="mt-3.5 flex items-center justify-end gap-2.5 border-t border-emerald-100 pt-3 dark:border-emerald-500/10">
-            <button
-              onClick={handleEditClick}
-              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-emerald-200 bg-white text-blue-600 shadow-2xs transition-all hover:bg-emerald-50/15 hover:text-blue-800 active:scale-90 dark:border-emerald-500/15 dark:bg-slate-900"
-              aria-label="Edit item"
-            >
-              <Pencil size={14} />
-            </button>
-            <button
-              onClick={handleDeleteClick}
-              className="text-red-650 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-emerald-200 bg-white shadow-2xs transition-all hover:bg-emerald-50/15 hover:text-red-800 active:scale-90 dark:border-emerald-500/15 dark:bg-slate-900"
-              aria-label="Delete item"
-            >
-              <Trash2 size={14} />
-            </button>
-          </div>
-        )}
+        </motion.div>
       </div>
+
+      {/* Hover action slide-up button (Được mang ra làm con trực tiếp của motion.div cha ngoài cùng) */}
+      {(viewMode === "all_items" || viewMode === "redeem") && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100 backdrop-blur-[1px]">
+          <button
+            onClick={handleDetailsClick}
+            className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-emerald-250 bg-white px-5 py-3 text-xs font-bold text-[#0B6E4F] shadow-md transition-all hover:bg-emerald-50 active:scale-95 dark:border-emerald-500/15 dark:bg-slate-900 dark:text-emerald-400 dark:hover:bg-slate-800"
+          >
+            <Eye size={15} />
+            {viewMode === "redeem"
+              ? t("list.redeemBtn")
+              : t("list.detailsBtn")}
+          </button>
+        </div>
+      )}
+
+      {/* Edit/Delete Buttons for my_items */}
+      {viewMode === "my_items" && (
+        <div className="mx-5 mb-5 flex items-center justify-end gap-2.5 border-t border-emerald-100 pt-3 dark:border-emerald-500/10">
+          <button
+            onClick={handleEditClick}
+            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-emerald-200 bg-white text-blue-600 shadow-sm transition-all hover:bg-emerald-50/15 hover:text-blue-800 active:scale-90 dark:border-emerald-500/15 dark:bg-slate-900"
+            aria-label="Edit item"
+          >
+            <Pencil size={14} />
+          </button>
+          <button
+            onClick={handleDeleteClick}
+            className="text-red-650 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-emerald-200 bg-white shadow-sm transition-all hover:bg-emerald-50/15 hover:text-red-800 active:scale-90 dark:border-emerald-500/15 dark:bg-slate-900"
+            aria-label="Delete item"
+          >
+            <Trash2 size={14} />
+          </button>
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (

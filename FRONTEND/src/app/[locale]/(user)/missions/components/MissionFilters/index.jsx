@@ -154,7 +154,6 @@ function MissionFilters({
         </select>
       </div>
     </div>
-    </div >
   );
 }
 

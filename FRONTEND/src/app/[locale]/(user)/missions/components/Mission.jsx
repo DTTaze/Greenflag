@@ -283,7 +283,7 @@ function Mission() {
 
       {/* Task Submission Modal */}
       {selectedTask && renderTaskModal()}
-    </main>
+    </div>
   );
 }
 

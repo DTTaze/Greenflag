@@ -12,17 +12,15 @@ import {
   LayoutDashboard,
   ListPlus,
   LogOut,
-  Menu,
   MessageSquare,
   Settings,
   ShieldCheck,
   ShoppingCart,
   Truck,
   Users,
-  X,
+  X
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import React from "react";
 
 import LocaleSwitcher from "@/src/components/layout/LocaleSwitcher";
 import ThemeSwitcher from "@/src/components/layout/ThemeSwitcher";
@@ -171,8 +169,8 @@ export default function SidebarAdmin({
       )}
 
       {/* Drawer Content */}
-      <div
-        className={`fixed top-0 left-0 z-50 flex h-full w-[280px] transform flex-col border-r border-emerald-100 bg-white shadow-2xl transition-transform duration-300 ease-in-out dark:border-emerald-500/15 dark:bg-zinc-900 ${open ? "translate-x-0" : "-translate-x-full"
+      <aside
+        className={`fixed top-0 left-0 z-50 flex h-full w-[280px] transform flex-col border-r border-emerald-100 bg-white shadow-2xl transition-transform duration-300 ease-in-out dark:border-emerald-500/15 dark:bg-zinc-900 ${isOpen ? "translate-x-0" : "-translate-x-full"
           }`}
       >
         {/* Header */}
@@ -189,84 +187,86 @@ export default function SidebarAdmin({
             >
               <X size={20} />
             </button>
-          )}
           </div>
-
-          {/* User Info Section */}
-          {userInfo && userInfo.id !== 0 && (
-            <div className="flex items-center gap-3 border-b border-emerald-100 bg-gray-50/30 p-4 dark:border-emerald-500/15 dark:bg-zinc-950/20">
-              {userInfo.avatar_url ? (
-                <img
-                  className="h-10 w-10 rounded-full border border-[var(--light-green)] object-cover dark:border-emerald-500/15"
-                  src={userInfo.avatar_url}
-                  alt="Avatar"
-                />
-              ) : (
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-600 text-sm font-bold text-white dark:bg-emerald-500 min-w-[36px]">
-                  {userInfo.username ? userInfo.username.charAt(0).toUpperCase() : "A"}
-                </div>
-              )}
-              {!isCollapsed && (
-                <div className="overflow-hidden">
-                  <div className="truncate text-sm font-semibold text-gray-800 dark:text-zinc-200">
-                    {userInfo.full_name || userInfo.username}
-                  </div>
-                  <div className="truncate text-xs font-medium text-gray-500 dark:text-zinc-400">
-                    {userInfo.email}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Navigation items */}
-          <nav className="flex-1 space-y-4 overflow-y-auto py-4">
-            {menuSections.map((section) => (
-              <div key={section.labelKey} className="space-y-1">
-                {!isCollapsed && (
-                  <div className="px-4 py-1.5 text-[10px] font-bold tracking-wider text-gray-400 uppercase dark:text-zinc-500">
-                    {t(section.labelKey)}
-                  </div>
-                )}
-                <ul className="space-y-0.5">
-                  {section.items.map((item) => {
-                    const selected = pathname === item.path || (item.path !== "/admin" && pathname.startsWith(item.path));
-                    return (
-                      <li key={item.textKey}>
-                        <button
-                          onClick={() => handleNavigation(item.path)}
-                          className={`flex w-full items-center gap-3.5 py-2.5 transition-all duration-200 ${isCollapsed ? "justify-center px-0" : "px-4"
-                            } ${selected
-                              ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 font-semibold"
-                              : "text-gray-650 hover:bg-gray-50 hover:text-gray-950 dark:text-zinc-400 dark:hover:bg-zinc-900/50 dark:hover:text-zinc-100"
-                            }`}
-                          title={isCollapsed ? t(item.textKey) : undefined}
-                        >
-                          <span
-                            className={`transition-colors ${selected
-                                ? "text-emerald-600 dark:text-emerald-400"
-                                : "text-gray-400 dark:text-zinc-500"
-                              }`}
-                          >
-                            {item.icon}
-                          </span>
-                          {!isCollapsed && (
-                            <span className="text-sm">{t(item.textKey)}</span>
-                          )}
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            ))}
         </div>
+
+        {/* User Info Section */}
+        {userInfo && userInfo.id !== 0 && (
+          <div className="flex items-center gap-3 border-b border-emerald-100 bg-gray-50/30 p-4 dark:border-emerald-500/15 dark:bg-zinc-950/20">
+            {userInfo.avatar_url ? (
+              <img
+                className="h-10 w-10 rounded-full border border-[var(--light-green)] object-cover dark:border-emerald-500/15"
+                src={userInfo.avatar_url}
+                alt="Avatar"
+              />
+            ) : (
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-600 text-sm font-bold text-white dark:bg-emerald-500 min-w-[36px]">
+                {userInfo.username ? userInfo.username.charAt(0).toUpperCase() : "A"}
+              </div>
+            )}
+            {!isCollapsed && (
+              <div className="overflow-hidden">
+                <div className="truncate text-sm font-semibold text-gray-800 dark:text-zinc-200">
+                  {userInfo.full_name || userInfo.username}
+                </div>
+                <div className="truncate text-xs font-medium text-gray-500 dark:text-zinc-400">
+                  {userInfo.email}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Navigation items */}
+        <nav className="flex-1 space-y-4 overflow-y-auto py-4">
+          {menuSections.map((section) => (
+            <div key={section.labelKey} className="space-y-1">
+              {!isCollapsed && (
+                <div className="px-4 py-1.5 text-[10px] font-bold tracking-wider text-gray-400 uppercase dark:text-zinc-500">
+                  {t(section.labelKey)}
+                </div>
+              )}
+              <ul className="space-y-0.5">
+                {section.items.map((item) => {
+                  const selected =
+                    pathname === item.path ||
+                    (item.path !== "/admin" && pathname.startsWith(item.path));
+                  return (
+                    <li key={item.textKey}>
+                      <button
+                        onClick={() => handleNavigation(item.path)}
+                        className={`flex w-full items-center gap-3.5 py-2.5 transition-all duration-200 ${isCollapsed ? "justify-center px-0" : "px-4"
+                          } ${selected
+                            ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 font-semibold"
+                            : "text-gray-650 hover:bg-gray-50 hover:text-gray-950 dark:text-zinc-400 dark:hover:bg-zinc-900/50 dark:hover:text-zinc-100"
+                          }`}
+                        title={isCollapsed ? t(item.textKey) : undefined}
+                      >
+                        <span
+                          className={`transition-colors ${selected
+                            ? "text-emerald-600 dark:text-emerald-400"
+                            : "text-gray-400 dark:text-zinc-500"
+                            }`}
+                        >
+                          {item.icon}
+                        </span>
+                        {!isCollapsed && (
+                          <span className="text-sm">{t(item.textKey)}</span>
+                        )}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+        </nav>
 
         {/* Footer Actions */}
         <div className="border-t border-emerald-100 bg-gray-50/30 p-3 dark:border-emerald-500/15 dark:bg-zinc-950/20">
           <Link
             href="/user"
-            onClick={() => setOpen(false)}
+            onClick={onClose}
             className="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-sm text-gray-600 transition-colors duration-150 hover:bg-gray-100 hover:text-gray-950 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
           >
             <Settings size={18} className="text-gray-400 dark:text-zinc-500" />

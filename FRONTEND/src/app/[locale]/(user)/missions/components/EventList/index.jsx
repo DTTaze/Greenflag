@@ -1,6 +1,15 @@
+import { Calendar, CalendarRange, Check, Flame } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/src/components/ui/tabs";
+import { cn } from "@/src/lib/utils";
 import { getAllEvents, getEventSignedByUserId } from "@/src/utils/api";
 
 import EventCard from "../EventCard";
@@ -8,6 +17,7 @@ import EventDetailsModal from "../EventDetailsModal";
 import Pagination from "../Pagination";
 
 const EventList = ({ userInfo }) => {
+  const t = useTranslations("missions.eventList");
   const [activeTab, setActiveTab] = useState("hot");
   const [eventsSigned, setEventsSigned] = useState([]);
   const [eventUser, setEventUser] = useState([]);
@@ -56,7 +66,7 @@ const EventList = ({ userInfo }) => {
         setNowEvents(nowEventsResponse);
       } catch (error) {
         console.error("Failed to fetch data!", error);
-        toast.error("Không thể tải thông tin sự kiện");
+        toast.error(t("loadInfoError"));
       }
     };
     fetchData();
@@ -112,138 +122,88 @@ const EventList = ({ userInfo }) => {
     <div className="mb-6 overflow-hidden rounded-2xl border border-gray-200/60 bg-white shadow-2xs dark:border-slate-700/70 dark:bg-slate-900/80">
       <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-slate-800">
         <h2 className="flex items-center text-base font-extrabold tracking-wider text-gray-800 uppercase dark:text-slate-100">
-          <svg
-            className="mr-2 h-5 w-5 text-emerald-600 dark:text-emerald-300"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-            ></path>
-          </svg>
-          Sự Kiện Môi Trường
+          <Calendar className="mr-2 h-5 w-5 text-emerald-600 dark:text-emerald-300" />
+          {t("title")}
         </h2>
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-100 bg-gray-50/40 px-3.5 py-1.5 dark:border-slate-800 dark:bg-slate-800/60">
-        <div className="flex gap-1">
-          <button
-            className={`flex-1 cursor-pointer rounded-xl py-2.5 text-center text-xs font-bold transition-all duration-300 ${
-              activeTab === "hot"
-                ? "text-red-650 border border-red-100/50 bg-red-50 shadow-2xs dark:border-red-400/30 dark:bg-red-400/10 dark:text-red-200"
-                : "text-gray-500 hover:bg-gray-100/50 hover:text-gray-900 dark:text-slate-300 dark:hover:bg-slate-700/70 dark:hover:text-white"
-            }`}
-            onClick={() => setActiveTab("hot")}
-          >
-            <div className="flex items-center justify-center gap-1.5">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 10V3L4 14h7v7l9-11h-7z"
-                />
-              </svg>
-              Sự Kiện Hot
-            </div>
-          </button>
-          <button
-            className={`flex-1 cursor-pointer rounded-xl py-2.5 text-center text-xs font-bold transition-all duration-300 ${
-              activeTab === "current"
-                ? "border border-emerald-100/50 bg-emerald-50 text-emerald-700 shadow-2xs dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-200"
-                : "text-gray-500 hover:bg-gray-100/50 hover:text-gray-900 dark:text-slate-300 dark:hover:bg-slate-700/70 dark:hover:text-white"
-            }`}
-            onClick={() => setActiveTab("current")}
-          >
-            <div className="flex items-center justify-center gap-1.5">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
-              Đang Diễn Ra
-            </div>
-          </button>
-          <button
-            className={`flex-1 cursor-pointer rounded-xl py-2.5 text-center text-xs font-bold transition-all duration-300 ${
-              activeTab === "completed"
-                ? "text-blue-650 border border-blue-100/50 bg-blue-50 shadow-2xs dark:border-blue-400/30 dark:bg-blue-400/10 dark:text-blue-200"
-                : "text-gray-500 hover:bg-gray-100/50 hover:text-gray-900 dark:text-slate-300 dark:hover:bg-slate-700/70 dark:hover:text-white"
-            }`}
-            onClick={() => setActiveTab("completed")}
-          >
-            <div className="flex items-center justify-center gap-1.5">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-              Đã Tham Gia
-            </div>
-          </button>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <div className="border-b border-gray-100 bg-gray-50/40 px-3.5 py-1.5 dark:border-slate-800 dark:bg-slate-800/60">
+          <TabsList className="flex w-full gap-1 bg-transparent p-0">
+            <TabsTrigger
+              value="hot"
+              className={cn(
+                "data-active:text-red-650 flex-1 cursor-pointer rounded-xl py-2.5 text-center text-xs font-bold transition-all duration-300 data-active:border-red-100/50 data-active:bg-red-50 dark:data-active:border-red-400/30 dark:data-active:bg-red-400/10 dark:data-active:text-red-200",
+                activeTab !== "hot" &&
+                  "text-gray-500 hover:bg-gray-100/50 hover:text-gray-900 dark:text-slate-300 dark:hover:bg-slate-700/70 dark:hover:text-white",
+              )}
+            >
+              <div className="flex items-center justify-center gap-1.5">
+                <Flame className="h-4 w-4" />
+                {t("tabs.hot")}
+              </div>
+            </TabsTrigger>
+            <TabsTrigger
+              value="current"
+              className={cn(
+                "flex-1 cursor-pointer rounded-xl py-2.5 text-center text-xs font-bold transition-all duration-300 data-active:border-emerald-100/50 data-active:bg-emerald-50 data-active:text-emerald-700 dark:data-active:border-emerald-400/30 dark:data-active:bg-emerald-400/10 dark:data-active:text-emerald-200",
+                activeTab !== "current" &&
+                  "text-gray-500 hover:bg-gray-100/50 hover:text-gray-900 dark:text-slate-300 dark:hover:bg-slate-700/70 dark:hover:text-white",
+              )}
+            >
+              <div className="flex items-center justify-center gap-1.5">
+                <CalendarRange className="h-4 w-4" />
+                {t("tabs.current")}
+              </div>
+            </TabsTrigger>
+            <TabsTrigger
+              value="completed"
+              className={cn(
+                "data-active:text-blue-650 flex-1 cursor-pointer rounded-xl py-2.5 text-center text-xs font-bold transition-all duration-300 data-active:border-blue-100/50 data-active:bg-blue-50 dark:data-active:border-blue-400/30 dark:data-active:bg-blue-400/10 dark:data-active:text-blue-200",
+                activeTab !== "completed" &&
+                  "text-gray-500 hover:bg-gray-100/50 hover:text-gray-900 dark:text-slate-300 dark:hover:bg-slate-700/70 dark:hover:text-white",
+              )}
+            >
+              <div className="flex items-center justify-center gap-1.5">
+                <Check className="h-4 w-4" />
+                {t("tabs.completed")}
+              </div>
+            </TabsTrigger>
+          </TabsList>
         </div>
-      </div>
 
-      {/* Event Cards */}
-      <div className="p-4">
-        {getCurrentEvents().length > 0 ? (
-          <div className="space-y-3">
-            {getPaginatedEvents().map((event) => (
-              <EventCard
-                key={event.id}
-                event={event}
-                onOpenModal={handleOpenModal}
-                isParticipated={isEventParticipated(event.id)}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="text-gray-405 py-8 text-center text-sm font-medium dark:text-slate-300">
-            Không có sự kiện nào trong mục này.
-          </div>
-        )}
+        {/* Event Cards & Content */}
+        <TabsContent value={activeTab} className="p-4 outline-none">
+          {getCurrentEvents().length > 0 ? (
+            <div className="space-y-3">
+              {getPaginatedEvents().map((event) => (
+                <EventCard
+                  key={event.id}
+                  event={event}
+                  onOpenModal={handleOpenModal}
+                  isParticipated={isEventParticipated(event.id)}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-gray-405 py-8 text-center text-sm font-medium dark:text-slate-300">
+              {t("noEvents")}
+            </div>
+          )}
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            goToNextPage={() => handlePageChange(currentPage + 1)}
-            goToPreviousPage={() => handlePageChange(currentPage - 1)}
-            goToPage={handlePageChange}
-          />
-        )}
-      </div>
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              goToNextPage={() => handlePageChange(currentPage + 1)}
+              goToPreviousPage={() => handlePageChange(currentPage - 1)}
+              goToPage={handlePageChange}
+            />
+          )}
+        </TabsContent>
+      </Tabs>
 
       {/* Event Details Modal */}
       <EventDetailsModal

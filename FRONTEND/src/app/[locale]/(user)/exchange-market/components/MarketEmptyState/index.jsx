@@ -1,7 +1,10 @@
 import { motion } from "framer-motion";
 import { Leaf, Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 function MarketEmptyState({ marketView, marketStatusFilter, handleAddItem }) {
+  const t = useTranslations("exchangeMarket");
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95, y: 16 }}
@@ -18,15 +21,15 @@ function MarketEmptyState({ marketView, marketStatusFilter, handleAddItem }) {
       </motion.div>
 
       <h3 className="mb-2 text-lg font-extrabold tracking-wide text-emerald-900 uppercase">
-        Không có sản phẩm nào
+        {t("emptyState.title")}
       </h3>
       <p className="mx-auto mb-8 max-w-sm text-sm leading-relaxed font-medium text-slate-600">
         {marketView === "my_items"
-          ? "Bạn chưa có sản phẩm nào với trạng thái này."
-          : "Hiện chưa có sản phẩm nào trong danh mục này."}
+          ? t("emptyState.myItemsDesc")
+          : t("emptyState.allItemsDesc")}
         {marketView === "my_items" &&
           marketStatusFilter === "all" &&
-          " Hãy thử thêm sản phẩm mới!"}
+          t("emptyState.myItemsAllDesc")}
       </p>
 
       {marketView === "my_items" && (
@@ -40,7 +43,7 @@ function MarketEmptyState({ marketView, marketStatusFilter, handleAddItem }) {
           className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-600/25 transition-all hover:shadow-xl"
         >
           <Plus className="h-4.5 w-4.5" />
-          Thêm sản phẩm mới
+          {t("emptyState.addBtn")}
         </motion.button>
       )}
     </motion.div>

@@ -1,11 +1,13 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Star, Truck, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { forwardRef, useEffect, useState } from "react";
 
 import { useAuthStore } from "@/src/store/auth/authStore";
 import { getReceiverInfoByUserId } from "@/src/utils/api";
 
 const ShippingInfoModal = forwardRef(({ isOpen, onClose, onSelect }, ref) => {
+  const t = useTranslations("exchangeMarket");
   const [shippingOptions, setShippingOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuthStore();
@@ -60,7 +62,7 @@ const ShippingInfoModal = forwardRef(({ isOpen, onClose, onSelect }, ref) => {
               </button>
               <h2 className="flex items-center text-lg font-bold tracking-wide">
                 <Truck className="mr-2 h-5 w-5 animate-pulse text-emerald-200" />
-                Chọn thông tin giao hàng
+                {t("shipping.modalTitle")}
               </h2>
             </div>
 
@@ -74,7 +76,7 @@ const ShippingInfoModal = forwardRef(({ isOpen, onClose, onSelect }, ref) => {
                 </div>
               ) : shippingOptions.length === 0 ? (
                 <p className="py-6 text-center text-sm text-slate-400">
-                  Chưa có thông tin giao hàng nào được lưu.
+                  {t("shipping.emptySaved")}
                 </p>
               ) : (
                 <div className="space-y-3">
@@ -91,7 +93,7 @@ const ShippingInfoModal = forwardRef(({ isOpen, onClose, onSelect }, ref) => {
                         {option.is_default && (
                           <span className="flex items-center gap-1 rounded-full border border-amber-400/20 bg-amber-400/10 px-2 py-0.5 text-[11px] font-medium text-amber-400">
                             <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                            Mặc định
+                            {t("shipping.defaultBadge")}
                           </span>
                         )}
                       </div>
@@ -103,11 +105,13 @@ const ShippingInfoModal = forwardRef(({ isOpen, onClose, onSelect }, ref) => {
                         {option.to_province_name}
                       </p>
                       <p className="mt-2 text-xs font-medium text-emerald-400">
-                        SĐT: {option.to_phone}
+                        {t("shipping.phonePrefix", { phone: option.to_phone })}
                       </p>
                       <p className="mt-1.5 flex items-center gap-1 text-[10px] text-slate-500 capitalize">
                         <span className="h-1.5 w-1.5 rounded-full bg-slate-600"></span>
-                        Loại: {option.account_type}
+                        {t("shipping.typePrefix", {
+                          type: option.account_type,
+                        })}
                       </p>
                     </button>
                   ))}
@@ -121,7 +125,7 @@ const ShippingInfoModal = forwardRef(({ isOpen, onClose, onSelect }, ref) => {
                 onClick={onClose}
                 className="w-full rounded-lg border border-slate-800 bg-slate-950/80 py-2.5 text-sm font-medium text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white"
               >
-                Hủy
+                {t("common.cancel")}
               </button>
             </div>
           </motion.div>

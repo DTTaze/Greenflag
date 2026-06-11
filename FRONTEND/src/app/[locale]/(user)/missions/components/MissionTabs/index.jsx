@@ -1,15 +1,17 @@
 import { motion } from "framer-motion";
 import { CalendarDays, CheckCircle2, ListTodo } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 /**
  * Tab navigation component for the mission page
  */
 const MissionTabs = ({ selectedTab, setSelectedTab }) => {
+  const t = useTranslations("missions.tabs");
   const tabs = [
-    { id: "daily", label: "Nhiệm Vụ Hàng Ngày", icon: CalendarDays },
-    { id: "other", label: "Nhiệm Vụ Khác", icon: ListTodo },
-    { id: "completed", label: "Đã Hoàn Thành", icon: CheckCircle2 },
+    { id: "daily", label: t("daily"), icon: CalendarDays },
+    { id: "other", label: t("other"), icon: ListTodo },
+    { id: "completed", label: t("completed"), icon: CheckCircle2 },
   ];
 
   return (
@@ -33,10 +35,10 @@ const MissionTabs = ({ selectedTab, setSelectedTab }) => {
               <span className="hidden md:inline">{label}</span>
               <span className="inline md:hidden">
                 {id === "daily"
-                  ? "Hàng ngày"
+                  ? t("dailyShort")
                   : id === "other"
-                    ? "Nhiệm vụ khác"
-                    : "Đã xong"}
+                    ? t("otherShort")
+                    : t("completedShort")}
               </span>
               {isActive && (
                 <motion.span

@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Grid2X2, LayoutList, Search, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 function MarketSearchBar({
   marketSearchText,
@@ -7,6 +8,8 @@ function MarketSearchBar({
   marketListView,
   setMarketListView,
 }) {
+  const t = useTranslations("exchangeMarket");
+
   return (
     <div className="flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-center">
       <div className="relative w-full max-w-xl sm:flex-grow">
@@ -15,7 +18,7 @@ function MarketSearchBar({
         </div>
         <input
           type="text"
-          placeholder="Tìm sản phẩm xanh, vật liệu, người bán..."
+          placeholder={t("emptyState.searchPlaceholder")}
           value={marketSearchText}
           onChange={(e) => setMarketSearchText(e.target.value)}
           className="w-full rounded-2xl border border-emerald-100 bg-white/85 py-3 pr-12 pl-11 text-sm font-medium text-slate-700 shadow-sm transition-all placeholder:text-slate-400 focus:border-[#0B6E4F] focus:bg-white focus:ring-4 focus:ring-emerald-100 focus:outline-none"
@@ -26,7 +29,7 @@ function MarketSearchBar({
             animate={{ opacity: 1, scale: 1 }}
             onClick={() => setMarketSearchText("")}
             className="absolute inset-y-0 right-0 flex cursor-pointer items-center pr-4 text-slate-400 transition hover:text-slate-700"
-            aria-label="Xóa tìm kiếm"
+            aria-label="Clear search"
           >
             <X className="h-4 w-4" />
           </motion.button>

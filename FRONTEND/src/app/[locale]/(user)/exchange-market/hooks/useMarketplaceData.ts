@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 
 import {
@@ -32,6 +33,7 @@ interface RawProductData {
 }
 
 export function useMarketplaceData(userId?: number | string) {
+  const t = useTranslations("exchangeMarket");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [items, setItems] = useState<MarketplaceItem[]>([]);
@@ -43,17 +45,17 @@ export function useMarketplaceData(userId?: number | string) {
       try {
         const userResponse = (await getUser()) as any;
         if (userResponse.status !== 200 || !userResponse.data) {
-          throw new Error("Không thể tải dữ liệu người dùng");
+          throw new Error(t("errors.loadUserFailed"));
         }
       } catch (err: unknown) {
-        setError("Lỗi khi tải dữ liệu người dùng");
+        setError(t("errors.loadUserError"));
         console.error(err);
       } finally {
         setLoading(false);
       }
     }
     initialize();
-  }, []);
+  }, [t]);
 
   const fetchRedeemItems = useCallback(async () => {
     try {
@@ -72,7 +74,7 @@ export function useMarketplaceData(userId?: number | string) {
           image: item.images.length > 0 ? item.images[0] : null,
           stock: item.stock || 0,
           canPurchase: item.status === "available",
-          seller: item.creator?.username || "Không xác định",
+          seller: item.creator?.username || t("categories.unknown"),
           purchaseLimitPerDay: item.purchase_limit_per_day,
           weight: item.weight,
           length: item.length,
@@ -83,9 +85,9 @@ export function useMarketplaceData(userId?: number | string) {
       }
     } catch (error) {
       console.error("Lỗi khi lấy sản phẩm cho tab đổi quà:", error);
-      setError("Có lỗi xảy ra khi tải danh sách sản phẩm đổi quà");
+      setError(t("errors.loadRedeemFailed"));
     }
-  }, []);
+  }, [t]);
 
   const fetchMyItems = useCallback(async () => {
     if (!userId) return;
@@ -105,7 +107,7 @@ export function useMarketplaceData(userId?: number | string) {
           image: item.images.length > 0 ? item.images[0] : null,
           stock: item.stock || 0,
           canPurchase: item.post_status === "public",
-          seller: item.creator?.username || "Không xác định",
+          seller: item.creator?.username || t("categories.unknown"),
           purchaseLimitPerDay: item.purchase_limit_per_day,
           weight: item.weight,
           length: item.length,
@@ -116,9 +118,9 @@ export function useMarketplaceData(userId?: number | string) {
       }
     } catch (error) {
       console.error("Lỗi khi lấy sản phẩm của người dùng:", error);
-      setError("Có lỗi xảy ra khi tải danh sách sản phẩm của bạn");
+      setError(t("errors.loadMyItemsFailed"));
     }
-  }, [userId]);
+  }, [userId, t]);
 
   const fetchAllItems = useCallback(async () => {
     try {
@@ -137,7 +139,7 @@ export function useMarketplaceData(userId?: number | string) {
           image: item.images.length > 0 ? item.images[0] : null,
           stock: item.stock || 0,
           canPurchase: item.post_status === "public",
-          seller: item.creator?.username || "Không xác định",
+          seller: item.creator?.username || t("categories.unknown"),
           purchaseLimitPerDay: item.purchase_limit_per_day,
           weight: item.weight,
           length: item.length,
@@ -148,9 +150,9 @@ export function useMarketplaceData(userId?: number | string) {
       }
     } catch (error) {
       console.error("Lỗi khi lấy tất cả sản phẩm:", error);
-      setError("Có lỗi xảy ra khi tải danh sách sản phẩm chợ trao đổi");
+      setError(t("errors.loadAllItemsFailed"));
     }
-  }, []);
+  }, [t]);
 
   return {
     loading,

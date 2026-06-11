@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { useContext } from "react";
 
 import { useAuthStore } from "@/src/store/auth/authStore";
@@ -24,6 +25,7 @@ export {
 } from "./contexts/marketplace.context";
 
 function ExchangeMarketContent({ children }: { children: React.ReactNode }) {
+  const t = useTranslations("exchangeMarket");
   const { user } = useAuthStore();
   const {
     loading,
@@ -66,7 +68,7 @@ function ExchangeMarketContent({ children }: { children: React.ReactNode }) {
                 onClick={() => setError(null)}
                 className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-red-700 shadow-sm ring-1 ring-red-100 transition hover:bg-red-100 active:scale-95 dark:bg-slate-800 dark:text-red-400 dark:ring-red-900/50 dark:hover:bg-slate-700"
               >
-                Đóng
+                {t("common.close")}
               </button>
             </div>
           )}
@@ -75,7 +77,7 @@ function ExchangeMarketContent({ children }: { children: React.ReactNode }) {
             <div className="mb-5 flex items-center gap-3 rounded-2xl border border-blue-200 bg-blue-50/90 p-4 shadow-sm dark:border-blue-900/30 dark:bg-blue-950/20">
               <span className="h-2.5 w-2.5 animate-ping rounded-full bg-blue-500" />
               <p className="text-sm font-semibold text-blue-700">
-                Đang xử lý giao dịch...
+                {t("common.processingTx")}
               </p>
             </div>
           )}

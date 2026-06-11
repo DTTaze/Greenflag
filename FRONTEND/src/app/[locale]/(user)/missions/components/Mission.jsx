@@ -1,5 +1,6 @@
 import "react-toastify/dist/ReactToastify.css";
 
+import { useTranslations } from "next-intl";
 import React from "react";
 import { ToastContainer } from "react-toastify";
 
@@ -17,6 +18,7 @@ import TasksList from "./TasksList/index.jsx";
 import TaskSubmissionModal from "./TaskSubmissionModal/index.jsx";
 
 function Mission() {
+  const t = useTranslations("missions.list");
   const {
     userInfo,
     loading,
@@ -146,13 +148,13 @@ function Mission() {
               {selectedTab === "daily" && dailyTasks.length === 0 ? (
                 <div className="py-12 text-center">
                   <p className="text-sm font-semibold text-slate-400">
-                    Không có nhiệm vụ hàng ngày nào
+                    {t("noDaily")}
                   </p>
                 </div>
               ) : selectedTab === "other" && otherTasks.length === 0 ? (
                 <div className="py-12 text-center">
                   <p className="text-sm font-semibold text-slate-400">
-                    Không có nhiệm vụ phụ nào
+                    {t("noOther")}
                   </p>
                 </div>
               ) : (
@@ -201,7 +203,7 @@ function Mission() {
             <div className="overflow-hidden rounded-2xl border border-emerald-200/70 bg-emerald-50/80 shadow-2xl shadow-emerald-200/30 transition-colors duration-300 dark:border-slate-700/70 dark:bg-slate-900/80 dark:shadow-emerald-950/20 dark:backdrop-blur">
               <div className="border-b border-emerald-100 bg-teal-50/70 p-4 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-800/60">
                 <h2 className="text-sm font-extrabold tracking-wider text-emerald-900 uppercase dark:text-slate-100">
-                  Bảng Xếp Hạng
+                  {t("ranking")}
                 </h2>
               </div>
               <div className="p-4">
@@ -212,7 +214,7 @@ function Mission() {
             {/* Stats Card */}
             <div className="rounded-2xl border border-emerald-200/70 bg-emerald-50/90 p-5 shadow-2xl shadow-emerald-200/30 transition-colors duration-300 dark:border-slate-700/70 dark:bg-slate-900/80 dark:shadow-emerald-950/20 dark:backdrop-blur">
               <h2 className="mb-4 text-sm font-extrabold tracking-wider text-emerald-900 uppercase dark:text-slate-100">
-                Thống Kê Hoạt Động
+                {t("stats")}
               </h2>
               <div className="grid grid-cols-2 gap-3">
                 <div className="rounded-xl border border-emerald-200/60 bg-emerald-100/70 p-4 text-center transition-colors duration-300 dark:border-emerald-400/20 dark:bg-emerald-500/10">
@@ -220,7 +222,7 @@ function Mission() {
                     {completedTasks.length}
                   </p>
                   <p className="mt-1 text-[10px] leading-snug font-bold tracking-wide text-emerald-800 uppercase dark:text-emerald-200/80">
-                    Nhiệm vụ đã xong
+                    {t("completedTasks")}
                   </p>
                 </div>
                 <div className="rounded-xl border border-emerald-200/60 bg-emerald-100/70 p-4 text-center transition-colors duration-300 dark:border-emerald-400/20 dark:bg-emerald-500/10">
@@ -230,7 +232,7 @@ function Mission() {
                     }, 0)}
                   </p>
                   <p className="mt-1 text-[10px] leading-snug font-bold tracking-wide text-emerald-800 uppercase dark:text-emerald-200/80">
-                    Xu đã nhận
+                    {t("coinsReceived")}
                   </p>
                 </div>
               </div>

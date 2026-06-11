@@ -1,6 +1,5 @@
-"use client";
-
 import { Search } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 function MissionFilters({
@@ -18,6 +17,8 @@ function MissionFilters({
   setDailyCurrentPage,
   setOtherCurrentPage,
 }) {
+  const t = useTranslations("missions.filters");
+
   return (
     <div className="space-y-5 border-x border-emerald-200/70 bg-emerald-50/90 p-6 shadow-lg dark:border-emerald-400/30 dark:bg-slate-900/80">
       {/* Search bar and Coin sort */}
@@ -32,13 +33,13 @@ function MissionFilters({
               setDailyCurrentPage(1);
               setOtherCurrentPage(1);
             }}
-            placeholder="Tìm kiếm nhiệm vụ..."
+            placeholder={t("searchPlaceholder")}
             className="w-full rounded-xl border border-gray-200 bg-gray-50/50 py-3 pr-4 pl-10.5 text-sm text-gray-800 transition-all placeholder:text-gray-400 focus:border-[#0B6E4F] focus:bg-white focus:ring-4 focus:ring-[#0B6E4F]/10 focus:outline-none dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-emerald-400 dark:focus:bg-slate-800 dark:focus:ring-emerald-400/10"
           />
         </div>
         <div className="flex items-center gap-2.5">
           <span className="text-xs font-bold tracking-wider whitespace-nowrap text-gray-400 uppercase dark:text-slate-400">
-            Sắp xếp:
+            {t("sortBy")}
           </span>
           <select
             value={sortByCoins}
@@ -49,9 +50,9 @@ function MissionFilters({
             }}
             className="cursor-pointer rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-gray-700 transition-all hover:bg-gray-50/50 focus:border-[#0B6E4F] focus:ring-4 focus:ring-[#0B6E4F]/10 focus:outline-none dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-100 dark:hover:bg-slate-700/80 dark:focus:border-emerald-400 dark:focus:ring-emerald-400/10"
           >
-            <option value="none">Mặc định</option>
-            <option value="desc">Xu cao nhất</option>
-            <option value="asc">Xu thấp nhất</option>
+            <option value="none">{t("default")}</option>
+            <option value="desc">{t("coinsDesc")}</option>
+            <option value="asc">{t("coinsAsc")}</option>
           </select>
         </div>
       </div>
@@ -61,15 +62,15 @@ function MissionFilters({
         {/* Category select buttons */}
         <div className="flex-1 space-y-2.5">
           <span className="block text-[11px] font-bold tracking-wider text-gray-400 uppercase dark:text-slate-400">
-            Loại hoạt động
+            {t("activityType")}
           </span>
           <div className="flex flex-wrap gap-2">
             {[
-              { value: "all", label: "Tất cả" },
-              { value: "planting", label: "Trồng cây" },
-              { value: "recycling", label: "Tái chế / Thu gom" },
-              { value: "saving", label: "Tiết kiệm" },
-              { value: "other", label: "Khác" },
+              { value: "all", label: t("all") },
+              { value: "planting", label: t("planting") },
+              { value: "recycling", label: t("recycling") },
+              { value: "saving", label: t("saving") },
+              { value: "other", label: t("other") },
             ].map((cat) => (
               <button
                 key={cat.value}
@@ -93,14 +94,14 @@ function MissionFilters({
         {/* Difficulty buttons */}
         <div className="space-y-2.5">
           <span className="block text-[11px] font-bold tracking-wider text-gray-400 uppercase dark:text-slate-400">
-            Độ khó
+            {t("difficulty")}
           </span>
           <div className="flex gap-2">
             {[
-              { value: "all", label: "Tất cả" },
-              { value: "easy", label: "Dễ" },
-              { value: "medium", label: "Trung bình" },
-              { value: "hard", label: "Khó" },
+              { value: "all", label: t("all") },
+              { value: "easy", label: t("easy") },
+              { value: "medium", label: t("medium") },
+              { value: "hard", label: t("hard") },
             ].map((diff) => {
               const isDaily = selectedTab === "daily";
               const activeFilter = isDaily

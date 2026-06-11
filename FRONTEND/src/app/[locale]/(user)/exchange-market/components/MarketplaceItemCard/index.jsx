@@ -10,6 +10,7 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useContext, useEffect, useState } from "react";
 
 import DeleteConfirmModal from "@/src/components/common/DeleteConfirmModal";
@@ -39,17 +40,6 @@ const getStatusClass = (status) => {
   return statusClasses[status] || statusClasses.draft;
 };
 
-const getCategoryDisplayName = (key) => {
-  const categories = {
-    handicraft: "Đồ thủ công",
-    recycled: "Đồ tái chế",
-    organic: "Sản phẩm hữu cơ",
-    plants: "Cây trồng",
-    other: "Khác",
-  };
-  return categories[key] || "Không xác định";
-};
-
 const MarketplaceItemCard = ({
   item,
   onEdit,
@@ -57,6 +47,7 @@ const MarketplaceItemCard = ({
   viewMode = "all_items",
   fetchItems,
 }) => {
+  const t = useTranslations("exchangeMarket");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -91,7 +82,7 @@ const MarketplaceItemCard = ({
   const handleDetailsClick = () => {
     if (viewMode === "redeem") {
       if (!user) {
-        alert("Vui lòng đăng nhập để thực hiện giao dịch!");
+        alert(t("errors.loginRequired"));
         return;
       }
       handlePurchase(item);
@@ -149,7 +140,9 @@ const MarketplaceItemCard = ({
             transition={{ delay: 0.15 }}
             className="mt-2 inline-block rounded-xl border border-emerald-100 bg-gradient-to-r from-emerald-50 to-emerald-50/70 px-2.5 py-1 text-[10px] font-extrabold tracking-wide text-[#0B6E4F] uppercase shadow-sm"
           >
-            {getCategoryDisplayName(item.category)}
+            {item.category
+              ? t("categories." + item.category)
+              : t("categories.unknown")}
           </motion.span>
           <p className="mt-3 line-clamp-2 min-h-[32px] text-xs leading-relaxed font-medium text-slate-600">
             {item.description}
@@ -177,7 +170,7 @@ const MarketplaceItemCard = ({
             <Coins className="h-4 w-4 text-amber-600" />
           </motion.div>
           <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-            Còn: {currentStock}
+            {t("list.remaining", { count: currentStock })}
           </span>
         </motion.div>
 
@@ -189,7 +182,9 @@ const MarketplaceItemCard = ({
               className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-5 py-3 text-xs font-bold text-[#0B6E4F] shadow-md transition-all hover:bg-gray-50 active:scale-95"
             >
               <Eye size={15} />
-              {viewMode === "redeem" ? "Đổi quà" : "Chi tiết"}
+              {viewMode === "redeem"
+                ? t("list.redeemBtn")
+                : t("list.detailsBtn")}
             </button>
           </div>
         )}
@@ -221,8 +216,8 @@ const MarketplaceItemCard = ({
           isOpen={showDeleteModal}
           onClose={cancelDelete}
           onConfirm={confirmDelete}
-          title="Xóa sản phẩm"
-          message="Bạn có chắc chắn muốn xóa sản phẩm này? Hành động này không thể hoàn tác."
+          title={t("list.deleteTitle")}
+          message={t("list.deleteMessage")}
         />
       )}
 
@@ -247,7 +242,6 @@ const MarketplaceItemCard = ({
           isOpen={showDetailsModal}
           onClose={() => setShowDetailsModal(false)}
           item={item}
-          getCategoryDisplayName={getCategoryDisplayName}
           isEditMode={viewMode === "my_items"}
           onEdit={onEdit}
           onPurchase={() => {

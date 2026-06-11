@@ -2,21 +2,14 @@ import { motion } from "framer-motion";
 import { Gift, PackageSearch, Store } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
-const navItems = {
-  "/exchange-market/redeem": { label: "Đổi quà", Icon: Gift },
-  "/exchange-market/my-items": {
-    label: "Sản phẩm của tôi",
-    Icon: PackageSearch,
-  },
-  "/exchange-market/all-items": { label: "Chợ trao đổi", Icon: Store },
-};
-
-function NavLink({ to }) {
+function NavLink({ to, label, Icon }) {
   const pathname = usePathname();
   const isActive =
-    pathname === to || (to !== "/" && pathname.startsWith(to + "/"));
-  const { label, Icon } = navItems[to];
+    pathname === to ||
+    (to !== "/" && pathname.startsWith(to + "/")) ||
+    pathname.endsWith(to);
 
   return (
     <motion.div
@@ -46,6 +39,18 @@ function NavLink({ to }) {
 }
 
 function MarketViewNavigation() {
+  const t = useTranslations("exchangeMarket");
+
+  const navItems = [
+    { to: "/exchange-market/redeem", label: t("nav.redeem"), Icon: Gift },
+    {
+      to: "/exchange-market/my-items",
+      label: t("nav.myItems"),
+      Icon: PackageSearch,
+    },
+    { to: "/exchange-market/all-items", label: t("nav.allItems"), Icon: Store },
+  ];
+
   return (
     <motion.nav
       initial={{ opacity: 0, y: 12 }}
@@ -53,9 +58,14 @@ function MarketViewNavigation() {
       transition={{ delay: 0.08, duration: 0.35 }}
       className="mb-6 flex w-full gap-1.5 overflow-x-auto rounded-3xl border border-emerald-100/50 bg-gradient-to-br from-emerald-50 via-white to-emerald-50/80 p-1.5 shadow-md backdrop-blur-md sm:w-fit"
     >
-      <NavLink to="/exchange-market/redeem" />
-      <NavLink to="/exchange-market/my-items" />
-      <NavLink to="/exchange-market/all-items" />
+      {navItems.map((item) => (
+        <NavLink
+          key={item.to}
+          to={item.to}
+          label={item.label}
+          Icon={item.Icon}
+        />
+      ))}
     </motion.nav>
   );
 }

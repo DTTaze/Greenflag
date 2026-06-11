@@ -52,7 +52,7 @@ function isTokenValid(token: string): boolean {
   }
 }
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const { locales, defaultLocale } = routing;
 

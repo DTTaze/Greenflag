@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { useCallback, useState } from "react";
 
 import {
@@ -46,6 +47,7 @@ export function useMarketplaceCrud({
   fetchRedeemItems: () => Promise<void>;
   setMyItems: React.Dispatch<React.SetStateAction<MarketplaceItem[]>>;
 }) {
+  const t = useTranslations("exchangeMarket");
   const [selectedItem, setSelectedItem] = useState<MarketplaceItem | null>(
     null,
   );
@@ -60,22 +62,22 @@ export function useMarketplaceCrud({
     (item: MarketplaceItem) => {
       const userCoins = auth.user?.coins?.amount || 0;
       if (!item) {
-        setError("Mặt hàng không hợp lệ");
+        setError(t("errors.invalidItem"));
         return;
       }
       if (!auth.user) {
-        setError("Vui lòng đăng nhập để thực hiện giao dịch");
+        setError(t("errors.loginRequired"));
         return;
       }
       if (userCoins < item.price) {
-        setError("Bạn không có đủ số coins để giao dịch");
+        setError(t("errors.insufficientCoins"));
         return;
       }
       setSelectedItem(item);
       setIsModalOpen(true);
       setTransactionStatus(null);
     },
-    [auth.user, setError],
+    [auth.user, setError, t],
   );
 
   const confirmPurchase = useCallback(
@@ -84,12 +86,12 @@ export function useMarketplaceCrud({
       shippingInfo: { receiver_information_id: number },
     ) => {
       if (!selectedItem) {
-        setError("Không có sản phẩm được chọn");
+        setError(t("errors.noItemSelected"));
         setIsModalOpen(false);
         return;
       }
       if (!auth.user) {
-        setError("Vui lòng đăng nhập để thực hiện giao dịch");
+        setError(t("errors.loginRequired"));
         setIsModalOpen(false);
         return;
       }
@@ -98,7 +100,7 @@ export function useMarketplaceCrud({
       const totalCost = selectedItem.price * quantity;
 
       if (userCoins < totalCost) {
-        setError("Bạn không có đủ số coins để thực hiện giao dịch");
+        setError(t("errors.insufficientCoinsTx"));
         setIsModalOpen(false);
         return;
       }
@@ -122,24 +124,26 @@ export function useMarketplaceCrud({
           setIsModalOpen(false);
           setSelectedItem(null);
           setTransactionStatus(null);
-          alert(
-            `Giao dịch ${quantity} ${selectedItem.name} đã được khởi tạo thành công!`,
-          );
+          alert(t("alerts.txSuccess", { quantity, name: selectedItem.name }));
           await fetchRedeemItems();
         } else {
-          throw new Error("Không nhận được mã giao dịch");
+          throw new Error(t("errors.txNoCode"));
         }
       } catch (error: unknown) {
         setTransactionStatus("failed");
         const err = error as { message?: string };
-        setError(`Giao dịch thất bại: ${err.message || "Vui lòng thử lại"}`);
+        setError(
+          t("errors.txFailed", {
+            message: err.message || t("common.tryAgain"),
+          }),
+        );
         console.error("Lỗi khi xử lý giao dịch:", error);
         setIsModalOpen(false);
         setSelectedItem(null);
         setTransactionStatus(null);
       }
     },
-    [selectedItem, auth.user, setError, fetchRedeemItems],
+    [selectedItem, auth.user, setError, fetchRedeemItems, t],
   );
 
   const handleCloseModal = () => {
@@ -156,7 +160,7 @@ export function useMarketplaceCrud({
   const handleEditItem = (item: MarketplaceItem) => {
     if (!item || !item.id) {
       console.error("Invalid item or item ID:", item);
-      alert("Không thể sửa sản phẩm do thiếu thông tin!");
+      alert(t("errors.missingEditInfo"));
       return;
     }
     setItemToEdit(item);
@@ -167,7 +171,7 @@ export function useMarketplaceCrud({
   const handleDeleteItem = async (itemId: number) => {
     if (!itemId) {
       console.error("Invalid item ID:", itemId);
-      alert("Không thể xóa sản phẩm do thiếu thông tin!");
+      alert(t("errors.missingDeleteInfo"));
       return;
     }
     try {
@@ -176,14 +180,14 @@ export function useMarketplaceCrud({
         setMyItems((prev) => prev.filter((item) => item.id !== itemId));
         setSelectedItem(null);
         setItemToEdit(null);
-        alert("Sản phẩm đã được xóa thành công!");
+        alert(t("alerts.deleteSuccess"));
       } else {
-        alert("Xóa sản phẩm thất bại!");
+        alert(t("alerts.deleteFailed"));
       }
     } catch (error: unknown) {
       const err = error as { message?: string };
       console.error("Lỗi khi xóa sản phẩm:", error);
-      alert(err.message || "Có lỗi xảy ra khi xóa sản phẩm");
+      alert(err.message || t("alerts.deleteFailed"));
     }
   };
 
@@ -197,15 +201,15 @@ export function useMarketplaceCrud({
         !productData.category ||
         !productData.product_status
       ) {
-        alert("Vui lòng điền đầy đủ các trường bắt buộc!");
+        alert(t("errors.missingSubmitFields"));
         return;
       }
       if (productData.price < 1) {
-        alert("Giá sản phẩm phải lớn hơn hoặc bằng 1!");
+        alert(t("errors.priceMin"));
         return;
       }
       if (productData.stock < 1) {
-        alert("Số lượng sản phẩm phải lớn hơn hoặc bằng 1!");
+        alert(t("errors.stockMin"));
         return;
       }
 
@@ -223,7 +227,7 @@ export function useMarketplaceCrud({
       if (isEditing) {
         if (!itemToEdit || !itemToEdit.id) {
           console.error("Missing item ID for update");
-          alert("Không thể cập nhật sản phẩm do thiếu thông tin!");
+          alert(t("errors.missingUpdateInfo"));
           return;
         }
 
@@ -250,9 +254,9 @@ export function useMarketplaceCrud({
               item.id === itemToEdit.id ? updatedProduct : item,
             ),
           );
-          alert("Cập nhật sản phẩm thành công!");
+          alert(t("alerts.updateSuccess"));
         } else {
-          alert("Cập nhật sản phẩm thất bại!");
+          alert(t("alerts.updateFailed"));
         }
       } else {
         const response = await createProduct(formDataToSend);
@@ -265,7 +269,7 @@ export function useMarketplaceCrud({
             createdAt: response.data.created_at || new Date().toISOString(),
             stock: response.data.stock || 0,
             canPurchase: response.data.post_status === "public",
-            seller: auth.user?.username || "Không xác định",
+            seller: auth.user?.username || t("categories.unknown"),
             purchaseLimitPerDay: response.data.purchase_limit_per_day,
             weight: response.data.weight,
             length: response.data.length,
@@ -276,9 +280,9 @@ export function useMarketplaceCrud({
             ...prev,
             newItem as unknown as MarketplaceItem,
           ]);
-          alert("Thêm sản phẩm mới thành công!");
+          alert(t("alerts.createSuccess"));
         } else {
-          alert("Thêm sản phẩm thất bại!");
+          alert(t("alerts.createFailed"));
         }
       }
       setShowCreateModal(false);
@@ -287,7 +291,7 @@ export function useMarketplaceCrud({
     } catch (error: unknown) {
       const err = error as { message?: string };
       console.error("Lỗi khi xử lý sản phẩm:", error);
-      alert(err.message || "Có lỗi xảy ra khi xử lý sản phẩm");
+      alert(err.message || t("alerts.createFailed"));
     }
   };
 

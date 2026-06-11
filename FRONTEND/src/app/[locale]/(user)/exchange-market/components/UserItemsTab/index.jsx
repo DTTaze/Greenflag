@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { useContext, useEffect, useMemo } from "react";
 
 import {
@@ -15,6 +16,8 @@ import MarketItemList from "../MarketItemList";
 import MarketSearchBar from "../MarketSearchBar";
 
 function UserItemsTab({ fetchItems }) {
+  const t = useTranslations("exchangeMarket");
+
   const {
     myItems,
     marketSearchText,
@@ -71,7 +74,7 @@ function UserItemsTab({ fetchItems }) {
           onClick={handleAddItem}
           className="rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/10 transition-all duration-200 hover:bg-emerald-500 active:scale-95"
         >
-          Thêm sản phẩm
+          {t("userItems.addProductBtn")}
         </button>
       </div>
 

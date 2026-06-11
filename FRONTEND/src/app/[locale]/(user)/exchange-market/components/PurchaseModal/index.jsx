@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckCircle, Coins, ShoppingBag, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 import ShippingInfoDisplay from "../ShippingInfoDisplay";
@@ -14,6 +15,8 @@ export default function PurchaseModal({
   userCoins,
   onConfirm,
 }) {
+  const t = useTranslations("exchangeMarket");
+
   const {
     quantity,
     setQuantity,
@@ -61,10 +64,10 @@ export default function PurchaseModal({
               </button>
               <h2 className="flex items-center text-lg font-bold tracking-wide">
                 <ShoppingBag className="mr-2 h-5 w-5 animate-pulse text-emerald-200" />
-                Xác nhận trao đổi
+                {t("purchaseModal.txConfirmTitle")}
               </h2>
               <p className="mt-1 text-xs text-emerald-100/80">
-                Vui lòng xác nhận thông tin giao dịch của bạn
+                {t("purchaseModal.txConfirmDesc")}
               </p>
             </div>
 
@@ -98,15 +101,19 @@ export default function PurchaseModal({
                       <Coins className="ml-1 h-3.5 w-3.5" />
                     </div>
                     <span className="text-[11px] text-slate-500">
-                      Còn lại: {currentStock} sản phẩm
+                      {t("purchaseModal.remainingLabel", {
+                        count: currentStock,
+                      })}
                     </span>
                   </div>
                 </div>
               </div>
 
               {/* Quantity Selector */}
-              <div className="flex items-center justify-between rounded-lg border border-slate-800/50 bg-slate-950/40 px-3 py-1 py-2.5">
-                <span className="text-sm text-slate-300">Số lượng:</span>
+              <div className="flex items-center justify-between rounded-lg border border-slate-800/50 bg-slate-950/40 px-3 py-2.5">
+                <span className="text-sm text-slate-300">
+                  {t("purchaseModal.quantityLabel")}
+                </span>
                 <div className="flex items-center overflow-hidden rounded-md border border-slate-800 bg-slate-900">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -148,7 +155,7 @@ export default function PurchaseModal({
                   onClick={onClose}
                   className="flex-1 rounded-lg border border-slate-800 bg-slate-950/80 py-2.5 text-sm font-medium text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white"
                 >
-                  Hủy
+                  {t("common.cancel")}
                 </button>
                 <button
                   onClick={handleConfirm}
@@ -160,15 +167,17 @@ export default function PurchaseModal({
                   }`}
                 >
                   {isProcessing ? (
-                    <span className="animate-pulse">Đang xử lý...</span>
+                    <span className="animate-pulse">
+                      {t("purchaseModal.btnProcessing")}
+                    </span>
                   ) : !canPurchase ? (
-                    "Không đủ điều kiện"
+                    t("purchaseModal.btnIneligible")
                   ) : !shippingInfo ? (
-                    "Chọn thông tin giao hàng"
+                    t("purchaseModal.btnSelectShipping")
                   ) : (
                     <>
                       <CheckCircle className="mr-1.5 h-4 w-4" />
-                      Xác nhận
+                      {t("purchaseModal.btnConfirm")}
                     </>
                   )}
                 </button>

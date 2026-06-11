@@ -1,10 +1,13 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Gift, Leaf, Sparkles } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 import CoinBalance from "../CoinBalance";
 
 function CatalogHeader({ userCoins }) {
+  const t = useTranslations("exchangeMarket");
+
   return (
     <motion.header
       initial={{ opacity: 0, y: 18 }}
@@ -25,7 +28,7 @@ function CatalogHeader({ userCoins }) {
             className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-bold text-emerald-50 shadow-sm backdrop-blur-md"
           >
             <Sparkles className="h-3.5 w-3.5 text-lime-200" />
-            Đổi coin xanh - nhận quà bền vững
+            {t("header.subtitleTag")}
           </motion.div>
 
           <h1 className="mb-3 flex items-center gap-3 text-2xl font-black tracking-tight md:text-4xl">
@@ -36,21 +39,20 @@ function CatalogHeader({ userCoins }) {
             >
               <Leaf className="h-6 w-6 text-lime-100" />
             </motion.span>
-            Trung tâm trao đổi xanh
+            {t("header.title")}
           </h1>
 
           <p className="max-w-2xl text-sm leading-relaxed font-medium text-emerald-50/90 md:text-base">
-            Khám phá vật phẩm thân thiện môi trường, quản lý sản phẩm của bạn và
-            đổi coins tích lũy trong vài thao tác đơn giản.
+            {t("header.desc")}
           </p>
 
           <div className="mt-5 flex flex-wrap gap-3 text-xs font-bold text-emerald-50">
             <span className="inline-flex items-center gap-2 rounded-full bg-white/12 px-3 py-2 ring-1 ring-white/15 backdrop-blur-md">
               <Gift className="h-4 w-4 text-lime-200" />
-              Quà xanh chọn lọc
+              {t("header.tagGift")}
             </span>
             <span className="inline-flex items-center gap-2 rounded-full bg-white/12 px-3 py-2 ring-1 ring-white/15 backdrop-blur-md">
-              Giao dịch dễ dàng
+              {t("header.tagEasy")}
               <ArrowRight className="h-4 w-4" />
             </span>
           </div>

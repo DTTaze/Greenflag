@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import { Calendar, Coins, Tag, User, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { statusConfig } from "../MarketplaceItemCard";
 
@@ -7,17 +8,18 @@ export default function DetailsModal({
   isOpen,
   onClose,
   item,
-  getCategoryDisplayName,
   isEditMode,
   onEdit,
   onPurchase,
 }) {
+  const t = useTranslations("exchangeMarket");
+
   if (!isOpen) return null;
 
   const handleEdit = () => {
     if (!item || !item.id) {
       console.error("Invalid item or item ID:", item);
-      alert("Không thể sửa sản phẩm do thiếu thông tin!");
+      alert(t("errors.missingEditInfo"));
       return;
     }
     onEdit(item);
@@ -34,7 +36,7 @@ export default function DetailsModal({
 
       {/* Modal Container */}
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative w-full max-w-md transform overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/95 p-6 text-left align-middle shadow-2xl transition-all duration-300">
+        <div className="relative w-full max-w-md transform overflow-hidden rounded-2xl border border-slate-800/85 bg-slate-900/95 p-6 text-left align-middle shadow-2xl transition-all duration-300">
           {/* Decorative Glow */}
           <div className="absolute -top-20 -left-20 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl" />
           <div className="absolute -right-20 -bottom-20 h-40 w-40 rounded-full bg-blue-500/10 blur-3xl" />
@@ -49,7 +51,7 @@ export default function DetailsModal({
 
           {/* Title */}
           <h3 className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text pr-8 text-xl font-bold text-transparent">
-            Chi tiết sản phẩm
+            {t("detailsModal.title")}
           </h3>
 
           <div className="mt-5 space-y-5">
@@ -72,7 +74,9 @@ export default function DetailsModal({
                 <div className="mt-1 flex items-center gap-2">
                   <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400">
                     <Tag size={12} />
-                    {getCategoryDisplayName(item.category)}
+                    {item.category
+                      ? t("categories." + item.category)
+                      : t("categories.unknown")}
                   </span>
                 </div>
               </div>
@@ -85,7 +89,9 @@ export default function DetailsModal({
               {/* Price & Status */}
               <div className="flex items-center justify-between rounded-lg border border-slate-800/50 bg-slate-950/40 p-3">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-slate-400">Giá đổi:</span>
+                  <span className="text-sm text-slate-400">
+                    {t("detailsModal.priceLabel")}
+                  </span>
                   <div className="flex items-center gap-1">
                     <span className="text-lg font-bold text-amber-400">
                       {item.price}
@@ -96,14 +102,18 @@ export default function DetailsModal({
 
                 {isEditMode && item.postStatus && (
                   <div className="flex items-center gap-1.5">
-                    <span className="text-xs text-slate-400">Trạng thái:</span>
+                    <span className="text-xs text-slate-400">
+                      {t("detailsModal.statusLabel")}
+                    </span>
                     <span
                       className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                         statusConfig[item.postStatus]?.color ||
                         "bg-slate-800 text-slate-400"
                       }`}
                     >
-                      {statusConfig[item.postStatus]?.name || "Không xác định"}
+                      {item.postStatus
+                        ? t("statuses." + item.postStatus)
+                        : t("statuses.unknown")}
                     </span>
                   </div>
                 )}
@@ -114,16 +124,16 @@ export default function DetailsModal({
                 <div className="flex items-center gap-1.5">
                   <User size={13} className="text-emerald-500/70" />
                   <span>
-                    Người bán:{" "}
+                    {t("detailsModal.sellerLabel")}{" "}
                     <strong className="font-medium text-slate-300">
-                      {item.seller || "Không xác định"}
+                      {item.seller || t("categories.unknown")}
                     </strong>
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Calendar size={13} className="text-emerald-500/70" />
                   <span>
-                    Ngày đăng:{" "}
+                    {t("detailsModal.dateLabel")}{" "}
                     <strong className="font-medium text-slate-300">
                       {item.createdAt &&
                         format(new Date(item.createdAt), "dd/MM/yyyy")}
@@ -141,7 +151,7 @@ export default function DetailsModal({
               className="inline-flex justify-center rounded-lg border border-slate-800 bg-slate-950/80 px-4 py-2 text-sm font-medium text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white"
               onClick={onClose}
             >
-              Đóng
+              {t("common.close")}
             </button>
             {isEditMode ? (
               <button
@@ -149,7 +159,7 @@ export default function DetailsModal({
                 className="inline-flex justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-blue-600/20 transition-all duration-200 hover:bg-blue-500 active:scale-95"
                 onClick={handleEdit}
               >
-                Chỉnh sửa
+                {t("common.edit")}
               </button>
             ) : (
               <button
@@ -157,7 +167,7 @@ export default function DetailsModal({
                 className="inline-flex justify-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-emerald-600/20 transition-all duration-200 hover:bg-emerald-500 active:scale-95"
                 onClick={onPurchase}
               >
-                Mua
+                {t("detailsModal.buyBtn")}
               </button>
             )}
           </div>

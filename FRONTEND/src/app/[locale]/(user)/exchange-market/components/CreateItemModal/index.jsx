@@ -1,9 +1,12 @@
 import { Coins, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import ImageUpload from "../ImageUpload";
 
 export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
+  const t = useTranslations("exchangeMarket");
+
   const [formData, setFormData] = useState({
     image: "",
     name: "",
@@ -61,21 +64,22 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.name.trim()) newErrors.name = "Tên sản phẩm là bắt buộc";
+    if (!formData.name.trim())
+      newErrors.name = t("createModal.errorNameRequired");
     if (!formData.description.trim())
-      newErrors.description = "Mô tả sản phẩm là bắt buộc";
-    if (!formData.price) newErrors.price = "Giá sản phẩm là bắt buộc";
+      newErrors.description = t("createModal.errorDescRequired");
+    if (!formData.price) newErrors.price = t("createModal.errorPriceRequired");
     else if (isNaN(formData.price) || Number(formData.price) <= 0) {
-      newErrors.price = "Giá phải là số dương";
+      newErrors.price = t("createModal.errorPricePositive");
     }
 
-    if (!formData.stock) newErrors.stock = "Số lượng sản phẩm là bắt buộc";
+    if (!formData.stock) newErrors.stock = t("createModal.errorStockRequired");
     else if (
       isNaN(formData.stock) ||
       Number(formData.stock) <= 0 ||
       !Number.isInteger(Number(formData.stock))
     ) {
-      newErrors.stock = "Số lượng phải là số nguyên dương";
+      newErrors.stock = t("createModal.errorStockInteger");
     }
 
     setErrors(newErrors);
@@ -122,11 +126,11 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
         {/* Header */}
         <div className="mb-6">
           <h2 className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-xl font-bold text-transparent">
-            {isEditing ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm mới"}
+            {isEditing
+              ? t("createModal.titleEdit")
+              : t("createModal.titleCreate")}
           </h2>
-          <p className="mt-1 text-xs text-slate-400">
-            Điền đầy đủ thông tin để đăng sản phẩm lên thị trường trao đổi.
-          </p>
+          <p className="mt-1 text-xs text-slate-400">{t("createModal.desc")}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="relative space-y-4">
@@ -147,7 +151,8 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
                 htmlFor="name"
                 className="flex items-center gap-1 text-sm font-semibold text-slate-300"
               >
-                Tên sản phẩm <span className="text-red-500">*</span>
+                {t("createModal.fieldName")}{" "}
+                <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -158,7 +163,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
                 className={`mt-1.5 w-full border bg-slate-950/40 ${
                   errors.name ? "border-red-500" : "border-slate-800"
                 } rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none`}
-                placeholder="Nhập tên sản phẩm"
+                placeholder={t("createModal.placeholderName")}
               />
               {errors.name && (
                 <p className="mt-1 text-xs text-red-500">{errors.name}</p>
@@ -171,7 +176,8 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
                   htmlFor="price"
                   className="flex items-center gap-1 text-sm font-semibold text-slate-300"
                 >
-                  Giá <span className="text-red-500">*</span>
+                  {t("createModal.fieldPrice")}{" "}
+                  <span className="text-red-500">*</span>
                 </label>
                 <div className="relative mt-1.5">
                   <input
@@ -198,7 +204,8 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
                   htmlFor="stock"
                   className="flex items-center gap-1 text-sm font-semibold text-slate-300"
                 >
-                  Số lượng <span className="text-red-500">*</span>
+                  {t("createModal.fieldStock")}{" "}
+                  <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="number"
@@ -225,7 +232,8 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
               htmlFor="description"
               className="flex items-center gap-1 text-sm font-semibold text-slate-300"
             >
-              Mô tả sản phẩm <span className="text-red-500">*</span>
+              {t("createModal.fieldDesc")}{" "}
+              <span className="text-red-500">*</span>
             </label>
             <textarea
               id="description"
@@ -236,7 +244,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
               className={`mt-1.5 w-full border bg-slate-950/40 ${
                 errors.description ? "border-red-500" : "border-slate-800"
               } rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none`}
-              placeholder="Mô tả chi tiết về sản phẩm của bạn"
+              placeholder={t("createModal.placeholderDesc")}
             ></textarea>
             {errors.description && (
               <p className="mt-1 text-xs text-red-500">{errors.description}</p>
@@ -250,7 +258,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
                 htmlFor="category"
                 className="text-sm font-semibold text-slate-300"
               >
-                Danh mục
+                {t("createModal.fieldCategory")}
               </label>
               <select
                 id="category"
@@ -259,11 +267,11 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
                 onChange={handleChange}
                 className="mt-1.5 w-full rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-300 transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
               >
-                <option value="handicraft">Đồ thủ công</option>
-                <option value="recycled">Đồ tái chế</option>
-                <option value="organic">Sản phẩm hữu cơ</option>
-                <option value="plants">Cây trồng</option>
-                <option value="other">Khác</option>
+                <option value="handicraft">{t("categories.handicraft")}</option>
+                <option value="recycled">{t("categories.recycled")}</option>
+                <option value="organic">{t("categories.organic")}</option>
+                <option value="plants">{t("categories.plants")}</option>
+                <option value="other">{t("categories.other")}</option>
               </select>
             </div>
 
@@ -272,7 +280,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
                 htmlFor="product_status"
                 className="text-sm font-semibold text-slate-300"
               >
-                Tình trạng
+                {t("createModal.fieldCondition")}
               </label>
               <select
                 id="product_status"
@@ -281,10 +289,12 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
                 onChange={handleChange}
                 className="mt-1.5 w-full rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-300 transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
               >
-                <option value="new">Mới</option>
-                <option value="like-new">Như mới</option>
-                <option value="used">Đã qua sử dụng</option>
-                <option value="refurbished">Tân trang</option>
+                <option value="new">{t("conditions.new")}</option>
+                <option value="like-new">{t("conditions.like-new")}</option>
+                <option value="used">{t("conditions.used")}</option>
+                <option value="refurbished">
+                  {t("conditions.refurbished")}
+                </option>
               </select>
             </div>
           </div>
@@ -296,13 +306,15 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
               onClick={onCancel}
               className="rounded-lg border border-slate-800 bg-slate-950/80 px-4 py-2 text-sm font-medium text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white"
             >
-              Hủy
+              {t("common.cancel")}
             </button>
             <button
               type="submit"
               className="rounded-lg bg-emerald-600 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-emerald-600/10 transition-all duration-200 hover:bg-emerald-500 active:scale-95"
             >
-              {isEditing ? "Cập nhật sản phẩm" : "Đăng sản phẩm"}
+              {isEditing
+                ? t("createModal.btnUpdate")
+                : t("createModal.btnCreate")}
             </button>
           </div>
         </form>

@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 function MarketFilterButtons({
   marketView,
@@ -11,6 +12,8 @@ function MarketFilterButtons({
   userItemStatuses,
   statusColors,
 }) {
+  const t = useTranslations("exchangeMarket");
+
   const filterItems =
     marketView === "my_items" ? userItemStatuses : marketplaceCategories;
 
@@ -27,7 +30,10 @@ function MarketFilterButtons({
             ? marketStatusFilter === filterItem.key
             : marketCategory === filterItem.key;
         const filterKey = filterItem.key;
-        const filterName = filterItem.name;
+        const filterName =
+          marketView === "my_items"
+            ? t("statuses." + filterKey)
+            : t("categories." + filterKey);
         const Icon = marketView === "my_items" && filterItem.icon;
         const statusColor =
           marketView === "my_items"

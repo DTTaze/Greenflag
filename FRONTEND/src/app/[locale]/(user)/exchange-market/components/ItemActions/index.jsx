@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import DetailsModal from "../DetailsModal";
@@ -11,6 +12,7 @@ function ItemActions({
   handlePurchase,
   getCategoryDisplayName,
 }) {
+  const t = useTranslations("exchangeMarket");
   const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   const handleViewDetails = () => {
@@ -25,13 +27,13 @@ function ItemActions({
             onClick={() => handleEditItem(item)}
             className="text-indigo-650 cursor-pointer text-xs font-bold transition-colors hover:text-indigo-800"
           >
-            Sửa
+            {t("list.editBtn")}
           </button>
           <button
             onClick={() => handleDeleteItem(item.id)}
             className="cursor-pointer text-xs font-bold text-red-600 transition-colors hover:text-red-800"
           >
-            Xóa
+            {t("list.deleteBtn")}
           </button>
         </>
       ) : marketListView === "list" ? (
@@ -39,7 +41,7 @@ function ItemActions({
           onClick={handleViewDetails}
           className="cursor-pointer text-xs font-bold text-[#0B6E4F] transition-colors hover:text-[#0D7F5C]"
         >
-          Xem chi tiết
+          {t("list.viewDetailsBtn")}
         </button>
       ) : (
         <button
@@ -47,7 +49,7 @@ function ItemActions({
           className="cursor-pointer text-xs font-bold text-[#0B6E4F] transition-colors hover:text-[#0D7F5C] disabled:cursor-not-allowed disabled:opacity-50"
           disabled={item.stock <= 0}
         >
-          {item.stock <= 0 ? "Hết hàng" : "Đổi quà"}
+          {item.stock <= 0 ? t("list.outOfStockBtn") : t("list.redeemBtn")}
         </button>
       )}
 

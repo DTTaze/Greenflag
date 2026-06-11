@@ -1,4 +1,5 @@
 import { ArrowRight, MapPin } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 export default function ShippingInfoDisplay({
@@ -6,18 +7,20 @@ export default function ShippingInfoDisplay({
   shippingInfo,
   onChangeShipping,
 }) {
+  const t = useTranslations("exchangeMarket");
+
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <h3 className="flex items-center gap-1.5 text-xs font-semibold tracking-wider text-slate-400 uppercase">
           <MapPin size={14} className="text-emerald-500" />
-          Thông tin nhận hàng
+          {t("shipping.title")}
         </h3>
         <button
           onClick={onChangeShipping}
           className="flex items-center gap-0.5 text-xs font-medium text-emerald-400 transition-colors duration-150 hover:text-emerald-300"
         >
-          Thay đổi
+          {t("shipping.btnChange")}
           <ArrowRight size={12} />
         </button>
       </div>
@@ -47,7 +50,7 @@ export default function ShippingInfoDisplay({
       ) : (
         <div className="rounded-lg border border-red-900/30 bg-red-950/10 p-4 text-center">
           <p className="text-xs font-medium text-red-400">
-            Chưa có thông tin giao hàng
+            {t("shipping.empty")}
           </p>
         </div>
       )}

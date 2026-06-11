@@ -1,4 +1,5 @@
 import { HttpResponse } from 'mvc-common-toolkit';
+import { Not, IsNull } from 'typeorm';
 
 import {
   Body,
@@ -11,8 +12,11 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+import { TaskUser } from '@modules/task/entities/task-user.entity';
+import { Item } from '@modules/commerce/entities/item.entity';
+import { Transaction } from '@modules/commerce/entities/transaction.entity';
 import { Roles } from '@shared/decorators/roles.decorator';
-import { ROLE } from '@shared/enums';
+import { ROLE, TRANSACTION_STATUS } from '@shared/enums';
 import { AuthGuard } from '@shared/guards/auth.guard';
 import { RolesGuard } from '@shared/guards/roles.guard';
 import { extractUserPublicInfo } from '@shared/helpers/user.helper';
@@ -31,6 +35,46 @@ export class AdminUserController {
   @Get()
   async getAllUsers(): Promise<HttpResponse> {
     return this.userService.getAllUsers();
+  }
+
+  @Get('dashboard-stats')
+  async getDashboardStats(): Promise<HttpResponse> {
+    const totalUsers = await this.userService.model.count({
+      where: { deletedAt: IsNull() },
+    });
+
+    const tasksCompleted = await this.userService.model.manager
+      .getRepository(TaskUser)
+      .count({
+        where: { completedAt: Not(IsNull()) },
+      });
+
+    const totalItems = await this.userService.model.manager
+      .getRepository(Item)
+      .count({
+        where: { deletedAt: IsNull() },
+      });
+
+    const acceptedTransactions = await this.userService.model.manager
+      .getRepository(Transaction)
+      .find({
+        where: { status: TRANSACTION_STATUS.ACCEPTED },
+      });
+
+    const totalRevenue = acceptedTransactions.reduce(
+      (sum, tx) => sum + (tx.totalPrice || 0),
+      0,
+    );
+
+    return {
+      success: true,
+      data: {
+        totalUsers,
+        tasksCompleted,
+        totalItems,
+        totalRevenue,
+      },
+    };
   }
 
   @Get(':id')

@@ -344,6 +344,18 @@
       "settings": "Settings",
       "logout": "Log Out"
     },
+    "dashboard": {
+      "title": "Dashboard",
+      "welcome": "Welcome to your admin dashboard. Here's what's happening today.",
+      "totalUsers": "Total Users",
+      "tasksCompleted": "Tasks Completed",
+      "totalItems": "Total Items",
+      "totalRevenue": "Total Revenue",
+      "activityOverview": "Activity Overview",
+      "viewDetails": "View Details",
+      "sinceLastMonth": "Since last month",
+      "sinceLastWeek": "Since last week"
+    },
     "common": {
       "actions": "Actions",
       "search": "Search...",

@@ -344,6 +344,18 @@
       "settings": "Cài đặt",
       "logout": "Đăng xuất"
     },
+    "dashboard": {
+      "title": "Bảng điều khiển",
+      "welcome": "Chào mừng bạn đến với bảng điều khiển quản trị. Đây là những gì đang diễn ra hôm nay.",
+      "totalUsers": "Tổng số người dùng",
+      "tasksCompleted": "Nhiệm vụ hoàn thành",
+      "totalItems": "Tổng số vật phẩm",
+      "totalRevenue": "Tổng doanh thu",
+      "activityOverview": "Tổng quan hoạt động",
+      "viewDetails": "Xem chi tiết",
+      "sinceLastMonth": "So với tháng trước",
+      "sinceLastWeek": "So với tuần trước"
+    },
     "common": {
       "actions": "Thao tác",
       "search": "Tìm kiếm...",

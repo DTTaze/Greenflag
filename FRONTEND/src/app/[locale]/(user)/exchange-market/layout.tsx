@@ -54,7 +54,7 @@ function ExchangeMarketContent({ children }: { children: React.ReactNode }) {
 
       <main className="relative min-h-screen bg-gray-50/50 pt-20 pb-10 transition-colors duration-300 dark:bg-zinc-950/50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <CatalogHeader userCoins={user?.coins?.amount || 0} />
+          <CatalogHeader />
 
           {/* Sticky Sub-navbar containing navigation and Wallet balance */}
           <div className="sticky top-16 z-40 mb-6 w-full rounded-[1.25rem] border border-gray-200 bg-white/95 p-3.5 shadow-sm backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-900/95">

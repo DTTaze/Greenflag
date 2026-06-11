@@ -6,6 +6,7 @@ import {
   Globe,
   History,
   Loader2,
+  MessageSquare,
   Search,
   Tag,
 } from "lucide-react";
@@ -14,6 +15,7 @@ import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 
 import GlobalSearchBar from "@/src/components/common/GlobalSearchBar";
+import PageHeader from "@/src/components/common/PageHeader";
 import { useForumPosts } from "@/src/hooks/useForum";
 import { ForumPost } from "@/src/types/forum/forum.type";
 
@@ -70,26 +72,21 @@ export default function ForumPage() {
   return (
     <main className="min-h-screen bg-gray-50 pt-20 pb-10 transition-colors duration-300 dark:bg-zinc-950">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* 1. Page Header chuẩn (Title bên trái, Action/Search bên phải) */}
-        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-zinc-100">
-              {t("title")}
-            </h1>
-            <p className="mt-1.5 text-sm text-gray-500 dark:text-zinc-400">
-              {t("subtitle")}
-            </p>
-          </div>
-
-          <div className="w-full md:w-96">
+        {/* 1. Page Header chuẩn (Tái sử dụng PageHeader) */}
+        <PageHeader
+          title={t("title")}
+          subtitle={t("subtitle")}
+          theme="blue"
+          icon={MessageSquare}
+          rightContent={
             <GlobalSearchBar
               value={searchQuery}
               onChange={setSearchQuery}
               placeholder={t("searchPlaceholder")}
               aria-label={t("searchAriaLabel")}
             />
-          </div>
-        </div>
+          }
+        />
 
         {/* 2. Main Layout Area (Sidebar on left, feed on right) */}
         <div className="flex flex-col items-start gap-6 md:flex-row">

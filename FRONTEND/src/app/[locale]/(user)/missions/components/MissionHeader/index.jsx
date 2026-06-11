@@ -3,6 +3,7 @@ import { useTranslations } from "next-intl";
 import React from "react";
 
 import GlobalSearchBar from "@/src/components/common/GlobalSearchBar";
+import PageHeader from "@/src/components/common/PageHeader";
 
 /**
  * Header component for the mission page
@@ -14,9 +15,10 @@ const MissionHeader = ({
   setSearchQuery,
 }) => {
   const t = useTranslations("missions.header");
+
   if (loading) {
     return (
-      <div className="mb-8 flex animate-pulse flex-col items-center justify-between rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-500 p-7 text-white shadow-lg sm:flex-row">
+      <div className="mb-8 flex animate-pulse flex-col items-center justify-between rounded-[2rem] bg-gradient-to-r from-emerald-600 to-emerald-500 p-7 text-white shadow-lg sm:flex-row">
         <div>
           <div className="mb-2.5 h-8 w-56 rounded bg-white/20"></div>
           <div className="h-4 w-80 rounded bg-white/20"></div>
@@ -29,32 +31,20 @@ const MissionHeader = ({
   }
 
   return (
-    <div className="relative mb-8 flex flex-col items-center justify-between gap-6 overflow-hidden rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-[#0B6E4F] via-[#0d7353] to-[#054E37] p-7 text-white shadow-xl sm:flex-row">
-      {/* Decorative backdrop glow */}
-      <div className="pointer-events-none absolute -top-20 -right-20 h-48 w-48 rounded-full bg-emerald-400/20 blur-3xl"></div>
-      <div className="pointer-events-none absolute -bottom-20 -left-20 h-48 w-48 rounded-full bg-[#129A72]/20 blur-3xl"></div>
-
-      <div className="flex-1 text-center sm:text-left">
-        <h1 className="mb-2 flex items-center justify-center gap-2.5 text-2xl font-extrabold tracking-tight sm:justify-start md:text-3xl">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/20 backdrop-blur-md">
-            <Sparkles className="h-5 w-5 animate-pulse text-emerald-200" />
-          </div>
-          {t("title")}
-        </h1>
-        <p className="max-w-md text-sm leading-relaxed font-medium text-emerald-100/90 md:text-[0.95rem]">
-          {t("subtitle")}
-        </p>
-      </div>
-
-      <div className="flex w-full justify-center sm:w-auto sm:min-w-[320px]">
+    <PageHeader
+      title={t("title")}
+      subtitle={t("subtitle")}
+      theme="emerald"
+      icon={Sparkles}
+      rightContent={
         <GlobalSearchBar
           value={searchQuery}
           onChange={setSearchQuery}
           placeholder="Tìm kiếm nhiệm vụ xanh..."
           aria-label="Tìm kiếm nhiệm vụ"
         />
-      </div>
-    </div>
+      }
+    />
   );
 };
 

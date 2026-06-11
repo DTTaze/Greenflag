@@ -5,7 +5,13 @@ import { routing } from "./i18n/routing";
 
 export const PUBLIC_ROUTES = ["/login", "/register", "/forgot-password"];
 
-export const PROTECTED_ROUTES = ["/user", "/admin", "/customer", "/community"];
+export const PROTECTED_ROUTES = [
+  "/user",
+  "/admin",
+  "/customer",
+  "/community",
+  "/partner",
+];
 
 function stripLocalePrefix(
   pathname: string,

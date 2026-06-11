@@ -52,7 +52,8 @@ export default function PartnerProfilePage() {
     setFiles((prev) => [...prev, ...list]);
   };
 
-  const removeFile = (idx: number) => setFiles((s) => s.filter((_, i) => i !== idx));
+  const removeFile = (idx: number) =>
+    setFiles((s) => s.filter((_, i) => i !== idx));
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -142,7 +143,10 @@ export default function PartnerProfilePage() {
                 <input
                   value={profile?.full_name || ""}
                   onChange={(e) =>
-                    setProfile((p: any) => ({ ...p, full_name: e.target.value }))
+                    setProfile((p: any) => ({
+                      ...p,
+                      full_name: e.target.value,
+                    }))
                   }
                   className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 transition outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100"
                 />
@@ -162,7 +166,10 @@ export default function PartnerProfilePage() {
                 <input
                   value={profile?.phone_number || ""}
                   onChange={(e) =>
-                    setProfile((p: any) => ({ ...p, phone_number: e.target.value }))
+                    setProfile((p: any) => ({
+                      ...p,
+                      phone_number: e.target.value,
+                    }))
                   }
                   className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 transition outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100"
                 />

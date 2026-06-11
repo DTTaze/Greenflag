@@ -4,15 +4,14 @@ import React from "react";
 export default function StatCard({
   title,
   value,
-  bgColor = "#ffffff",
+  bgClassName = "",
   trendText,
   trendSubtext,
   icon: IconComponent,
 }) {
   return (
     <div
-      className="relative flex h-[150px] flex-col justify-between rounded-xl border border-gray-100 p-5 shadow-sm transition-all duration-300 hover:shadow-md"
-      style={{ backgroundColor: bgColor }}
+      className={`relative flex h-40 flex-col justify-between rounded-xl border border-gray-100 bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-950 ${bgClassName}`}
     >
       {/* Top action button */}
       <div className="absolute top-3 right-3">

@@ -1,7 +1,8 @@
 import { FormEvent } from "react";
+import React from "react";
+
 import { Button } from "@/src/components/ui/button";
 import { TaskDifficulty } from "@/src/types/task/task.type";
-import React from "react";
 
 type TaskFormValues = {
   title: string;

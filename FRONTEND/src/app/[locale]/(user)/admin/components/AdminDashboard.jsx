@@ -45,10 +45,10 @@ export default function AdminDashboard() {
     <div className="flex-1 space-y-6 p-0">
       {/* Welcome header */}
       <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight text-gray-950">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-950 dark:text-slate-100">
           Dashboard
         </h1>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           Welcome to your admin dashboard. Here&apos;s what&apos;s happening
           today.
         </p>
@@ -59,7 +59,7 @@ export default function AdminDashboard() {
         <StatCard
           title="Total Users"
           value="1,285"
-          bgColor="#f0fdf4"
+          bgClassName="bg-emerald-50 dark:bg-emerald-500/10"
           trendText="+12.5%"
           trendSubtext="Since last month"
           icon={Users}
@@ -68,7 +68,7 @@ export default function AdminDashboard() {
         <StatCard
           title="Tasks Completed"
           value="824"
-          bgColor="#ecfdf5"
+          bgClassName="bg-sky-50 dark:bg-sky-500/10"
           trendText="+8.2%"
           trendSubtext="Since last week"
           icon={CheckSquare}
@@ -77,7 +77,7 @@ export default function AdminDashboard() {
         <StatCard
           title="Total Items"
           value="452"
-          bgColor="#fffbeb"
+          bgClassName="bg-amber-50 dark:bg-amber-500/10"
           trendText="+5.3%"
           trendSubtext="Since last month"
           icon={ShoppingBag}
@@ -86,7 +86,7 @@ export default function AdminDashboard() {
         <StatCard
           title="Total Revenue"
           value="$28,450"
-          bgColor="#fff7ed"
+          bgClassName="bg-orange-50 dark:bg-orange-500/10"
           trendText="+16.8%"
           trendSubtext="Since last month"
         />
@@ -95,12 +95,12 @@ export default function AdminDashboard() {
       {/* Charts and Recent Activities Grid */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {/* Charts */}
-        <div className="space-y-4 rounded-xl border border-gray-100 bg-white p-6 shadow-sm md:col-span-2">
+        <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm md:col-span-2 dark:border-slate-700 dark:bg-slate-950 dark:shadow-none">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-950">
+            <h3 className="text-lg font-semibold text-slate-950 dark:text-slate-100">
               Activity Overview
             </h3>
-            <button className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors duration-150 hover:bg-gray-50">
+            <button className="rounded-lg border border-slate-200 bg-white/90 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors duration-150 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">
               View Details
             </button>
           </div>

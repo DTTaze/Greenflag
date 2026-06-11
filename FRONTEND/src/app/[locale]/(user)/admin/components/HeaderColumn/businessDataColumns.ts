@@ -83,11 +83,11 @@ export const eventsColumns = [
   { field: "title", headerName: "Tên sự kiện", width: 200 },
   {
     field: "creator",
-    headerName: "Tên tài khoản người mua",
+    headerName: "Tên tài khoản người tạo",
     width: 200,
     valueGetter: (params: any) => params?.username || "Unknown",
   },
-  { field: "description", headerName: "Tổng giá trị (xu)", width: 150 },
+  { field: "description", headerName: "Mô tả", width: 150 },
   {
     field: "location",
     headerName: "Địa điểm tổ chức",
@@ -95,7 +95,6 @@ export const eventsColumns = [
   },
   { field: "capacity", headerName: "Hạn mức tham gia", width: 150 },
   { field: "coins", headerName: "Số xu nhận được", width: 150 },
-  { field: "status", headerName: "Trạng thái", width: 200 },
   {
     field: "end_sign",
     headerName: "Hạn chót đăng kí",

@@ -1,6 +1,7 @@
-import { Button } from "@/src/components/ui/button";
-import { TaskVisibility, type TaskType } from "@/src/types/task/task.type";
 import React from "react";
+
+import { Button } from "@/src/components/ui/button";
+import { type TaskType, TaskVisibility } from "@/src/types/task/task.type";
 
 type TaskListProps = {
   tasks: TaskType[];

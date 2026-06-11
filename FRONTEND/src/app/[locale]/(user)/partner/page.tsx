@@ -9,8 +9,9 @@ import {
   User,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { DashboardHeader } from "./components/DashboardHeader";
+
 import { DashboardCards } from "./components/DashboardCards";
+import { DashboardHeader } from "./components/DashboardHeader";
 
 export default function PartnerPage() {
   const t = useTranslations("partner");

@@ -1,6 +1,7 @@
 import { ScanQrCode } from "lucide-react";
-import { Button } from "@/src/components/ui/button";
 import React from "react";
+
+import { Button } from "@/src/components/ui/button";
 
 type EventPreviewProps = {
   qrSrc: string | null;

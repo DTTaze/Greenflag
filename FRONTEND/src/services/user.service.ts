@@ -60,6 +60,10 @@ export const getAllUsers = () => {
   return axiosClient.get("/admin/users");
 };
 
+export const getAdminDashboardStats = () => {
+  return axiosClient.get("/admin/users/dashboard-stats");
+};
+
 export const updateUser = (id: number | string, data: any) => {
   return axiosClient.put(`/admin/users/${id}`, data);
 };

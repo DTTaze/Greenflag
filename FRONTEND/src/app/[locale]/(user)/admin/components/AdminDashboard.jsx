@@ -1,17 +1,26 @@
 "use client";
 
-import { CheckSquare, ShoppingBag, Users } from "lucide-react";
+import { CheckSquare, Coins, ShoppingBag, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
 
-import { getAllUsers } from "@/src/utils/api";
+import { getAdminDashboardStats, getAllUsers } from "@/src/utils/api";
 
 import SimpleLineChart from "./ChartAdmin";
 import RecentActivityList from "./RecentActivityList";
 import StatCard from "./StatCard";
 
 export default function AdminDashboard() {
+  const t = useTranslations("admin.dashboard");
   const [recentActivities, setRecentActivities] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    tasksCompleted: 0,
+    totalItems: 0,
+    totalRevenue: 0,
+  });
+  const [statsLoading, setStatsLoading] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -38,7 +47,22 @@ export default function AdminDashboard() {
       }
     };
 
+    const fetchStats = async () => {
+      setStatsLoading(true);
+      try {
+        const response = await getAdminDashboardStats();
+        if (response?.success && response?.data) {
+          setStats(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching dashboard stats:", error);
+      } finally {
+        setStatsLoading(false);
+      }
+    };
+
     fetchUsers();
+    fetchStats();
   }, []);
 
   return (
@@ -46,49 +70,51 @@ export default function AdminDashboard() {
       {/* Welcome header */}
       <div className="space-y-1">
         <h1 className="text-2xl font-bold tracking-tight text-slate-950 dark:text-slate-100">
-          Dashboard
+          {t("title")}
         </h1>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Welcome to your admin dashboard. Here&apos;s what&apos;s happening
-          today.
+          {t("welcome")}
         </p>
       </div>
 
       {/* Admin Grid Container */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4">
         <StatCard
-          title="Total Users"
-          value="1,285"
+          title={t("totalUsers")}
+          value={statsLoading ? "..." : stats.totalUsers.toLocaleString()}
           bgClassName="bg-emerald-50 dark:bg-emerald-500/10"
           trendText="+12.5%"
-          trendSubtext="Since last month"
+          trendSubtext={t("sinceLastMonth")}
           icon={Users}
         />
 
         <StatCard
-          title="Tasks Completed"
-          value="824"
+          title={t("tasksCompleted")}
+          value={statsLoading ? "..." : stats.tasksCompleted.toLocaleString()}
           bgClassName="bg-sky-50 dark:bg-sky-500/10"
           trendText="+8.2%"
-          trendSubtext="Since last week"
+          trendSubtext={t("sinceLastWeek")}
           icon={CheckSquare}
         />
 
         <StatCard
-          title="Total Items"
-          value="452"
+          title={t("totalItems")}
+          value={statsLoading ? "..." : stats.totalItems.toLocaleString()}
           bgClassName="bg-amber-50 dark:bg-amber-500/10"
           trendText="+5.3%"
-          trendSubtext="Since last month"
+          trendSubtext={t("sinceLastMonth")}
           icon={ShoppingBag}
         />
 
         <StatCard
-          title="Total Revenue"
-          value="$28,450"
+          title={t("totalRevenue")}
+          value={
+            statsLoading ? "..." : `${stats.totalRevenue.toLocaleString()} xu`
+          }
           bgClassName="bg-orange-50 dark:bg-orange-500/10"
           trendText="+16.8%"
-          trendSubtext="Since last month"
+          trendSubtext={t("sinceLastMonth")}
+          icon={Coins}
         />
       </div>
 
@@ -98,10 +124,10 @@ export default function AdminDashboard() {
         <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm md:col-span-2 dark:border-slate-700 dark:bg-slate-950 dark:shadow-none">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-slate-950 dark:text-slate-100">
-              Activity Overview
+              {t("activityOverview")}
             </h3>
             <button className="rounded-lg border border-slate-200 bg-white/90 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors duration-150 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">
-              View Details
+              {t("viewDetails")}
             </button>
           </div>
           <SimpleLineChart />

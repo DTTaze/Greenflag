@@ -19,7 +19,17 @@ export default function ProductForm({
   handleSubmit,
   initialData = {},
   mode,
+  categories = [],
 }) {
+  const categoryOptions = categories && categories.length > 0
+    ? categories.map(cat => ({ value: cat.id, label: cat.name }))
+    : [
+        { value: "recycled", label: "Tái chế" },
+        { value: "handicraft", label: "Thủ công" },
+        { value: "organic", label: "Hữu cơ" },
+        { value: "plants", label: "Cây trồng" },
+        { value: "other", label: "Khác" },
+      ];
   const [formData, setFormData] = useState({
     seller_id: "",
     name: "",
@@ -128,11 +138,11 @@ export default function ProductForm({
                 className="h-8 w-full rounded-lg border border-gray-200 bg-transparent px-2.5 py-1 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
               >
                 <option value="">Chọn danh mục</option>
-                <option value="recycled">Tái chế</option>
-                <option value="handicraft">Thủ công</option>
-                <option value="organic">Hữu cơ</option>
-                <option value="plants">Cây trồng</option>
-                <option value="other">Khác</option>
+                {categoryOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
               </select>
             </div>
           </div>

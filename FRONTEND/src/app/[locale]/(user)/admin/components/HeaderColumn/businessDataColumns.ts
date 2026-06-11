@@ -1,7 +1,8 @@
 const formatDateValue = (params: any): string => {
-  if (!params) return "";
+  if (!params) return "N/A";
   const date = new Date(params);
-  return date.toLocaleString();
+  if (isNaN(date.getTime())) return "N/A";
+  return date.toLocaleString("vi-VN");
 };
 
 export const transactionsColumns = [
@@ -12,13 +13,13 @@ export const transactionsColumns = [
     field: "buyer",
     headerName: "Tên tài khoản người mua",
     width: 200,
-    valueGetter: (params: any) => params?.username || "Unknown",
+    valueGetter: (params: any) => params?.username || params?.email || "Chưa cập nhật",
   },
   {
     field: "item_snapshot",
     headerName: "Tên tài khoản người bán",
     width: 200,
-    valueGetter: (params: any) => params?.creator?.username || "Unknown",
+    valueGetter: (params: any) => params?.creator?.username || params?.creator?.email || "Chưa cập nhật",
   },
   { field: "total_price", headerName: "Tổng giá trị (xu)", width: 150 },
   { field: "quantity", headerName: "Số lượng sản phẩm", width: 150 },
@@ -85,7 +86,7 @@ export const eventsColumns = [
     field: "creator",
     headerName: "Tên tài khoản người tạo",
     width: 200,
-    valueGetter: (params: any) => params?.username || "Unknown",
+    valueGetter: (params: any) => params?.username || params?.email || "Chưa cập nhật",
   },
   { field: "description", headerName: "Mô tả", width: 150 },
   {

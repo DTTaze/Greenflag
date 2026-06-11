@@ -156,7 +156,7 @@ Output STRICTLY as a JSON object:
   ): Promise<Post> {
     const isAdmin = userRole === ROLE.ADMIN;
     let status = FORUM_POST_STATUS.APPROVED;
-    let flaggedReason: string | null = null;
+    const flaggedReason: string | null = null;
     let isAdminPost = false;
 
     // Handle image uploads if files exist

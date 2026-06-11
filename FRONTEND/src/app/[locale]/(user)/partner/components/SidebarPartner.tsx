@@ -39,7 +39,9 @@ export default function SidebarPartner({
   const t = useTranslations("partner");
   const pathname = usePathname();
   const router = useRouter();
-  const { dispatch } = useAuthStore();
+  const { user, dispatch } = useAuthStore();
+  const userRoleName = (user?.role || user?.roles?.name || "").toLowerCase();
+  const isAdmin = userRoleName === "admin" || user?.roles?.id === 1;
 
   const handleLogout = async () => {
     try {
@@ -152,6 +154,20 @@ export default function SidebarPartner({
 
         {/* Navigation items */}
         <nav className="flex-1 space-y-1 overflow-y-auto px-4 py-4">
+          {isAdmin && (
+            <Link
+              href="/admin"
+              onClick={onClose}
+              className="flex items-center gap-3.5 rounded-2xl px-4 py-3 text-sm font-semibold bg-amber-50 text-amber-700 hover:bg-amber-100 dark:bg-amber-950/10 dark:text-amber-400 dark:hover:bg-amber-950/20 transition-all duration-200 mb-2 border border-amber-100/50 dark:border-amber-900/30"
+            >
+              <span className="text-amber-600 dark:text-amber-400">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+              </span>
+              <span>{t("backToAdmin") || "Trở về Admin"}</span>
+            </Link>
+          )}
           {menuItems.map((item) => {
             const isActive =
               item.path === "/partner"
@@ -185,10 +201,6 @@ export default function SidebarPartner({
 
         {/* Footer actions */}
         <div className="border-t border-gray-200 p-4 dark:border-zinc-800">
-          <div className="flex items-center justify-between px-2 pb-4">
-            <LocaleSwitcher />
-            <ThemeSwitcher />
-          </div>
           <button
             onClick={handleLogout}
             className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-red-600 transition-colors duration-150 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/10"

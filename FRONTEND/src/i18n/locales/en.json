@@ -194,6 +194,8 @@
     "notifications": "Notifications"
   },
   "partner": {
+    "logout": "Partner Log Out",
+    "backToAdmin": "Back to Admin",
     "dashboard": {
       "version": "Version 1.0",
       "title": "Partner Dashboard",
@@ -348,7 +350,7 @@
       "queues": "Queues",
       "notifications": "Notifications",
       "partnerSpace": "Partner Space",
-      "settings": "Settings",
+      "settings": "System Config",
       "logout": "Log Out"
     },
     "dashboard": {

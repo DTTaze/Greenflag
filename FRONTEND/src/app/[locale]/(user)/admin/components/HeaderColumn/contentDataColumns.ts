@@ -1,7 +1,8 @@
 const formatDateValue = (params: any): string => {
-  if (!params) return "";
+  if (!params) return "N/A";
   const date = new Date(params);
-  return date.toLocaleString();
+  if (isNaN(date.getTime())) return "N/A";
+  return date.toLocaleString("vi-VN");
 };
 
 export const taskColumns = [
@@ -17,7 +18,7 @@ export const taskColumns = [
     field: "User",
     headerName: "Bên cung cấp",
     width: 150,
-    valueGetter: (params: any) => params?.username || "Unknown",
+    valueGetter: (params: any) => params?.username || params?.email || "Chưa cập nhật",
   },
   {
     field: "dueDate",
@@ -55,7 +56,7 @@ export const itemColumns = [
     field: "creator",
     headerName: "Tài khoản cung cấp",
     width: 150,
-    valueGetter: (params: any) => params?.username || "Unknown",
+    valueGetter: (params: any) => params?.username || params?.email || "Chưa cập nhật",
   },
   {
     field: "purchase_limit_per_day",
@@ -90,7 +91,7 @@ export const productColumns = [
     field: "seller",
     headerName: "Tài khoản người bán",
     width: 150,
-    valueGetter: (params: any) => params?.username || "Unknown",
+    valueGetter: (params: any) => params?.username || params?.email || "Chưa cập nhật",
   },
   {
     field: "updated_at",

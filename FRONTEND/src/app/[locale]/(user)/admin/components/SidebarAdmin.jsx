@@ -50,11 +50,6 @@ const menuSections = [
         icon: <Users size={20} />,
         path: "/admin/users",
       },
-      {
-        textKey: "rolesPermissions",
-        icon: <ShieldCheck size={20} />,
-        path: "/admin/roles-permissions",
-      },
     ],
   },
   {
@@ -111,9 +106,9 @@ const menuSections = [
     labelKey: "other",
     items: [
       {
-        textKey: "queues",
-        icon: <ListPlus size={20} />,
-        path: "/admin/queues",
+        textKey: "settings",
+        icon: <Settings size={20} />,
+        path: "/admin/settings",
       },
       {
         textKey: "notifications",
@@ -172,14 +167,16 @@ export default function SidebarAdmin({
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex flex-col border-r border-gray-200 bg-white transition-all duration-300 dark:border-zinc-800 dark:bg-zinc-950 md:sticky md:top-0 md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex flex-col border-r border-gray-200 bg-white transition-all duration-300 md:sticky md:top-0 md:translate-x-0 dark:border-zinc-800 dark:bg-zinc-950 ${
           isCollapsed ? "w-16" : "w-72"
         } ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
       >
         {/* Header/Logo */}
-        <div className={`flex h-16 items-center border-b border-gray-200 px-4 dark:border-zinc-800 ${
-          isCollapsed ? "justify-center" : "justify-between"
-        }`}>
+        <div
+          className={`flex h-16 items-center border-b border-gray-200 px-4 dark:border-zinc-800 ${
+            isCollapsed ? "justify-center" : "justify-between"
+          }`}
+        >
           <Link
             href="/"
             onClick={onClose}
@@ -187,11 +184,11 @@ export default function SidebarAdmin({
           >
             <img
               src="/images/Logo-Greenflag.png"
-              className="h-8 w-8 object-contain min-w-[32px]"
+              className="h-8 w-8 min-w-[32px] object-contain"
               alt="Green Flag Logo"
             />
             {!isCollapsed && (
-              <span className="text-md font-extrabold text-[#0B6E4F] dark:text-emerald-500 whitespace-nowrap">
+              <span className="text-md font-extrabold whitespace-nowrap text-[#0B6E4F] dark:text-emerald-500">
                 {t("title") || "Admin Hub"}
               </span>
             )}
@@ -199,7 +196,7 @@ export default function SidebarAdmin({
           {!isCollapsed && (
             <button
               onClick={onClose}
-              className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 dark:text-zinc-400 dark:hover:bg-zinc-800 md:hidden"
+              className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 md:hidden dark:text-zinc-400 dark:hover:bg-zinc-800"
             >
               <X size={20} />
             </button>
@@ -208,18 +205,22 @@ export default function SidebarAdmin({
 
         {/* User Info Section */}
         {userInfo && userInfo.id !== 0 && (
-          <div className={`flex items-center gap-3 border-b border-gray-200 px-4 py-4 dark:border-zinc-800 ${
-            isCollapsed ? "justify-center" : ""
-          }`}>
+          <div
+            className={`flex items-center gap-3 border-b border-gray-200 px-4 py-4 dark:border-zinc-800 ${
+              isCollapsed ? "justify-center" : ""
+            }`}
+          >
             {userInfo.avatar_url ? (
               <img
-                className="h-9 w-9 rounded-full border border-emerald-500 object-cover min-w-[36px]"
+                className="h-9 w-9 min-w-[36px] rounded-full border border-emerald-500 object-cover"
                 src={userInfo.avatar_url}
                 alt="Avatar"
               />
             ) : (
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-600 text-sm font-bold text-white dark:bg-emerald-500 min-w-[36px]">
-                {userInfo.username ? userInfo.username.charAt(0).toUpperCase() : "A"}
+              <div className="flex h-9 w-9 min-w-[36px] items-center justify-center rounded-full bg-emerald-600 text-sm font-bold text-white dark:bg-emerald-500">
+                {userInfo.username
+                  ? userInfo.username.charAt(0).toUpperCase()
+                  : "A"}
               </div>
             )}
             {!isCollapsed && (
@@ -246,7 +247,9 @@ export default function SidebarAdmin({
               )}
               <ul className="space-y-0.5">
                 {section.items.map((item) => {
-                  const selected = pathname === item.path || (item.path !== "/admin" && pathname.startsWith(item.path));
+                  const selected =
+                    pathname === item.path ||
+                    (item.path !== "/admin" && pathname.startsWith(item.path));
                   return (
                     <li key={item.textKey}>
                       <button
@@ -255,7 +258,7 @@ export default function SidebarAdmin({
                           isCollapsed ? "justify-center px-0" : "px-4"
                         } ${
                           selected
-                            ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 font-semibold"
+                            ? "bg-emerald-50 font-semibold text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400"
                             : "text-gray-650 hover:bg-gray-50 hover:text-gray-950 dark:text-zinc-400 dark:hover:bg-zinc-900/50 dark:hover:text-zinc-100"
                         }`}
                         title={isCollapsed ? t(item.textKey) : undefined}
@@ -283,13 +286,6 @@ export default function SidebarAdmin({
 
         {/* Footer actions */}
         <div className="border-t border-gray-200 p-4 dark:border-zinc-800">
-          <div className={`flex items-center pb-4 ${
-            isCollapsed ? "flex-col gap-3 justify-center" : "justify-between"
-          }`}>
-            <LocaleSwitcher />
-            <ThemeSwitcher />
-          </div>
-          
           <button
             onClick={handleLogout}
             className={`flex w-full items-center gap-3 rounded-2xl py-3 text-sm font-semibold text-red-600 transition-colors duration-150 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/10 ${
@@ -304,9 +300,13 @@ export default function SidebarAdmin({
           {/* Toggle button for Desktop */}
           <button
             onClick={onToggleCollapse}
-            className="hidden md:flex items-center justify-center p-2 rounded-2xl hover:bg-gray-100 dark:hover:bg-zinc-900/50 text-gray-500 dark:text-zinc-400 mt-3 mx-auto w-full border border-gray-100 dark:border-zinc-800"
+            className="mx-auto mt-3 hidden w-full items-center justify-center rounded-2xl border border-gray-100 p-2 text-gray-500 hover:bg-gray-100 md:flex dark:border-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-900/50"
           >
-            {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+            {isCollapsed ? (
+              <ChevronRight size={18} />
+            ) : (
+              <ChevronLeft size={18} />
+            )}
           </button>
         </div>
       </aside>

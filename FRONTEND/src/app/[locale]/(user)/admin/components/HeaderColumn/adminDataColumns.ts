@@ -1,7 +1,8 @@
 const formatDateValue = (params: any): string => {
-  if (!params) return "";
+  if (!params) return "N/A";
   const date = new Date(params);
-  return date.toLocaleString();
+  if (isNaN(date.getTime())) return "N/A";
+  return date.toLocaleString("vi-VN");
 };
 
 export const userColumns = [
@@ -16,12 +17,6 @@ export const userColumns = [
     field: "avatar_url",
     headerName: "Avatar URL",
     width: 250,
-  },
-  {
-    field: "roles",
-    headerName: "Vai trò",
-    width: 120,
-    valueGetter: (params: any) => params?.name || "Unknown",
   },
   {
     field: "updated_at",
@@ -79,13 +74,13 @@ export const rolesPermissionsColumns = [
     field: "role",
     headerName: "Name",
     width: 250,
-    valueGetter: (params: any) => params?.name || "Unknown",
+    valueGetter: (params: any) => params?.name || "Chưa cập nhật",
   },
   {
     field: "permission",
     headerName: "Subject",
     width: 150,
-    valueGetter: (params: any) => params?.subject || "Unknown",
+    valueGetter: (params: any) => params?.subject || "Chưa cập nhật",
   },
   {
     field: "updated_at",

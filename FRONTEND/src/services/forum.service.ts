@@ -282,4 +282,33 @@ export const forumService = {
     );
     return response;
   },
+
+  adminGetPosts: async (status: string): Promise<BaseResponse<{ items: ForumPost[]; nextCursor: string | null }>> => {
+    const response: any = await axiosClient.get("/admin/forum/posts", {
+      params: { status },
+    });
+    const items = response.data?.items
+      ? response.data.items.map(mapBackendPostToForumPost)
+      : [];
+    return {
+      success: response.success,
+      message: response.message,
+      data: {
+        items,
+        nextCursor: response.data?.nextCursor || null,
+      },
+    };
+  },
+
+  approvePost: async (id: string): Promise<BaseResponse<any>> => {
+    const response: any = await axiosClient.patch(`/admin/forum/posts/${id}/approve`);
+    return response;
+  },
+
+  rejectPost: async (id: string, flaggedReason?: string): Promise<BaseResponse<any>> => {
+    const response: any = await axiosClient.patch(`/admin/forum/posts/${id}/reject`, {
+      flaggedReason,
+    });
+    return response;
+  },
 };

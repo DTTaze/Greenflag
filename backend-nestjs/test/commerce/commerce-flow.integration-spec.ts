@@ -1,27 +1,31 @@
+import { Job, Queue } from 'bullmq';
+import { DataSource, Repository } from 'typeorm';
+
 import { getQueueToken } from '@nestjs/bullmq';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
-import { Job, Queue } from 'bullmq';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 
+import { Item } from '@modules/commerce/entities/item.entity';
+import { Transaction } from '@modules/commerce/entities/transaction.entity';
+import { CommerceProcessor } from '@modules/commerce/processors/commerce.processor';
+import { ItemService } from '@modules/commerce/services/item.service';
+import { TransactionService } from '@modules/commerce/services/transaction.service';
+import { ShippingReconciliationCron } from '@modules/delivery/cron/shipping-reconciliation.cron';
 import { DeliveryAccount } from '@modules/delivery/entities/delivery-account.entity';
 import { DeliveryOrder } from '@modules/delivery/entities/delivery-order.entity';
 import { ReceiverInformation } from '@modules/delivery/entities/receiver-information.entity';
 import { ShippingFactoryService } from '@modules/delivery/services/shipping-factory.service';
-import { ShippingReconciliationCron } from '@modules/delivery/cron/shipping-reconciliation.cron';
+import { MetricsService } from '@modules/global/metrics.service';
 import { Coin } from '@modules/user/entities/coin.entity';
 import { User } from '@modules/user/entities/user.entity';
-import { MetricsService } from '@modules/global/metrics.service';
 
 import { JOB_NAME, QUEUE_NAME } from '@shared/constants';
-import { ITEM_STATUS, TRANSACTION_STATUS, DELIVERY_ORDER_STATUS } from '@shared/enums';
-
-import { CommerceProcessor } from '@modules/commerce/processors/commerce.processor';
-import { Item } from '@modules/commerce/entities/item.entity';
-import { Transaction } from '@modules/commerce/entities/transaction.entity';
-import { ItemService } from '@modules/commerce/services/item.service';
-import { TransactionService } from '@modules/commerce/services/transaction.service';
+import {
+  DELIVERY_ORDER_STATUS,
+  ITEM_STATUS,
+  TRANSACTION_STATUS,
+} from '@shared/enums';
 
 describe('Commerce Flow Integration', () => {
   let itemService: ItemService;
@@ -153,7 +157,9 @@ describe('Commerce Flow Integration', () => {
     itemService = module.get<ItemService>(ItemService);
     commerceProcessor = module.get<CommerceProcessor>(CommerceProcessor);
     commerceQueue = module.get<Queue>(getQueueToken(QUEUE_NAME.COMMERCE));
-    shippingReconciliationCron = module.get<ShippingReconciliationCron>(ShippingReconciliationCron);
+    shippingReconciliationCron = module.get<ShippingReconciliationCron>(
+      ShippingReconciliationCron,
+    );
 
     jest.clearAllMocks();
   });
@@ -175,21 +181,23 @@ describe('Commerce Flow Integration', () => {
     } as Coin;
 
     // Simulate database lookup during purchase creation
-    mockQueryRunner.manager.findOne.mockImplementation((entityClass, options) => {
-      if (entityClass === Item) return Promise.resolve(mockItem);
-      if (entityClass === Coin) return Promise.resolve(mockCoin);
-      if (entityClass === ReceiverInformation) {
-        return Promise.resolve({
-          id: 'receiver-info-123',
-          userId: 'buyer-123',
-          isDefault: true,
-          toName: 'Recipient Name',
-          toPhone: '0901234567',
-          toAddress: '123 Test Street',
-        });
-      }
-      return Promise.resolve(null);
-    });
+    mockQueryRunner.manager.findOne.mockImplementation(
+      (entityClass, options) => {
+        if (entityClass === Item) return Promise.resolve(mockItem);
+        if (entityClass === Coin) return Promise.resolve(mockCoin);
+        if (entityClass === ReceiverInformation) {
+          return Promise.resolve({
+            id: 'receiver-info-123',
+            userId: 'buyer-123',
+            isDefault: true,
+            toName: 'Recipient Name',
+            toPhone: '0901234567',
+            toAddress: '123 Test Street',
+          });
+        }
+        return Promise.resolve(null);
+      },
+    );
 
     const result = await itemService.purchaseItem('buyer-123', 'item-123', {
       name: 'Test Item',
@@ -294,7 +302,9 @@ describe('Commerce Flow Integration', () => {
 
     // Mock provider getOrderStatus
     const mockProvider = mockShippingFactoryService.getProvider('ghn');
-    mockProvider.getOrderStatus = jest.fn().mockResolvedValue(DELIVERY_ORDER_STATUS.DELIVERED);
+    mockProvider.getOrderStatus = jest
+      .fn()
+      .mockResolvedValue(DELIVERY_ORDER_STATUS.DELIVERED);
 
     await shippingReconciliationCron.reconcileShippingOrders();
 

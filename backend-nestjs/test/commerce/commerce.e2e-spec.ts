@@ -1,15 +1,20 @@
-import { ExecutionContext, INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 
-import { AuthGuard } from '@shared/guards/auth.guard';
-import { ITEM_STATUS, TRANSACTION_STATUS } from '@shared/enums';
-import { generateSuccessResult } from '@shared/helpers/operation-result.helper';
+import {
+  ExecutionContext,
+  INestApplication,
+  ValidationPipe,
+} from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 
 import { CommerceController } from '@modules/commerce/commerce.controller';
 import { ItemService } from '@modules/commerce/services/item.service';
 import { ProductService } from '@modules/commerce/services/product.service';
 import { TransactionService } from '@modules/commerce/services/transaction.service';
+
+import { ITEM_STATUS, TRANSACTION_STATUS } from '@shared/enums';
+import { AuthGuard } from '@shared/guards/auth.guard';
+import { generateSuccessResult } from '@shared/helpers/operation-result.helper';
 
 describe('CommerceController (e2e)', () => {
   let app: INestApplication;
@@ -40,9 +45,15 @@ describe('CommerceController (e2e)', () => {
   };
 
   const mockTransactionService = {
-    getTransactionByBuyerId: jest.fn().mockResolvedValue(generateSuccessResult([])),
-    getTransactionById: jest.fn().mockResolvedValue(generateSuccessResult(null)),
-    cancelTransactionById: jest.fn().mockResolvedValue(generateSuccessResult(null)),
+    getTransactionByBuyerId: jest
+      .fn()
+      .mockResolvedValue(generateSuccessResult([])),
+    getTransactionById: jest
+      .fn()
+      .mockResolvedValue(generateSuccessResult(null)),
+    cancelTransactionById: jest
+      .fn()
+      .mockResolvedValue(generateSuccessResult(null)),
   };
 
   // AuthGuard Bypass Mock

@@ -194,6 +194,8 @@
     "notifications": "Thông báo"
   },
   "partner": {
+    "logout": "Đăng xuất đối tác",
+    "backToAdmin": "Trở về Admin",
     "dashboard": {
       "version": "Phiên bản 1.0",
       "title": "Bảng điều khiển đối tác",
@@ -348,7 +350,7 @@
       "queues": "Hàng đợi",
       "notifications": "Thông báo",
       "partnerSpace": "Không gian Đối tác",
-      "settings": "Cài đặt",
+      "settings": "Cấu hình",
       "logout": "Đăng xuất"
     },
     "dashboard": {

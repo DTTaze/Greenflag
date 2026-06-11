@@ -60,11 +60,6 @@ export default function UserManagementPage() {
       render: (profile) => profile?.fullName || "-",
     },
     {
-      field: "role",
-      headerName: tCommon("role"),
-      width: "120px",
-    },
-    {
       field: "status",
       headerName: tCommon("status"),
       width: "120px",

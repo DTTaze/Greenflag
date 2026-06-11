@@ -3,7 +3,7 @@ import * as sanitizeHtml from 'sanitize-html';
 
 import { BadRequestException } from '@nestjs/common';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const escapeHTMLFn = require('escape-html');
 
 export function SanitizeInput(options?: {

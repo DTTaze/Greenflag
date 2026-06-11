@@ -1,60 +1,61 @@
-import { NestFactory } from '@nestjs/core';
-import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
-import { randomUUID } from 'crypto';
+import { DataSource } from 'typeorm';
+
+import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from '../app.module';
-
-// Import Entities
-import { User } from '../modules/user/entities/user.entity';
-import { UserProfile } from '../modules/user/entities/user-profile.entity';
-import { Coin } from '../modules/user/entities/coin.entity';
-import { Rank } from '../modules/user/entities/rank.entity';
-import { UserSocialAccount } from '../modules/user/entities/user-social-account.entity';
-import { SystemConfig } from '../modules/system-config/system-config.entity';
-import { Type } from '../modules/task/entities/type.entity';
-import { Task } from '../modules/task/entities/task.entity';
-import { TaskType } from '../modules/task/entities/task-type.entity';
-import { TaskUser } from '../modules/task/entities/task-user.entity';
-import { TaskSubmit } from '../modules/task/entities/task-submit.entity';
-import { Product } from '../modules/commerce/entities/product.entity';
 import { Item } from '../modules/commerce/entities/item.entity';
+import { Product } from '../modules/commerce/entities/product.entity';
 import { Transaction } from '../modules/commerce/entities/transaction.entity';
-import { ReceiverInformation } from '../modules/delivery/entities/receiver-information.entity';
 import { DeliveryAccount } from '../modules/delivery/entities/delivery-account.entity';
 import { DeliveryOrder } from '../modules/delivery/entities/delivery-order.entity';
-import { Event } from '../modules/event/entities/event.entity';
+import { ReceiverInformation } from '../modules/delivery/entities/receiver-information.entity';
 import { EventUser } from '../modules/event/entities/event-user.entity';
-import { Post } from '../modules/forum/entities/post.entity';
+import { Event } from '../modules/event/entities/event.entity';
+import { CommentVote } from '../modules/forum/entities/comment-vote.entity';
 import { Comment } from '../modules/forum/entities/comment.entity';
 import { PostVote } from '../modules/forum/entities/post-vote.entity';
-import { CommentVote } from '../modules/forum/entities/comment-vote.entity';
-import { Notification, NotificationType } from '../modules/notification/entities/notification.entity';
-
+import { Post } from '../modules/forum/entities/post.entity';
+import {
+  Notification,
+  NotificationType,
+} from '../modules/notification/entities/notification.entity';
+import { SystemConfig } from '../modules/system-config/system-config.entity';
+import { TaskSubmit } from '../modules/task/entities/task-submit.entity';
+import { TaskType } from '../modules/task/entities/task-type.entity';
+import { TaskUser } from '../modules/task/entities/task-user.entity';
+import { Task } from '../modules/task/entities/task.entity';
+import { Type } from '../modules/task/entities/type.entity';
+import { Coin } from '../modules/user/entities/coin.entity';
+import { Rank } from '../modules/user/entities/rank.entity';
+import { UserProfile } from '../modules/user/entities/user-profile.entity';
+// Import Entities
+import { User } from '../modules/user/entities/user.entity';
 // Import Enums
 import {
-  ROLE,
+  CARRIER_TYPE,
+  DELIVERY_ORDER_STATUS,
+  ENTITY_STATUS,
+  FORUM_POST_STATUS,
+  FORUM_VOTE_TYPE,
   ITEM_STATUS,
   PRODUCT_CATEGORY,
   PRODUCT_CONDITION,
   PRODUCT_POST_STATUS,
-  TRANSACTION_STATUS,
-  DELIVERY_ORDER_STATUS,
-  EVENT_STATUS,
-  TASK_DIFFICULTY,
-  TASK_VISIBILITY,
-  TASK_SUBMIT_STATUS,
-  ENTITY_STATUS,
-  SYSTEM_CONFIG_KEY,
-  CARRIER_TYPE,
   RECEIVER_ACCOUNT_TYPE,
-  FORUM_POST_STATUS,
-  FORUM_VOTE_TYPE,
+  ROLE,
+  SYSTEM_CONFIG_KEY,
+  TASK_DIFFICULTY,
+  TASK_SUBMIT_STATUS,
+  TASK_VISIBILITY,
+  TRANSACTION_STATUS,
 } from '../shared/enums';
 
 async function bootstrap() {
   console.log('🚀 Bootstrapping NestJS Application Context for Seeder...');
-  const app = await NestFactory.createApplicationContext(AppModule, { logger: ['error', 'warn'] });
+  const app = await NestFactory.createApplicationContext(AppModule, {
+    logger: ['error', 'warn'],
+  });
   const dataSource = app.get(DataSource);
 
   console.log('🔌 Connected to database. Executing seeder transaction...');
@@ -130,27 +131,32 @@ async function bootstrap() {
       {
         key: SYSTEM_CONFIG_KEY.AI_AUTO_MODERATION_ENABLED,
         value: 'false',
-        description: 'Trạng thái hoạt động của tự động hóa AI kiểm duyệt bài viết và bình luận trực tiếp',
+        description:
+          'Trạng thái hoạt động của tự động hóa AI kiểm duyệt bài viết và bình luận trực tiếp',
       },
       {
         key: SYSTEM_CONFIG_KEY.AI_MODERATION_POST_ROLES,
         value: JSON.stringify(['USER']),
-        description: 'Danh sách các vai trò cần được AI lọc và kiểm duyệt trước khi đăng bài viết (JSON array)',
+        description:
+          'Danh sách các vai trò cần được AI lọc và kiểm duyệt trước khi đăng bài viết (JSON array)',
       },
       {
         key: SYSTEM_CONFIG_KEY.AI_MODERATION_COMMENT_ROLES,
         value: JSON.stringify(['USER']),
-        description: 'Danh sách các vai trò cần được AI lọc và kiểm duyệt trước khi bình luận (JSON array)',
+        description:
+          'Danh sách các vai trò cần được AI lọc và kiểm duyệt trước khi bình luận (JSON array)',
       },
       {
         key: SYSTEM_CONFIG_KEY.AI_CRON_MODERATION_ENABLED,
         value: 'false',
-        description: 'Trạng thái hoạt động của Cron Job quét duyệt bài viết và bình luận chạy nền',
+        description:
+          'Trạng thái hoạt động của Cron Job quét duyệt bài viết và bình luận chạy nền',
       },
       {
         key: SYSTEM_CONFIG_KEY.AI_CRON_DELAY_MINUTES,
         value: '15',
-        description: 'Số phút trễ trước khi quét các bài viết/bình luận PENDING',
+        description:
+          'Số phút trễ trước khi quét các bài viết/bình luận PENDING',
       },
     ];
     await queryRunner.manager.save(SystemConfig, systemConfigs);
@@ -166,15 +172,15 @@ async function bootstrap() {
       { type: 'others' },
     ];
     const seededTypes = await queryRunner.manager.save(Type, typesData);
-    const typeDaily = seededTypes.find(t => t.type === 'daily')!;
-    const typeWeekly = seededTypes.find(t => t.type === 'weekly')!;
-    const typeOthers = seededTypes.find(t => t.type === 'others')!;
+    const typeDaily = seededTypes.find((t) => t.type === 'daily')!;
+    const typeWeekly = seededTypes.find((t) => t.type === 'weekly')!;
+    const typeOthers = seededTypes.find((t) => t.type === 'others')!;
 
     // ============================================================================
     // 4. USERS & PROFILES (Fixed demo accounts + dummy accounts)
     // ============================================================================
     console.log('👥 Seeding Users...');
-    
+
     // Fixed Demo Accounts
     const demoUsers = [
       {
@@ -182,21 +188,24 @@ async function bootstrap() {
         username: 'admin',
         role: ROLE.ADMIN,
         fullName: 'GreenFlag Administrator',
-        avatarUrl: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=120&auto=format&fit=crop&q=80',
+        avatarUrl:
+          'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=120&auto=format&fit=crop&q=80',
       },
       {
         email: 'partner@greenflag.id.vn',
         username: 'partner',
         role: ROLE.PARTNER,
         fullName: 'GreenFlag Partner Business',
-        avatarUrl: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=120&auto=format&fit=crop&q=80',
+        avatarUrl:
+          'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=120&auto=format&fit=crop&q=80',
       },
       {
         email: 'user@greenflag.id.vn',
         username: 'user',
         role: ROLE.USER,
         fullName: 'Thành viên Demo GreenFlag',
-        avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
+        avatarUrl:
+          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
       },
     ];
 
@@ -207,21 +216,24 @@ async function bootstrap() {
         username: 'johndoe',
         role: ROLE.USER,
         fullName: 'John Doe Green',
-        avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80',
+        avatarUrl:
+          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80',
       },
       {
         email: 'janesmith@greenflag.id.vn',
         username: 'janesmith',
         role: ROLE.USER,
         fullName: 'Jane Smith Eco',
-        avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&auto=format&fit=crop&q=80',
+        avatarUrl:
+          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&auto=format&fit=crop&q=80',
       },
       {
         email: 'zerocoin@greenflag.id.vn',
         username: 'zerouser',
         role: ROLE.USER,
         fullName: 'Newbie Zero Balance',
-        avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop&q=80',
+        avatarUrl:
+          'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop&q=80',
       },
     ];
 
@@ -242,8 +254,11 @@ async function bootstrap() {
       const profile = queryRunner.manager.create(UserProfile, {
         userId: savedUser.id,
         fullName: u.fullName,
-        streak: u.username === 'user' ? 5 : (u.role === ROLE.USER ? 2 : 0),
-        phoneNumber: u.username === 'user' ? '0987654321' : `0911${Math.floor(100000 + Math.random() * 900000)}`,
+        streak: u.username === 'user' ? 5 : u.role === ROLE.USER ? 2 : 0,
+        phoneNumber:
+          u.username === 'user'
+            ? '0987654321'
+            : `0911${Math.floor(100000 + Math.random() * 900000)}`,
         lastCompletedTask: u.username === 'user' ? relativeDate(-1) : undefined,
       });
       await queryRunner.manager.save(UserProfile, profile);
@@ -251,12 +266,12 @@ async function bootstrap() {
       createdUsers.push(savedUser);
     }
 
-    const adminUser = createdUsers.find(u => u.username === 'admin')!;
-    const partnerUser = createdUsers.find(u => u.username === 'partner')!;
-    const mainDemoUser = createdUsers.find(u => u.username === 'user')!;
-    const johnUser = createdUsers.find(u => u.username === 'johndoe')!;
-    const janeUser = createdUsers.find(u => u.username === 'janesmith')!;
-    const zeroUser = createdUsers.find(u => u.username === 'zerouser')!;
+    const adminUser = createdUsers.find((u) => u.username === 'admin')!;
+    const partnerUser = createdUsers.find((u) => u.username === 'partner')!;
+    const mainDemoUser = createdUsers.find((u) => u.username === 'user')!;
+    const johnUser = createdUsers.find((u) => u.username === 'johndoe')!;
+    const janeUser = createdUsers.find((u) => u.username === 'janesmith')!;
+    const zeroUser = createdUsers.find((u) => u.username === 'zerouser')!;
 
     // ============================================================================
     // 5. TASKS (Missions)
@@ -266,8 +281,10 @@ async function bootstrap() {
       {
         creatorId: adminUser.id,
         title: 'Phân loại rác tại nguồn',
-        description: 'Phân loại rác hữu cơ, rác tái chế và rác vô cơ tại gia đình bạn.',
-        content: 'Chụp hình ảnh túi rác tái chế và túi rác hữu cơ đã được tách riêng đặt tại điểm tập kết hoặc thùng rác gia đình.',
+        description:
+          'Phân loại rác hữu cơ, rác tái chế và rác vô cơ tại gia đình bạn.',
+        content:
+          'Chụp hình ảnh túi rác tái chế và túi rác hữu cơ đã được tách riêng đặt tại điểm tập kết hoặc thùng rác gia đình.',
         coins: 1500,
         difficulty: TASK_DIFFICULTY.EASY,
         total: 1,
@@ -276,8 +293,10 @@ async function bootstrap() {
       {
         creatorId: partnerUser.id,
         title: 'Đạp xe vì môi trường',
-        description: 'Sử dụng xe đạp thay thế xe máy cho các chặng đường đi lại hàng ngày dưới 5km.',
-        content: 'Chụp ảnh bạn đi xe đạp kèm ứng dụng đo quãng đường (Strava, Runkeeper...) đạt tối thiểu 3km.',
+        description:
+          'Sử dụng xe đạp thay thế xe máy cho các chặng đường đi lại hàng ngày dưới 5km.',
+        content:
+          'Chụp ảnh bạn đi xe đạp kèm ứng dụng đo quãng đường (Strava, Runkeeper...) đạt tối thiểu 3km.',
         coins: 2000,
         difficulty: TASK_DIFFICULTY.MEDIUM,
         total: 2,
@@ -286,8 +305,10 @@ async function bootstrap() {
       {
         creatorId: partnerUser.id,
         title: 'Trồng thêm một cây xanh',
-        description: 'Trồng cây xanh hoặc chậu cây mini tại ban công, bàn làm việc hoặc sân vườn.',
-        content: 'Chụp ảnh chậu cây mới trồng kèm thẻ GreenFlag hoặc biển tên viết tay ngày chụp để xác nhận.',
+        description:
+          'Trồng cây xanh hoặc chậu cây mini tại ban công, bàn làm việc hoặc sân vườn.',
+        content:
+          'Chụp ảnh chậu cây mới trồng kèm thẻ GreenFlag hoặc biển tên viết tay ngày chụp để xác nhận.',
         coins: 3000,
         difficulty: TASK_DIFFICULTY.HARD,
         total: 1,
@@ -296,8 +317,10 @@ async function bootstrap() {
       {
         creatorId: adminUser.id,
         title: 'Không dùng ống hút nhựa một tuần',
-        description: 'Sử dụng bình nước cá nhân và ống hút tre/inox hoặc uống trực tiếp không dùng ống hút nhựa.',
-        content: 'Ghi chép nhật ký 3 ngày không dùng ống hút nhựa qua hình ảnh cốc nước cá nhân tại công sở/quán cafe.',
+        description:
+          'Sử dụng bình nước cá nhân và ống hút tre/inox hoặc uống trực tiếp không dùng ống hút nhựa.',
+        content:
+          'Ghi chép nhật ký 3 ngày không dùng ống hút nhựa qua hình ảnh cốc nước cá nhân tại công sở/quán cafe.',
         coins: 1000,
         difficulty: TASK_DIFFICULTY.EASY,
         total: 3,
@@ -306,7 +329,8 @@ async function bootstrap() {
       {
         creatorId: partnerUser.id,
         title: 'Chiến dịch Sống Xanh Nội Bộ',
-        description: 'Nhiệm vụ riêng tư dành cho nhân viên văn phòng đối tác thực hành tiết kiệm điện.',
+        description:
+          'Nhiệm vụ riêng tư dành cho nhân viên văn phòng đối tác thực hành tiết kiệm điện.',
         content: 'Chụp ảnh tắt điều hòa/thiết bị điện khi ra về.',
         coins: 1200,
         difficulty: TASK_DIFFICULTY.EASY,
@@ -316,7 +340,7 @@ async function bootstrap() {
     ];
 
     const seededTasks = await queryRunner.manager.save(Task, tasksData);
-    
+
     // Map tasks to types
     await queryRunner.manager.save(TaskType, [
       { taskId: seededTasks[0].id, typeId: typeDaily.id },
@@ -357,7 +381,9 @@ async function bootstrap() {
       description: 'Em đã phân loại vỏ lon nhôm và bã cafe riêng biệt ạ.',
       status: TASK_SUBMIT_STATUS.APPROVED,
       submittedAt: relativeDate(-5, 2),
-      images: ['https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=400&auto=format&fit=crop&q=80'],
+      images: [
+        'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=400&auto=format&fit=crop&q=80',
+      ],
     });
 
     // 2. Đạp xe vì môi trường - user
@@ -375,14 +401,18 @@ async function bootstrap() {
         description: 'Ngày 1: Đạp xe đi học từ quận Bình Thạnh sang quận 1.',
         status: TASK_SUBMIT_STATUS.APPROVED,
         submittedAt: relativeDate(-3, 4),
-        images: ['https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=400&auto=format&fit=crop&q=80'],
+        images: [
+          'https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=400&auto=format&fit=crop&q=80',
+        ],
       },
       {
         taskUserId: savedTu2.id,
         description: 'Ngày 2: Đạp xe đi uống cafe cuối tuần với bạn.',
         status: TASK_SUBMIT_STATUS.APPROVED,
         submittedAt: relativeDate(-2, 2),
-        images: ['https://images.unsplash.com/photo-1541614101331-1a5a3a194e92?w=400&auto=format&fit=crop&q=80'],
+        images: [
+          'https://images.unsplash.com/photo-1541614101331-1a5a3a194e92?w=400&auto=format&fit=crop&q=80',
+        ],
       },
     ]);
 
@@ -401,21 +431,28 @@ async function bootstrap() {
         description: 'Ống hút thủy tinh tự mang theo ngày thứ 1.',
         status: TASK_SUBMIT_STATUS.APPROVED,
         submittedAt: relativeDate(-1, 1),
-        images: ['https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=400&auto=format&fit=crop&q=80'],
+        images: [
+          'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=400&auto=format&fit=crop&q=80',
+        ],
       },
       {
         taskUserId: savedTu3.id,
         description: 'Cốc cafe kim loại tự mang theo ngày thứ 2.',
         status: TASK_SUBMIT_STATUS.APPROVED,
         submittedAt: relativeDate(-1, 8),
-        images: ['https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400&auto=format&fit=crop&q=80'],
+        images: [
+          'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400&auto=format&fit=crop&q=80',
+        ],
       },
       {
         taskUserId: savedTu3.id,
-        description: 'Hôm nay em dùng cốc sứ ở quán không lấy ống hút nhựa. Nhờ admin duyệt ạ.',
+        description:
+          'Hôm nay em dùng cốc sứ ở quán không lấy ống hút nhựa. Nhờ admin duyệt ạ.',
         status: TASK_SUBMIT_STATUS.PENDING, // Pending state to display on moderation dashboards
         submittedAt: relativeDate(0, -1),
-        images: ['https://images.unsplash.com/photo-1511920170033-f8396924c348?w=400&auto=format&fit=crop&q=80'],
+        images: [
+          'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=400&auto=format&fit=crop&q=80',
+        ],
       },
     ]);
 
@@ -435,7 +472,9 @@ async function bootstrap() {
       description: 'Chậu sen đá mini em trồng tại bàn làm việc ở văn phòng.',
       status: TASK_SUBMIT_STATUS.APPROVED,
       submittedAt: relativeDate(-6, 3),
-      images: ['https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&auto=format&fit=crop&q=80'],
+      images: [
+        'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&auto=format&fit=crop&q=80',
+      ],
     });
 
     // Jane User:
@@ -455,7 +494,9 @@ async function bootstrap() {
       description: 'Đã gom và dán nhãn vỏ chai nhựa Pet tại nhà.',
       status: TASK_SUBMIT_STATUS.APPROVED,
       submittedAt: relativeDate(-8, 1),
-      images: ['https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=400&auto=format&fit=crop&q=80'],
+      images: [
+        'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=400&auto=format&fit=crop&q=80',
+      ],
     });
 
     const tuJane2 = queryRunner.manager.create(TaskUser, {
@@ -472,14 +513,18 @@ async function bootstrap() {
         description: 'Jane Day 1 bike ride.',
         status: TASK_SUBMIT_STATUS.APPROVED,
         submittedAt: relativeDate(-4, 2),
-        images: ['https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=400&auto=format&fit=crop&q=80'],
+        images: [
+          'https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=400&auto=format&fit=crop&q=80',
+        ],
       },
       {
         taskUserId: savedTuJane2.id,
         description: 'Jane Day 2 bike ride.',
         status: TASK_SUBMIT_STATUS.APPROVED,
         submittedAt: relativeDate(-3, 3),
-        images: ['https://images.unsplash.com/photo-1541614101331-1a5a3a194e92?w=400&auto=format&fit=crop&q=80'],
+        images: [
+          'https://images.unsplash.com/photo-1541614101331-1a5a3a194e92?w=400&auto=format&fit=crop&q=80',
+        ],
       },
     ]);
 
@@ -495,7 +540,6 @@ async function bootstrap() {
     });
     await queryRunner.manager.save(TaskUser, tuZero);
 
-
     // ============================================================================
     // 7. EVENTS & EVENT REGISTRATIONS
     // ============================================================================
@@ -505,43 +549,55 @@ async function bootstrap() {
         publicId: 'EV-001',
         creatorId: partnerUser.id,
         title: 'Hội thảo “Sống Xanh Không Rác Thải”',
-        description: 'Hội thảo chia sẻ các phương pháp giảm thiểu rác thải sinh hoạt hàng ngày, tự ủ phân hữu cơ compost tại nhà và làm enzyme tẩy rửa sinh học từ vỏ trái cây.',
-        location: 'Văn phòng Trung tâm Môi trường Xanh, 45 Nguyễn Huệ, Quận 1, TP. HCM',
+        description:
+          'Hội thảo chia sẻ các phương pháp giảm thiểu rác thải sinh hoạt hàng ngày, tự ủ phân hữu cơ compost tại nhà và làm enzyme tẩy rửa sinh học từ vỏ trái cây.',
+        location:
+          'Văn phòng Trung tâm Môi trường Xanh, 45 Nguyễn Huệ, Quận 1, TP. HCM',
         capacity: 50,
         coins: 1000,
         endSign: relativeDate(-2), // Past sign-up deadline
         startTime: relativeDate(-3), // Past event
         endTime: relativeDate(-3, 4),
         status: 'finished', // Expired event
-        images: ['https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&auto=format&fit=crop&q=80'],
+        images: [
+          'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&auto=format&fit=crop&q=80',
+        ],
       },
       {
         publicId: 'EV-002',
         creatorId: partnerUser.id,
         title: 'Chiến dịch “Thu Gom Pin Cũ Đổi Cây”',
-        description: 'Hãy mang pin cũ đã qua sử dụng tới điểm thu gom của chúng tôi. Với mỗi 10 viên pin, bạn sẽ nhận được một sen đá xinh xắn và 1000 xu thưởng GreenFlag.',
-        location: 'Sảnh chính Nhà văn hóa Thanh Niên, 4 Phạm Ngọc Thạch, Quận 1, TP. HCM',
+        description:
+          'Hãy mang pin cũ đã qua sử dụng tới điểm thu gom của chúng tôi. Với mỗi 10 viên pin, bạn sẽ nhận được một sen đá xinh xắn và 1000 xu thưởng GreenFlag.',
+        location:
+          'Sảnh chính Nhà văn hóa Thanh Niên, 4 Phạm Ngọc Thạch, Quận 1, TP. HCM',
         capacity: 200,
         coins: 1000,
         endSign: relativeDate(3),
         startTime: relativeDate(-1), // Ongoing event
         endTime: relativeDate(2),
         status: 'ongoing',
-        images: ['https://images.unsplash.com/photo-1528190336454-13cd56b45b5a?w=800&auto=format&fit=crop&q=80'],
+        images: [
+          'https://images.unsplash.com/photo-1528190336454-13cd56b45b5a?w=800&auto=format&fit=crop&q=80',
+        ],
       },
       {
         publicId: 'EV-003',
         creatorId: partnerUser.id,
         title: 'Tình nguyện dọn rác bãi biển Vũng Tàu',
-        description: 'Chiến dịch thu dọn rác thải nhựa đại dương tại bờ biển Bãi Sau. GreenFlag hỗ trợ xe bus đưa đón, găng tay, bao tải và cung cấp nước uống cho toàn bộ tình nguyện viên.',
-        location: 'Bờ biển Bãi Sau (Đối diện khách sạn Imperial), Thành phố Vũng Tàu',
+        description:
+          'Chiến dịch thu dọn rác thải nhựa đại dương tại bờ biển Bãi Sau. GreenFlag hỗ trợ xe bus đưa đón, găng tay, bao tải và cung cấp nước uống cho toàn bộ tình nguyện viên.',
+        location:
+          'Bờ biển Bãi Sau (Đối diện khách sạn Imperial), Thành phố Vũng Tàu',
         capacity: 100,
         coins: 2500,
         endSign: relativeDate(8), // Upcoming event
         startTime: relativeDate(10),
         endTime: relativeDate(10, 8),
         status: 'upcoming',
-        images: ['https://images.unsplash.com/photo-1618477388954-7852f32655ec?w=800&auto=format&fit=crop&q=80'],
+        images: [
+          'https://images.unsplash.com/photo-1618477388954-7852f32655ec?w=800&auto=format&fit=crop&q=80',
+        ],
       },
     ];
 
@@ -572,7 +628,6 @@ async function bootstrap() {
       completedAt: relativeDate(-3),
     });
 
-
     // ============================================================================
     // 8. COMMERCE - PRODUCTS & ITEMS (Exchange Market)
     // ============================================================================
@@ -583,32 +638,39 @@ async function bootstrap() {
       {
         sellerId: johnUser.id,
         name: 'Chậu đất nung trồng cây cũ',
-        description: 'Mình dư 3 chậu đất nung cỡ trung không xài đến. Có trầy xước nhẹ nhưng không nứt vỡ.',
+        description:
+          'Mình dư 3 chậu đất nung cỡ trung không xài đến. Có trầy xước nhẹ nhưng không nứt vỡ.',
         price: 500,
         category: PRODUCT_CATEGORY.PLANTS,
         productStatus: PRODUCT_CONDITION.USED,
         postStatus: PRODUCT_POST_STATUS.PUBLIC,
-        images: ['https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=400&auto=format&fit=crop&q=80'],
+        images: [
+          'https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=400&auto=format&fit=crop&q=80',
+        ],
       },
       {
         sellerId: janeUser.id,
         name: 'Túi tote canvas vẽ tay thủ công',
-        description: 'Tự vẽ họa tiết lá xanh bảo vệ môi trường, vải dày dặn giặt thoải mái không phai màu.',
+        description:
+          'Tự vẽ họa tiết lá xanh bảo vệ môi trường, vải dày dặn giặt thoải mái không phai màu.',
         price: 1500,
         category: PRODUCT_CATEGORY.HANDICRAFT,
         productStatus: PRODUCT_CONDITION.NEW,
         postStatus: PRODUCT_POST_STATUS.PUBLIC,
-        images: ['https://images.unsplash.com/photo-1544816155-12df9643f363?w=400&auto=format&fit=crop&q=80'],
+        images: [
+          'https://images.unsplash.com/photo-1544816155-12df9643f363?w=400&auto=format&fit=crop&q=80',
+        ],
       },
     ];
-    const seededProducts = await queryRunner.manager.save(Product, productsData);
+    await queryRunner.manager.save(Product, productsData);
 
     // Items (Quà tặng/Vật phẩm đổi từ Coin tích lũy của GreenFlag hoặc Partner)
     const itemsData = [
       {
         creatorId: partnerUser.id,
         name: 'Bình giữ nhiệt tre khắc tên',
-        description: 'Lõi bình inox 304 không gỉ, vỏ ngoài ốp gỗ tre tự nhiên thân thiện. Khả năng giữ nhiệt lên tới 12 tiếng. Dung tích 500ml nhỏ gọn thích hợp mang theo hàng ngày.',
+        description:
+          'Lõi bình inox 304 không gỉ, vỏ ngoài ốp gỗ tre tự nhiên thân thiện. Khả năng giữ nhiệt lên tới 12 tiếng. Dung tích 500ml nhỏ gọn thích hợp mang theo hàng ngày.',
         price: 1000,
         stock: 15,
         status: ITEM_STATUS.AVAILABLE,
@@ -616,12 +678,15 @@ async function bootstrap() {
         length: 25,
         width: 7,
         height: 7,
-        images: ['https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&auto=format&fit=crop&q=80'],
+        images: [
+          'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&auto=format&fit=crop&q=80',
+        ],
       },
       {
         creatorId: partnerUser.id,
         name: 'Set ống hút cỏ bàng sấy khô',
-        description: 'Ống hút cỏ bàng hoàn toàn tự nhiên phân hủy sinh học, sản phẩm thủ công từ miền Tây. Một set gồm 50 ống hút kèm cọ xơ dừa vệ sinh.',
+        description:
+          'Ống hút cỏ bàng hoàn toàn tự nhiên phân hủy sinh học, sản phẩm thủ công từ miền Tây. Một set gồm 50 ống hút kèm cọ xơ dừa vệ sinh.',
         price: 300,
         stock: 50,
         status: ITEM_STATUS.AVAILABLE,
@@ -629,12 +694,15 @@ async function bootstrap() {
         length: 20,
         width: 10,
         height: 3,
-        images: ['https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=400&auto=format&fit=crop&q=80'],
+        images: [
+          'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=400&auto=format&fit=crop&q=80',
+        ],
       },
       {
         creatorId: partnerUser.id,
         name: 'Bàn chải tre phân hủy sinh học',
-        description: 'Thân tre tự nhiên được phủ sáp chống mốc, sợi lông bàn chải mềm mịn làm từ nylon sinh học chứa than hoạt tính kháng khuẩn. Dành cho những ai muốn loại bỏ nhựa khỏi nhà tắm.',
+        description:
+          'Thân tre tự nhiên được phủ sáp chống mốc, sợi lông bàn chải mềm mịn làm từ nylon sinh học chứa than hoạt tính kháng khuẩn. Dành cho những ai muốn loại bỏ nhựa khỏi nhà tắm.',
         price: 200,
         stock: 0, // Out of stock to test Sold Out / Empty state cards
         status: ITEM_STATUS.SOLD_OUT,
@@ -642,13 +710,16 @@ async function bootstrap() {
         length: 19,
         width: 2,
         height: 1,
-        images: ['https://images.unsplash.com/photo-1593005510509-d05b264f1c9c?w=400&auto=format&fit=crop&q=80'],
+        images: [
+          'https://images.unsplash.com/photo-1593005510509-d05b264f1c9c?w=400&auto=format&fit=crop&q=80',
+        ],
       },
       {
         creatorId: partnerUser.id,
         name: 'Sổ tay bìa giấy Kraft xi măng tái chế độc quyền GreenFlag 2026',
         // VERY LONG DESCRIPTION for testing layout word-wrap limits and truncation
-        description: 'Sổ tay A5 tiện lợi với bìa làm hoàn toàn từ bột giấy tái chế ép cứng bảo vệ môi trường, mang đậm dấu ấn phong cách bụi bặm retro. Ruột sổ gồm 160 trang giấy kẻ ngang màu ngà chống mỏi mắt khi đọc viết, không chứa hóa chất tẩy trắng công nghiệp độc hại. Từng cuốn sổ được khâu chỉ gáy thủ công cực kỳ chắc chắn, có dây ruy băng đánh dấu trang xanh teal lá cây mát mắt. Mua cuốn sổ này là bạn đã đóng góp 10% doanh thu vào quỹ trồng rừng phòng hộ đầu nguồn của GreenFlag tại miền Trung Việt Nam. Thích hợp làm quà tặng ý nghĩa cho những người có lối sống thân thiện môi trường hoặc ghi chép kế hoạch xanh mỗi ngày.',
+        description:
+          'Sổ tay A5 tiện lợi với bìa làm hoàn toàn từ bột giấy tái chế ép cứng bảo vệ môi trường, mang đậm dấu ấn phong cách bụi bặm retro. Ruột sổ gồm 160 trang giấy kẻ ngang màu ngà chống mỏi mắt khi đọc viết, không chứa hóa chất tẩy trắng công nghiệp độc hại. Từng cuốn sổ được khâu chỉ gáy thủ công cực kỳ chắc chắn, có dây ruy băng đánh dấu trang xanh teal lá cây mát mắt. Mua cuốn sổ này là bạn đã đóng góp 10% doanh thu vào quỹ trồng rừng phòng hộ đầu nguồn của GreenFlag tại miền Trung Việt Nam. Thích hợp làm quà tặng ý nghĩa cho những người có lối sống thân thiện môi trường hoặc ghi chép kế hoạch xanh mỗi ngày.',
         price: 800,
         stock: 5,
         status: ITEM_STATUS.AVAILABLE,
@@ -656,11 +727,12 @@ async function bootstrap() {
         length: 21,
         width: 15,
         height: 2,
-        images: ['https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=400&auto=format&fit=crop&q=80'],
+        images: [
+          'https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=400&auto=format&fit=crop&q=80',
+        ],
       },
     ];
     const seededItems = await queryRunner.manager.save(Item, itemsData);
-
 
     // ============================================================================
     // 9. TRANSACTIONS & DELIVERY
@@ -679,20 +751,27 @@ async function bootstrap() {
       accountType: RECEIVER_ACCOUNT_TYPE.HOME,
       isDefault: true,
     });
-    const savedAddress = await queryRunner.manager.save(ReceiverInformation, mainAddress);
+    const savedAddress = await queryRunner.manager.save(
+      ReceiverInformation,
+      mainAddress,
+    );
 
     const janeAddress = queryRunner.manager.create(ReceiverInformation, {
       userId: janeUser.id,
       toName: 'Jane Smith',
       toPhone: '0901234567',
-      toAddress: 'Văn phòng tòa nhà Green, 102 Nguyễn Đình Chiểu, Phường Đa Kao, Quận 1',
+      toAddress:
+        'Văn phòng tòa nhà Green, 102 Nguyễn Đình Chiểu, Phường Đa Kao, Quận 1',
       toWardName: 'Phường Đa Kao',
       toDistrictName: 'Quận 1',
       toProvinceName: 'Hồ Chí Minh',
       accountType: RECEIVER_ACCOUNT_TYPE.OFFICE,
       isDefault: true,
     });
-    const savedJaneAddress = await queryRunner.manager.save(ReceiverInformation, janeAddress);
+    const savedJaneAddress = await queryRunner.manager.save(
+      ReceiverInformation,
+      janeAddress,
+    );
 
     // Delivery Accounts (for partners to ship)
     const partnerCarrier = queryRunner.manager.create(DeliveryAccount, {
@@ -702,7 +781,10 @@ async function bootstrap() {
       apiConfig: { token: 'sample-ghn-token-123', shop_id: '196506' },
       isDefault: true,
     });
-    const savedCarrier = await queryRunner.manager.save(DeliveryAccount, partnerCarrier);
+    const savedCarrier = await queryRunner.manager.save(
+      DeliveryAccount,
+      partnerCarrier,
+    );
 
     // Transactions (Lịch sử giao dịch chi tiêu xu)
     // 1. user: bought Bình giữ nhiệt tre (cost = 1000) -> accepted
@@ -764,7 +846,7 @@ async function bootstrap() {
         images: seededItems[0].images,
       },
     });
-    const savedTxJane = await queryRunner.manager.save(Transaction, txJane);
+    await queryRunner.manager.save(Transaction, txJane);
 
     const txJane2 = queryRunner.manager.create(Transaction, {
       receiverInformationId: savedJaneAddress.id,
@@ -784,7 +866,6 @@ async function bootstrap() {
     });
     await queryRunner.manager.save(Transaction, txJane2);
 
-
     // ============================================================================
     // 10. FORUM - POSTS, COMMENTS, VOTES
     // ============================================================================
@@ -793,7 +874,8 @@ async function bootstrap() {
     const postsData = [
       {
         authorId: mainDemoUser.id,
-        content: 'Chào cả nhà, mình vừa hoàn thành nhiệm vụ trồng cây ban công. Nhìn mầm xanh bé nhỏ lớn lên mỗi ngày thấy vui cực kỳ! Có ai có mẹo nhỏ nào để chăm sóc sen đá trong nhà không bị úng không, chia sẻ cho mình với nha? Chúc mọi người một ngày sống xanh lành mạnh!',
+        content:
+          'Chào cả nhà, mình vừa hoàn thành nhiệm vụ trồng cây ban công. Nhìn mầm xanh bé nhỏ lớn lên mỗi ngày thấy vui cực kỳ! Có ai có mẹo nhỏ nào để chăm sóc sen đá trong nhà không bị úng không, chia sẻ cho mình với nha? Chúc mọi người một ngày sống xanh lành mạnh!',
         category: 'Kinh nghiệm',
         status: FORUM_POST_STATUS.APPROVED,
         tags: ['Sống xanh', 'Trồng cây', 'Sen đá'],
@@ -806,7 +888,8 @@ async function bootstrap() {
       },
       {
         authorId: janeUser.id,
-        content: 'Chiến dịch đổi pin hôm nay siêu đông vui luôn mọi người ơi! Mình gom được 20 viên pin hỏng mang đi đổi được hai em sen đá đáng yêu xỉu. Hành động nhỏ nhưng giúp bảo vệ mạch nước ngầm khỏi kim loại nặng độc hại đó. Hãy chung tay bảo vệ môi trường nha!',
+        content:
+          'Chiến dịch đổi pin hôm nay siêu đông vui luôn mọi người ơi! Mình gom được 20 viên pin hỏng mang đi đổi được hai em sen đá đáng yêu xỉu. Hành động nhỏ nhưng giúp bảo vệ mạch nước ngầm khỏi kim loại nặng độc hại đó. Hãy chung tay bảo vệ môi trường nha!',
         category: 'Thảo luận chung',
         status: FORUM_POST_STATUS.APPROVED,
         tags: ['Tái chế', 'Thu gom pin', 'Sống sạch'],
@@ -820,7 +903,8 @@ async function bootstrap() {
       },
       {
         authorId: adminUser.id,
-        content: '📣 [THÔNG BÁO QUAN TRỌNG] Quy tắc kiểm duyệt bài viết mới tại cộng đồng GreenFlag. Các bài viết chứa từ ngữ tục tĩu hoặc không liên quan đến bảo vệ môi trường sẽ bị AI tự động gắn cờ và loại bỏ để xây dựng môi trường lành mạnh.',
+        content:
+          '📣 [THÔNG BÁO QUAN TRỌNG] Quy tắc kiểm duyệt bài viết mới tại cộng đồng GreenFlag. Các bài viết chứa từ ngữ tục tĩu hoặc không liên quan đến bảo vệ môi trường sẽ bị AI tự động gắn cờ và loại bỏ để xây dựng môi trường lành mạnh.',
         category: 'Thảo luận chung',
         status: FORUM_POST_STATUS.APPROVED,
         tags: ['Thông báo', 'Quy định'],
@@ -833,28 +917,59 @@ async function bootstrap() {
       },
     ];
 
-    const seededPosts = await queryRunner.manager.getRepository(Post).save(postsData);
+    const seededPosts = await queryRunner.manager
+      .getRepository(Post)
+      .save(postsData);
 
     // Votes for Post 1
     await queryRunner.manager.getRepository(PostVote).save([
-      { postId: seededPosts[0].id, userId: johnUser.id, type: FORUM_VOTE_TYPE.UP },
-      { postId: seededPosts[0].id, userId: janeUser.id, type: FORUM_VOTE_TYPE.UP },
-      { postId: seededPosts[0].id, userId: partnerUser.id, type: FORUM_VOTE_TYPE.UP },
+      {
+        postId: seededPosts[0].id,
+        userId: johnUser.id,
+        type: FORUM_VOTE_TYPE.UP,
+      },
+      {
+        postId: seededPosts[0].id,
+        userId: janeUser.id,
+        type: FORUM_VOTE_TYPE.UP,
+      },
+      {
+        postId: seededPosts[0].id,
+        userId: partnerUser.id,
+        type: FORUM_VOTE_TYPE.UP,
+      },
     ]);
 
     // Votes for Post 2
     await queryRunner.manager.getRepository(PostVote).save([
-      { postId: seededPosts[1].id, userId: mainDemoUser.id, type: FORUM_VOTE_TYPE.UP },
-      { postId: seededPosts[1].id, userId: johnUser.id, type: FORUM_VOTE_TYPE.UP },
-      { postId: seededPosts[1].id, userId: adminUser.id, type: FORUM_VOTE_TYPE.UP },
-      { postId: seededPosts[1].id, userId: zeroUser.id, type: FORUM_VOTE_TYPE.DOWN },
+      {
+        postId: seededPosts[1].id,
+        userId: mainDemoUser.id,
+        type: FORUM_VOTE_TYPE.UP,
+      },
+      {
+        postId: seededPosts[1].id,
+        userId: johnUser.id,
+        type: FORUM_VOTE_TYPE.UP,
+      },
+      {
+        postId: seededPosts[1].id,
+        userId: adminUser.id,
+        type: FORUM_VOTE_TYPE.UP,
+      },
+      {
+        postId: seededPosts[1].id,
+        userId: zeroUser.id,
+        type: FORUM_VOTE_TYPE.DOWN,
+      },
     ]);
 
     // Comments for Post 1
     const comment1 = queryRunner.manager.create(Comment, {
       postId: seededPosts[0].id,
       authorId: johnUser.id,
-      content: 'Sen đá ưa nắng và thoáng gió lắm bạn ơi, đặc biệt 1 tuần chỉ nên tưới 1 lần quanh gốc thôi nè, tưới nhiều úng chết ngay á.',
+      content:
+        'Sen đá ưa nắng và thoáng gió lắm bạn ơi, đặc biệt 1 tuần chỉ nên tưới 1 lần quanh gốc thôi nè, tưới nhiều úng chết ngay á.',
       upvotes: 3,
       downvotes: 0,
       status: FORUM_POST_STATUS.APPROVED,
@@ -867,7 +982,8 @@ async function bootstrap() {
       postId: seededPosts[0].id,
       authorId: mainDemoUser.id,
       parentId: savedComment1.id,
-      content: 'Cảm ơn chia sẻ hữu ích từ bạn nhiều nhé! Mình sẽ lưu ý để cây khô thoáng hơn.',
+      content:
+        'Cảm ơn chia sẻ hữu ích từ bạn nhiều nhé! Mình sẽ lưu ý để cây khô thoáng hơn.',
       upvotes: 1,
       downvotes: 0,
       status: FORUM_POST_STATUS.APPROVED,
@@ -879,7 +995,8 @@ async function bootstrap() {
     const comment2 = queryRunner.manager.create(Comment, {
       postId: seededPosts[1].id,
       authorId: mainDemoUser.id,
-      content: 'Tiếc ghê hôm nay bận không ra Nhà văn hóa Thanh Niên được, không biết chương trình còn kéo dài đến chủ nhật không ạ?',
+      content:
+        'Tiếc ghê hôm nay bận không ra Nhà văn hóa Thanh Niên được, không biết chương trình còn kéo dài đến chủ nhật không ạ?',
       upvotes: 2,
       downvotes: 0,
       status: FORUM_POST_STATUS.APPROVED,
@@ -889,16 +1006,23 @@ async function bootstrap() {
 
     // Comment Votes
     await queryRunner.manager.getRepository(CommentVote).save([
-      { commentId: savedComment1.id, userId: mainDemoUser.id, type: FORUM_VOTE_TYPE.UP },
-      { commentId: savedComment1.id, userId: janeUser.id, type: FORUM_VOTE_TYPE.UP },
+      {
+        commentId: savedComment1.id,
+        userId: mainDemoUser.id,
+        type: FORUM_VOTE_TYPE.UP,
+      },
+      {
+        commentId: savedComment1.id,
+        userId: janeUser.id,
+        type: FORUM_VOTE_TYPE.UP,
+      },
     ]);
-
 
     // ============================================================================
     // 11. LEDGER LEDGER BALANCE CALCULATION & INSERTS (Coins & Ranks)
     // ============================================================================
     console.log('🪙 Computing Ledger Balances for Coins & Ranks...');
-    
+
     // We now have all the actual history seeded! Let's calculate and seed user coins/ranks.
     // Calculations:
     // 1. mainDemoUser ('user'):
@@ -969,7 +1093,8 @@ async function bootstrap() {
         recipientId: mainDemoUser.id,
         senderId: partnerUser.id,
         type: NotificationType.COIN_RECEIVED,
-        content: 'Bạn được cộng 1,000 xu từ việc hoàn thành sự kiện: Hội thảo "Sống Xanh Không Rác Thải".',
+        content:
+          'Bạn được cộng 1,000 xu từ việc hoàn thành sự kiện: Hội thảo "Sống Xanh Không Rác Thải".',
         link: `/events/${seededEvents[0].id}`,
         isRead: true,
       },
@@ -987,7 +1112,10 @@ async function bootstrap() {
     await queryRunner.commitTransaction();
     console.log('✅ Base transactions completed successfully!');
   } catch (error) {
-    console.error('❌ Error seeding database! Rolling back transaction...', error);
+    console.error(
+      '❌ Error seeding database! Rolling back transaction...',
+      error,
+    );
     await queryRunner.rollbackTransaction();
     throw error;
   } finally {
@@ -1020,7 +1148,7 @@ async function bootstrap() {
   process.exit(0);
 }
 
-bootstrap().catch(err => {
+bootstrap().catch((err) => {
   console.error('💥 Seeder failed completely:', err);
   process.exit(1);
 });

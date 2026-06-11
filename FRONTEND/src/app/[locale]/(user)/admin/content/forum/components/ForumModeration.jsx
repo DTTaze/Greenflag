@@ -19,11 +19,7 @@ function ForumModeration() {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      // Gọi API thực tế của Diễn đàn, truyền statusFilter để lấy bài đăng theo trạng thái tương ứng
-      const res = await forumService.getPosts({
-        limit: 100,
-        status: statusFilter,
-      });
+      const res = await forumService.adminGetPosts(statusFilter);
 
       if (res.success && res.data) {
         setPosts(res.data.items || []);
@@ -45,7 +41,15 @@ function ForumModeration() {
 
   const handleModerate = async (postId, decision) => {
     try {
-      const res = await forumService.moderatePost(postId, decision);
+      let res;
+      if (decision === "approved") {
+        res = await forumService.approvePost(postId);
+      } else {
+        const flaggedReason = window.prompt("Nhập lý do ẩn bài viết (không bắt buộc):");
+        if (flaggedReason === null) return; // User cancelled prompt
+        res = await forumService.rejectPost(postId, flaggedReason || undefined);
+      }
+
       if (res.success) {
         toast.success(
           decision === "approved"

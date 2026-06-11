@@ -1,5 +1,7 @@
-import { DataSource, Repository } from 'typeorm';
+import { EventEmitter } from 'events';
+import { DataSource } from 'typeorm';
 
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
@@ -15,7 +17,6 @@ import { TransactionService } from './transaction.service';
 
 describe('TransactionService', () => {
   let service: TransactionService;
-  let transactionRepo: Repository<Transaction>;
   let socketStubService: SocketStubService;
 
   const mockTransactionRepository = {
@@ -60,13 +61,22 @@ describe('TransactionService', () => {
           provide: SocketStubService,
           useValue: mockSocketStubService,
         },
+        {
+          provide: EventEmitter2,
+          useValue: {
+            emit: jest.fn(),
+          },
+        },
+        {
+          provide: EventEmitter,
+          useValue: {
+            emit: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     service = module.get<TransactionService>(TransactionService);
-    transactionRepo = module.get<Repository<Transaction>>(
-      getRepositoryToken(Transaction),
-    );
     socketStubService = module.get<SocketStubService>(SocketStubService);
 
     jest.clearAllMocks();

@@ -20,6 +20,7 @@ export interface DataTableColumn<T = any> {
   headerName: string;
   width?: string;
   render?: (value: any, row: T) => React.ReactNode;
+  valueGetter?: (value: any, row: T) => any;
 }
 
 interface DataTableProps<T = any> {
@@ -62,7 +63,7 @@ export default function DataTable<T extends { id: string | number }>({
       const lowerQuery = searchQuery.toLowerCase();
       result = result.filter((row) =>
         columns.some((col) => {
-          const val = row[col.field];
+          const val = col.valueGetter ? col.valueGetter(row[col.field], row) : row[col.field];
           return val != null && String(val).toLowerCase().includes(lowerQuery);
         }),
       );
@@ -262,21 +263,22 @@ export default function DataTable<T extends { id: string | number }>({
 
                     {/* Data Cells */}
                     {columns.map((col) => {
-                      const value = row[col.field];
+                      const rawValue = row[col.field];
+                      const resolvedValue = col.valueGetter ? col.valueGetter(rawValue, row) : rawValue;
                       return (
                         <td
                           key={String(col.field)}
-                          className="max-w-xs truncate px-6 py-4 text-gray-700 dark:text-slate-300"
+                          className="max-w-xs truncate px-6 py-4 text-gray-750 dark:text-slate-300"
                         >
                           {col.render ? (
-                            col.render(value, row)
+                            col.render(resolvedValue, row)
                           ) : col.field === "status" ||
                             String(col.field)
                               .toLowerCase()
                               .includes("status") ? (
-                            <StatusBadge status={String(value)} />
+                            <StatusBadge status={String(resolvedValue)} />
                           ) : (
-                            String(value)
+                            resolvedValue != null ? String(resolvedValue) : ""
                           )}
                         </td>
                       );

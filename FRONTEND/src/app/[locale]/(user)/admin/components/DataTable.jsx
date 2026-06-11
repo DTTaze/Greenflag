@@ -28,13 +28,12 @@ export default function DataTable({
   const [pageSize, setPageSize] = useState(10);
   const [selectedIds, setSelectedIds] = useState(new Set());
 
-  // Filter rows based on search query
   const filteredRows = useMemo(() => {
     if (!searchQuery) return rows;
     const lowerQuery = searchQuery.toLowerCase();
     return rows.filter((row) =>
       columns.some((col) => {
-        const val = row[col.field];
+        const val = col.valueGetter ? col.valueGetter(row[col.field], row) : row[col.field];
         return val != null && String(val).toLowerCase().includes(lowerQuery);
       }),
     );
@@ -194,16 +193,19 @@ export default function DataTable({
 
                     {/* Data Cells */}
                     {columns.map((col) => {
-                      const value = row[col.field];
+                      const rawValue = row[col.field];
+                      const resolvedValue = col.valueGetter ? col.valueGetter(rawValue, row) : rawValue;
                       return (
                         <td
                           key={col.field}
                           className="max-w-xs truncate px-6 py-4 text-gray-700"
                         >
-                          {col.field === "status" ? (
-                            <StatusBadge status={value} />
+                          {col.render ? (
+                            col.render(resolvedValue, row)
+                          ) : col.field === "status" ? (
+                            <StatusBadge status={resolvedValue} />
                           ) : (
-                            value
+                            resolvedValue != null ? String(resolvedValue) : ""
                           )}
                         </td>
                       );

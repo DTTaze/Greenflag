@@ -5,6 +5,7 @@
     "exchange": "Trao đổi",
     "community": "Cộng đồng",
     "customer": "Khách hàng",
+    "partner": "Đối tác",
     "admin": "Quản trị",
     "login": "Đăng nhập",
     "register": "Đăng ký",
@@ -185,6 +186,140 @@
     "activityHistory": "Lịch sử hoạt động & Giao dịch xu",
     "notLoggedIn": "Người dùng chưa đăng nhập.",
     "noEmail": "Không có email khả dụng"
+  },
+  "partner": {
+    "dashboard": {
+      "version": "Phiên bản 1.0",
+      "title": "Bảng điều khiển đối tác",
+      "description": "Điều phối nhiệm vụ, sự kiện và đánh giá hiệu suất đối tác một cách trực quan.",
+      "toolsTitle": "Công cụ đối tác",
+      "toolsDescription": "Hỗ trợ lập kế hoạch nhanh, quản lý dễ dàng và kết quả rõ ràng."
+    },
+    "cards": {
+      "profile": {
+        "title": "Hồ sơ đối tác",
+        "description": "Cập nhật thông tin tổ chức, chứng nhận và liên hệ đối tác."
+      },
+      "tasks": {
+        "title": "Nhiệm vụ đối tác",
+        "description": "Tạo nhiệm vụ xanh và khuyến khích thành viên tham gia."
+      },
+      "events": {
+        "title": "Sự kiện đối tác",
+        "description": "Lên kế hoạch, tạo mã QR và quản lý điểm danh hiệu quả."
+      },
+      "inventory": {
+        "title": "Kho quà",
+        "description": "Quản lý tồn kho quà tặng và điểm đổi thưởng."
+      },
+      "reports": {
+        "title": "Báo cáo",
+        "description": "Xem hiệu suất đối tác và xuất dữ liệu tổng quan."
+      }
+    },
+    "openCard": "Mở {title}",
+    "tasks": {
+      "headline": "Nhiệm vụ đối tác",
+      "subtitle": "Tạo nhiệm vụ cộng đồng, phân bổ phần thưởng và cập nhật trạng thái rõ ràng.",
+      "panelTitle": "Tạo nhiệm vụ mới",
+      "panelDesc": "Điền thông tin nhiệm vụ để thành viên biết yêu cầu và phần thưởng.",
+      "panelTag": "Tạo",
+      "panelDescription": "Thêm các nhiệm vụ hấp dẫn để khuyến khích thành viên tham gia.",
+      "newTag": "Mới",
+      "titleLabel": "Tiêu đề nhiệm vụ",
+      "titlePlaceholder": "Nhập tiêu đề nhiệm vụ",
+      "difficultyLabel": "Độ khó",
+      "difficulty": {
+        "easy": "Dễ",
+        "medium": "Trung bình",
+        "hard": "Khó"
+      },
+      "descriptionLabel": "Mô tả nhiệm vụ",
+      "descriptionPlaceholder": "Mô tả yêu cầu và kết quả mong đợi của nhiệm vụ",
+      "rewardLabel": "Điểm thưởng",
+      "resetBtn": "Xóa",
+      "saveBtn": "Tạo nhiệm vụ",
+      "saving": "Đang lưu...",
+      "statusPublic": "Công khai",
+      "statusPrivate": "Riêng tư",
+      "listTitle": "Danh sách nhiệm vụ",
+      "listDescription": "Quản lý và giám sát tất cả nhiệm vụ",
+      "taskCount": "Tổng số nhiệm vụ",
+      "loadingTasks": "Đang tải nhiệm vụ...",
+      "noTasks": "Chưa có nhiệm vụ nào.",
+      "showTask": "Hiển thị",
+      "hideTask": "Ẩn",
+      "errors": {
+        "titleRequired": "Tiêu đề nhiệm vụ là bắt buộc.",
+        "descriptionRequired": "Mô tả nhiệm vụ là bắt buộc.",
+        "createFailed": "Không thể tạo nhiệm vụ. Vui lòng thử lại.",
+        "updateStatusFailed": "Không thể cập nhật trạng thái nhiệm vụ. Vui lòng thử lại."
+      }
+    },
+    "events": {
+      "headline": "Sự kiện đối tác",
+      "subtitle": "Tạo và quản lý sự kiện với mã QR để điểm danh dễ dàng.",
+      "badge": "Sự kiện",
+      "version": "Phiên bản 1.0",
+      "panelDescription": "Tổ chức sự kiện, tạo mã QR và quản lý điểm danh trong một nơi.",
+      "createTitle": "Tạo sự kiện",
+      "createDescription": "Nhập tên sự kiện để tạo mã QR dùng cho việc điểm danh.",
+      "inputLabel": "Tên sự kiện",
+      "inputPlaceholder": "Nhập tên sự kiện",
+      "generateBtn": "Tạo mã QR",
+      "generating": "Đang tạo...",
+      "clearBtn": "Xóa",
+      "qrSectionTitle": "Mã QR",
+      "qrSectionDescription": "Tải xuống hoặc mở máy quét để kiểm tra khách tham dự.",
+      "qrBadge": "Mã QR",
+      "downloadQr": "Tải QR",
+      "openScanner": "Mở máy quét",
+      "qrNotCreated": "Chưa có mã QR. Hãy tạo mã sự kiện để bắt đầu.",
+      "errors": {
+        "requiredName": "Vui lòng nhập tên sự kiện.",
+        "generateFailed": "Không thể tạo mã QR. Vui lòng thử lại."
+      }
+    },
+    "inventory": {
+      "title": "Kho quà",
+      "subtitle": "Quản lý tồn kho phần thưởng và đổi điểm cho đối tác.",
+      "panelTitle": "Thêm vật phẩm mới",
+      "panelDesc": "Thêm quà tặng mới và đặt điểm phù hợp.",
+      "currentInventory": "Kho hiện tại",
+      "itemNameLabel": "Tên vật phẩm",
+      "stockLabel": "Tồn kho",
+      "pointsLabel": "Điểm thưởng",
+      "addBtn": "Thêm vật phẩm",
+      "clearBtn": "Xóa",
+      "errorLoading": "Không thể tải kho hàng. Vui lòng thử lại.",
+      "noItems": "Chưa có vật phẩm nào."
+    },
+    "reports": {
+      "title": "Báo cáo hoạt động",
+      "subtitle": "Theo dõi tác động xanh qua báo cáo dễ đọc và xuất dữ liệu.",
+      "badge": "Báo cáo",
+      "summaryTitle": "Bảng tóm tắt",
+      "chartTitle": "Biểu đồ tổng quan",
+      "exportBtn": "Xuất CSV"
+    },
+    "profile": {
+      "title": "Hồ sơ đối tác",
+      "subtitle": "Cập nhật tổ chức, liên hệ và chứng nhận môi trường.",
+      "contactSection": "Thông tin liên hệ",
+      "partnerSection": "Hồ sơ đối tác",
+      "certificationSection": "Chứng nhận môi trường",
+      "certificationDesc": "Tải lên tài liệu chứng nhận và quản lý hồ sơ minh chứng.",
+      "fullName": "Họ tên",
+      "email": "Email",
+      "phone": "Điện thoại",
+      "organization": "Tổ chức",
+      "contactName": "Người liên hệ",
+      "address": "Địa chỉ",
+      "description": "Mô tả",
+      "uploadFiles": "Tải lên tài liệu",
+      "saveSuccess": "Lưu hồ sơ thành công.",
+      "saveError": "Lưu hồ sơ thất bại. Vui lòng thử lại."
+    }
   },
   "footer": {
     "aboutDesc": "Green Flag là nền tảng cộng đồng hướng tới bảo vệ môi trường. Thực hiện các nhiệm vụ xanh hằng ngày, tích lũy EcoCoins và đổi lấy các phần quà thân thiện môi trường.",

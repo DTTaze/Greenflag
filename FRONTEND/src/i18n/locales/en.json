@@ -5,6 +5,7 @@
     "exchange": "Market",
     "community": "Community",
     "customer": "Customer",
+    "partner": "Partner",
     "admin": "Admin",
     "login": "Log In",
     "register": "Sign Up",
@@ -185,6 +186,140 @@
     "activityHistory": "Activity & Coins History",
     "notLoggedIn": "User not logged in.",
     "noEmail": "No email available"
+  },
+  "partner": {
+    "dashboard": {
+      "version": "Version 1.0",
+      "title": "Partner Dashboard",
+      "description": "Quickly navigate your partner operations, create tasks, organize events, and track performance in one place.",
+      "toolsTitle": "Partner tools",
+      "toolsDescription": "Designed for faster planning, easier approvals, and clearer outcomes."
+    },
+    "cards": {
+      "profile": {
+        "title": "Partner Profile",
+        "description": "Update your organization profile, certifications, and contact details."
+      },
+      "tasks": {
+        "title": "Partner Tasks",
+        "description": "Create sustainable assignments and reward participation."
+      },
+      "events": {
+        "title": "Partner Events",
+        "description": "Plan campaigns, generate QR codes and track attendance."
+      },
+      "inventory": {
+        "title": "Inventory",
+        "description": "Keep reward stock and item availability in sync."
+      },
+      "reports": {
+        "title": "Reports",
+        "description": "Review partner performance with charts and export tools."
+      }
+    },
+    "openCard": "Open {title}",
+    "tasks": {
+      "headline": "Partner Tasks",
+      "subtitle": "Create community missions, allocate rewards, and update statuses with clarity.",
+      "panelTitle": "Create new task",
+      "panelDesc": "Fill task details so members know the requirements and rewards.",
+      "panelTag": "Create",
+      "panelDescription": "Add engaging tasks to motivate community participation.",
+      "newTag": "New",
+      "titleLabel": "Task title",
+      "titlePlaceholder": "Enter task title",
+      "difficultyLabel": "Difficulty",
+      "difficulty": {
+        "easy": "Easy",
+        "medium": "Medium",
+        "hard": "Hard"
+      },
+      "descriptionLabel": "Task description",
+      "descriptionPlaceholder": "Describe the task requirements and expected outcomes",
+      "rewardLabel": "Reward points",
+      "resetBtn": "Clear",
+      "saveBtn": "Create task",
+      "saving": "Saving...",
+      "statusPublic": "Public",
+      "statusPrivate": "Private",
+      "listTitle": "Task List",
+      "listDescription": "Manage and monitor all tasks",
+      "taskCount": "Total tasks",
+      "loadingTasks": "Loading tasks...",
+      "noTasks": "No tasks available yet.",
+      "showTask": "Show",
+      "hideTask": "Hide",
+      "errors": {
+        "titleRequired": "Task title is required.",
+        "descriptionRequired": "Task description is required.",
+        "createFailed": "Failed to create task. Please try again.",
+        "updateStatusFailed": "Failed to update task status. Please try again."
+      }
+    },
+    "events": {
+      "headline": "Partner Events",
+      "subtitle": "Create and manage events with QR codes for easy attendance.",
+      "badge": "Events",
+      "version": "Version 1.0",
+      "panelDescription": "Organize events, generate QR codes, and manage attendance in one place.",
+      "createTitle": "Create an event",
+      "createDescription": "Enter your event name to generate a QR code for attendee check-in.",
+      "inputLabel": "Event name",
+      "inputPlaceholder": "Enter event name",
+      "generateBtn": "Generate QR",
+      "generating": "Generating...",
+      "clearBtn": "Clear",
+      "qrSectionTitle": "QR Code",
+      "qrSectionDescription": "Download or open the scanner to check attendees.",
+      "qrBadge": "QR Code",
+      "downloadQr": "Download QR",
+      "openScanner": "Open scanner",
+      "qrNotCreated": "No QR code created yet. Please generate an event QR first.",
+      "errors": {
+        "requiredName": "Please enter an event name.",
+        "generateFailed": "Unable to create QR code. Please try again."
+      }
+    },
+    "inventory": {
+      "title": "Gift Inventory",
+      "subtitle": "Manage reward stock and point redemptions for partners.",
+      "panelTitle": "Add new item",
+      "panelDesc": "Add new reward items and set appropriate points.",
+      "currentInventory": "Current stock",
+      "itemNameLabel": "Item name",
+      "stockLabel": "Stock",
+      "pointsLabel": "Reward points",
+      "addBtn": "Add item",
+      "clearBtn": "Clear",
+      "errorLoading": "Unable to load inventory. Please try again.",
+      "noItems": "No items found."
+    },
+    "reports": {
+      "title": "Activity Reports",
+      "subtitle": "Track your green impact with readable reports and export data.",
+      "badge": "Reports",
+      "summaryTitle": "Summary",
+      "chartTitle": "Overview chart",
+      "exportBtn": "Export CSV"
+    },
+    "profile": {
+      "title": "Partner Profile",
+      "subtitle": "Update your organization, contact, and environmental certifications.",
+      "contactSection": "Contact information",
+      "partnerSection": "Partner profile",
+      "certificationSection": "Environmental certifications",
+      "certificationDesc": "Upload certification documents and manage proof materials.",
+      "fullName": "Full name",
+      "email": "Email",
+      "phone": "Phone",
+      "organization": "Organization",
+      "contactName": "Contact name",
+      "address": "Address",
+      "description": "Description",
+      "uploadFiles": "Upload files",
+      "saveSuccess": "Profile saved successfully.",
+      "saveError": "Failed to save profile. Please try again."
+    }
   },
   "footer": {
     "aboutDesc": "Green Flag is a community platform dedicated to environmental protection. Complete daily green tasks, earn EcoCoins, and exchange them for sustainable products.",

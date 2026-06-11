@@ -14,9 +14,11 @@ import { CommerceModule } from '@modules/commerce/commerce.module';
 import { DeliveryModule } from '@modules/delivery/delivery.module';
 import { EmailModule } from '@modules/email/email.module';
 import { EventModule } from '@modules/event/event.module';
+import { ForumModule } from '@modules/forum/forum.module';
 import { GlobalModule } from '@modules/global/global.module';
 import { HealthModule } from '@modules/health/health.module';
 import { MediaModule } from '@modules/media/media.module';
+import { StorageModule } from '@modules/storage/storage.module';
 import { SystemConfigModule } from '@modules/system-config/system-config.module';
 import { TaskModule } from '@modules/task/task.module';
 import { UserModule } from '@modules/user/user.module';
@@ -69,6 +71,8 @@ import configs from './configs';
     DeliveryModule,
     EventModule,
     MediaModule,
+    StorageModule,
+    ForumModule,
   ],
 })
 export class AppModule {}

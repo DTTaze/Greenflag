@@ -123,3 +123,7 @@ export const rearrangeRank = () => {
 export const getUserById = (id: number | string) => {
   return axiosClient.get(`/admin/users/${id}`);
 };
+
+export const searchUsers = (q: string): Promise<any> => {
+  return axiosClient.get(`/users/search?q=${encodeURIComponent(q)}`);
+};

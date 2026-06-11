@@ -38,6 +38,8 @@ export const getStorageFolder = () => ({
   EVENT: `${process.env.APP_NAME || 'greenflag'}/events`,
   AVATAR: `${process.env.APP_NAME || 'greenflag'}/avatars`,
   MEDIA: `${process.env.APP_NAME || 'greenflag'}/media`,
+  FORUM_POSTS: `${process.env.APP_NAME || 'greenflag'}/forum_posts`,
+  FORUM_COMMENTS: `${process.env.APP_NAME || 'greenflag'}/forum_comments`,
 });
 
 export const ERR_CODE = {
@@ -153,6 +155,28 @@ export const ENV_KEY = {
   ADMIN_EMAILS: CONFIG_KEY.EMAIL + '.adminEmails',
 
   GHN_URL: CONFIG_KEY.APP + '.ghnUrl',
+  GROQ_API_KEY: 'groq.apiKey',
+  GROQ_MODEL_NAME: 'groq.modelName',
+};
+
+export const VOTE_CONFIG = {
+  POST: {
+    targetName: 'Post',
+    voteRelationField: 'postId',
+    updateScore: true,
+  },
+  COMMENT: {
+    targetName: 'Comment',
+    voteRelationField: 'commentId',
+    updateScore: false,
+  },
+} as const;
+
+export const EVENT_KEYS = {
+  POST_CREATED: 'post.created',
+  COMMENT_CREATED: 'comment.created',
+  ADMIN_ALERT_VIOLATION: 'admin.alert_violation',
+  POST_MODERATED: 'post.moderated',
 };
 
 export const DEFAULT_MAX_CONCURRENT_CALL = 1;

@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { ROLE } from '@shared/enums';
+import { ROLE, SOCIAL_PROVIDER } from '@shared/enums';
 import {
   OperationResult,
   generateSuccessResult,
@@ -38,13 +38,15 @@ export class UserSocialAccountService extends BaseCRUDService<UserSocialAccount>
     if (existingUser) {
       // Check if social account is already linked
       const hasSocial = existingUser.socialAccounts?.some(
-        (s) => s.provider === 'google' && s.providerUserId === googleId,
+        (s) =>
+          s.provider === SOCIAL_PROVIDER.GOOGLE &&
+          s.providerUserId === googleId,
       );
 
       if (!hasSocial) {
         const social = this.model.create({
           userId: existingUser.id,
-          provider: 'google',
+          provider: SOCIAL_PROVIDER.GOOGLE,
           providerUserId: googleId,
         });
         await this.model.save(social);
@@ -80,7 +82,7 @@ export class UserSocialAccountService extends BaseCRUDService<UserSocialAccount>
         // 4. Create Social Account Link
         const social = transactionalEntityManager.create(UserSocialAccount, {
           userId: savedUser.id,
-          provider: 'google',
+          provider: SOCIAL_PROVIDER.GOOGLE,
           providerUserId: googleId,
         });
         await transactionalEntityManager.save(UserSocialAccount, social);

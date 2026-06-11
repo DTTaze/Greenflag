@@ -3,7 +3,7 @@
     "home": "Home",
     "missions": "Missions",
     "exchange": "Market",
-    "community": "Community",
+    "forum": "Forum",
     "customer": "Customer",
     "partner": "Partner",
     "admin": "Admin",
@@ -58,10 +58,10 @@
       "marketH2": "Exchange Market - Turn points into real action",
       "marketP": "Receive worthy rewards for your efforts. Use EcoCoins to redeem sustainable green products, biodegradable straws, compostable bags, or useful green vouchers from Green Flag's partners.",
       "marketBtn": "Explore market",
-      "communityBadge": "Social Network",
-      "communityH2": "Connect Community - Spread civilized habits",
-      "communityP": "Share photos of your environmental activities on the community feed. Discuss, interact, like, and comment to cheer everyone's actions to light up the most positive messages together!",
-      "communityBtn": "Join the community now"
+      "forumBadge": "Forum",
+      "forumH2": "GreenFlag Forum - Connect & Spread Green Habits",
+      "forumP": "Share photos and environmental activities on the forum. Discuss, interact, comment, and learn green lifestyle experiences from other members to protect the Earth together!",
+      "forumBtn": "Join the forum now"
     }
   },
   "common": {
@@ -342,7 +342,7 @@
       "p2pProducts": "P2P Products",
       "categories": "Categories",
       "events": "Events",
-      "community": "Community Posts",
+      "forum": "Forum Moderation",
       "transactions": "Transactions",
       "shipping": "Shipping",
       "queues": "Queues",

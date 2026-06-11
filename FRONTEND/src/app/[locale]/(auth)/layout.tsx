@@ -34,9 +34,9 @@ export default function AuthLayout({
       desc: tFeatures("marketP"),
     },
     {
-      badge: tFeatures("communityBadge"),
-      title: tFeatures("communityH2"),
-      desc: tFeatures("communityP"),
+      badge: tFeatures("forumBadge"),
+      title: tFeatures("forumH2"),
+      desc: tFeatures("forumP"),
     },
   ];
 

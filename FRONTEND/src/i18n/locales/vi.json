@@ -3,7 +3,7 @@
     "home": "Trang chủ",
     "missions": "Nhiệm vụ",
     "exchange": "Trao đổi",
-    "community": "Cộng đồng",
+    "forum": "Diễn đàn",
     "customer": "Khách hàng",
     "partner": "Đối tác",
     "admin": "Quản trị",
@@ -58,10 +58,10 @@
       "marketH2": "Chợ Trao Đổi - Biến điểm thành hành động thực tế",
       "marketP": "Nhận phần thưởng xứng đáng cho nỗ lực của bạn. Sử dụng EcoCoins để quy đổi sang các sản phẩm xanh bền vững, ống hút sinh học, túi tự hủy hoặc các voucher xanh hữu ích từ đối tác liên kết của Green Flag.",
       "marketBtn": "Khám phá chợ trao đổi",
-      "communityBadge": "Mạng xã hội",
-      "communityH2": "Kết nối cộng đồng - Lan tỏa thói quen văn minh",
-      "communityP": "Chia sẻ hình ảnh hoạt động bảo vệ môi trường của bạn lên bảng tin cộng đồng. Thảo luận, tương tác, thả tim và bình luận cổ vũ hành động của mọi người để cùng nhau thắp sáng những thông điệp tích cực nhất!",
-      "communityBtn": "Tham gia cộng đồng ngay"
+      "forumBadge": "Diễn đàn",
+      "forumH2": "Diễn đàn GreenFlag - Kết nối & Lan tỏa thói quen xanh",
+      "forumP": "Chia sẻ hình ảnh và hành động bảo vệ môi trường của bạn lên diễn đàn. Thảo luận, tương tác, bình luận, và học hỏi các kinh nghiệm sống xanh từ các thành viên khác để cùng chung tay bảo vệ Trái Đất!",
+      "forumBtn": "Tham gia diễn đàn ngay"
     }
   },
   "common": {
@@ -342,7 +342,7 @@
       "p2pProducts": "Sản phẩm P2P",
       "categories": "Danh mục",
       "events": "Sự kiện",
-      "community": "Bài đăng cộng đồng",
+      "forum": "Kiểm duyệt diễn đàn",
       "transactions": "Giao dịch",
       "shipping": "Vận chuyển",
       "queues": "Hàng đợi",

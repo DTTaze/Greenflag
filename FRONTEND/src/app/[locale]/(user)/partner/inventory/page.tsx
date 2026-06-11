@@ -241,7 +241,7 @@ export default function PartnerInventoryPage() {
                       {item.name}
                     </h3>
                     <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                      {item.points} pts • Tồn kho {item.stock}
+                      {item.price} pts • Tồn kho {item.stock}
                     </p>
                   </div>
                   <div className="flex gap-3">

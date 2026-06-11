@@ -9,7 +9,7 @@ export const PROTECTED_ROUTES = [
   "/user",
   "/admin",
   "/customer",
-  "/community",
+  "/forum",
   "/partner",
 ];
 

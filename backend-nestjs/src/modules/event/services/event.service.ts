@@ -52,10 +52,11 @@ export class EventService extends BaseCRUDService<Event> {
     return generateSuccessResult(mapped);
   }
 
-  async getAllEvents(): Promise<OperationResult<any[]>> {
+  async getAllEvents(withDeleted = false): Promise<OperationResult<any[]>> {
     const events = await this.eventRepository.find({
       relations: ['creator'],
       order: { createdAt: 'DESC' },
+      withDeleted,
     });
 
     const mapped = events.map((event) => ({
@@ -212,8 +213,8 @@ export class EventService extends BaseCRUDService<Event> {
       return detailedEventResult;
     }
     const detailedEvent = detailedEventResult.data;
-    await this.deleteEventImages(event);
-    await this.eventRepository.delete(eventId);
+    // Do not delete event images from Cloudinary during soft-delete to support auditing and recovery.
+    await this.eventRepository.softDelete(eventId);
     return generateSuccessResult(detailedEvent);
   }
 

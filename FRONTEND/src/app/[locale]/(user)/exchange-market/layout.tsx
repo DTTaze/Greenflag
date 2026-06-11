@@ -21,7 +21,7 @@ export {
   MarketplaceContext,
   statusColors,
   statusConfig,
-  userItemStatuses
+  userItemStatuses,
 } from "./contexts/marketplace.context";
 
 function ExchangeMarketContent({ children }: { children: React.ReactNode }) {
@@ -101,8 +101,8 @@ function ExchangeMarketContent({ children }: { children: React.ReactNode }) {
               },
             )}
         </section>
-      </main >
-    </div >
+      </main>
+    </div>
   );
 }
 

@@ -32,10 +32,10 @@ import { QueryKeysEvent } from "./QueryKeysEvent";
 
 // --- Query Hooks ---
 
-export const useEventsQuery = () => {
+export const useEventsQuery = (showDeleted?: boolean) => {
   return useQuery({
-    queryKey: [QueryKeysEvent.EVENTS],
-    queryFn: getAllEventsQueryFn,
+    queryKey: [QueryKeysEvent.EVENTS, showDeleted],
+    queryFn: () => getAllEventsQueryFn(showDeleted),
   });
 };
 

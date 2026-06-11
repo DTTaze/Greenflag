@@ -77,8 +77,10 @@ export const submitTask = async (
 
 /** Admin Task Endpoints (/admin/tasks) */
 
-export const adminGetAllTasks = async (): Promise<ApiResponse<TaskType[]>> => {
-  return axiosClient.get("/admin/tasks");
+export const adminGetAllTasks = async (
+  showDeleted?: boolean,
+): Promise<ApiResponse<TaskType[]>> => {
+  return axiosClient.get("/admin/tasks", { params: { showDeleted } });
 };
 
 export const adminGetTaskSubmissions = async (

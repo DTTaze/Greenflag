@@ -159,10 +159,11 @@ export default function PostCard({ post }: PostCardProps) {
 
   return (
     <div
-      className={`rounded-xl border p-4 shadow-sm transition-all duration-300 hover:shadow-md ${post.isAdminPost
+      className={`rounded-xl border p-4 shadow-sm transition-all duration-300 hover:shadow-md ${
+        post.isAdminPost
           ? "border-emerald-500 bg-emerald-50/10 shadow-[0_0_12px_rgba(16,185,129,0.15)] hover:shadow-[0_0_16px_rgba(16,185,129,0.25)] dark:border-emerald-500 dark:bg-emerald-950/10"
           : "border-emerald-250/50 bg-white dark:border-emerald-500/15 dark:bg-gray-900"
-        }`}
+      }`}
     >
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -297,7 +298,7 @@ export default function PostCard({ post }: PostCardProps) {
                   "https://res.cloudinary.com/ptquanh/image/upload/v1779947161/default-avatar.png"
                 }
                 alt={post.topComment.author.name}
-                className="dark:border-emerald-500/15 h-8 w-8 shrink-0 rounded-full border border-emerald-50 object-cover"
+                className="h-8 w-8 shrink-0 rounded-full border border-emerald-50 object-cover dark:border-emerald-500/15"
               />
               <div className="flex-1">
                 <div className="flex items-center gap-2">
@@ -321,10 +322,11 @@ export default function PostCard({ post }: PostCardProps) {
           {/* Upvote Button */}
           <button
             onClick={handleUpvote}
-            className={`flex transform cursor-pointer items-center gap-1.5 rounded-full border px-4 py-1.5 text-[13px] font-semibold transition-all duration-200 active:scale-95 ${vote === "up"
+            className={`flex transform cursor-pointer items-center gap-1.5 rounded-full border px-4 py-1.5 text-[13px] font-semibold transition-all duration-200 active:scale-95 ${
+              vote === "up"
                 ? "border-[#2F9E44] bg-[#2F9E44] text-white shadow-sm hover:bg-[#1F6F2E]"
-                : "border-emerald-250/60 bg-white text-[#5C5C5C] hover:border-emerald-350 hover:bg-[#F7F7F7] dark:border-emerald-500/15 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-              }`}
+                : "border-emerald-250/60 hover:border-emerald-350 bg-white text-[#5C5C5C] hover:bg-[#F7F7F7] dark:border-emerald-500/15 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+            }`}
           >
             <span>{t("helpful")}</span>
             <span>({displayedUpvotes})</span>
@@ -333,10 +335,11 @@ export default function PostCard({ post }: PostCardProps) {
           {/* Downvote Button */}
           <button
             onClick={handleDownvote}
-            className={`flex transform cursor-pointer items-center gap-1.5 rounded-full border px-4 py-1.5 text-[13px] font-semibold transition-all duration-200 active:scale-95 ${vote === "down"
+            className={`flex transform cursor-pointer items-center gap-1.5 rounded-full border px-4 py-1.5 text-[13px] font-semibold transition-all duration-200 active:scale-95 ${
+              vote === "down"
                 ? "border-[#FCA5A5] bg-[#FEE2E2] text-[#991B1B] shadow-sm hover:bg-[#FECACA] dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-400"
-                : "border-emerald-250/60 bg-white text-[#5C5C5C] hover:border-emerald-350 hover:bg-[#F7F7F7] dark:border-emerald-500/15 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-              }`}
+                : "border-emerald-250/60 hover:border-emerald-350 bg-white text-[#5C5C5C] hover:bg-[#F7F7F7] dark:border-emerald-500/15 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+            }`}
           >
             <span>{t("notHelpful")}</span>
             <span>({displayedDownvotes})</span>
@@ -375,7 +378,7 @@ export default function PostCard({ post }: PostCardProps) {
             className="fixed inset-0 bg-black/55 backdrop-blur-sm"
             onClick={() => setShowDeleteConfirm(false)}
           />
-          <div className="relative z-10 w-full max-w-md rounded-2xl border border-emerald-255 bg-white p-6 shadow-xl dark:border-emerald-500/15 dark:bg-gray-900">
+          <div className="border-emerald-255 relative z-10 w-full max-w-md rounded-2xl border bg-white p-6 shadow-xl dark:border-emerald-500/15 dark:bg-gray-900">
             <h3 className="text-lg font-bold text-gray-950 dark:text-white">
               {t("confirmDeleteTitle")}
             </h3>
@@ -386,7 +389,7 @@ export default function PostCard({ post }: PostCardProps) {
               <button
                 type="button"
                 onClick={() => setShowDeleteConfirm(false)}
-                className="cursor-pointer rounded-xl border border-emerald-250 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 dark:border-emerald-500/15 dark:text-gray-300 dark:hover:bg-gray-800"
+                className="border-emerald-250 cursor-pointer rounded-xl border px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 dark:border-emerald-500/15 dark:text-gray-300 dark:hover:bg-gray-800"
               >
                 {t("cancel")}
               </button>

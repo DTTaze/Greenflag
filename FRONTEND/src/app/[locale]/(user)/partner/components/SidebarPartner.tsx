@@ -158,11 +158,21 @@ export default function SidebarPartner({
             <Link
               href="/admin"
               onClick={onClose}
-              className="flex items-center gap-3.5 rounded-2xl px-4 py-3 text-sm font-semibold bg-amber-50 text-amber-700 hover:bg-amber-100 dark:bg-amber-950/10 dark:text-amber-400 dark:hover:bg-amber-950/20 transition-all duration-200 mb-2 border border-amber-100/50 dark:border-amber-900/30"
+              className="mb-2 flex items-center gap-3.5 rounded-2xl border border-amber-100/50 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-700 transition-all duration-200 hover:bg-amber-100 dark:border-amber-900/30 dark:bg-amber-950/10 dark:text-amber-400 dark:hover:bg-amber-950/20"
             >
               <span className="text-amber-600 dark:text-amber-400">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                  />
                 </svg>
               </span>
               <span>{t("backToAdmin") || "Trở về Admin"}</span>

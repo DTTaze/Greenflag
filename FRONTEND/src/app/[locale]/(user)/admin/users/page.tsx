@@ -28,8 +28,9 @@ export default function UserManagementPage() {
   const [isUpdatingUser, setIsUpdatingUser] = useState(false);
   const [flashMessage, setFlashMessage] = useState<string | null>(null);
   const [requestError, setRequestError] = useState<string | null>(null);
+  const [showDeleted, setShowDeleted] = useState(false);
 
-  const { data, isLoading } = useAdminUsersQuery();
+  const { data, isLoading } = useAdminUsersQuery(showDeleted);
   const { mutate: deleteUser } = useAdminDeleteUserMutation();
   const { mutate: updateUser } = useAdminUpdateUserMutation();
 
@@ -183,6 +184,8 @@ export default function UserManagementPage() {
         onDelete={handleDeleteUser}
         loading={isLoading}
         enableSelection={true}
+        showDeleted={showDeleted}
+        onToggleShowDeleted={setShowDeleted}
       />
 
       {/* User Detail Drawer */}

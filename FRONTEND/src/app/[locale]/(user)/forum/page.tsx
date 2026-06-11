@@ -7,7 +7,7 @@ import {
   Globe,
   History,
   Loader2,
-  Search
+  Search,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -105,7 +105,7 @@ export default function ForumPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t("searchPlaceholder")}
             aria-label={t("searchAriaLabel")}
-            className="w-full rounded-full border border-emerald-250/70 bg-white py-2.5 pr-4 pl-11 text-[14px] text-[#1B1B1B] placeholder-[#9E9E9E] shadow-xs transition-all duration-300 hover:border-emerald-400 hover:shadow-sm focus:border-emerald-600 focus:shadow-md focus:ring-2 focus:ring-emerald-500/20 focus:outline-none dark:border-emerald-500/15 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:hover:border-emerald-500/25 dark:focus:border-[#2F9E44] dark:focus:ring-[#2F9E44]/30"
+            className="border-emerald-250/70 w-full rounded-full border bg-white py-2.5 pr-4 pl-11 text-[14px] text-[#1B1B1B] placeholder-[#9E9E9E] shadow-xs transition-all duration-300 hover:border-emerald-400 hover:shadow-sm focus:border-emerald-600 focus:shadow-md focus:ring-2 focus:ring-emerald-500/20 focus:outline-none dark:border-emerald-500/15 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:hover:border-emerald-500/25 dark:focus:border-[#2F9E44] dark:focus:ring-[#2F9E44]/30"
           />
         </div>
       </div>
@@ -114,10 +114,11 @@ export default function ForumPage() {
       <div className="scrollbar-hide flex items-center gap-2 overflow-x-auto pb-1 md:hidden">
         <button
           onClick={() => setSelectedTag(undefined)}
-          className={`flex shrink-0 transform cursor-pointer items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-bold transition-all duration-200 active:scale-95 ${selectedTag === undefined
-            ? "bg-emerald-50 text-[#0B6E4F] dark:bg-emerald-950/40 dark:text-emerald-400"
-            : "text-slate-650 border border-gray-200 bg-white hover:bg-gray-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800"
-            }`}
+          className={`flex shrink-0 transform cursor-pointer items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-bold transition-all duration-200 active:scale-95 ${
+            selectedTag === undefined
+              ? "bg-emerald-50 text-[#0B6E4F] dark:bg-emerald-950/40 dark:text-emerald-400"
+              : "text-slate-650 border border-gray-200 bg-white hover:bg-gray-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800"
+          }`}
         >
           <span>Tất cả</span>
         </button>
@@ -127,10 +128,11 @@ export default function ForumPage() {
             <button
               key={tag}
               onClick={() => setSelectedTag(tag)}
-              className={`flex shrink-0 transform cursor-pointer items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-bold transition-all duration-200 active:scale-95 ${isActive
-                ? "bg-emerald-50 text-[#0B6E4F] dark:bg-emerald-950/40 dark:text-emerald-400"
-                : "text-slate-650 border border-gray-200 bg-white hover:bg-gray-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800"
-                }`}
+              className={`flex shrink-0 transform cursor-pointer items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-bold transition-all duration-200 active:scale-95 ${
+                isActive
+                  ? "bg-emerald-50 text-[#0B6E4F] dark:bg-emerald-950/40 dark:text-emerald-400"
+                  : "text-slate-650 border border-gray-200 bg-white hover:bg-gray-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800"
+              }`}
             >
               <span>{tag}</span>
             </button>
@@ -148,10 +150,11 @@ export default function ForumPage() {
             setSort("hot");
             setSelectedTag(undefined);
           }}
-          className={`flex shrink-0 transform cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-[14px] font-[600] transition-all duration-250 active:scale-95 ${sort === "hot" && !selectedTag
-            ? "bg-[#E6F4EA] text-[#2F9E44] shadow-xs dark:bg-green-950/40 dark:text-green-400"
-            : "border border-emerald-250/50 bg-white text-[#5C5C5C] hover:bg-emerald-50/20 hover:text-emerald-800 dark:border-emerald-500/15 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700/60 dark:hover:text-white"
-            }`}
+          className={`flex shrink-0 transform cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-[14px] font-[600] transition-all duration-250 active:scale-95 ${
+            sort === "hot" && !selectedTag
+              ? "bg-[#E6F4EA] text-[#2F9E44] shadow-xs dark:bg-green-950/40 dark:text-green-400"
+              : "border-emerald-250/50 border bg-white text-[#5C5C5C] hover:bg-emerald-50/20 hover:text-emerald-800 dark:border-emerald-500/15 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700/60 dark:hover:text-white"
+          }`}
         >
           <Flame className="h-4 w-4" aria-hidden="true" />
           <span>{t("hot")}</span>
@@ -162,10 +165,11 @@ export default function ForumPage() {
             setSort("new");
             setSelectedTag(undefined);
           }}
-          className={`flex shrink-0 transform cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-[14px] font-[600] transition-all duration-250 active:scale-95 ${sort === "new" && !selectedTag
-            ? "bg-[#E6F4EA] text-[#2F9E44] shadow-xs dark:bg-green-950/40 dark:text-green-400"
-            : "border border-emerald-250/50 bg-white text-[#5C5C5C] hover:bg-emerald-50/20 hover:text-emerald-800 dark:border-emerald-500/15 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700/60 dark:hover:text-white"
-            }`}
+          className={`flex shrink-0 transform cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-[14px] font-[600] transition-all duration-250 active:scale-95 ${
+            sort === "new" && !selectedTag
+              ? "bg-[#E6F4EA] text-[#2F9E44] shadow-xs dark:bg-green-950/40 dark:text-green-400"
+              : "border-emerald-250/50 border bg-white text-[#5C5C5C] hover:bg-emerald-50/20 hover:text-emerald-800 dark:border-emerald-500/15 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700/60 dark:hover:text-white"
+          }`}
         >
           <Clock className="h-4 w-4" aria-hidden="true" />
           <span>{t("new")}</span>
@@ -175,10 +179,11 @@ export default function ForumPage() {
           onClick={() => {
             setSelectedTag(selectedTag === "Tái chế" ? undefined : "Tái chế");
           }}
-          className={`flex shrink-0 transform cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-[14px] font-[600] transition-all duration-250 active:scale-95 ${selectedTag === "Tái chế"
-            ? "bg-[#E6F4EA] text-[#2F9E44] shadow-xs dark:bg-green-950/40 dark:text-green-400"
-            : "border border-emerald-250/50 bg-white text-[#5C5C5C] hover:bg-emerald-50/20 hover:text-emerald-800 dark:border-emerald-500/15 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700/60 dark:hover:text-white"
-            }`}
+          className={`flex shrink-0 transform cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-[14px] font-[600] transition-all duration-250 active:scale-95 ${
+            selectedTag === "Tái chế"
+              ? "bg-[#E6F4EA] text-[#2F9E44] shadow-xs dark:bg-green-950/40 dark:text-green-400"
+              : "border-emerald-250/50 border bg-white text-[#5C5C5C] hover:bg-emerald-50/20 hover:text-emerald-800 dark:border-emerald-500/15 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700/60 dark:hover:text-white"
+          }`}
         >
           <Filter className="h-4 w-4" aria-hidden="true" />
           <span>{t("recycle")}</span>

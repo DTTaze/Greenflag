@@ -114,8 +114,8 @@ export const submitTaskFn = async ({
 
 /** Admin API Query Fns */
 
-export const adminGetAllTasksFn = async () => {
-  const res = await adminGetAllTasks();
+export const adminGetAllTasksFn = async (showDeleted?: boolean) => {
+  const res = await adminGetAllTasks(showDeleted);
   if (!res.success) {
     throw new Error(res.message || "Failed to fetch admin tasks");
   }

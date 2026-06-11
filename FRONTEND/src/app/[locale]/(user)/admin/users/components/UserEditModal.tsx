@@ -141,7 +141,7 @@ export default function UserEditModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-xl border border-emerald-250 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-emerald-50/20 dark:border-emerald-500/15 dark:text-slate-300 dark:hover:bg-slate-800"
+                className="border-emerald-250 rounded-xl border px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-emerald-50/20 dark:border-emerald-500/15 dark:text-slate-300 dark:hover:bg-slate-800"
               >
                 {tCommon("cancel")}
               </button>

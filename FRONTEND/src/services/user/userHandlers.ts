@@ -44,10 +44,10 @@ export const getUserItemsHandler = async (
 
 // --- Admin User Handlers ---
 
-export const adminGetAllUsersHandler = async (): Promise<
-  ApiResponse<UserType[]>
-> => {
-  return UserService.adminGetAllUsers();
+export const adminGetAllUsersHandler = async (
+  showDeleted?: boolean,
+): Promise<ApiResponse<UserType[]>> => {
+  return UserService.adminGetAllUsers(showDeleted);
 };
 
 export const adminGetUserByIdHandler = async (

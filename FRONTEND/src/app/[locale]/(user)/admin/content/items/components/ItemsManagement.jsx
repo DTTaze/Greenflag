@@ -19,11 +19,12 @@ export default function ItemsManagement() {
   const [formOpen, setFormOpen] = useState(false);
   const [editData, setEditData] = useState(null);
   const [formMode, setFormMode] = useState("add");
+  const [showDeleted, setShowDeleted] = useState(false);
 
   const fetchItems = async () => {
     setLoading(true);
     try {
-      const res = await getAllItems();
+      const res = await getAllItems(showDeleted);
       if (res.success) {
         setItems(res.data);
       } else {
@@ -38,7 +39,7 @@ export default function ItemsManagement() {
 
   useEffect(() => {
     fetchItems();
-  }, []);
+  }, [showDeleted]);
 
   const handleAddItem = () => {
     setFormMode("add");
@@ -58,7 +59,7 @@ export default function ItemsManagement() {
         const res = await deleteItem(item.id);
         if (res.success) {
           alert("Xóa vật phẩm thành công!");
-          setItems((prev) => prev.filter((i) => i.id !== item.id));
+          fetchItems();
         } else {
           alert("Xóa vật phẩm thất bại!");
         }
@@ -107,6 +108,8 @@ export default function ItemsManagement() {
         onEdit={handleEditItem}
         onDelete={handleDeleteItem}
         loading={loading}
+        showDeleted={showDeleted}
+        onToggleShowDeleted={setShowDeleted}
       />
       <ItemForm
         open={formOpen}

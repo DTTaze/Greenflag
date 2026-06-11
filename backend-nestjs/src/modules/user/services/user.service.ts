@@ -182,10 +182,11 @@ export class UserService extends BaseCRUDService<User> {
     return this.userSocialAccountService.findOrCreateUser(profile);
   }
 
-  async getAllUsers(): Promise<OperationResult<User[]>> {
+  async getAllUsers(withDeleted = false): Promise<OperationResult<User[]>> {
     const users = await this.userRepository.find({
       relations: ['profile', 'coin', 'rank'],
       order: { createdAt: 'DESC' },
+      withDeleted,
     });
     return generateSuccessResult(users);
   }
@@ -260,13 +261,15 @@ export class UserService extends BaseCRUDService<User> {
     }
 
     await this.model.manager.transaction(async (transactionalEntityManager) => {
-      await transactionalEntityManager.delete(Rank, { userId: user.id });
-      await transactionalEntityManager.delete(Coin, { userId: user.id });
-      await transactionalEntityManager.delete(UserProfile, { userId: user.id });
-      await transactionalEntityManager.delete(UserSocialAccount, {
+      await transactionalEntityManager.softDelete(Rank, { userId: user.id });
+      await transactionalEntityManager.softDelete(Coin, { userId: user.id });
+      await transactionalEntityManager.softDelete(UserProfile, {
         userId: user.id,
       });
-      await transactionalEntityManager.delete(User, { id: user.id });
+      await transactionalEntityManager.softDelete(UserSocialAccount, {
+        userId: user.id,
+      });
+      await transactionalEntityManager.softDelete(User, user.id);
     });
 
     return generateSuccessResult(undefined);

@@ -13,8 +13,10 @@ import {
   EventUserResponse,
 } from "@/src/types/event/event.response";
 
-export const getAllEventsQueryFn = async (): Promise<EventResponse[]> => {
-  const response = await getAllEventsHandler();
+export const getAllEventsQueryFn = async (
+  showDeleted?: boolean,
+): Promise<EventResponse[]> => {
+  const response = await getAllEventsHandler(showDeleted);
   if (!response.success) {
     throw new Error(response.message || "Failed to fetch events");
   }

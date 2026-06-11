@@ -7,8 +7,8 @@ const getEventPrefix = () => {
   return isAdmin ? "/admin/events" : "/partner/events";
 };
 
-export const getAllEvents = () => {
-  return axiosClient.get("/events/informations");
+export const getAllEvents = (showDeleted?: boolean) => {
+  return axiosClient.get("/events/informations", { params: { showDeleted } });
 };
 
 export const getOwnerEvents = () => {

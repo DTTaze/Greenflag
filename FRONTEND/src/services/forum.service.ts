@@ -283,7 +283,11 @@ export const forumService = {
     return response;
   },
 
-  adminGetPosts: async (status: string): Promise<BaseResponse<{ items: ForumPost[]; nextCursor: string | null }>> => {
+  adminGetPosts: async (
+    status: string,
+  ): Promise<
+    BaseResponse<{ items: ForumPost[]; nextCursor: string | null }>
+  > => {
     const response: any = await axiosClient.get("/admin/forum/posts", {
       params: { status },
     });
@@ -301,14 +305,22 @@ export const forumService = {
   },
 
   approvePost: async (id: string): Promise<BaseResponse<any>> => {
-    const response: any = await axiosClient.patch(`/admin/forum/posts/${id}/approve`);
+    const response: any = await axiosClient.patch(
+      `/admin/forum/posts/${id}/approve`,
+    );
     return response;
   },
 
-  rejectPost: async (id: string, flaggedReason?: string): Promise<BaseResponse<any>> => {
-    const response: any = await axiosClient.patch(`/admin/forum/posts/${id}/reject`, {
-      flaggedReason,
-    });
+  rejectPost: async (
+    id: string,
+    flaggedReason?: string,
+  ): Promise<BaseResponse<any>> => {
+    const response: any = await axiosClient.patch(
+      `/admin/forum/posts/${id}/reject`,
+      {
+        flaggedReason,
+      },
+    );
     return response;
   },
 };

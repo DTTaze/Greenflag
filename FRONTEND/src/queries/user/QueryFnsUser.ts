@@ -44,8 +44,10 @@ export const getUserItemsQueryFn = async (userId: string): Promise<any[]> => {
   return response.data;
 };
 
-export const adminGetAllUsersQueryFn = async (): Promise<UserType[]> => {
-  const response = await adminGetAllUsersHandler();
+export const adminGetAllUsersQueryFn = async (
+  showDeleted?: boolean,
+): Promise<UserType[]> => {
+  const response = await adminGetAllUsersHandler(showDeleted);
   if (!response.success) {
     throw new Error(response.message || "Failed to fetch users");
   }

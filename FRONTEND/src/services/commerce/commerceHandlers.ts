@@ -16,10 +16,10 @@ import { commerceServices } from ".";
 
 // --- Products ---
 
-export const getProductsHandler = async (): Promise<
-  ApiResponse<ProductResponse[]>
-> => {
-  return commerceServices.getAllProducts();
+export const getProductsHandler = async (
+  showDeleted?: boolean,
+): Promise<ApiResponse<ProductResponse[]>> => {
+  return commerceServices.getAllProducts(showDeleted);
 };
 
 export const getProductByIdHandler = async (
@@ -30,10 +30,10 @@ export const getProductByIdHandler = async (
 
 // --- Items ---
 
-export const getItemsHandler = async (): Promise<
-  ApiResponse<ItemResponse[]>
-> => {
-  return commerceServices.getAllItems();
+export const getItemsHandler = async (
+  showDeleted?: boolean,
+): Promise<ApiResponse<ItemResponse[]>> => {
+  return commerceServices.getAllItems(showDeleted);
 };
 
 export const getItemByIdHandler = async (

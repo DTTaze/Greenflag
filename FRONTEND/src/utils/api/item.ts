@@ -48,8 +48,8 @@ const mapToProductDto = (raw: any) => {
   };
 };
 
-export const getAllItems = () => {
-  return axiosClient.get("/commerce/items");
+export const getAllItems = (showDeleted?: boolean) => {
+  return axiosClient.get("/commerce/items", { params: { showDeleted } });
 };
 
 export const deleteItem = (itemId: string | number) => {
@@ -78,8 +78,8 @@ export const getAllAvailableProducts = () => {
   return axiosClient.get("/commerce/products");
 };
 
-export const getAllProducts = () => {
-  return axiosClient.get("/commerce/products");
+export const getAllProducts = (showDeleted?: boolean) => {
+  return axiosClient.get("/commerce/products", { params: { showDeleted } });
 };
 
 export const getProductByUserId = async (userId: string | number) => {

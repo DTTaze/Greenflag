@@ -22,7 +22,6 @@ export class AuditWithTimezone {
   @DeleteDateColumn({
     name: 'deleted_at',
     type: 'timestamp with time zone',
-    select: false,
   })
   deletedAt: Date;
 }

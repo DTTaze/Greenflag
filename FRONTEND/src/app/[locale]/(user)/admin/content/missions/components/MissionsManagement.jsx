@@ -14,7 +14,8 @@ import { taskColumns } from "../../../components/HeaderColumn";
 import TaskForm from "./TaskForm";
 
 export default function TasksManagement() {
-  const { data: tasks = [], isLoading: loading } = useAdminTasksQuery();
+  const [showDeleted, setShowDeleted] = useState(false);
+  const { data: tasks = [], isLoading: loading } = useAdminTasksQuery(showDeleted);
   const createTaskMutation = useAdminCreateTaskMutation();
   const updateTaskMutation = useAdminUpdateTaskMutation();
   const deleteTaskMutation = useAdminDeleteTaskMutation();
@@ -76,6 +77,8 @@ export default function TasksManagement() {
         onEdit={handleEditTask}
         onDelete={handleDeleteTask}
         loading={loading}
+        showDeleted={showDeleted}
+        onToggleShowDeleted={setShowDeleted}
       />
       <TaskForm
         open={formOpen}

@@ -12,6 +12,7 @@ import {
 } from "@/src/components/ui/dialog";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
+import { useAuthStore } from "@/src/store/auth/authStore";
 
 export default function ItemForm({
   open,
@@ -20,6 +21,7 @@ export default function ItemForm({
   initialData = {},
   mode,
 }) {
+  const { user } = useAuthStore();
   const [formData, setFormData] = useState({
     owner_id: "",
     name: "",
@@ -79,7 +81,15 @@ export default function ItemForm({
 
   const onSubmit = (e) => {
     e.preventDefault();
-    handleSubmit(formData, mode);
+    if (!user?.id) {
+      alert("Phiên đăng nhập không hợp lệ, vui lòng tải lại trang.");
+      return;
+    }
+    const payload = {
+      ...formData,
+      owner_id: formData.owner_id || user.id,
+    };
+    handleSubmit(payload, mode);
   };
 
   return (
@@ -214,30 +224,17 @@ export default function ItemForm({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="owner_id">Chủ sở hữu</Label>
-              <Input
-                id="owner_id"
-                name="owner_id"
-                value={formData.owner_id}
-                onChange={handleChange}
-                required
-                placeholder="Owner ID..."
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="purchase_limit_per_day">
-                Giới hạn lượt mua/ngày
-              </Label>
-              <Input
-                id="purchase_limit_per_day"
-                name="purchase_limit_per_day"
-                value={formData.purchase_limit_per_day}
-                onChange={handleChange}
-                placeholder="Không giới hạn"
-              />
-            </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="purchase_limit_per_day">
+              Giới hạn lượt mua/ngày
+            </Label>
+            <Input
+              id="purchase_limit_per_day"
+              name="purchase_limit_per_day"
+              value={formData.purchase_limit_per_day}
+              onChange={handleChange}
+              placeholder="Không giới hạn"
+            />
           </div>
 
           <DialogFooter className="mt-6 border-t border-emerald-100 pt-4 dark:border-emerald-500/10">

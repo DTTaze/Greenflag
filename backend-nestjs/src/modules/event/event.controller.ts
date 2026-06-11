@@ -1,6 +1,14 @@
 import { HttpResponse } from 'mvc-common-toolkit';
 
-import { Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { AuthGuard } from '@shared/guards/auth.guard';
@@ -26,8 +34,11 @@ export class EventController {
   }
 
   @Get('informations')
-  async getAllEvents(): Promise<HttpResponse> {
-    return this.eventService.getAllEvents();
+  async getAllEvents(
+    @Query('showDeleted') showDeleted?: string,
+  ): Promise<HttpResponse> {
+    const withDeleted = showDeleted === 'true';
+    return this.eventService.getAllEvents(withDeleted);
   }
 
   @Get('signed')

@@ -9,8 +9,7 @@ import {
   Search,
   Trash2,
 } from "lucide-react";
-import React, { useMemo, useState } from "react";
-
+import { useAuthStore } from "@/src/store/auth/authStore";
 import { StatusBadge } from "./StatusBadge";
 
 export default function DataTable({
@@ -22,7 +21,11 @@ export default function DataTable({
   onDelete,
   onView,
   loading = false,
+  showDeleted = false,
+  onToggleShowDeleted,
 }) {
+  const { user } = useAuthStore();
+  const isAdmin = (user?.role || user?.roles?.name || "").toLowerCase() === "admin";
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -79,7 +82,22 @@ export default function DataTable({
       {/* Header section */}
       <div className="flex flex-col items-start justify-between gap-4 border-b border-gray-100 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 p-6 sm:flex-row sm:items-center">
         <h3 className="text-lg font-bold text-gray-900 dark:text-zinc-100">{title}</h3>
-        <div className="flex w-full items-center gap-3 sm:w-auto">
+        <div className="flex w-full items-center gap-4 sm:w-auto">
+          {onToggleShowDeleted && isAdmin && (
+            <label className="relative inline-flex items-center cursor-pointer gap-3 select-none">
+              <input
+                type="checkbox"
+                className="sr-only peer"
+                checked={showDeleted}
+                onChange={(e) => onToggleShowDeleted(e.target.checked)}
+              />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-emerald-500"></div>
+              <span className="text-sm font-medium text-gray-600 dark:text-zinc-400 whitespace-nowrap">
+                Hiển thị dữ liệu đã xóa
+              </span>
+            </label>
+          )}
+
           {/* Search Input */}
           <div className="relative flex-1 sm:w-64 sm:flex-none">
             <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 dark:text-zinc-500">
@@ -175,12 +193,15 @@ export default function DataTable({
             ) : (
               paginatedRows.map((row, index) => {
                 const isSelected = selectedIds.has(row.id);
+                const hasDeletedAt = !!(row.deletedAt || row.deleted_at);
                 return (
                   <tr
                     key={row.id || index}
                     className={`even:bg-gray-50/30 dark:even:bg-zinc-950/30 hover:bg-gray-100/50 dark:hover:bg-zinc-800/50 transition-colors duration-150 border-b border-gray-100 dark:border-zinc-800/50 last:border-0 ${
-                      isSelected ? "bg-emerald-50/10 dark:bg-emerald-950/20 even:bg-emerald-50/10 dark:even:bg-emerald-950/20" : ""
-                    }`}
+                      isSelected
+                        ? "bg-emerald-50/10 dark:bg-emerald-950/20 even:bg-emerald-50/10 dark:even:bg-emerald-950/20"
+                        : ""
+                    } ${hasDeletedAt ? "opacity-60 bg-red-50/5 dark:bg-red-950/5" : ""}`}
                   >
                     {/* Selection checkbox */}
                     <td className="w-4 p-4">
@@ -213,6 +234,43 @@ export default function DataTable({
                         cellContent = <StatusBadge status={resolvedValue} />;
                       } else {
                         cellContent = resolvedValue != null ? String(resolvedValue) : "";
+                      }
+
+                      // Check if resolvedValue is a relation object that has been soft-deleted
+                      const isRelationDeleted = resolvedValue && typeof resolvedValue === 'object' && !!(resolvedValue.deletedAt || resolvedValue.deleted_at);
+
+                      if (isRelationDeleted) {
+                        const displayName = resolvedValue.fullName || resolvedValue.full_name || resolvedValue.username || resolvedValue.name || resolvedValue.email || "Đã xóa";
+                        cellContent = (
+                          <span className="inline-flex items-center gap-1.5">
+                            <span className="text-gray-400 line-through dark:text-zinc-500">{displayName}</span>
+                            <span className="inline-flex items-center justify-center rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-red-650 dark:border-red-900/20 dark:bg-red-950/30 dark:text-red-400">
+                              Đã xóa
+                            </span>
+                          </span>
+                        );
+                      } else if (hasDeletedAt) {
+                        // If the row itself is soft-deleted
+                        if (col.field === "status") {
+                          cellContent = (
+                            <span className="inline-flex items-center justify-center rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-650 dark:border-red-900/20 dark:bg-red-950/30 dark:text-red-400">
+                              Đã xóa
+                            </span>
+                          );
+                        } else if (
+                          colIndex === 0 &&
+                          !columns.some((c) => c.field === "status")
+                        ) {
+                          // Render "Đã xóa" next to the primary column value if there is no status column
+                          cellContent = (
+                            <span className="inline-flex items-center gap-1.5">
+                              {cellContent}
+                              <span className="inline-flex items-center justify-center rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-red-605 dark:border-red-900/20 dark:bg-red-950/30 dark:text-red-400">
+                                Đã xóa
+                              </span>
+                            </span>
+                          );
+                        }
                       }
 
                       return (

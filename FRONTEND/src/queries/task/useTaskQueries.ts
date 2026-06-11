@@ -109,10 +109,10 @@ export const useSubmitTaskMutation = () => {
 
 /** Admin Query & Mutation Hooks */
 
-export const useAdminTasksQuery = () => {
+export const useAdminTasksQuery = (showDeleted?: boolean) => {
   return useQuery({
-    queryKey: TASK_KEYS.ADMIN_LIST,
-    queryFn: adminGetAllTasksFn,
+    queryKey: [...TASK_KEYS.ADMIN_LIST, showDeleted],
+    queryFn: () => adminGetAllTasksFn(showDeleted),
   });
 };
 

@@ -43,9 +43,7 @@ export default function UserLayout({
             </aside>
 
             <main className="lg:col-span-8">
-                <div className="transition-opacity duration-300">
-                  {children}
-                </div>
+              <div className="transition-opacity duration-300">{children}</div>
             </main>
           </div>
         </div>

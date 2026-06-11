@@ -21,7 +21,8 @@ const buildEventFormData = (payload: any, images?: File[]): FormData => {
 
 export const eventServices = {
   // --- Public / General User ---
-  getAllEvents: (): Promise<any> => axiosClient.get("/events/informations"),
+  getAllEvents: (showDeleted?: boolean): Promise<any> =>
+    axiosClient.get("/events/informations", { params: { showDeleted } }),
 
   getEventById: (eventId: string): Promise<any> =>
     axiosClient.get(`/events/information/${eventId}`),

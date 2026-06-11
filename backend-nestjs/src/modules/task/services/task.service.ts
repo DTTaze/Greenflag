@@ -108,10 +108,11 @@ export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
     return generateSuccessResult(savedTask);
   }
 
-  async getAllTasks(): Promise<OperationResult<Task[]>> {
+  async getAllTasks(withDeleted = false): Promise<OperationResult<Task[]>> {
     const tasks = await this.taskRepository.find({
       relations: ['creator', 'creator.profile'],
       order: { createdAt: 'DESC' },
+      withDeleted,
     });
     return generateSuccessResult(tasks);
   }

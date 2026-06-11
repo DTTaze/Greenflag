@@ -73,10 +73,10 @@ export const useUserItemsQuery = (userId: string) => {
   });
 };
 
-export const useAdminUsersQuery = () => {
+export const useAdminUsersQuery = (showDeleted?: boolean) => {
   return useQuery({
-    queryKey: [QueryKeysUser.ADMIN_USERS],
-    queryFn: adminGetAllUsersQueryFn,
+    queryKey: [QueryKeysUser.ADMIN_USERS, showDeleted],
+    queryFn: () => adminGetAllUsersQueryFn(showDeleted),
   });
 };
 

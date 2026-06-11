@@ -1,13 +1,6 @@
-const formatDateValue = (params: any): string => {
-  if (!params) return "N/A";
-  const date = new Date(params);
-  if (isNaN(date.getTime())) return "N/A";
-  return date.toLocaleString("vi-VN");
-};
+import { formatDate } from "@/src/utils/formatDate";
 
 export const userColumns = [
-  { field: "id", headerName: "ID", width: 100 },
-  { field: "public_id", headerName: "ID công khai", width: 200 },
   { field: "full_name", headerName: "Họ tên", width: 250 },
   { field: "username", headerName: "Tên người dùng", width: 200 },
   { field: "phone_number", headerName: "SĐT", width: 200 },
@@ -22,54 +15,64 @@ export const userColumns = [
     field: "updated_at",
     headerName: "Ngày cập nhật",
     width: 200,
-    valueGetter: formatDateValue,
+    valueGetter: (_value: any, row: any) =>
+      formatDate(row.updated_at || row.updatedAt),
   },
   {
     field: "created_at",
     headerName: "Ngày khởi tạo",
     width: 200,
-    valueGetter: formatDateValue,
+    valueGetter: (_value: any, row: any) =>
+      formatDate(row.created_at || row.createdAt),
+  },
+  {
+    field: "deletedAt",
+    headerName: "Ngày xóa",
+    width: 200,
+    valueGetter: (_value: any, row: any) =>
+      formatDate(row.deletedAt || row.deleted_at),
   },
 ];
 
 export const roleColumns = [
-  { field: "id", headerName: "ID", width: 100 },
   { field: "name", headerName: "Tên vai trò", width: 230 },
   { field: "description", headerName: "Mô tả", width: 230 },
   {
     field: "updated_at",
     headerName: "Ngày cập nhật",
     width: 200,
-    valueGetter: formatDateValue,
+    valueGetter: (_value: any, row: any) =>
+      formatDate(row.updated_at || row.updatedAt),
   },
   {
     field: "created_at",
     headerName: "Ngày khởi tạo",
     width: 200,
-    valueGetter: formatDateValue,
+    valueGetter: (_value: any, row: any) =>
+      formatDate(row.created_at || row.createdAt),
   },
 ];
 
 export const permissionColumns = [
-  { field: "id", headerName: "ID", width: 100 },
   { field: "action", headerName: "Hành động", width: 230 },
   { field: "subject", headerName: "Đối tượng", width: 230 },
   {
     field: "updated_at",
     headerName: "Ngày cập nhật",
     width: 200,
-    valueGetter: formatDateValue,
+    valueGetter: (_value: any, row: any) =>
+      formatDate(row.updated_at || row.updatedAt),
   },
   {
     field: "created_at",
     headerName: "Ngày khởi tạo",
     width: 200,
-    valueGetter: formatDateValue,
+    valueGetter: (_value: any, row: any) =>
+      formatDate(row.created_at || row.createdAt),
   },
 ];
 
 export const rolesPermissionsColumns = [
-  { field: "id", headerName: "ID", width: 100 },
   {
     field: "role",
     headerName: "Name",
@@ -86,12 +89,14 @@ export const rolesPermissionsColumns = [
     field: "updated_at",
     headerName: "Ngày cập nhật",
     width: 200,
-    valueGetter: formatDateValue,
+    valueGetter: (_value: any, row: any) =>
+      formatDate(row.updated_at || row.updatedAt),
   },
   {
     field: "created_at",
     headerName: "Ngày khởi tạo",
     width: 200,
-    valueGetter: formatDateValue,
+    valueGetter: (_value: any, row: any) =>
+      formatDate(row.created_at || row.createdAt),
   },
 ];

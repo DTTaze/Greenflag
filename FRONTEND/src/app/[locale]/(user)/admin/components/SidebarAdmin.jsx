@@ -69,11 +69,6 @@ const menuSections = [
         path: "/admin/content/products",
       },
       {
-        textKey: "categories",
-        icon: <ListPlus size={20} />,
-        path: "/admin/content/categories",
-      },
-      {
         textKey: "events",
         icon: <Calendar size={20} />,
         path: "/admin/content/events",

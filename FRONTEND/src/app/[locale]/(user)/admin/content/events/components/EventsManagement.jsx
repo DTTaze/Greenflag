@@ -19,11 +19,12 @@ export default function EventsManagement() {
   const [formOpen, setFormOpen] = useState(false);
   const [editData, setEditData] = useState(null);
   const [formMode, setFormMode] = useState("add");
+  const [showDeleted, setShowDeleted] = useState(false);
 
   const fetchEvents = async () => {
     setLoading(true);
     try {
-      const res = await getAllEvents();
+      const res = await getAllEvents(showDeleted);
       if (res.success) {
         setEvents(res.data);
       } else {
@@ -38,7 +39,7 @@ export default function EventsManagement() {
 
   useEffect(() => {
     fetchEvents();
-  }, []);
+  }, [showDeleted]);
 
   const handleAddEvent = () => {
     setFormMode("add");
@@ -58,7 +59,7 @@ export default function EventsManagement() {
         const res = await deleteEvent(event.id);
         if (res.success) {
           alert("Xóa sự kiện thành công!");
-          setEvents((prev) => prev.filter((e) => e.id !== event.id));
+          fetchEvents();
         } else {
           alert("Xóa sự kiện thất bại!");
         }
@@ -105,6 +106,8 @@ export default function EventsManagement() {
         onEdit={handleEditEvent}
         onDelete={handleDeleteEvent}
         loading={loading}
+        showDeleted={showDeleted}
+        onToggleShowDeleted={setShowDeleted}
       />
       <EventForm
         open={formOpen}

@@ -70,4 +70,3 @@ const styles = {
     transform: "translate(-50%, -50%)",
   },
 };
-

@@ -1,6 +1,14 @@
 import { HttpResponse } from 'mvc-common-toolkit';
 
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { User } from '@modules/user/entities/user.entity';
@@ -27,8 +35,11 @@ export class CommerceController {
   // --- Products ---
 
   @Get('products')
-  public async getAllProducts(): Promise<HttpResponse> {
-    return this.productService.findAll();
+  public async getAllProducts(
+    @Query('showDeleted') showDeleted?: string,
+  ): Promise<HttpResponse> {
+    const withDeleted = showDeleted === 'true';
+    return this.productService.findAll({}, { withDeleted });
   }
 
   @Get('products/:id')
@@ -39,8 +50,14 @@ export class CommerceController {
   // --- Items ---
 
   @Get('items')
-  public async getAllItems(): Promise<HttpResponse> {
-    return this.itemService.findAll({}, { relations: { creator: true } });
+  public async getAllItems(
+    @Query('showDeleted') showDeleted?: string,
+  ): Promise<HttpResponse> {
+    const withDeleted = showDeleted === 'true';
+    return this.itemService.findAll(
+      {},
+      { relations: { creator: true }, withDeleted },
+    );
   }
 
   @Get('items/:id')

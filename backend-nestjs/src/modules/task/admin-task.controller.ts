@@ -9,6 +9,7 @@ import {
   Patch,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -41,8 +42,11 @@ export class AdminTaskController {
 
   @Get()
   @ApiOperation({ summary: 'Get list of all tasks' })
-  async getAllTasks(): Promise<HttpResponse> {
-    return this.taskService.getAllTasks();
+  async getAllTasks(
+    @Query('showDeleted') showDeleted?: string,
+  ): Promise<HttpResponse> {
+    const withDeleted = showDeleted === 'true';
+    return this.taskService.getAllTasks(withDeleted);
   }
 
   @Get('submissions/:customerId')

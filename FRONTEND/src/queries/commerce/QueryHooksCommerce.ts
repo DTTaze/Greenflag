@@ -40,10 +40,10 @@ import { QueryKeysCommerce } from "./QueryKeysCommerce";
 
 // --- Query Hooks ---
 
-export const useProductsQuery = () => {
+export const useProductsQuery = (showDeleted?: boolean) => {
   return useQuery({
-    queryKey: [QueryKeysCommerce.PRODUCTS],
-    queryFn: getProductsQueryFn,
+    queryKey: [QueryKeysCommerce.PRODUCTS, showDeleted],
+    queryFn: () => getProductsQueryFn(showDeleted),
   });
 };
 
@@ -55,10 +55,10 @@ export const useProductDetailQuery = (id: string) => {
   });
 };
 
-export const useItemsQuery = () => {
+export const useItemsQuery = (showDeleted?: boolean) => {
   return useQuery({
-    queryKey: [QueryKeysCommerce.ITEMS],
-    queryFn: getItemsQueryFn,
+    queryKey: [QueryKeysCommerce.ITEMS, showDeleted],
+    queryFn: () => getItemsQueryFn(showDeleted),
   });
 };
 

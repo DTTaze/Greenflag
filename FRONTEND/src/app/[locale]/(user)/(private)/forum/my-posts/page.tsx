@@ -227,7 +227,7 @@ export default function MyPostsPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t("searchPlaceholder")}
             aria-label={t("searchAriaLabel")}
-            className="w-full rounded-full border border-emerald-250/70 bg-white py-2.5 pr-4 pl-11 text-[14px] text-[#1B1B1B] placeholder-[#9E9E9E] shadow-xs transition-all duration-300 hover:border-emerald-400 hover:shadow-sm focus:border-emerald-600 focus:shadow-md focus:ring-2 focus:ring-emerald-500/20 focus:outline-none dark:border-emerald-500/15 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:hover:border-emerald-500/25 dark:focus:border-[#2F9E44] dark:focus:ring-[#2F9E44]/30"
+            className="border-emerald-250/70 w-full rounded-full border bg-white py-2.5 pr-4 pl-11 text-[14px] text-[#1B1B1B] placeholder-[#9E9E9E] shadow-xs transition-all duration-300 hover:border-emerald-400 hover:shadow-sm focus:border-emerald-600 focus:shadow-md focus:ring-2 focus:ring-emerald-500/20 focus:outline-none dark:border-emerald-500/15 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:hover:border-emerald-500/25 dark:focus:border-[#2F9E44] dark:focus:ring-[#2F9E44]/30"
           />
         </div>
       </div>
@@ -274,7 +274,7 @@ export default function MyPostsPage() {
           </p>
         </div>
       ) : posts.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-emerald-250/80 bg-white px-4 py-16 text-center shadow-xs dark:border-emerald-500/15 dark:bg-gray-900">
+        <div className="border-emerald-250/80 flex flex-col items-center justify-center rounded-xl border border-dashed bg-white px-4 py-16 text-center shadow-xs dark:border-emerald-500/15 dark:bg-gray-900">
           <MessageSquare
             className="h-10 w-10 text-gray-300 opacity-80 dark:text-gray-700"
             aria-hidden="true"
@@ -291,7 +291,7 @@ export default function MyPostsPage() {
           {posts.map((post: ForumPost) => (
             <div
               key={post.id}
-              className="group overflow-hidden rounded-xl border border-emerald-250/50 bg-white p-5 shadow-xs transition-all duration-300 hover:border-emerald-350 hover:shadow-md dark:border-emerald-500/15 dark:bg-gray-900"
+              className="group border-emerald-250/50 hover:border-emerald-350 overflow-hidden rounded-xl border bg-white p-5 shadow-xs transition-all duration-300 hover:shadow-md dark:border-emerald-500/15 dark:bg-gray-900"
             >
               {/* Header Info */}
               <div className="flex items-start justify-between gap-4">

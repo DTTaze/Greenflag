@@ -30,7 +30,8 @@ export const UserService = {
     axiosClient.get(`/users/items/${userId}`),
 
   // --- Admin User Actions ---
-  adminGetAllUsers: (): Promise<any> => axiosClient.get("/admin/users"),
+  adminGetAllUsers: (showDeleted?: boolean): Promise<any> =>
+    axiosClient.get("/admin/users", { params: { showDeleted } }),
 
   adminGetUserById: (id: string): Promise<any> =>
     axiosClient.get(`/admin/users/${id}`),

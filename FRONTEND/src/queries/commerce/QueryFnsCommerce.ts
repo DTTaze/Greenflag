@@ -15,8 +15,10 @@ import {
   TransactionResponse,
 } from "@/src/types/commerce/commerce.response";
 
-export const getProductsQueryFn = async (): Promise<ProductResponse[]> => {
-  const response = await getProductsHandler();
+export const getProductsQueryFn = async (
+  showDeleted?: boolean,
+): Promise<ProductResponse[]> => {
+  const response = await getProductsHandler(showDeleted);
   if (!response.success) {
     throw new Error(response.message || "Failed to fetch products");
   }
@@ -33,8 +35,10 @@ export const getProductByIdQueryFn = async (
   return response.data;
 };
 
-export const getItemsQueryFn = async (): Promise<ItemResponse[]> => {
-  const response = await getItemsHandler();
+export const getItemsQueryFn = async (
+  showDeleted?: boolean,
+): Promise<ItemResponse[]> => {
+  const response = await getItemsHandler(showDeleted);
   if (!response.success) {
     throw new Error(response.message || "Failed to fetch items");
   }

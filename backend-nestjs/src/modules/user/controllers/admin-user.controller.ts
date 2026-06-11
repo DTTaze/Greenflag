@@ -8,6 +8,7 @@ import {
   Get,
   Param,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -34,8 +35,11 @@ export class AdminUserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  async getAllUsers(): Promise<HttpResponse> {
-    return this.userService.getAllUsers();
+  async getAllUsers(
+    @Query('showDeleted') showDeleted?: string,
+  ): Promise<HttpResponse> {
+    const withDeleted = showDeleted === 'true';
+    return this.userService.getAllUsers(withDeleted);
   }
 
   @Get('dashboard-stats')

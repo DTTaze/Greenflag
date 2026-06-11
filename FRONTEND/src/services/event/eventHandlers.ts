@@ -13,10 +13,10 @@ import { eventServices } from ".";
 
 // --- Public Handlers ---
 
-export const getAllEventsHandler = async (): Promise<
-  ApiResponse<EventResponse[]>
-> => {
-  return eventServices.getAllEvents();
+export const getAllEventsHandler = async (
+  showDeleted?: boolean,
+): Promise<ApiResponse<EventResponse[]>> => {
+  return eventServices.getAllEvents(showDeleted);
 };
 
 export const getEventByIdHandler = async (

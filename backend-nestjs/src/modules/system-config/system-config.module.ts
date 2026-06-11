@@ -12,4 +12,3 @@ import { SystemConfigService } from './system-config.service';
   exports: [SystemConfigService],
 })
 export class SystemConfigModule {}
-

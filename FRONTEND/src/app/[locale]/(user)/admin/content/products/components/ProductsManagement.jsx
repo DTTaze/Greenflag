@@ -19,11 +19,12 @@ export default function ProductsManagement() {
   const [formOpen, setFormOpen] = useState(false);
   const [editData, setEditData] = useState(null);
   const [formMode, setFormMode] = useState("add");
+  const [showDeleted, setShowDeleted] = useState(false);
 
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await getAllProducts();
+      const res = await getAllProducts(showDeleted);
       if (res.success) {
         setProducts(res.data);
       } else {
@@ -38,7 +39,7 @@ export default function ProductsManagement() {
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [showDeleted]);
 
   const handleAddProduct = () => {
     setFormMode("add");
@@ -58,7 +59,7 @@ export default function ProductsManagement() {
         const res = await deleteProduct(item.id);
         if (res.success) {
           alert("Xóa sản phẩm thành công!");
-          setProducts((prev) => prev.filter((u) => u.id !== item.id));
+          fetchProducts();
         } else {
           alert("Xóa sản phẩm thất bại!");
         }
@@ -107,6 +108,8 @@ export default function ProductsManagement() {
         onEdit={handleEditProduct}
         onDelete={handleDeleteProduct}
         loading={loading}
+        showDeleted={showDeleted}
+        onToggleShowDeleted={setShowDeleted}
       />
       <ProductForm
         open={formOpen}

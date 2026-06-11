@@ -52,15 +52,23 @@ export class User extends AuditWithTimezone {
   })
   avatarUrl: string;
 
-  @OneToOne(() => UserProfile, (profile) => profile.user, { cascade: true })
+  @OneToOne(() => UserProfile, (profile) => profile.user, {
+    cascade: ['insert', 'update', 'soft-remove'],
+  })
   profile: UserProfile;
 
-  @OneToOne(() => Coin, (coin) => coin.user)
+  @OneToOne(() => Coin, (coin) => coin.user, {
+    cascade: ['insert', 'update', 'soft-remove'],
+  })
   coin: Coin;
 
-  @OneToOne(() => Rank, (rank) => rank.user)
+  @OneToOne(() => Rank, (rank) => rank.user, {
+    cascade: ['insert', 'update', 'soft-remove'],
+  })
   rank: Rank;
 
-  @OneToMany(() => UserSocialAccount, (social) => social.user)
+  @OneToMany(() => UserSocialAccount, (social) => social.user, {
+    cascade: ['insert', 'update', 'soft-remove'],
+  })
   socialAccounts: UserSocialAccount[];
 }

@@ -12,6 +12,7 @@ import {
 } from "@/src/components/ui/dialog";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
+import { useAuthStore } from "@/src/store/auth/authStore";
 
 export default function ProductForm({
   open,
@@ -21,6 +22,7 @@ export default function ProductForm({
   mode,
   categories = [],
 }) {
+  const { user } = useAuthStore();
   const categoryOptions = categories && categories.length > 0
     ? categories.map(cat => ({ value: cat.id, label: cat.name }))
     : [
@@ -76,7 +78,15 @@ export default function ProductForm({
 
   const onSubmit = (e) => {
     e.preventDefault();
-    handleSubmit(formData, mode);
+    if (!user?.id) {
+      alert("Phiên đăng nhập không hợp lệ, vui lòng tải lại trang.");
+      return;
+    }
+    const payload = {
+      ...formData,
+      seller_id: formData.seller_id || user.id,
+    };
+    handleSubmit(payload, mode);
   };
 
   return (
@@ -182,17 +192,7 @@ export default function ProductForm({
             </div>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="seller_id">Chủ sở hữu</Label>
-            <Input
-              id="seller_id"
-              name="seller_id"
-              value={formData.seller_id}
-              onChange={handleChange}
-              required
-              placeholder="Seller ID..."
-            />
-          </div>
+
 
           <DialogFooter className="mt-6 border-t border-emerald-100 pt-4 dark:border-emerald-500/10">
             <Button

@@ -13,6 +13,7 @@ import {
 import { useTranslations } from "next-intl";
 import React, { useMemo, useState } from "react";
 
+import { useAuthStore } from "@/src/store/auth/authStore";
 import { StatusBadge } from "./StatusBadge";
 
 export interface DataTableColumn<T = any> {
@@ -36,6 +37,8 @@ interface DataTableProps<T = any> {
   onView?: (row: T) => void;
   loading?: boolean;
   enableSelection?: boolean;
+  showDeleted?: boolean;
+  onToggleShowDeleted?: (show: boolean) => void;
 }
 
 export default function DataTable<T extends { id: string | number }>({
@@ -48,8 +51,13 @@ export default function DataTable<T extends { id: string | number }>({
   onView,
   loading = false,
   enableSelection = true,
+  showDeleted = false,
+  onToggleShowDeleted,
 }: DataTableProps<T>) {
   const t = useTranslations("admin.common");
+  const { user } = useAuthStore();
+  const isAdmin =
+    (user?.role || user?.roles?.name || "").toLowerCase() === "admin";
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -68,7 +76,9 @@ export default function DataTable<T extends { id: string | number }>({
         columns.some((col) => {
           const fieldKey = col.field || col.accessorKey;
           const rawValue = fieldKey ? (row as any)[fieldKey] : undefined;
-          const val = col.valueGetter ? col.valueGetter(rawValue, row) : rawValue;
+          const val = col.valueGetter
+            ? col.valueGetter(rawValue, row)
+            : rawValue;
           return val != null && String(val).toLowerCase().includes(lowerQuery);
         }),
       );
@@ -134,13 +144,28 @@ export default function DataTable<T extends { id: string | number }>({
     paginatedRows.every((r) => selectedIds.has(r.id));
 
   return (
-    <div className="mb-6 w-full bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden">
+    <div className="mb-6 w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
       {/* Header section */}
-      <div className="flex flex-col items-start justify-between gap-4 border-b border-gray-100 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 p-6 sm:flex-row sm:items-center">
+      <div className="flex flex-col items-start justify-between gap-4 border-b border-gray-100 bg-white p-6 sm:flex-row sm:items-center dark:border-zinc-800/50 dark:bg-zinc-900">
         <h3 className="text-lg font-bold text-gray-900 dark:text-zinc-100">
           {title}
         </h3>
-        <div className="flex w-full items-center gap-3 sm:w-auto">
+        <div className="flex w-full items-center gap-4 sm:w-auto">
+          {onToggleShowDeleted && isAdmin && (
+            <label className="relative inline-flex cursor-pointer items-center gap-3 select-none">
+              <input
+                type="checkbox"
+                className="peer sr-only"
+                checked={showDeleted}
+                onChange={(e) => onToggleShowDeleted(e.target.checked)}
+              />
+              <div className="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-emerald-500 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-zinc-700"></div>
+              <span className="text-sm font-medium whitespace-nowrap text-gray-600 dark:text-zinc-400">
+                Hiển thị dữ liệu đã xóa
+              </span>
+            </label>
+          )}
+
           {/* Search Input */}
           <div className="relative flex-1 sm:w-64 sm:flex-none">
             <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 dark:text-zinc-500">
@@ -151,7 +176,7 @@ export default function DataTable<T extends { id: string | number }>({
               placeholder={t("searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 bg-transparent py-2 pr-4 pl-9 text-sm transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none dark:border-zinc-850 dark:bg-zinc-950 dark:text-zinc-200 dark:focus:border-emerald-500"
+              className="dark:border-zinc-850 w-full rounded-lg border border-gray-200 bg-transparent py-2 pr-4 pl-9 text-sm transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none dark:bg-zinc-950 dark:text-zinc-200 dark:focus:border-emerald-500"
             />
           </div>
 
@@ -172,7 +197,7 @@ export default function DataTable<T extends { id: string | number }>({
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-left text-sm text-gray-500 dark:text-zinc-400">
           <thead>
-            <tr className="bg-gray-50/80 dark:bg-zinc-900/50 border-b border-gray-200 dark:border-zinc-800">
+            <tr className="border-b border-gray-200 bg-gray-50/80 dark:border-zinc-800 dark:bg-zinc-900/50">
               {/* Checkbox Column */}
               {enableSelection && (
                 <th scope="col" className="w-4 p-4">
@@ -194,7 +219,7 @@ export default function DataTable<T extends { id: string | number }>({
                   <th
                     key={index}
                     scope="col"
-                    className="py-4 px-6 text-xs uppercase tracking-wider font-semibold text-gray-500 dark:text-zinc-400 whitespace-nowrap"
+                    className="px-6 py-4 text-xs font-semibold tracking-wider whitespace-nowrap text-gray-500 uppercase dark:text-zinc-400"
                     style={{ width: col.width }}
                   >
                     {headerText}
@@ -206,7 +231,7 @@ export default function DataTable<T extends { id: string | number }>({
               {(onView || onEdit || onDelete) && (
                 <th
                   scope="col"
-                  className="w-[150px] py-4 px-6 text-right text-xs uppercase tracking-wider font-semibold text-gray-500 dark:text-zinc-400 whitespace-nowrap"
+                  className="w-[150px] px-6 py-4 text-right text-xs font-semibold tracking-wider whitespace-nowrap text-gray-500 uppercase dark:text-zinc-400"
                 >
                   {t("actions")}
                 </th>
@@ -249,14 +274,17 @@ export default function DataTable<T extends { id: string | number }>({
             ) : (
               paginatedRows.map((row, index) => {
                 const isSelected = selectedIds.has(row.id);
+                const hasDeletedAt = !!(
+                  (row as any).deletedAt || (row as any).deleted_at
+                );
                 return (
                   <tr
                     key={row.id || index}
-                    className={`even:bg-gray-50/30 dark:even:bg-zinc-950/30 hover:bg-gray-100/50 dark:hover:bg-zinc-800/50 transition-colors duration-150 border-b border-gray-100 dark:border-zinc-800/50 last:border-0 ${
+                    className={`border-b border-gray-100 transition-colors duration-150 last:border-0 even:bg-gray-50/30 hover:bg-gray-100/50 dark:border-zinc-800/50 dark:even:bg-zinc-950/30 dark:hover:bg-zinc-800/50 ${
                       isSelected
-                        ? "bg-emerald-50/10 dark:bg-emerald-950/20 even:bg-emerald-50/10 dark:even:bg-emerald-950/20"
+                        ? "bg-emerald-50/10 even:bg-emerald-50/10 dark:bg-emerald-950/20 dark:even:bg-emerald-950/20"
                         : ""
-                    }`}
+                    } ${hasDeletedAt ? "bg-red-50/5 opacity-60 dark:bg-red-950/5" : ""}`}
                   >
                     {/* Selection checkbox */}
                     {enableSelection && (
@@ -266,7 +294,7 @@ export default function DataTable<T extends { id: string | number }>({
                             type="checkbox"
                             checked={isSelected}
                             onChange={() => handleSelectRow(row.id)}
-                            className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-emerald-600 focus:ring-emerald-500 dark:border-zinc-700 dark:bg-zinc-850"
+                            className="dark:bg-zinc-850 h-4 w-4 rounded border-gray-300 bg-gray-100 text-emerald-600 focus:ring-emerald-500 dark:border-zinc-700"
                           />
                         </div>
                       </td>
@@ -275,8 +303,10 @@ export default function DataTable<T extends { id: string | number }>({
                     {/* Data Cells */}
                     {columns.map((col, colIndex) => {
                       const fieldKey = col.field || col.accessorKey;
-                      const rawValue = fieldKey ? (row as any)[fieldKey] : undefined;
-                      
+                      const rawValue = fieldKey
+                        ? (row as any)[fieldKey]
+                        : undefined;
+
                       let resolvedValue = rawValue;
                       if (col.valueGetter) {
                         resolvedValue = col.valueGetter(rawValue, row);
@@ -289,17 +319,79 @@ export default function DataTable<T extends { id: string | number }>({
                         cellContent = col.cell(row);
                       } else if (
                         fieldKey === "status" ||
-                        (fieldKey && String(fieldKey).toLowerCase().includes("status"))
+                        (fieldKey &&
+                          String(fieldKey).toLowerCase().includes("status"))
                       ) {
-                        cellContent = <StatusBadge status={String(resolvedValue)} />;
+                        cellContent = (
+                          <StatusBadge status={String(resolvedValue)} />
+                        );
                       } else {
-                        cellContent = resolvedValue != null ? String(resolvedValue) : "";
+                        cellContent =
+                          resolvedValue != null ? String(resolvedValue) : "";
+                      }
+
+                      // Check if resolvedValue is a relation object that has been soft-deleted
+                      const isRelationDeleted =
+                        resolvedValue &&
+                        typeof resolvedValue === "object" &&
+                        !!(resolvedValue.deletedAt || resolvedValue.deleted_at);
+
+                      if (isRelationDeleted) {
+                        const displayName =
+                          resolvedValue.fullName ||
+                          resolvedValue.full_name ||
+                          resolvedValue.username ||
+                          resolvedValue.name ||
+                          resolvedValue.email ||
+                          "Đã xóa";
+                        cellContent = (
+                          <span className="inline-flex items-center gap-1.5">
+                            <span className="text-gray-400 line-through dark:text-zinc-500">
+                              {displayName}
+                            </span>
+                            <span className="inline-flex items-center justify-center rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-red-600 dark:border-red-900/20 dark:bg-red-950/30 dark:text-red-400">
+                              Đã xóa
+                            </span>
+                          </span>
+                        );
+                      } else if (hasDeletedAt) {
+                        // If the row itself is soft-deleted
+                        if (
+                          fieldKey === "status" ||
+                          (fieldKey &&
+                            String(fieldKey).toLowerCase().includes("status"))
+                        ) {
+                          cellContent = (
+                            <span className="text-red-650 inline-flex items-center justify-center rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-semibold dark:border-red-900/20 dark:bg-red-950/30 dark:text-red-400">
+                              Đã xóa
+                            </span>
+                          );
+                        } else if (
+                          colIndex === 0 &&
+                          !columns.some((c) => {
+                            const k = c.field || c.accessorKey;
+                            return (
+                              k === "status" ||
+                              (k && String(k).toLowerCase().includes("status"))
+                            );
+                          })
+                        ) {
+                          // Render "Đã xóa" next to the primary column value if there is no status column
+                          cellContent = (
+                            <span className="inline-flex items-center gap-1.5">
+                              {cellContent}
+                              <span className="inline-flex items-center justify-center rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-red-600 dark:border-red-900/20 dark:bg-red-950/30 dark:text-red-400">
+                                Đã xóa
+                              </span>
+                            </span>
+                          );
+                        }
                       }
 
                       return (
                         <td
                           key={colIndex}
-                          className="max-w-xs truncate py-4 px-6 text-sm text-gray-700 dark:text-zinc-300"
+                          className="max-w-xs truncate px-6 py-4 text-sm text-gray-700 dark:text-zinc-300"
                         >
                           {cellContent}
                         </td>
@@ -308,7 +400,7 @@ export default function DataTable<T extends { id: string | number }>({
 
                     {/* Actions Cell */}
                     {(onView || onEdit || onDelete) && (
-                      <td className="py-4 px-6 text-right">
+                      <td className="px-6 py-4 text-right">
                         <div className="inline-flex gap-2">
                           {onView && (
                             <button
@@ -350,7 +442,7 @@ export default function DataTable<T extends { id: string | number }>({
 
       {/* Pagination Footer */}
       {!loading && filteredRows.length > 0 && (
-        <div className="flex flex-col items-center justify-between gap-4 border-t border-gray-100 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 p-6 sm:flex-row text-sm text-gray-500 dark:text-zinc-400">
+        <div className="flex flex-col items-center justify-between gap-4 border-t border-gray-100 bg-white p-6 text-sm text-gray-500 sm:flex-row dark:border-zinc-800/50 dark:bg-zinc-900 dark:text-zinc-400">
           <div>
             {t("showing")}{" "}
             <span className="font-semibold text-gray-700 dark:text-zinc-200">

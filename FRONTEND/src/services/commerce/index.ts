@@ -9,13 +9,15 @@ import {
 
 export const commerceServices = {
   // --- Products ---
-  getAllProducts: (): Promise<any> => axiosClient.get("/commerce/products"),
+  getAllProducts: (showDeleted?: boolean): Promise<any> =>
+    axiosClient.get("/commerce/products", { params: { showDeleted } }),
 
   getProductById: (id: string): Promise<any> =>
     axiosClient.get(`/commerce/products/${id}`),
 
   // --- Items ---
-  getAllItems: (): Promise<any> => axiosClient.get("/commerce/items"),
+  getAllItems: (showDeleted?: boolean): Promise<any> =>
+    axiosClient.get("/commerce/items", { params: { showDeleted } }),
 
   getItemById: (id: string): Promise<any> =>
     axiosClient.get(`/commerce/items/${id}`),

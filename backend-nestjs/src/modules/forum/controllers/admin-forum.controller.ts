@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Patch, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { Roles } from '@shared/decorators/roles.decorator';
@@ -66,4 +75,3 @@ export class AdminForumController {
     return generateSuccessResult(post);
   }
 }
-

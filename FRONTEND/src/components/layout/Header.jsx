@@ -18,6 +18,7 @@ import { getUser, getUserAvatarById, logoutUser } from "@/src/utils/api";
 import CoinsBadge from "./CoinsBadge";
 import LocaleSwitcher from "./LocaleSwitcher";
 import MobileMenu from "./MobileMenu";
+import NotificationDropdown from "./NotificationDropdown";
 import ProfileDropdown from "./ProfileDropdown";
 import ThemeSwitcher from "./ThemeSwitcher";
 
@@ -87,7 +88,7 @@ function UserHeader() {
       await logoutUser();
       dispatch({ type: "LOGOUT" });
       notify("success", t("logoutSuccess"));
-      router.push("/");
+      router.push("/login");
     } catch (error) {
       console.error("Lỗi khi đăng xuất:", error);
       notify("error", t("logoutError"));
@@ -184,6 +185,7 @@ function UserHeader() {
             {isAuthenticated ? (
               <div className="flex items-center gap-2 sm:gap-3">
                 <CoinsBadge amount={user?.coins?.amount} />
+                <NotificationDropdown />
                 <ProfileDropdown
                   user={user}
                   avatarUrl={avatarUrl}

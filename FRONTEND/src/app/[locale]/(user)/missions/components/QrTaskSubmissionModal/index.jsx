@@ -71,7 +71,7 @@ export default function QrTaskSubmissionModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
-      <div className="flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-2xl">
+      <div className="flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-2xl">
         {/* Header with Background Pattern */}
         <div className="relative shrink-0 bg-gradient-to-r from-[#0B6E4F] to-[#0D7F5C] p-6 text-white">
           <div className="absolute top-0 right-0 -mt-6 -mr-6 h-24 w-24 rounded-full bg-white/10 blur-xl"></div>
@@ -92,26 +92,26 @@ export default function QrTaskSubmissionModal({
         {/* Content Area */}
         <div className="flex-1 space-y-6 overflow-y-auto p-6">
           {/* Details block */}
-          <div className="space-y-3.5 rounded-xl border border-gray-100 bg-gray-50/50 p-4 text-sm">
-            <div className="border-gray-250/30 flex justify-between border-b pb-2">
-              <span className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+          <div className="space-y-3.5 rounded-xl border border-gray-100 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-950/35 p-4 text-sm">
+            <div className="border-gray-250/30 dark:border-zinc-800 flex justify-between border-b pb-2">
+              <span className="text-xs font-semibold tracking-wider text-gray-400 dark:text-zinc-500 uppercase">
                 Tiền thưởng:
               </span>
-              <span className="flex items-center gap-1 font-extrabold text-amber-600">
+              <span className="flex items-center gap-1 font-extrabold text-amber-600 dark:text-amber-400">
                 +{task.coins} <span className="text-xs">🪙</span>
               </span>
             </div>
-            <div className="border-gray-250/30 flex justify-between border-b pb-2">
-              <span className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+            <div className="border-gray-250/30 dark:border-zinc-800 flex justify-between border-b pb-2">
+              <span className="text-xs font-semibold tracking-wider text-gray-400 dark:text-zinc-500 uppercase">
                 Tiến độ cần đạt:
               </span>
-              <span className="font-bold text-gray-700">{task.total} lần</span>
+              <span className="font-bold text-gray-700 dark:text-zinc-300">{task.total} lần</span>
             </div>
             <div>
-              <span className="mb-1 block text-xs font-semibold tracking-wider text-gray-400 uppercase">
+              <span className="mb-1 block text-xs font-semibold tracking-wider text-gray-400 dark:text-zinc-500 uppercase">
                 Mô tả chi tiết:
               </span>
-              <p className="text-gray-650 leading-relaxed">
+              <p className="text-gray-650 dark:text-zinc-300 leading-relaxed">
                 {task.description || "Nhiệm vụ chưa có mô tả chi tiết."}
               </p>
             </div>
@@ -119,10 +119,10 @@ export default function QrTaskSubmissionModal({
 
           {/* QR Scanner Frame */}
           <div className="space-y-3">
-            <label className="block text-xs font-extrabold tracking-wider text-gray-400 uppercase">
+            <label className="block text-xs font-extrabold tracking-wider text-gray-400 dark:text-zinc-500 uppercase">
               Khung quét mã QR:
             </label>
-            <div className="bg-gray-55/40 flex flex-col items-center justify-center rounded-2xl border border-gray-100 p-4">
+            <div className="bg-gray-50/40 dark:bg-zinc-950/10 flex flex-col items-center justify-center rounded-2xl border border-gray-100 dark:border-zinc-800 p-4">
               <QRscanner
                 onScan={handleScan}
                 onError={handleError}
@@ -132,15 +132,15 @@ export default function QrTaskSubmissionModal({
 
             {/* Selected files feedback */}
             {scannedQRCodes.length > 0 && (
-              <div className="space-y-2 rounded-xl border border-emerald-100 bg-emerald-50/30 p-4.5">
-                <div className="flex items-center gap-2 text-xs font-bold text-[#0B6E4F]">
+              <div className="space-y-2 rounded-xl border border-emerald-100 dark:border-emerald-900/30 bg-emerald-50/30 dark:bg-emerald-950/20 p-4.5">
+                <div className="flex items-center gap-2 text-xs font-bold text-[#0B6E4F] dark:text-emerald-450">
                   <span>
                     ✅ Đã quét {scannedQRCodes.length} mã QR thành công.
                   </span>
                 </div>
-                <div className="text-[11px] font-semibold text-emerald-800/80">
+                <div className="text-[11px] font-semibold text-emerald-800/80 dark:text-emerald-350">
                   Tiến độ dự kiến sẽ tăng thêm:{" "}
-                  <strong className="text-xs text-[#0B6E4F]">
+                  <strong className="text-xs text-[#0B6E4F] dark:text-emerald-400">
                     +
                     {Math.min(
                       scannedQRCodes.length,
@@ -154,10 +154,10 @@ export default function QrTaskSubmissionModal({
         </div>
 
         {/* Footer actions */}
-        <div className="flex shrink-0 justify-end gap-3 border-t border-gray-100 bg-gray-50/50 p-4">
+        <div className="flex shrink-0 justify-end gap-3 border-t border-gray-100 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-950/30 p-4">
           <button
             onClick={onClose}
-            className="cursor-pointer rounded-xl border border-gray-200 bg-white px-5 py-2.5 text-xs font-bold text-gray-600 transition-all hover:bg-gray-50 active:scale-95"
+            className="cursor-pointer rounded-xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-5 py-2.5 text-xs font-bold text-gray-600 dark:text-zinc-350 transition-all hover:bg-gray-50 dark:hover:bg-zinc-800 active:scale-95"
           >
             Hủy
           </button>

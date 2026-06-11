@@ -130,7 +130,7 @@ export default function DataTable({
                 <th
                   key={col.field}
                   scope="col"
-                  className="px-6 py-4 font-semibold text-gray-600"
+                  className="px-6 py-4 font-semibold text-gray-650 dark:text-zinc-300"
                   style={{ width: col.width }}
                 >
                   {col.headerName}
@@ -141,7 +141,7 @@ export default function DataTable({
               {(onView || onEdit || onDelete) && (
                 <th
                   scope="col"
-                  className="w-[150px] px-6 py-4 text-right font-semibold text-gray-600"
+                  className="w-[150px] px-6 py-4 text-right font-semibold text-gray-650 dark:text-zinc-300"
                 >
                   Thao tác
                 </th>
@@ -154,8 +154,8 @@ export default function DataTable({
               <tr>
                 <td colSpan={columns.length + 2} className="py-20 text-center">
                   <div className="flex flex-col items-center justify-center gap-3">
-                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-600 border-t-transparent"></div>
-                    <span className="text-sm text-gray-500">
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-600 border-t-transparent dark:border-emerald-500"></div>
+                    <span className="text-sm text-gray-500 dark:text-zinc-400">
                       Loading data...
                     </span>
                   </div>
@@ -165,7 +165,7 @@ export default function DataTable({
               <tr>
                 <td
                   colSpan={columns.length + 2}
-                  className="py-16 text-center text-gray-400"
+                  className="py-16 text-center text-gray-400 dark:text-zinc-500"
                 >
                   No records found
                 </td>
@@ -176,8 +176,8 @@ export default function DataTable({
                 return (
                   <tr
                     key={row.id || index}
-                    className={`transition-colors hover:bg-gray-50/50 ${
-                      isSelected ? "bg-emerald-50/10" : ""
+                    className={`transition-colors even:bg-gray-50/50 dark:even:bg-zinc-900/50 hover:bg-gray-100/50 dark:hover:bg-zinc-800/50 ${
+                      isSelected ? "bg-emerald-50/10 dark:bg-emerald-950/20" : ""
                     }`}
                   >
                     {/* Selection checkbox */}

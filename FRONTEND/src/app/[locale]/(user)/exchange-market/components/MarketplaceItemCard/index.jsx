@@ -98,40 +98,31 @@ const MarketplaceItemCard = ({
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -6 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className={`relative flex flex-col justify-between overflow-hidden rounded-3xl border p-5 shadow-sm transition-all ${getStatusClass(
+      className={`relative flex flex-col justify-between overflow-hidden rounded-3xl border shadow-sm transition-all ${getStatusClass(
         currentStatus,
       )} group`}
     >
       <div>
         {/* Item Image */}
-        <motion.div
-          className={`relative mb-5 aspect-video w-full overflow-hidden rounded-2xl bg-gradient-to-br from-gray-100 to-gray-50 shadow-sm transition-all ${
-            viewMode === "all_items" || viewMode === "redeem"
-              ? "group-hover:blur-sm"
-              : ""
-          } ${showPurchaseModal || showDetailsModal ? "blur-sm" : ""}`}
-          whileHover={{ scale: 1.03 }}
-          transition={{ duration: 0.4 }}
-        >
+        <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100 dark:bg-zinc-800">
           <img
             src={item.image || "/placeholder.svg"}
             alt={item.name}
-            className="h-full w-full object-cover transition-transform duration-500"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
-        </motion.div>
+          {/* Frosted glass overlay when Out of stock */}
+          {currentStock <= 0 && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-zinc-900/50 backdrop-blur-[2px]">
+              <span className="rounded-lg bg-black/60 px-3 py-1.5 text-xs font-black tracking-wide text-white uppercase">
+                Tạm hết
+              </span>
+            </div>
+          )}
+        </div>
 
         {/* Item Details */}
-        <motion.div
-          className={`mb-4 transition-all duration-300 ${
-            viewMode === "all_items" || viewMode === "redeem"
-              ? "group-hover:blur-sm"
-              : ""
-          } ${showPurchaseModal || showDetailsModal ? "blur-sm" : ""}`}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.1 }}
-        >
-          <h3 className="truncate text-sm leading-snug font-bold text-slate-800 transition-colors group-hover:text-emerald-700">
+        <div className={`p-5 pb-0 ${showPurchaseModal || showDetailsModal ? "blur-sm" : ""}`}>
+          <h3 className="truncate text-sm leading-snug font-bold text-slate-800 dark:text-zinc-200 transition-colors group-hover:text-emerald-700 dark:group-hover:text-emerald-400">
             {item.name}
           </h3>
           <motion.span
@@ -143,14 +134,14 @@ const MarketplaceItemCard = ({
             {item.category
               ? t("categories." + item.category)
               : t("categories.unknown")}
-          </motion.span>
-          <p className="mt-3 line-clamp-2 min-h-[32px] text-xs leading-relaxed font-medium text-slate-600">
+          </span>
+          <p className="mt-3 line-clamp-2 min-h-[32px] text-xs leading-relaxed font-medium text-slate-600 dark:text-zinc-400">
             {item.description}
           </p>
-        </motion.div>
+        </div>
       </div>
 
-      <div>
+      <div className={`p-5 ${(viewMode === "all_items" || viewMode === "redeem") ? "pb-14" : ""}`}>
         {/* Price and stock row */}
         <motion.div
           className={`flex items-center justify-between border-t border-emerald-100 dark:border-emerald-500/10 pt-4 transition-all duration-300 ${
@@ -167,14 +158,14 @@ const MarketplaceItemCard = ({
             whileHover={{ scale: 1.05 }}
           >
             <span className="coin-value font-extrabold">{item.price}</span>
-            <Coins className="h-4 w-4 text-amber-600" />
-          </motion.div>
-          <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+            <Coins className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+          </div>
+          <span className="text-[10px] font-bold tracking-wider text-slate-400 dark:text-zinc-500 uppercase">
             {t("list.remaining", { count: currentStock })}
           </span>
-        </motion.div>
+        </div>
 
-        {/* Hover action overlay for all_items/redeem */}
+        {/* Hover action slide-up button for all_items/redeem */}
         {(viewMode === "all_items" || viewMode === "redeem") && (
           <div className="backdrop-blur-3xs absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-black/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
             <button

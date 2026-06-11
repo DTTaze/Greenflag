@@ -38,7 +38,7 @@ export default function TaskDetailModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
-      <div className="flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-2xl">
+      <div className="flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-2xl">
         {/* Header with Background Pattern */}
         <div className="relative shrink-0 bg-gradient-to-r from-[#0B6E4F] to-[#0D7F5C] p-6 text-white">
           <div className="absolute top-0 right-0 -mt-6 -mr-6 h-24 w-24 rounded-full bg-white/10 blur-xl"></div>
@@ -60,22 +60,22 @@ export default function TaskDetailModal({
         <div className="flex-1 space-y-6 overflow-y-auto p-6">
           {/* Main info cards */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col items-center justify-center rounded-xl border border-amber-100 bg-amber-50/35 p-4 text-center">
-              <Award className="mb-1.5 h-6 w-6 text-amber-600" />
-              <span className="text-[10px] font-extrabold tracking-wider text-gray-400 uppercase">
+            <div className="flex flex-col items-center justify-center rounded-xl border border-amber-100 dark:border-amber-900/30 bg-amber-50/35 dark:bg-amber-950/10 p-4 text-center">
+              <Award className="mb-1.5 h-6 w-6 text-amber-600 dark:text-amber-400" />
+              <span className="text-[10px] font-extrabold tracking-wider text-gray-400 dark:text-zinc-500 uppercase">
                 Phần thưởng
               </span>
-              <span className="mt-0.5 text-base font-black text-amber-700">
+              <span className="mt-0.5 text-base font-black text-amber-700 dark:text-amber-400">
                 +{task.coins} Xu
               </span>
             </div>
 
-            <div className="flex flex-col items-center justify-center rounded-xl border border-emerald-100 bg-emerald-50/25 p-4 text-center">
-              <ShieldAlert className="mb-1.5 h-6 w-6 text-[#0B6E4F]" />
-              <span className="text-[10px] font-extrabold tracking-wider text-gray-400 uppercase">
+            <div className="flex flex-col items-center justify-center rounded-xl border border-emerald-100 dark:border-emerald-900/30 bg-emerald-50/25 dark:bg-emerald-950/10 p-4 text-center">
+              <ShieldAlert className="mb-1.5 h-6 w-6 text-[#0B6E4F] dark:text-emerald-400" />
+              <span className="text-[10px] font-extrabold tracking-wider text-gray-400 dark:text-zinc-500 uppercase">
                 Độ khó
               </span>
-              <span className="mt-1 text-sm font-extrabold tracking-wide text-[#0B6E4F] uppercase">
+              <span className="mt-1 text-sm font-extrabold tracking-wide text-[#0B6E4F] dark:text-emerald-400 uppercase">
                 {task.difficulty === "easy"
                   ? "Dễ"
                   : task.difficulty === "medium"
@@ -88,22 +88,22 @@ export default function TaskDetailModal({
           <div className="space-y-4">
             {/* Description */}
             <div className="space-y-1">
-              <span className="text-[10px] font-extrabold tracking-wider text-gray-400 uppercase">
+              <span className="text-[10px] font-extrabold tracking-wider text-gray-400 dark:text-zinc-500 uppercase">
                 Mô tả thử thách
               </span>
-              <p className="text-gray-650 text-sm leading-relaxed">
+              <p className="text-gray-650 dark:text-zinc-300 text-sm leading-relaxed">
                 {task.description || "Nhiệm vụ chưa có mô tả chi tiết."}
               </p>
             </div>
 
             {/* Target */}
             <div className="space-y-1">
-              <span className="text-[10px] font-extrabold tracking-wider text-gray-400 uppercase">
+              <span className="text-[10px] font-extrabold tracking-wider text-gray-400 dark:text-zinc-500 uppercase">
                 Yêu cầu tiến độ
               </span>
-              <p className="text-gray-750 text-sm font-semibold">
+              <p className="text-gray-750 dark:text-zinc-300 text-sm font-semibold">
                 Cần tích lũy đủ:{" "}
-                <strong className="text-sm font-extrabold text-emerald-700">
+                <strong className="text-sm font-extrabold text-emerald-700 dark:text-emerald-400">
                   {task.total} lần
                 </strong>{" "}
                 thực hiện
@@ -113,10 +113,10 @@ export default function TaskDetailModal({
         </div>
 
         {/* Footer actions */}
-        <div className="flex shrink-0 justify-end gap-3 border-t border-gray-100 bg-gray-50/50 p-4">
+        <div className="flex shrink-0 justify-end gap-3 border-t border-gray-100 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-950/30 p-4">
           <button
             onClick={onClose}
-            className="cursor-pointer rounded-xl border border-gray-200 bg-white px-5 py-2.5 text-xs font-bold text-gray-600 transition-all hover:bg-gray-50 active:scale-95"
+            className="cursor-pointer rounded-xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-5 py-2.5 text-xs font-bold text-gray-600 dark:text-zinc-350 transition-all hover:bg-gray-50 dark:hover:bg-zinc-800 active:scale-95"
           >
             Đóng
           </button>

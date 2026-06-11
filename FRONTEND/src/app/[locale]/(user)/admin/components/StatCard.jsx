@@ -1,13 +1,14 @@
-import { MoreVertical, TrendingUp } from "lucide-react";
 import React from "react";
+import { TrendingUp } from "lucide-react";
 
 export default function StatCard({
   title,
   value,
-  bgClassName = "",
   trendText,
   trendSubtext,
   icon: IconComponent,
+  iconBgClass = "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400",
+  textColorClass = "",
 }) {
   return (
     <div
@@ -25,26 +26,24 @@ export default function StatCard({
         <span className="truncate pr-6 text-sm font-medium text-gray-600">
           {title}
         </span>
-        <span className="text-3xl font-bold tracking-tight text-gray-900">
+        {IconComponent && (
+          <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${iconBgClass}`}>
+            <IconComponent size={20} />
+          </div>
+        )}
+      </div>
+      <div className="mt-4">
+        <h3 className={`text-2xl font-bold tracking-tight text-gray-900 dark:text-white ${textColorClass}`}>
           {value}
-        </span>
+        </h3>
+        {(trendText || trendSubtext) && (
+          <p className="mt-1 flex items-center text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+            {trendText && <TrendingUp className="mr-1 h-3.5 w-3.5" />}
+            {trendText && <span className="mr-1">{trendText}</span>}
+            <span className="text-gray-400 dark:text-zinc-500 font-normal">{trendSubtext}</span>
+          </p>
+        )}
       </div>
-
-      {/* Trend footer */}
-      <div className="mt-2 flex items-center text-xs text-gray-500">
-        <div className="mr-2 flex items-center gap-0.5 font-semibold text-emerald-600">
-          <TrendingUp size={14} />
-          <span>{trendText}</span>
-        </div>
-        <span className="truncate">{trendSubtext}</span>
-      </div>
-
-      {/* Background Icon */}
-      {IconComponent && (
-        <div className="pointer-events-none absolute right-3 bottom-3 text-gray-800 opacity-[0.08]">
-          <IconComponent size={64} />
-        </div>
-      )}
     </div>
   );
 }

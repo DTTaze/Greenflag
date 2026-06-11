@@ -154,7 +154,9 @@ export default function MyPostsPage() {
 
       if (result.success && result.data?.status === "rejected") {
         toast.warning(
-          t("publishDraftRejected", { reason: result.data.flaggedReason || "" }),
+          t("publishDraftRejected", {
+            reason: result.data.flaggedReason || "",
+          }),
         );
       } else if (result.success) {
         toast.success(t("publishSuccess"));

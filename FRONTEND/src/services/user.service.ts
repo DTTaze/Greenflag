@@ -10,7 +10,7 @@ export const mapUserToStore = (user: any): any => {
   const roleMap: Record<string, { id: number; name: string }> = {
     admin: { id: 1, name: "Admin" },
     user: { id: 2, name: "User" },
-    partner: { id: 3, name: "Customer" },
+    partner: { id: 3, name: "Partner" },
   };
 
   const roleInfo = roleMap[user.role] || { id: 2, name: "User" };
@@ -62,6 +62,10 @@ export const getAllUsers = () => {
 
 export const getAdminDashboardStats = () => {
   return axiosClient.get("/admin/users/dashboard-stats");
+};
+
+export const getAdminMacroStats = () => {
+  return axiosClient.get("/admin/dashboard/macro-stats");
 };
 
 export const updateUser = (id: number | string, data: any) => {

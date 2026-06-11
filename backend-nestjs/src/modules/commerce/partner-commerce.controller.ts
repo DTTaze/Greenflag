@@ -34,7 +34,7 @@ import { TransactionService } from './services/transaction.service';
 @ApiBearerAuth()
 @Controller('partner/commerce')
 @UseGuards(AuthGuard, RolesGuard)
-@Roles(ROLE.PARTNER)
+@Roles(ROLE.PARTNER, ROLE.ADMIN)
 export class PartnerCommerceController {
   constructor(
     private readonly productService: ProductService,
@@ -46,7 +46,7 @@ export class PartnerCommerceController {
 
   @Post('products')
   public async createProduct(
-    @RequestUser() user: User,
+    @RequestUser() user: any,
     @Body() dto: CreateProductDto,
   ): Promise<HttpResponse> {
     const mapped = mapToProductEntity(dto);
@@ -60,25 +60,27 @@ export class PartnerCommerceController {
   public async updateProduct(
     @Param('id') id: string,
     @Body() dto: UpdateProductDto,
-    @RequestUser() user: User,
+    @RequestUser() user: any,
   ): Promise<HttpResponse> {
     const mapped = mapToProductEntity(dto);
-    return this.productService.updateProduct(id, mapped, user.id, false);
+    const isAdmin = user.role === ROLE.ADMIN;
+    return this.productService.updateProduct(id, mapped, user.id, isAdmin);
   }
 
   @Delete('products/:id')
   public async deleteProduct(
     @Param('id') id: string,
-    @RequestUser() user: User,
+    @RequestUser() user: any,
   ): Promise<HttpResponse> {
-    return this.productService.deleteProduct(id, user.id, false);
+    const isAdmin = user.role === ROLE.ADMIN;
+    return this.productService.deleteProduct(id, user.id, isAdmin);
   }
 
   // --- Items ---
 
   @Post('items')
   public async createItem(
-    @RequestUser() user: User,
+    @RequestUser() user: any,
     @Body() dto: CreateItemDto,
   ): Promise<HttpResponse> {
     const mapped = mapToItemEntity(dto);
@@ -92,35 +94,39 @@ export class PartnerCommerceController {
   public async updateItem(
     @Param('id') id: string,
     @Body() dto: UpdateItemDto,
-    @RequestUser() user: User,
+    @RequestUser() user: any,
   ): Promise<HttpResponse> {
     const mapped = mapToItemEntity(dto);
-    return this.itemService.updateItem(id, mapped, user.id, false);
+    const isAdmin = user.role === ROLE.ADMIN;
+    return this.itemService.updateItem(id, mapped, user.id, isAdmin);
   }
 
   @Delete('items/:id')
   public async deleteItem(
     @Param('id') id: string,
-    @RequestUser() user: User,
+    @RequestUser() user: any,
   ): Promise<HttpResponse> {
-    return this.itemService.deleteItem(id, user.id, false);
+    const isAdmin = user.role === ROLE.ADMIN;
+    return this.itemService.deleteItem(id, user.id, isAdmin);
   }
 
   // --- Transactions ---
 
   @Get('transactions')
   public async getMyTransactions(
-    @RequestUser() user: User,
+    @RequestUser() user: any,
   ): Promise<HttpResponse> {
-    return this.transactionService.getTransactionBySellerId(user.id);
+    const isAdmin = user.role === ROLE.ADMIN;
+    return this.transactionService.getTransactionBySellerId(user.id, isAdmin);
   }
 
   @Patch('transactions/:id/decision')
   public async makeDecision(
     @Param('id') id: string,
     @Body('decision') decision: TRANSACTION_STATUS,
-    @RequestUser() user: User,
+    @RequestUser() user: any,
   ): Promise<HttpResponse> {
-    return this.transactionService.makeDecision(id, decision, user.id, false);
+    const isAdmin = user.role === ROLE.ADMIN;
+    return this.transactionService.makeDecision(id, decision, user.id, isAdmin);
   }
 }

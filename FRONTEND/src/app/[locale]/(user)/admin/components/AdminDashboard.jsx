@@ -1,10 +1,10 @@
 "use client";
 
-import { CheckSquare, Coins, ShoppingBag, Users } from "lucide-react";
+import { Calendar, Coins, MessageSquare, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
 
-import { getAdminDashboardStats, getAllUsers } from "@/src/utils/api";
+import { getAdminMacroStats, getAllUsers } from "@/src/utils/api";
 
 import SimpleLineChart from "./ChartAdmin";
 import RecentActivityList from "./RecentActivityList";
@@ -16,9 +16,9 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState({
     totalUsers: 0,
-    tasksCompleted: 0,
-    totalItems: 0,
-    totalRevenue: 0,
+    activeEvents: 0,
+    pendingPosts: 0,
+    totalCoins: 0,
   });
   const [statsLoading, setStatsLoading] = useState(false);
 
@@ -50,7 +50,7 @@ export default function AdminDashboard() {
     const fetchStats = async () => {
       setStatsLoading(true);
       try {
-        const response = await getAdminDashboardStats();
+        const response = await getAdminMacroStats();
         if (response?.success && response?.data) {
           setStats(response.data);
         }
@@ -82,36 +82,37 @@ export default function AdminDashboard() {
         <StatCard
           title={t("totalUsers")}
           value={statsLoading ? "..." : stats.totalUsers.toLocaleString()}
-          bgClassName="bg-emerald-50 dark:bg-emerald-500/10"
+          iconBgClass="bg-blue-50 text-blue-600 dark:bg-blue-950/30 dark:text-blue-400"
           trendText="+12.5%"
           trendSubtext={t("sinceLastMonth")}
           icon={Users}
         />
 
         <StatCard
-          title={t("tasksCompleted")}
-          value={statsLoading ? "..." : stats.tasksCompleted.toLocaleString()}
-          bgClassName="bg-sky-50 dark:bg-sky-500/10"
+          title={t("activeEvents")}
+          value={statsLoading ? "..." : stats.activeEvents.toLocaleString()}
+          iconBgClass="bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400"
           trendText="+8.2%"
           trendSubtext={t("sinceLastWeek")}
-          icon={CheckSquare}
+          icon={Calendar}
         />
 
         <StatCard
-          title={t("totalItems")}
-          value={statsLoading ? "..." : stats.totalItems.toLocaleString()}
-          bgClassName="bg-amber-50 dark:bg-amber-500/10"
+          title={t("pendingPosts")}
+          value={statsLoading ? "..." : stats.pendingPosts.toLocaleString()}
+          iconBgClass="bg-red-50 text-red-600 dark:bg-red-950/30 dark:text-red-400"
           trendText="+5.3%"
           trendSubtext={t("sinceLastMonth")}
-          icon={ShoppingBag}
+          textColorClass="text-red-650 dark:text-red-400"
+          icon={MessageSquare}
         />
 
         <StatCard
-          title={t("totalRevenue")}
+          title={t("totalCoins")}
           value={
-            statsLoading ? "..." : `${stats.totalRevenue.toLocaleString()} xu`
+            statsLoading ? "..." : `${stats.totalCoins.toLocaleString()} xu`
           }
-          bgClassName="bg-orange-50 dark:bg-orange-500/10"
+          iconBgClass="bg-amber-50 text-amber-600 dark:bg-amber-950/30 dark:text-amber-400"
           trendText="+16.8%"
           trendSubtext={t("sinceLastMonth")}
           icon={Coins}

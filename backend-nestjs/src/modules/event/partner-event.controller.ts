@@ -29,7 +29,7 @@ import { EventService } from './services/event.service';
 @ApiBearerAuth()
 @Controller('partner/events')
 @UseGuards(AuthGuard, RolesGuard)
-@Roles(ROLE.PARTNER)
+@Roles(ROLE.PARTNER, ROLE.ADMIN)
 export class PartnerEventController {
   constructor(
     private readonly eventService: EventService,
@@ -39,7 +39,8 @@ export class PartnerEventController {
   @Get()
   @ApiOperation({ summary: 'Get events created by the current partner' })
   async getMyEvents(@RequestUser() reqUser: any): Promise<HttpResponse> {
-    return this.eventService.getEventsOfCreator(reqUser.id);
+    const isAdmin = reqUser.role === ROLE.ADMIN;
+    return this.eventService.getEventsOfCreator(reqUser.id, isAdmin);
   }
 
   @Post()
@@ -62,12 +63,13 @@ export class PartnerEventController {
     @RequestUser() reqUser: any,
     @UploadedFiles() images?: Express.Multer.File[],
   ): Promise<HttpResponse> {
+    const isAdmin = reqUser.role === ROLE.ADMIN;
     return this.eventService.updateEvent(
       eventId,
       dto,
       images,
       reqUser.id,
-      false,
+      isAdmin,
     );
   }
 
@@ -78,7 +80,8 @@ export class PartnerEventController {
     @Body('user_id') userId: string,
     @RequestUser() reqUser: any,
   ): Promise<HttpResponse> {
-    return this.eventUserService.checkIn(eventId, userId, reqUser.id, false);
+    const isAdmin = reqUser.role === ROLE.ADMIN;
+    return this.eventUserService.checkIn(eventId, userId, reqUser.id, isAdmin);
   }
 
   @Put(':id/check-out')
@@ -88,7 +91,8 @@ export class PartnerEventController {
     @Body('user_id') userId: string,
     @RequestUser() reqUser: any,
   ): Promise<HttpResponse> {
-    return this.eventUserService.checkOut(eventId, userId, reqUser.id, false);
+    const isAdmin = reqUser.role === ROLE.ADMIN;
+    return this.eventUserService.checkOut(eventId, userId, reqUser.id, isAdmin);
   }
 
   @Delete('participants/:eventUserId')
@@ -97,10 +101,11 @@ export class PartnerEventController {
     @Param('eventUserId') eventUserId: string,
     @RequestUser() reqUser: any,
   ): Promise<HttpResponse> {
+    const isAdmin = reqUser.role === ROLE.ADMIN;
     return this.eventUserService.deleteEventUser(
       eventUserId,
       reqUser.id,
-      false,
+      isAdmin,
     );
   }
 }

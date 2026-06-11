@@ -1,11 +1,12 @@
 import { DataSource, In, Repository } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Coin } from '@modules/user/entities/coin.entity';
 
-import { ERR_CODE } from '@shared/constants';
+import { ERR_CODE, EVENT_KEYS } from '@shared/constants';
 import { ITEM_STATUS, TRANSACTION_STATUS } from '@shared/enums';
 import {
   OperationResult,
@@ -27,6 +28,7 @@ export class TransactionService extends BaseCRUDService<Transaction> {
     private readonly transactionRepository: Repository<Transaction>,
     private readonly dataSource: DataSource,
     private readonly socketStubService: SocketStubService,
+    private readonly eventEmitter: EventEmitter2,
   ) {
     super(transactionRepository);
   }
@@ -67,11 +69,12 @@ export class TransactionService extends BaseCRUDService<Transaction> {
 
   public async getTransactionBySellerId(
     sellerId: string,
+    isAdmin: boolean = false,
   ): Promise<OperationResult<Transaction[]>> {
-    return this.findAll(
-      { sellerId },
-      { relations: { receiverInformation: true, item: true } },
-    );
+    const whereCondition = isAdmin ? {} : { sellerId };
+    return this.findAll(whereCondition, {
+      relations: { receiverInformation: true, item: true },
+    });
   }
 
   public async getTransactionById(
@@ -270,6 +273,19 @@ export class TransactionService extends BaseCRUDService<Transaction> {
       }
 
       await queryRunner.commitTransaction();
+
+      // Emit order refunded notification
+      try {
+        this.eventEmitter.emit(EVENT_KEYS.NOTIFICATION_ORDER_REFUNDED, {
+          userId: transaction.buyerId,
+          orderId: transaction.id,
+          amount: transaction.totalPrice,
+          reason: reason,
+        });
+      } catch (err) {
+        console.error('Error emitting order refund notification:', err);
+      }
+
       return generateSuccessResult(transaction);
     } catch (error) {
       await queryRunner.rollbackTransaction();

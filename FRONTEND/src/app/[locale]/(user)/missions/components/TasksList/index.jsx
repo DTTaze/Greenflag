@@ -26,7 +26,7 @@ const TasksList = ({
   console.log("tasks in TaskList: ", tasks);
   if (loading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+      <div className="grid gap-6 sm:grid-cols-2">
         <TaskCardSkeleton />
         <TaskCardSkeleton />
         <TaskCardSkeleton />
@@ -66,7 +66,7 @@ const TasksList = ({
           </h2>
 
           {tasks && tasks.length > 0 ? (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+            <div className="grid gap-6 sm:grid-cols-2">
               {tasks
                 .slice(
                   (currentPage - 1) * (taskPerPage || 4),
@@ -140,7 +140,7 @@ const TasksList = ({
           </h2>
 
           {tasks && tasks.length > 0 ? (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+            <div className="grid gap-6 sm:grid-cols-2">
               {tasks
                 .slice(
                   (currentPage - 1) * (taskPerPage || 4),
@@ -214,7 +214,7 @@ const TasksList = ({
           </h2>
 
           {tasks && tasks.length > 0 ? (
-            <div className="animate-fade-in grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+            <div className="animate-fade-in grid gap-6 sm:grid-cols-2">
               {tasks
                 .slice(
                   (currentPage - 1) * (taskPerPage || 4),
@@ -223,7 +223,7 @@ const TasksList = ({
                 .map((task) => (
                   <div
                     key={task.id}
-                    className="flex items-center gap-3.5 rounded-2xl border border-gray-200 bg-gray-50/50 p-4.5 transition-all duration-300 hover:border-emerald-300/40 hover:bg-emerald-50/5 hover:shadow-2xs dark:border-slate-700 dark:bg-slate-800/80 dark:hover:border-emerald-500/40 dark:hover:bg-emerald-500/10"
+                    className="flex items-center gap-3.5 rounded-2xl border border-gray-200 bg-gray-50/50 p-4.5 transition-all duration-300 hover:border-emerald-300/40 hover:bg-emerald-50/5 hover:shadow-xs dark:border-zinc-800 dark:bg-zinc-800/40 dark:hover:border-green-500/40 dark:hover:bg-green-500/10"
                   >
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-emerald-100 bg-emerald-50 dark:border-emerald-400/30 dark:bg-emerald-400/10">
                       <img

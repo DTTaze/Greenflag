@@ -107,7 +107,7 @@ export default function EventSelectionModal({
                 {t("noRegisteredEvents")}
               </p>
               <Link
-                href="/customer/events"
+                href="/partner/events"
                 onClick={onCancel}
                 className="inline-flex transform cursor-pointer items-center gap-2 rounded-lg bg-[#2F9E44] px-4 py-2 text-[13px] font-bold text-white shadow-sm transition-all hover:scale-[1.02] hover:bg-[#1F6F2E] active:scale-[0.98]"
               >

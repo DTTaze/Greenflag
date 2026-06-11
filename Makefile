@@ -74,3 +74,6 @@ clean:
 
 migrate:
 	docker compose exec -T db psql -U postgres -d greenflag < backend-nestjs/src/scripts/migrate_seed_data.sql
+
+seed:
+	docker compose exec -T backend yarn db:seed

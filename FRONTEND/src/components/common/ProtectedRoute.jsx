@@ -6,7 +6,7 @@ import { useAuthStore } from "@/src/store/auth/authStore";
 const roleMap = {
   1: "Admin",
   2: "User",
-  3: "Customer",
+  3: "Partner",
 };
 
 const getUserRole = (user) => {
@@ -31,7 +31,12 @@ const ProtectedRoute = ({ children, requiredRole }) => {
         ? requiredRole.map((r) => r.toLowerCase())
         : [requiredRole.toLowerCase()];
 
-      if (!userRole || !requiredRoles.includes(userRole.toLowerCase())) {
+      const isAuthorized =
+        userRole &&
+        (requiredRoles.includes(userRole.toLowerCase()) ||
+          (requiredRoles.includes("partner") && userRole.toLowerCase() === "admin"));
+
+      if (!isAuthorized) {
         router.replace("/");
       }
     }
@@ -47,7 +52,12 @@ const ProtectedRoute = ({ children, requiredRole }) => {
       ? requiredRole.map((r) => r.toLowerCase())
       : [requiredRole.toLowerCase()];
 
-    if (!userRole || !requiredRoles.includes(userRole.toLowerCase())) {
+    const isAuthorized =
+      userRole &&
+      (requiredRoles.includes(userRole.toLowerCase()) ||
+        (requiredRoles.includes("partner") && userRole.toLowerCase() === "admin"));
+
+    if (!isAuthorized) {
       return null;
     }
   }

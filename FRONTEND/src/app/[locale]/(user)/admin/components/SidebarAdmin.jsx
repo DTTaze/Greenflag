@@ -2,7 +2,10 @@
 
 import {
   Bell,
+  Briefcase,
   Calendar,
+  ChevronLeft,
+  ChevronRight,
   ClipboardList,
   Coins,
   Gift,
@@ -19,7 +22,7 @@ import {
   X,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import React, { useState } from "react";
+import React from "react";
 
 import LocaleSwitcher from "@/src/components/layout/LocaleSwitcher";
 import ThemeSwitcher from "@/src/components/layout/ThemeSwitcher";
@@ -36,6 +39,11 @@ const menuSections = [
         textKey: "home",
         icon: <LayoutDashboard size={20} />,
         path: "/admin",
+      },
+      {
+        textKey: "partnerSpace",
+        icon: <Briefcase size={20} />,
+        path: "/partner",
       },
       {
         textKey: "users",
@@ -116,8 +124,13 @@ const menuSections = [
   },
 ];
 
-export default function TemporaryDrawer({ userInfo }) {
-  const [open, setOpen] = useState(false);
+export default function SidebarAdmin({
+  isOpen,
+  onClose,
+  isCollapsed,
+  onToggleCollapse,
+  userInfo,
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations("admin.sidebar");
@@ -125,11 +138,9 @@ export default function TemporaryDrawer({ userInfo }) {
   const { dispatch } = useAuthStore();
   const { notify } = useNotification();
 
-  const toggleDrawer = (newOpen) => () => setOpen(newOpen);
-
-  const handleNavigation = (item) => {
-    router.push(item.path);
-    setOpen(false);
+  const handleNavigation = (path) => {
+    router.push(path);
+    onClose();
   };
 
   const handleLogout = async () => {
@@ -139,8 +150,8 @@ export default function TemporaryDrawer({ userInfo }) {
       if (notify) {
         notify("success", tMenu("logoutSuccess"));
       }
-      router.push("/");
-      setOpen(false);
+      router.push("/login");
+      onClose();
     } catch (error) {
       console.error("Lỗi khi đăng xuất:", error);
       if (notify) {
@@ -151,28 +162,18 @@ export default function TemporaryDrawer({ userInfo }) {
 
   return (
     <>
-      {/* Menu Button */}
-      <button
-        onClick={toggleDrawer(true)}
-        className="flex items-center justify-center rounded-md p-2 text-[var(--primary-green)] transition-colors duration-200 hover:bg-gray-100 focus:outline-none dark:text-[var(--secondary-green)] dark:hover:bg-zinc-800"
-        aria-label="Open navigation menu"
-      >
-        <Menu size={24} />
-      </button>
-
-      {/* Drawer Overlay (Backdrop) */}
-      {open && (
+      {/* Mobile Drawer Overlay */}
+      {isOpen && (
         <div
-          className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs transition-opacity duration-300 dark:bg-black/60"
-          onClick={toggleDrawer(false)}
+          className="fixed inset-0 z-40 bg-black/55 backdrop-blur-sm transition-opacity md:hidden"
+          onClick={onClose}
         />
       )}
 
       {/* Drawer Content */}
       <div
-        className={`fixed top-0 left-0 z-50 flex h-full w-[280px] transform flex-col border-r border-emerald-100 bg-white shadow-2xl transition-transform duration-300 ease-in-out dark:border-emerald-500/15 dark:bg-zinc-900 ${
-          open ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed top-0 left-0 z-50 flex h-full w-[280px] transform flex-col border-r border-emerald-100 bg-white shadow-2xl transition-transform duration-300 ease-in-out dark:border-emerald-500/15 dark:bg-zinc-900 ${open ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-emerald-100 bg-emerald-50/20 p-4 dark:border-emerald-500/15 dark:bg-zinc-950/10">
@@ -183,78 +184,82 @@ export default function TemporaryDrawer({ userInfo }) {
             <ThemeSwitcher />
             <LocaleSwitcher />
             <button
-              onClick={toggleDrawer(false)}
-              className="rounded-full p-1.5 text-gray-500 transition-colors hover:bg-gray-200 dark:text-zinc-400 dark:hover:bg-zinc-800"
+              onClick={onClose}
+              className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 dark:text-zinc-400 dark:hover:bg-zinc-800 md:hidden"
             >
-              <X size={18} />
+              <X size={20} />
             </button>
+          )}
           </div>
-        </div>
 
-        {/* User Info Section */}
-        {userInfo && userInfo.id !== 0 && (
-          <div className="flex items-center gap-3 border-b border-emerald-100 bg-gray-50/30 p-4 dark:border-emerald-500/15 dark:bg-zinc-950/20">
-            {userInfo.avatar_url ? (
-              <img
-                className="h-10 w-10 rounded-full border border-[var(--light-green)] object-cover dark:border-emerald-500/15"
-                src={userInfo.avatar_url}
-                alt={userInfo.username || "Admin avatar"}
-              />
-            ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--primary-green)] text-base font-bold text-white dark:bg-[var(--secondary-green)]">
-                {userInfo.username
-                  ? userInfo.username.charAt(0).toUpperCase()
-                  : "A"}
-              </div>
-            )}
-            <div className="overflow-hidden">
-              <div className="truncate text-sm font-semibold text-gray-800 dark:text-zinc-200">
-                {userInfo.full_name || userInfo.username}
-              </div>
-              <div className="truncate text-xs text-gray-500 dark:text-zinc-400">
-                {userInfo.email}
-              </div>
+          {/* User Info Section */}
+          {userInfo && userInfo.id !== 0 && (
+            <div className="flex items-center gap-3 border-b border-emerald-100 bg-gray-50/30 p-4 dark:border-emerald-500/15 dark:bg-zinc-950/20">
+              {userInfo.avatar_url ? (
+                <img
+                  className="h-10 w-10 rounded-full border border-[var(--light-green)] object-cover dark:border-emerald-500/15"
+                  src={userInfo.avatar_url}
+                  alt="Avatar"
+                />
+              ) : (
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-600 text-sm font-bold text-white dark:bg-emerald-500 min-w-[36px]">
+                  {userInfo.username ? userInfo.username.charAt(0).toUpperCase() : "A"}
+                </div>
+              )}
+              {!isCollapsed && (
+                <div className="overflow-hidden">
+                  <div className="truncate text-sm font-semibold text-gray-800 dark:text-zinc-200">
+                    {userInfo.full_name || userInfo.username}
+                  </div>
+                  <div className="truncate text-xs font-medium text-gray-500 dark:text-zinc-400">
+                    {userInfo.email}
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Menu Items List */}
-        <div className="flex-1 overflow-y-auto py-2">
-          {menuSections.map((section) => (
-            <div key={section.labelKey} className="mb-4">
-              <div className="px-4 py-1.5 text-[10px] font-bold tracking-wider text-gray-400 uppercase dark:text-zinc-500">
-                {t(section.labelKey)}
-              </div>
-              <ul className="space-y-0.5">
-                {section.items.map((item) => {
-                  const selected = pathname === item.path;
-                  return (
-                    <li key={item.textKey}>
-                      <button
-                        onClick={() => handleNavigation(item)}
-                        className={`flex w-full items-center gap-3 py-2.5 text-sm transition-all duration-200 ${
-                          selected
-                            ? "border-l-4 border-[var(--primary-green)] bg-[var(--light-green)] pl-3 font-semibold text-[var(--dark-green)] dark:border-emerald-500 dark:bg-emerald-950/20 dark:text-emerald-400"
-                            : "pl-4 text-gray-600 hover:bg-gray-50 hover:text-gray-950 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
-                        }`}
-                      >
-                        <span
-                          className={`transition-colors ${
-                            selected
-                              ? "text-[var(--primary-green)] dark:text-emerald-400"
-                              : "text-gray-400 dark:text-zinc-500"
-                          }`}
+          {/* Navigation items */}
+          <nav className="flex-1 space-y-4 overflow-y-auto py-4">
+            {menuSections.map((section) => (
+              <div key={section.labelKey} className="space-y-1">
+                {!isCollapsed && (
+                  <div className="px-4 py-1.5 text-[10px] font-bold tracking-wider text-gray-400 uppercase dark:text-zinc-500">
+                    {t(section.labelKey)}
+                  </div>
+                )}
+                <ul className="space-y-0.5">
+                  {section.items.map((item) => {
+                    const selected = pathname === item.path || (item.path !== "/admin" && pathname.startsWith(item.path));
+                    return (
+                      <li key={item.textKey}>
+                        <button
+                          onClick={() => handleNavigation(item.path)}
+                          className={`flex w-full items-center gap-3.5 py-2.5 transition-all duration-200 ${isCollapsed ? "justify-center px-0" : "px-4"
+                            } ${selected
+                              ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 font-semibold"
+                              : "text-gray-650 hover:bg-gray-50 hover:text-gray-950 dark:text-zinc-400 dark:hover:bg-zinc-900/50 dark:hover:text-zinc-100"
+                            }`}
+                          title={isCollapsed ? t(item.textKey) : undefined}
                         >
-                          {item.icon}
-                        </span>
-                        <span>{t(item.textKey)}</span>
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ))}
+                          <span
+                            className={`transition-colors ${selected
+                                ? "text-emerald-600 dark:text-emerald-400"
+                                : "text-gray-400 dark:text-zinc-500"
+                              }`}
+                          >
+                            {item.icon}
+                          </span>
+                          {!isCollapsed && (
+                            <span className="text-sm">{t(item.textKey)}</span>
+                          )}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
         </div>
 
         {/* Footer Actions */}
@@ -269,13 +274,23 @@ export default function TemporaryDrawer({ userInfo }) {
           </Link>
           <button
             onClick={handleLogout}
-            className="mt-1 flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-sm text-red-600 transition-colors duration-150 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/20"
+            className={`flex w-full items-center gap-3 rounded-2xl py-3 text-sm font-semibold text-red-600 transition-colors duration-150 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/10 ${isCollapsed ? "justify-center px-0" : "px-4"
+              }`}
+            title={isCollapsed ? t("logout") : undefined}
           >
-            <LogOut size={18} />
-            <span>{t("logout")}</span>
+            <LogOut size={20} />
+            {!isCollapsed && <span>{t("logout")}</span>}
+          </button>
+
+          {/* Toggle button for Desktop */}
+          <button
+            onClick={onToggleCollapse}
+            className="hidden md:flex items-center justify-center p-2 rounded-2xl hover:bg-gray-100 dark:hover:bg-zinc-900/50 text-gray-500 dark:text-zinc-400 mt-3 mx-auto w-full border border-gray-100 dark:border-zinc-800"
+          >
+            {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
           </button>
         </div>
-      </div>
+      </aside>
     </>
   );
 }

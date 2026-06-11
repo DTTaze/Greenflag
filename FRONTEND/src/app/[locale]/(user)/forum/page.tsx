@@ -2,17 +2,20 @@
 
 import {
   Clock,
-  Filter,
   Flame,
   Globe,
   History,
   Loader2,
+  MessageSquare,
   Search,
+  Tag,
 } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 
+import GlobalSearchBar from "@/src/components/common/GlobalSearchBar";
+import PageHeader from "@/src/components/common/PageHeader";
 import { useForumPosts } from "@/src/hooks/useForum";
 import { useCurrentUserQuery } from "@/src/queries/user/useUserQueries";
 import { ForumPost } from "@/src/types/forum/forum.type";
@@ -69,6 +72,8 @@ export default function ForumPage() {
     });
   }, [posts, searchQuery]);
 
+  const tagsList = ["Sống xanh", "Tái chế", "Trồng cây", "Chia sẻ", "Hỏi đáp"];
+
   return (
     <div className="mx-auto flex max-w-[800px] flex-col gap-6 pb-20">
       <ForumHeader userCoins={userInfo?.coins || 0} loading={isUserLoading} />
@@ -108,8 +113,38 @@ export default function ForumPage() {
         </div>
       </div>
 
-      {/* Create Post Area */}
-      <CreatePostWidget />
+            {/* Mobile Category scrollable chips */}
+            <div className="scrollbar-hide flex items-center gap-2 overflow-x-auto pb-1 md:hidden">
+              <button
+                onClick={() => setSelectedTag(undefined)}
+                className={`flex shrink-0 transform cursor-pointer items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-bold transition-all duration-200 active:scale-95 ${
+                  selectedTag === undefined
+                    ? "bg-emerald-50 text-[#0B6E4F] dark:bg-emerald-950/40 dark:text-emerald-400"
+                    : "text-slate-650 border border-gray-200 bg-white hover:bg-gray-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                }`}
+              >
+                <span>Tất cả</span>
+              </button>
+              {tagsList.map((tag) => {
+                const isActive = selectedTag === tag;
+                return (
+                  <button
+                    key={tag}
+                    onClick={() => setSelectedTag(tag)}
+                    className={`flex shrink-0 transform cursor-pointer items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-bold transition-all duration-200 active:scale-95 ${
+                      isActive
+                        ? "bg-emerald-50 text-[#0B6E4F] dark:bg-emerald-950/40 dark:text-emerald-400"
+                        : "text-slate-650 border border-gray-200 bg-white hover:bg-gray-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                    }`}
+                  >
+                    <span>{tag}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Create Post Widget */}
+            <CreatePostWidget />
 
       {/* Sort & Filter */}
       <div className="scrollbar-hide flex items-center gap-2 overflow-x-auto border-b border-emerald-100 pb-3.5 dark:border-emerald-500/15">

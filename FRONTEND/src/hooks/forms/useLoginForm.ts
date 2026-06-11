@@ -67,7 +67,7 @@ export const useLoginForm = () => {
         } else if (role === "user") {
           router.push("/");
         } else if (role === "partner") {
-          router.push("/customer");
+          router.push("/partner");
         } else {
           notify("error", t("generalError"));
         }

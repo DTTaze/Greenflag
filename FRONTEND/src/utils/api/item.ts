@@ -127,15 +127,3 @@ export const getItemByUserId = async (userId: string | number) => {
   }
   return res;
 };
-
-export const updateCustomerItem = (
-  itemId: string | number,
-  itemFormData: Record<string, any>,
-  _images?: File[],
-) => {
-  return updateItem(itemId, itemFormData);
-};
-
-export const deleteCustomerItem = (itemId: string | number) => {
-  return deleteItem(itemId);
-};

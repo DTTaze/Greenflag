@@ -3,13 +3,20 @@ import { Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React from "react";
 
-import CoinBalance from "@/src/app/[locale]/(user)/exchange-market/components/CoinBalance";
+import GlobalSearchBar from "@/src/components/common/GlobalSearchBar";
+import PageHeader from "@/src/components/common/PageHeader";
 
 /**
  * Header component for the mission page
  */
-const MissionHeader = ({ userInfo, loading }) => {
+const MissionHeader = ({
+  userInfo,
+  loading,
+  searchQuery,
+  setSearchQuery,
+}) => {
   const t = useTranslations("missions.header");
+
   if (loading) {
     return (
       <div className="mb-8 flex animate-pulse flex-col items-center justify-between rounded-[2rem] border border-emerald-200/40 bg-gradient-to-br from-[#064E3B] via-[#0B6E4F] to-[#10B981] p-7 text-white shadow-[0_24px_70px_rgba(6,78,59,0.24)] sm:flex-row">
@@ -18,7 +25,7 @@ const MissionHeader = ({ userInfo, loading }) => {
           <div className="h-4 w-80 rounded bg-white/20"></div>
         </div>
         <div className="mt-4 flex items-center sm:mt-0">
-          <div className="h-16 w-64 rounded-xl bg-white/20"></div>
+          <div className="h-10 w-64 rounded-full bg-white/20"></div>
         </div>
       </div>
     );

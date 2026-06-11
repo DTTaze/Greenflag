@@ -105,10 +105,10 @@ const Calendar = ({ streak = 0, lastLogin = null }) => {
       {/* Streak indicator */}
       <div className="streak-indicator flex items-center border-b border-emerald-100/30 bg-emerald-50/50 p-4 dark:border-emerald-500/10 dark:bg-slate-900/40">
         <div className="mr-3">
-          <div className="text-[10px] font-bold tracking-wider text-gray-400 uppercase">
+          <div className="text-[10px] font-bold tracking-wider text-gray-400 dark:text-zinc-500 uppercase">
             Chuỗi hoạt động
           </div>
-          <div className="flex items-center gap-1.5 text-xl font-extrabold text-[#0B6E4F]">
+          <div className="flex items-center gap-1.5 text-xl font-extrabold text-[#0B6E4F] dark:text-emerald-450">
             🔥 {streak} ngày
           </div>
         </div>
@@ -170,7 +170,7 @@ const Calendar = ({ streak = 0, lastLogin = null }) => {
             >
               {i + 1}
               {inStreak && !isToday && (
-                <div className="streak-day-dot absolute bottom-1 h-1 w-1 rounded-full bg-emerald-600 transition-all duration-300"></div>
+                <div className="streak-day-dot absolute bottom-1 h-1 w-1 rounded-full bg-emerald-600 dark:bg-emerald-400 transition-all duration-300"></div>
               )}
             </div>
           );

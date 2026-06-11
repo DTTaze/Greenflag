@@ -4,7 +4,7 @@
     "missions": "Missions",
     "exchange": "Market",
     "forum": "Forum",
-    "customer": "Customer",
+    "customer": "Partner",
     "partner": "Partner",
     "admin": "Admin",
     "login": "Log In",
@@ -347,6 +347,7 @@
       "shipping": "Shipping",
       "queues": "Queues",
       "notifications": "Notifications",
+      "partnerSpace": "Partner Space",
       "settings": "Settings",
       "logout": "Log Out"
     },
@@ -357,6 +358,9 @@
       "tasksCompleted": "Tasks Completed",
       "totalItems": "Total Items",
       "totalRevenue": "Total Revenue",
+      "activeEvents": "Active Events",
+      "pendingPosts": "Pending Posts",
+      "totalCoins": "Total Coins Issued",
       "activityOverview": "Activity Overview",
       "viewDetails": "View Details",
       "sinceLastMonth": "Since last month",
@@ -644,240 +648,253 @@
       "Review sản phẩm thân thiện": "Sustainable Product Reviews"
     }
   },
-  "missions": {
-    "eventBanner": {
-      "featuredTag": "Featured environmental event",
-      "joinButton": "Register to join",
-      "ticketDetail": "Ticket details",
-      "loadListError": "Cannot load event list",
-      "loadInfoError": "Cannot load event info",
-      "prevEvent": "Previous event",
-      "nextEvent": "Next event",
-      "goToSlide": "Go to slide {index}"
-    },
-    "header": {
-      "title": "Your Missions",
-      "subtitle": "Complete green challenges to accumulate coins and join hands to protect the environment every day.",
-      "balance": "Account balance"
-    },
-    "tabs": {
-      "daily": "Daily Missions",
-      "other": "Other Missions",
-      "completed": "Completed",
-      "dailyShort": "Daily",
-      "otherShort": "Others",
-      "completedShort": "Done"
-    },
-    "filters": {
-      "searchPlaceholder": "Search missions...",
-      "sortBy": "Sort by:",
-      "default": "Default",
-      "coinsDesc": "Highest Coins",
-      "coinsAsc": "Lowest Coins",
-      "activityType": "Activity Type",
-      "all": "All",
-      "planting": "Planting",
-      "recycling": "Recycling / Collection",
-      "saving": "Saving",
-      "other": "Others",
-      "difficulty": "Difficulty",
-      "easy": "Easy",
-      "medium": "Medium",
-      "hard": "Hard"
-    },
-    "list": {
-      "noDaily": "No daily missions available.",
-      "noOther": "No side missions available.",
-      "completedTasks": "Missions Completed",
-      "coinsReceived": "Coins Received",
-      "ranking": "Leaderboard",
-      "stats": "Activity Stats"
-    },
-    "eventList": {
-      "title": "Environmental Events",
-      "noEvents": "No events in this category.",
-      "loadInfoError": "Cannot load event info",
-      "tabs": {
-        "hot": "Hot Events",
-        "current": "Ongoing",
-        "completed": "Joined"
-      }
+  "notifications": {
+    "title": "Notifications",
+    "markAllAsRead": "Mark all as read",
+    "noNotifications": "No notifications",
+    "viewAll": "View all",
+    "justNow": "Just now",
+    "minutesAgo": "{count}m ago",
+    "hoursAgo": "{count}h ago",
+    "daysAgo": "{count}d ago",
+    "errors": {
+      "notification_not_found": "Notification not found or access denied."
     }
   },
-  "exchangeMarket": {
-    "categories": {
-      "all": "All",
-      "recycled": "Recycled",
-      "handicraft": "Handicrafts",
-      "organic": "Organic Products",
-      "plants": "Plants",
-      "other": "Others",
-      "unknown": "Unknown"
+  "missions": {
+      "eventBanner": {
+        "featuredTag": "Featured environmental event",
+        "joinButton": "Register to join",
+        "ticketDetail": "Ticket details",
+        "loadListError": "Cannot load event list",
+        "loadInfoError": "Cannot load event info",
+        "prevEvent": "Previous event",
+        "nextEvent": "Next event",
+        "goToSlide": "Go to slide {index}"
+      },
+      "header": {
+        "title": "Your Missions",
+        "subtitle": "Complete green challenges to accumulate coins and join hands to protect the environment every day.",
+        "balance": "Account balance"
+      },
+      "tabs": {
+        "daily": "Daily Missions",
+        "other": "Other Missions",
+        "completed": "Completed",
+        "dailyShort": "Daily",
+        "otherShort": "Others",
+        "completedShort": "Done"
+      },
+      "filters": {
+        "searchPlaceholder": "Search missions...",
+        "sortBy": "Sort by:",
+        "default": "Default",
+        "coinsDesc": "Highest Coins",
+        "coinsAsc": "Lowest Coins",
+        "activityType": "Activity Type",
+        "all": "All",
+        "planting": "Planting",
+        "recycling": "Recycling / Collection",
+        "saving": "Saving",
+        "other": "Others",
+        "difficulty": "Difficulty",
+        "easy": "Easy",
+        "medium": "Medium",
+        "hard": "Hard"
+      },
+      "list": {
+        "noDaily": "No daily missions available.",
+        "noOther": "No side missions available.",
+        "completedTasks": "Missions Completed",
+        "coinsReceived": "Coins Received",
+        "ranking": "Leaderboard",
+        "stats": "Activity Stats"
+      },
+      "eventList": {
+        "title": "Environmental Events",
+        "noEvents": "No events in this category.",
+        "loadInfoError": "Cannot load event info",
+        "tabs": {
+          "hot": "Hot Events",
+          "current": "Ongoing",
+          "completed": "Joined"
+        }
+      }
     },
-    "statuses": {
-      "all": "All",
-      "public": "Displaying",
-      "pending": "Pending",
-      "rejected": "Rejected",
-      "hidden": "Hidden",
-      "private": "Hidden",
-      "draft": "Draft",
-      "unknown": "Unknown"
-    },
-    "conditions": {
-      "new": "New",
-      "like-new": "Like New",
-      "used": "Used",
-      "refurbished": "Refurbished"
-    },
-    "common": {
-      "close": "Close",
-      "cancel": "Cancel",
-      "edit": "Edit",
-      "delete": "Delete",
-      "save": "Save",
-      "confirm": "Confirm",
-      "processing": "Processing...",
-      "processingTx": "Processing transaction..."
-    },
-    "layout": {
-      "closeBtn": "Close"
-    },
-    "errors": {
-      "loadUserFailed": "Cannot load user data",
-      "loadUserError": "Error loading user data",
-      "loadRedeemFailed": "An error occurred while loading redeem items",
-      "loadMyItemsFailed": "An error occurred while loading your items",
-      "loadAllItemsFailed": "An error occurred while loading exchange market items",
-      "invalidItem": "Invalid item",
-      "loginRequired": "Please log in to perform this transaction",
-      "insufficientCoins": "You do not have enough coins for this transaction",
-      "noItemSelected": "No item selected",
-      "insufficientCoinsTx": "You do not have enough coins to perform this transaction",
-      "txNoCode": "Did not receive transaction code",
-      "txFailed": "Transaction failed: {message}",
-      "missingEditInfo": "Cannot edit product due to missing information!",
-      "missingDeleteInfo": "Cannot delete product due to missing information!",
-      "missingSubmitFields": "Please fill in all required fields!",
-      "priceMin": "Product price must be greater than or equal to 1!",
-      "stockMin": "Product quantity must be greater than or equal to 1!",
-      "missingUpdateInfo": "Cannot update product due to missing information!"
-    },
-    "alerts": {
-      "txSuccess": "Transaction for {quantity} {name} has been initiated successfully!",
-      "deleteSuccess": "Product has been successfully deleted!",
-      "deleteFailed": "Failed to delete product!",
-      "updateSuccess": "Product updated successfully!",
-      "updateFailed": "Failed to update product!",
-      "createSuccess": "New product added successfully!",
-      "createFailed": "Failed to add new product!",
-      "selectShipping": "Please select shipping information!",
-      "missingShippingFields": "Shipping information is missing ward/commune, district, or ID!"
-    },
-    "header": {
-      "subtitleTag": "Redeem green coins - get sustainable gifts",
-      "title": "Green Exchange Center",
-      "desc": "Discover eco-friendly items, manage your products, and redeem accumulated coins in a few simple taps.",
-      "tagGift": "Curated Green Gifts",
-      "tagEasy": "Easy Transactions",
-      "yourBalance": "Your Balance",
-      "coins": "Coins"
-    },
-    "nav": {
-      "redeem": "Redeem",
-      "myItems": "My Products",
-      "allItems": "Exchange Market"
-    },
-    "emptyState": {
-      "title": "No products found",
-      "myItemsDesc": "You do not have any products with this status.",
-      "allItemsDesc": "There are currently no products in this category.",
-      "myItemsAllDesc": " Try adding a new product!",
-      "addBtn": "Add New Product",
-      "searchPlaceholder": "Search green products, materials, sellers..."
-    },
-    "list": {
-      "thProduct": "Product",
-      "thCategory": "Category",
-      "thPrice": "Price",
-      "thStatus": "Status",
-      "thSeller": "Seller",
-      "thDate": "Date Posted",
-      "thActions": "Actions",
-      "editBtn": "Edit",
-      "deleteBtn": "Delete",
-      "detailsBtn": "Details",
-      "viewDetailsBtn": "View Details",
-      "redeemBtn": "Redeem",
-      "outOfStockBtn": "Out of stock",
-      "deleteTitle": "Delete Product",
-      "deleteMessage": "Are you sure you want to delete this product? This action cannot be undone.",
-      "remaining": "Stock: {count}"
-    },
-    "detailsModal": {
-      "title": "Product Details",
-      "priceLabel": "Price:",
-      "statusLabel": "Status:",
-      "sellerLabel": "Seller:",
-      "dateLabel": "Date Posted:",
-      "buyBtn": "Buy"
-    },
-    "createModal": {
-      "titleEdit": "Edit Product",
-      "titleCreate": "Add New Product",
-      "desc": "Fill in all the information to post your product on the exchange market.",
-      "fieldName": "Product Name",
-      "fieldPrice": "Price",
-      "fieldStock": "Quantity",
-      "fieldDesc": "Description",
-      "fieldCategory": "Category",
-      "fieldCondition": "Condition",
-      "placeholderName": "Enter product name",
-      "placeholderDesc": "Describe your product in detail",
-      "errorNameRequired": "Product name is required",
-      "errorDescRequired": "Product description is required",
-      "errorPriceRequired": "Product price is required",
-      "errorPricePositive": "Price must be a positive number",
-      "errorStockRequired": "Product quantity is required",
-      "errorStockInteger": "Quantity must be a positive integer",
-      "btnUpdate": "Update Product",
-      "btnCreate": "Post Product"
-    },
-    "imageUpload": {
-      "label": "Product Image",
-      "uploadText": "Upload Image",
-      "chooseBtn": "Choose Image",
-      "hint": "Supports PNG, JPG up to 5MB"
-    },
-    "purchaseModal": {
-      "txConfirmTitle": "Confirm Exchange",
-      "txConfirmDesc": "Please confirm your transaction details",
-      "remainingLabel": "{count} products left",
-      "quantityLabel": "Quantity:",
-      "btnProcessing": "Processing...",
-      "btnIneligible": "Ineligible",
-      "btnSelectShipping": "Select shipping information",
-      "btnConfirm": "Confirm"
-    },
-    "shipping": {
-      "title": "Delivery Information",
-      "btnChange": "Change",
-      "empty": "No shipping information",
-      "modalTitle": "Select Shipping Information",
-      "emptySaved": "No shipping information has been saved.",
-      "defaultBadge": "Default",
-      "phonePrefix": "Phone: {phone}",
-      "typePrefix": "Type: {type}"
-    },
-    "summary": {
-      "productPrice": "Product Price:",
-      "shippingFee": "Shipping Fee:",
-      "totalCost": "Total Product Cost (Coins):",
-      "currentBalance": "Current Balance:",
-      "balanceAfter": "Balance After Transaction:"
-    },
-    "userItems": {
-      "addProductBtn": "Add Product"
+    "exchangeMarket": {
+      "categories": {
+        "all": "All",
+        "recycled": "Recycled",
+        "handicraft": "Handicrafts",
+        "organic": "Organic Products",
+        "plants": "Plants",
+        "other": "Others",
+        "unknown": "Unknown"
+      },
+      "statuses": {
+        "all": "All",
+        "public": "Displaying",
+        "pending": "Pending",
+        "rejected": "Rejected",
+        "hidden": "Hidden",
+        "private": "Hidden",
+        "draft": "Draft",
+        "unknown": "Unknown"
+      },
+      "conditions": {
+        "new": "New",
+        "like-new": "Like New",
+        "used": "Used",
+        "refurbished": "Refurbished"
+      },
+      "common": {
+        "close": "Close",
+        "cancel": "Cancel",
+        "edit": "Edit",
+        "delete": "Delete",
+        "save": "Save",
+        "confirm": "Confirm",
+        "processing": "Processing...",
+        "processingTx": "Processing transaction..."
+      },
+      "layout": {
+        "closeBtn": "Close"
+      },
+      "errors": {
+        "loadUserFailed": "Cannot load user data",
+        "loadUserError": "Error loading user data",
+        "loadRedeemFailed": "An error occurred while loading redeem items",
+        "loadMyItemsFailed": "An error occurred while loading your items",
+        "loadAllItemsFailed": "An error occurred while loading exchange market items",
+        "invalidItem": "Invalid item",
+        "loginRequired": "Please log in to perform this transaction",
+        "insufficientCoins": "You do not have enough coins for this transaction",
+        "noItemSelected": "No item selected",
+        "insufficientCoinsTx": "You do not have enough coins to perform this transaction",
+        "txNoCode": "Did not receive transaction code",
+        "txFailed": "Transaction failed: {message}",
+        "missingEditInfo": "Cannot edit product due to missing information!",
+        "missingDeleteInfo": "Cannot delete product due to missing information!",
+        "missingSubmitFields": "Please fill in all required fields!",
+        "priceMin": "Product price must be greater than or equal to 1!",
+        "stockMin": "Product quantity must be greater than or equal to 1!",
+        "missingUpdateInfo": "Cannot update product due to missing information!"
+      },
+      "alerts": {
+        "txSuccess": "Transaction for {quantity} {name} has been initiated successfully!",
+        "deleteSuccess": "Product has been successfully deleted!",
+        "deleteFailed": "Failed to delete product!",
+        "updateSuccess": "Product updated successfully!",
+        "updateFailed": "Failed to update product!",
+        "createSuccess": "New product added successfully!",
+        "createFailed": "Failed to add new product!",
+        "selectShipping": "Please select shipping information!",
+        "missingShippingFields": "Shipping information is missing ward/commune, district, or ID!"
+      },
+      "header": {
+        "subtitleTag": "Redeem green coins - get sustainable gifts",
+        "title": "Green Exchange Center",
+        "desc": "Discover eco-friendly items, manage your products, and redeem accumulated coins in a few simple taps.",
+        "tagGift": "Curated Green Gifts",
+        "tagEasy": "Easy Transactions",
+        "yourBalance": "Your Balance",
+        "coins": "Coins"
+      },
+      "nav": {
+        "redeem": "Redeem",
+        "myItems": "My Products",
+        "allItems": "Exchange Market"
+      },
+      "emptyState": {
+        "title": "No products found",
+        "myItemsDesc": "You do not have any products with this status.",
+        "allItemsDesc": "There are currently no products in this category.",
+        "myItemsAllDesc": " Try adding a new product!",
+        "addBtn": "Add New Product",
+        "searchPlaceholder": "Search green products, materials, sellers..."
+      },
+      "list": {
+        "thProduct": "Product",
+        "thCategory": "Category",
+        "thPrice": "Price",
+        "thStatus": "Status",
+        "thSeller": "Seller",
+        "thDate": "Date Posted",
+        "thActions": "Actions",
+        "editBtn": "Edit",
+        "deleteBtn": "Delete",
+        "detailsBtn": "Details",
+        "viewDetailsBtn": "View Details",
+        "redeemBtn": "Redeem",
+        "outOfStockBtn": "Out of stock",
+        "deleteTitle": "Delete Product",
+        "deleteMessage": "Are you sure you want to delete this product? This action cannot be undone.",
+        "remaining": "Stock: {count}"
+      },
+      "detailsModal": {
+        "title": "Product Details",
+        "priceLabel": "Price:",
+        "statusLabel": "Status:",
+        "sellerLabel": "Seller:",
+        "dateLabel": "Date Posted:",
+        "buyBtn": "Buy"
+      },
+      "createModal": {
+        "titleEdit": "Edit Product",
+        "titleCreate": "Add New Product",
+        "desc": "Fill in all the information to post your product on the exchange market.",
+        "fieldName": "Product Name",
+        "fieldPrice": "Price",
+        "fieldStock": "Quantity",
+        "fieldDesc": "Description",
+        "fieldCategory": "Category",
+        "fieldCondition": "Condition",
+        "placeholderName": "Enter product name",
+        "placeholderDesc": "Describe your product in detail",
+        "errorNameRequired": "Product name is required",
+        "errorDescRequired": "Product description is required",
+        "errorPriceRequired": "Product price is required",
+        "errorPricePositive": "Price must be a positive number",
+        "errorStockRequired": "Product quantity is required",
+        "errorStockInteger": "Quantity must be a positive integer",
+        "btnUpdate": "Update Product",
+        "btnCreate": "Post Product"
+      },
+      "imageUpload": {
+        "label": "Product Image",
+        "uploadText": "Upload Image",
+        "chooseBtn": "Choose Image",
+        "hint": "Supports PNG, JPG up to 5MB"
+      },
+      "purchaseModal": {
+        "txConfirmTitle": "Confirm Exchange",
+        "txConfirmDesc": "Please confirm your transaction details",
+        "remainingLabel": "{count} products left",
+        "quantityLabel": "Quantity:",
+        "btnProcessing": "Processing...",
+        "btnIneligible": "Ineligible",
+        "btnSelectShipping": "Select shipping information",
+        "btnConfirm": "Confirm"
+      },
+      "shipping": {
+        "title": "Delivery Information",
+        "btnChange": "Change",
+        "empty": "No shipping information",
+        "modalTitle": "Select Shipping Information",
+        "emptySaved": "No shipping information has been saved.",
+        "defaultBadge": "Default",
+        "phonePrefix": "Phone: {phone}",
+        "typePrefix": "Type: {type}"
+      },
+      "summary": {
+        "productPrice": "Product Price:",
+        "shippingFee": "Shipping Fee:",
+        "totalCost": "Total Product Cost (Coins):",
+        "currentBalance": "Current Balance:",
+        "balanceAfter": "Balance After Transaction:"
+      },
+      "userItems": {
+        "addProductBtn": "Add Product"
+      }
     }
-  }
 }

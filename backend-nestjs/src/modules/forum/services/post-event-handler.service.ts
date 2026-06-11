@@ -86,6 +86,23 @@ export class PostEventHandlerService {
         1,
       );
       await this.postRepository.increment({ id: comment.postId }, 'score', 2);
+
+      // Emit new comment notification
+      try {
+        const post = await this.postRepository.findOne({
+          where: { id: comment.postId },
+        });
+        if (post && post.authorId !== comment.authorId) {
+          this.eventEmitter.emit(EVENT_KEYS.NOTIFICATION_NEW_COMMENT, {
+            recipientId: post.authorId,
+            senderId: comment.authorId,
+            postId: post.id,
+            commentId: comment.id,
+          });
+        }
+      } catch (err) {
+        console.error('Error sending auto-approved comment notification:', err);
+      }
     }
   }
 

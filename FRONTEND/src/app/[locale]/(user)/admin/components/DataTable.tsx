@@ -183,7 +183,7 @@ export default function DataTable<T extends { id: string | number }>({
                 <th
                   key={String(col.field)}
                   scope="col"
-                  className="px-6 py-4 font-semibold text-gray-600 dark:text-slate-300"
+                  className="text-gray-650 px-6 py-4 font-semibold dark:text-zinc-300"
                   style={{ width: col.width }}
                 >
                   {col.headerName}
@@ -194,7 +194,7 @@ export default function DataTable<T extends { id: string | number }>({
               {(onView || onEdit || onDelete) && (
                 <th
                   scope="col"
-                  className="w-[150px] px-6 py-4 text-right font-semibold text-gray-600 dark:text-slate-300"
+                  className="text-gray-650 w-[150px] px-6 py-4 text-right font-semibold dark:text-zinc-300"
                 >
                   {t("actions")}
                 </th>
@@ -215,7 +215,7 @@ export default function DataTable<T extends { id: string | number }>({
                 >
                   <div className="flex flex-col items-center justify-center gap-3">
                     <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-600 border-t-transparent dark:border-emerald-500"></div>
-                    <span className="text-sm text-gray-500 dark:text-slate-400">
+                    <span className="text-sm text-gray-500 dark:text-zinc-400">
                       {t("loading")}
                     </span>
                   </div>
@@ -229,7 +229,7 @@ export default function DataTable<T extends { id: string | number }>({
                     (enableSelection ? 1 : 0) +
                     (onView || onEdit || onDelete ? 1 : 0)
                   }
-                  className="py-16 text-center text-gray-400 dark:text-slate-500"
+                  className="py-16 text-center text-gray-400 dark:text-zinc-500"
                 >
                   {t("noRecords")}
                 </td>
@@ -240,8 +240,10 @@ export default function DataTable<T extends { id: string | number }>({
                 return (
                   <tr
                     key={row.id || index}
-                    className={`transition-colors hover:bg-gray-50/50 dark:hover:bg-slate-800/50 ${
-                      isSelected ? "bg-emerald-50/10 dark:bg-emerald-500/5" : ""
+                    className={`transition-colors even:bg-gray-50/50 hover:bg-gray-100/50 dark:even:bg-zinc-900/50 dark:hover:bg-zinc-800/50 ${
+                      isSelected
+                        ? "bg-emerald-50/10 dark:bg-emerald-950/20"
+                        : ""
                     }`}
                   >
                     {/* Selection checkbox */}

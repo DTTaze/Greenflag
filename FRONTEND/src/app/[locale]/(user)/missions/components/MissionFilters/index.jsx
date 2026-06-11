@@ -1,4 +1,5 @@
-import { Search } from "lucide-react";
+"use client";
+
 import { useTranslations } from "next-intl";
 import React from "react";
 
@@ -79,11 +80,10 @@ function MissionFilters({
                   setDailyCurrentPage(1);
                   setOtherCurrentPage(1);
                 }}
-                className={`cursor-pointer rounded-xl border px-4 py-2.5 text-xs font-bold transition-all duration-200 active:scale-95 ${
-                  categoryFilter === cat.value
+                className={`cursor-pointer rounded-xl border px-4 py-2.5 text-xs font-bold transition-all duration-200 active:scale-95 ${categoryFilter === cat.value
                     ? "border-[#0B6E4F] bg-[#0B6E4F] text-white shadow-md shadow-[#0B6E4F]/10 dark:border-emerald-400 dark:bg-emerald-500 dark:text-slate-950 dark:shadow-emerald-500/20"
                     : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-900 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-200 dark:hover:border-emerald-500/50 dark:hover:bg-slate-700/80 dark:hover:text-white"
-                }`}
+                  }`}
               >
                 {cat.label}
               </button>
@@ -91,12 +91,12 @@ function MissionFilters({
           </div>
         </div>
 
-        {/* Difficulty buttons */}
-        <div className="space-y-2.5">
-          <span className="block text-[11px] font-bold tracking-wider text-gray-400 uppercase dark:text-slate-400">
+        {/* Group 2: Độ khó */}
+        <div className="flex flex-col gap-3">
+          <span className="text-xs font-semibold text-gray-500 dark:text-zinc-400 uppercase tracking-wider">
             {t("difficulty")}
           </span>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {[
               { value: "all", label: t("all") },
               { value: "easy", label: t("easy") },
@@ -121,11 +121,10 @@ function MissionFilters({
                     setFilter(diff.value);
                     setPage(1);
                   }}
-                  className={`cursor-pointer rounded-xl border px-4 py-2.5 text-xs font-bold transition-all duration-200 active:scale-95 ${
-                    activeFilter === diff.value
-                      ? "border-emerald-200 bg-emerald-50 text-[#0B6E4F] shadow-2xs dark:border-emerald-400/60 dark:bg-emerald-400/15 dark:text-emerald-200"
-                      : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-900 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-200 dark:hover:border-emerald-500/50 dark:hover:bg-slate-700/80 dark:hover:text-white"
-                  }`}
+                  className={`px-4 py-2 text-sm font-semibold rounded-full cursor-pointer transition-all duration-200 active:scale-95 ${activeFilter === diff.value
+                      ? "border border-[#0B6E4F] bg-[#0B6E4F] text-white shadow-sm dark:border-emerald-500 dark:bg-emerald-500/20 dark:text-emerald-450"
+                      : "border border-gray-200 bg-white text-gray-650 dark:border-zinc-800 dark:bg-zinc-950 text-gray-700 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-850"
+                    }`}
                 >
                   {diff.label}
                 </button>
@@ -134,7 +133,28 @@ function MissionFilters({
           </div>
         </div>
       </div>
+
+      {/* NỬA PHẢI: Nút Sắp xếp */}
+      <div className="flex items-center gap-3 lg:shrink-0 mt-4 lg:mt-0 lg:self-start">
+        <span className="text-xs font-semibold text-gray-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">
+          {t("sortBy")}
+        </span>
+        <select
+          value={sortByCoins}
+          onChange={(e) => {
+            setSortByCoins(e.target.value);
+            setDailyCurrentPage(1);
+            setOtherCurrentPage(1);
+          }}
+          className="bg-gray-50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-zinc-100 text-sm rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-green-500/50 cursor-pointer transition-all duration-200"
+        >
+          <option value="none">{t("default")}</option>
+          <option value="desc">{t("coinsDesc")}</option>
+          <option value="asc">{t("coinsAsc")}</option>
+        </select>
+      </div>
     </div>
+    </div >
   );
 }
 

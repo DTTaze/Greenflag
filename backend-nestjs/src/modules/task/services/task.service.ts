@@ -1,6 +1,7 @@
 import { EntityManager, Repository } from 'typeorm';
 
 import { Inject, Injectable, OnModuleInit, forwardRef } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CloudinaryService } from '@modules/cloudinary/services/cloudinary.service';
@@ -10,7 +11,7 @@ import { CoinService } from '@modules/user/services/coin.service';
 import { UserProfileService } from '@modules/user/services/user-profile.service';
 import { UserService } from '@modules/user/services/user.service';
 
-import { ERR_CODE, getStorageFolder } from '@shared/constants';
+import { ERR_CODE, EVENT_KEYS, getStorageFolder } from '@shared/constants';
 import {
   TASK_DIFFICULTY,
   TASK_SUBMIT_STATUS,
@@ -52,6 +53,7 @@ export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
     @Inject(forwardRef(() => UserProfileService))
     private readonly userProfileService: UserProfileService,
     private readonly cloudinaryService: CloudinaryService,
+    private readonly eventEmitter: EventEmitter2,
   ) {
     super(taskRepository);
   }
@@ -340,6 +342,17 @@ export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
         if (userCoin) {
           userCoin.amount += task.coins;
           await manager.save(Coin, userCoin);
+
+          // Emit coin received event
+          try {
+            this.eventEmitter.emit(EVENT_KEYS.NOTIFICATION_COIN_RECEIVED, {
+              userId: user.id,
+              amount: task.coins,
+              reason: `Hoàn thành nhiệm vụ: ${task.title}`,
+            });
+          } catch (err) {
+            console.error('Error emitting task coin notification:', err);
+          }
         }
       }
 
@@ -437,6 +450,20 @@ export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
             if (userCoin) {
               userCoin.amount += taskUser.task.coins;
               await manager.save(Coin, userCoin);
+
+              // Emit coin received event
+              try {
+                this.eventEmitter.emit(EVENT_KEYS.NOTIFICATION_COIN_RECEIVED, {
+                  userId: user.id,
+                  amount: taskUser.task.coins,
+                  reason: `Hoàn thành nhiệm vụ: ${taskUser.task.title}`,
+                });
+              } catch (err) {
+                console.error(
+                  'Error emitting task progress coin notification:',
+                  err,
+                );
+              }
             }
           }
 
@@ -565,9 +592,11 @@ export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
 
   async getAllTasksOfCustomer(
     customerId: string,
+    isAdmin: boolean = false,
   ): Promise<OperationResult<Task[]>> {
+    const whereCondition = isAdmin ? {} : { creatorId: customerId };
     const tasks = await this.taskRepository.find({
-      where: { creatorId: customerId },
+      where: whereCondition,
       relations: ['creator', 'creator.profile'],
     });
     return generateSuccessResult(tasks);

@@ -125,7 +125,11 @@ export class ForumController {
     @Param() params: FindOnePostParamDTO,
     @RequestUser('optional') user?: User,
   ) {
-    const post = await this.postService.getPostById(params.id, user?.id);
+    const post = await this.postService.getPostById(
+      params.id,
+      user?.id,
+      user?.role,
+    );
     return generateSuccessResult(post);
   }
 
@@ -138,12 +142,11 @@ export class ForumController {
     @Body() dto: UpdatePostDTO,
     @RequestUser() user: User,
   ) {
-    const isAdmin = user.role === ROLE.ADMIN;
     const post = await this.postService.updatePost(
       params.id,
       dto,
       user.id,
-      isAdmin,
+      user.role,
     );
     return generateSuccessResult(post);
   }

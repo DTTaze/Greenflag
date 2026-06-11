@@ -4,7 +4,8 @@ import { deleteCookie, getCookie } from "cookies-next/client";
 import { queryClient } from "@/src/lib/react-query/queryClient";
 
 export const ACCESS_TOKEN = "access_token";
-const NESTJS_API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3030/api/v1";
+const NESTJS_API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3030/api/v1";
 
 const axiosClient = axios.create({
   baseURL: NESTJS_API_BASE,

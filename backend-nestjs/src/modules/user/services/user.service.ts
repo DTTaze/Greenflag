@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcryptjs';
 import { CacheService } from 'mvc-common-toolkit';
-import { In, Repository } from 'typeorm';
+import { ILike, In, Repository } from 'typeorm';
 
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -305,5 +305,25 @@ export class UserService extends BaseCRUDService<User> {
 
     delete updatedUser.password;
     return generateSuccessResult(updatedUser);
+  }
+
+  async searchUsers(query: string): Promise<OperationResult<User[]>> {
+    if (!query || !query.trim()) {
+      return generateSuccessResult([]);
+    }
+    const cleanQuery = query.trim();
+    const queryBuilder = this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.profile', 'profile')
+      .where('user.username ILike :q', { q: `%${cleanQuery}%` })
+      .orWhere('user.email ILike :q', { q: `%${cleanQuery}%` })
+      .orWhere('profile.fullName ILike :q', { q: `%${cleanQuery}%` })
+      .take(10);
+
+    const users = await queryBuilder.getMany();
+    users.forEach((user) => {
+      delete user.password;
+    });
+    return generateSuccessResult(users);
   }
 }

@@ -56,7 +56,7 @@ export class PostExpirationCron {
         .where('status = :pendingStatus', {
           pendingStatus: FORUM_POST_STATUS.PENDING,
         })
-        .andWhere('createdAt < :thresholdDate', { thresholdDate })
+        .andWhere('created_at < :thresholdDate', { thresholdDate })
         .execute();
 
       this.logger.log(

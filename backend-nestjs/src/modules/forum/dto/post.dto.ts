@@ -61,6 +61,16 @@ export class CreatePostDTO {
   @IsString()
   category?: string;
 
+  @ApiPropertyOptional({ example: 'Sống xanh' })
+  @IsOptional()
+  @IsString()
+  category_id?: string;
+
+  @ApiPropertyOptional({ example: 'Tái chế' })
+  @IsOptional()
+  @IsString()
+  topic_id?: string;
+
   @ApiPropertyOptional({ example: false })
   @IsOptional()
   @Transform(({ value }) => {
@@ -119,6 +129,16 @@ export class UpdatePostDTO {
   @IsOptional()
   @IsString()
   category?: string;
+
+  @ApiPropertyOptional({ example: 'Sống xanh' })
+  @IsOptional()
+  @IsString()
+  category_id?: string;
+
+  @ApiPropertyOptional({ example: 'Tái chế' })
+  @IsOptional()
+  @IsString()
+  topic_id?: string;
 
   @ApiPropertyOptional({ example: false })
   @IsOptional()

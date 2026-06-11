@@ -4,8 +4,8 @@ import {
   Home,
   LayoutDashboard,
   ShoppingBag,
+  MessageSquare,
   Target,
-  Users,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -98,7 +98,7 @@ function UserHeader() {
     { key: "", label: t("home"), icon: Home },
     { key: "missions", label: t("missions"), icon: Target },
     { key: "exchange-market", label: t("exchange"), icon: ArrowLeftRight },
-    { key: "community", label: t("community"), icon: Users },
+    { key: "forum", label: t("forum"), icon: MessageSquare },
   ];
 
   if (isAuthenticated && user?.roles?.id === 3) {

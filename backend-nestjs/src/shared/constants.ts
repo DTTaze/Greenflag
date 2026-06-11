@@ -176,6 +176,7 @@ export const EVENT_KEYS = {
   POST_CREATED: 'post.created',
   COMMENT_CREATED: 'comment.created',
   ADMIN_ALERT_VIOLATION: 'admin.alert_violation',
+  POST_MODERATED: 'post.moderated',
 };
 
 export const DEFAULT_MAX_CONCURRENT_CALL = 1;

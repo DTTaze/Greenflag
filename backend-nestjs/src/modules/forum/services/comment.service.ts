@@ -1,6 +1,7 @@
 import { DataSource, EntityManager, Repository } from 'typeorm';
 
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -79,12 +80,23 @@ export class CommentService {
         throw new NotFoundException('Post not found');
       }
 
+      if (post.status !== FORUM_POST_STATUS.APPROVED) {
+        throw new BadRequestException(
+          'Không thể bình luận vào bài viết chưa được phê duyệt hoặc đã hết hạn!',
+        );
+      }
+
       if (dto.parentId) {
         const parent = await manager.findOne(Comment, {
           where: { id: dto.parentId },
         });
         if (!parent) {
           throw new NotFoundException('Parent comment not found');
+        }
+        if (parent.postId !== postId) {
+          throw new BadRequestException(
+            'Bình luận phản hồi phải thuộc cùng một bài viết!',
+          );
         }
       }
 
@@ -140,20 +152,20 @@ export class CommentService {
       .createQueryBuilder('comment')
       .leftJoinAndSelect('comment.author', 'author')
       .leftJoinAndSelect('author.profile', 'profile')
-      .where('comment.postId = :postId', { postId })
-      .andWhere('comment.parentId IS NULL')
+      .where('comment.post_id = :postId', { postId })
+      .andWhere('comment.parent_id IS NULL')
       .andWhere('comment.status = :approvedStatus', {
         approvedStatus: FORUM_POST_STATUS.APPROVED,
       });
 
     if (query.cursor) {
       const cursorCreatedAt = new Date(query.cursor);
-      queryBuilder.andWhere('comment.createdAt > :cursorCreatedAt', {
+      queryBuilder.andWhere('comment.created_at > :cursorCreatedAt', {
         cursorCreatedAt,
       });
     }
 
-    queryBuilder.orderBy('comment.createdAt', 'ASC');
+    queryBuilder.orderBy('comment.created_at', 'ASC');
     queryBuilder.take(limit + 1);
 
     if (currentUserId) {
@@ -207,11 +219,11 @@ export class CommentService {
       .createQueryBuilder('reply')
       .leftJoinAndSelect('reply.author', 'author')
       .leftJoinAndSelect('author.profile', 'profile')
-      .where('reply.parentId = :parentId', { parentId: parentComment.id })
+      .where('reply.parent_id = :parentId', { parentId: parentComment.id })
       .andWhere('reply.status = :approvedStatus', {
         approvedStatus: FORUM_POST_STATUS.APPROVED,
       })
-      .orderBy('reply.createdAt', 'ASC');
+      .orderBy('reply.created_at', 'ASC');
 
     if (currentUserId) {
       repliesQuery

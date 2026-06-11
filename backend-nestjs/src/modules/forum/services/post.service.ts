@@ -73,19 +73,18 @@ export class PostService implements OnModuleInit {
   }
 
   async aiEnhanceContent(content: string) {
-    const systemPrompt = `You are a strict editorial assistant for a RICE FARMING (Trồng lúa) forum.
+    const systemPrompt = `You are a strict editorial assistant for an ENVIRONMENTAL PROTECTION & GREEN LIVING (Bảo vệ môi trường & Sống xanh) forum named Greenflag.
 The user will provide a raw, often misspelled draft.
 
 Your tasks:
-1. Fix spelling and agricultural terminology based on RICE context. Example: "đáo ồn" means "bệnh đạo ôn" (Rice blast).
-2. Expand the draft into a polite, clear forum post asking the community for help.
+1. Fix spelling and environmental terminology based on Greenflag context (e.g., recycling, planting, reducing plastic waste, clean energy).
+2. Expand the draft into a polite, clear forum post asking the community for help, sharing tips, or discussing green activities.
 3. CRITICAL RULES:
-   - CONTEXT IS RICE (Cây lúa). Do not mention peach trees or other plants.
-   - DO NOT answer the question or provide treatments.
-   - DO NOT invent fake symptoms.
+   - CONTEXT IS ENVIRONMENTAL PROTECTION & SUSTAINABILITY (Bảo vệ môi trường & Phát triển bền vững). Do not discuss unrelated topics.
+   - DO NOT answer questions or provide official recommendations.
    - KEEP IT SHORT (maximum 2-3 sentences).
 4. Suggest 3-5 relevant tags. 
-   - TAG FORMAT RULE: Output tags as natural Vietnamese phrases with spaces, capitalized first letter, NO '#' symbol. Example: ["Bệnh đạo ôn", "Kinh nghiệm trồng lúa", "Phân bón"].
+   - TAG FORMAT RULE: Output tags as natural Vietnamese phrases with spaces, capitalized first letter, NO '#' symbol. Example: ["Sống xanh", "Tái chế", "Trồng cây", "Giảm rác nhựa"].
 5. Categorize strictly into ONE of these: ['Hỏi đáp', 'Kinh nghiệm', 'Thảo luận chung'].
 
 Output STRICTLY as a JSON object:
@@ -116,7 +115,7 @@ Output STRICTLY as a JSON object:
               .trim()
               .replace(/\s+/g, ' ');
             if (cleanString.length > 0) {
-              // Viết hoa chữ cái đầu tiên cho đẹp tự nhiên (VD: "bạc lá" -> "Bạc lá")
+              // Viết hoa chữ cái đầu tiên cho đẹp tự nhiên (VD: "tái chế" -> "Tái chế")
               return (
                 cleanString.charAt(0).toUpperCase() +
                 cleanString.slice(1).toLowerCase()
@@ -131,7 +130,7 @@ Output STRICTLY as a JSON object:
     } catch (err) {
       return {
         enhancedContent: content,
-        hashtags: ['Lúa Khỏe', 'Nông nghiệp'],
+        hashtags: ['Sống xanh', 'Môi trường'],
         category: 'Thảo luận chung',
       };
     }
@@ -188,18 +187,22 @@ Output STRICTLY as a JSON object:
     } else if (isAdmin) {
       status = FORUM_POST_STATUS.APPROVED;
       isAdminPost = true;
-    } else if (isAutoEnabled && postRoles.includes(userRole)) {
-      status = FORUM_POST_STATUS.PENDING;
     } else {
-      status = FORUM_POST_STATUS.APPROVED;
+      status = FORUM_POST_STATUS.PENDING;
+    }
+
+    const categoryVal = dto.category_id || dto.category || 'Thảo luận chung';
+    let tagsVal = dto.tags || [];
+    if (dto.topic_id && !tagsVal.includes(dto.topic_id)) {
+      tagsVal = [dto.topic_id, ...tagsVal];
     }
 
     const post = this.postRepository.create({
       authorId,
       content: dto.content,
       images: postImages,
-      tags: dto.tags || [],
-      category: dto.category || 'Thảo luận chung',
+      tags: tagsVal,
+      category: categoryVal,
       status,
       flaggedReason,
       isAdminPost,
@@ -222,7 +225,11 @@ Output STRICTLY as a JSON object:
       }
     }
 
-    if (status === FORUM_POST_STATUS.PENDING) {
+    if (
+      status === FORUM_POST_STATUS.PENDING &&
+      isAutoEnabled &&
+      postRoles.includes(userRole)
+    ) {
       this.eventEmitter.emit(EVENT_KEYS.POST_CREATED, { postId: savedPost.id });
     }
 
@@ -420,7 +427,11 @@ Output STRICTLY as a JSON object:
     };
   }
 
-  async getPostById(postId: string, currentUserId?: string): Promise<Post> {
+  async getPostById(
+    postId: string,
+    currentUserId?: string,
+    currentUserRole?: ROLE,
+  ): Promise<Post> {
     const queryBuilder = this.postRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.author', 'author')
@@ -484,6 +495,15 @@ Output STRICTLY as a JSON object:
       throw new NotFoundException('Post not found');
     }
 
+    if (entity.status !== FORUM_POST_STATUS.APPROVED) {
+      if (
+        !currentUserId ||
+        (entity.authorId !== currentUserId && currentUserRole !== ROLE.ADMIN)
+      ) {
+        throw new ForbiddenException('Bạn không có quyền xem bài viết này');
+      }
+    }
+
     const rawItem = raw[0];
     entity['userVote'] = rawItem ? rawItem.userVote || null : null;
 
@@ -516,8 +536,9 @@ Output STRICTLY as a JSON object:
     postId: string,
     dto: UpdatePostDTO,
     userId: string,
-    isAdmin: boolean,
+    userRole: ROLE = ROLE.USER,
   ): Promise<Post> {
+    const isAdmin = userRole === ROLE.ADMIN;
     const post = await this.postRepository.findOne({ where: { id: postId } });
     if (!post) {
       throw new NotFoundException('Post not found');
@@ -531,11 +552,27 @@ Output STRICTLY as a JSON object:
 
     if (dto.content !== undefined) post.content = dto.content;
     if (dto.images !== undefined) post.images = dto.images;
-    if (dto.tags !== undefined) post.tags = dto.tags;
-    if (dto.category !== undefined) post.category = dto.category;
+
+    if (dto.category_id !== undefined) {
+      post.category = dto.category_id;
+    } else if (dto.category !== undefined) {
+      post.category = dto.category;
+    }
+
+    if (dto.topic_id !== undefined) {
+      let tagsVal = dto.tags || post.tags || [];
+      if (!tagsVal.includes(dto.topic_id)) {
+        tagsVal = [dto.topic_id, ...tagsVal];
+      }
+      post.tags = tagsVal;
+    } else if (dto.tags !== undefined) {
+      post.tags = dto.tags;
+    }
 
     const isDraftVal =
       dto.isDraft === undefined ? undefined : dto.isDraft === true;
+
+    let shouldEmitEvent = false;
 
     // Security Draft Publication Moderation Check
     if (post.status === FORUM_POST_STATUS.DRAFT && isDraftVal === false) {
@@ -544,24 +581,43 @@ Output STRICTLY as a JSON object:
         post.isAdminPost = true;
         post.flaggedReason = null;
       } else {
-        const moderationResult =
-          await this.moderationService.moderatePostContent(
-            post.content,
-            post.images,
-          );
-        if (!moderationResult.isSafe) {
-          post.status = FORUM_POST_STATUS.REJECTED;
-          post.flaggedReason = moderationResult.reason || 'Bị từ chối tự động';
-        } else {
-          post.status = FORUM_POST_STATUS.PENDING;
-          post.flaggedReason = null;
+        const isAutoEnabled =
+          (await this.systemConfigService.get(
+            SYSTEM_CONFIG_KEY.AI_AUTO_MODERATION_ENABLED,
+          )) === 'true';
+        const postRolesStr = await this.systemConfigService.get(
+          SYSTEM_CONFIG_KEY.AI_MODERATION_POST_ROLES,
+        );
+        let postRoles: string[] = ['USER'];
+        if (postRolesStr) {
+          try {
+            const parsed = JSON.parse(postRolesStr);
+            if (Array.isArray(parsed)) {
+              postRoles = parsed;
+            }
+          } catch {
+            postRoles = ['USER'];
+          }
+        }
+
+        post.status = FORUM_POST_STATUS.PENDING;
+        post.flaggedReason = null;
+
+        if (isAutoEnabled && postRoles.includes(userRole)) {
+          shouldEmitEvent = true;
         }
       }
     } else if (isDraftVal === true) {
       post.status = FORUM_POST_STATUS.DRAFT;
     }
 
-    return this.postRepository.save(post);
+    const savedPost = await this.postRepository.save(post);
+
+    if (shouldEmitEvent) {
+      this.eventEmitter.emit(EVENT_KEYS.POST_CREATED, { postId: savedPost.id });
+    }
+
+    return savedPost;
   }
 
   async votePost(
@@ -607,8 +663,8 @@ Output STRICTLY as a JSON object:
         .createQueryBuilder()
         .update(Comment)
         .set({ deletedAt: new Date() })
-        .where('postId = :postId', { postId })
-        .andWhere('deletedAt IS NULL')
+        .where('post_id = :postId', { postId })
+        .andWhere('deleted_at IS NULL')
         .execute();
     });
   }
@@ -632,7 +688,14 @@ Output STRICTLY as a JSON object:
     if (flaggedReason !== undefined) {
       post.flaggedReason = flaggedReason;
     }
-    return this.postRepository.save(post);
+    const savedPost = await this.postRepository.save(post);
+    this.eventEmitter.emit(EVENT_KEYS.POST_MODERATED, {
+      postId: savedPost.id,
+      status: savedPost.status,
+      authorId: savedPost.authorId,
+      flaggedReason: savedPost.flaggedReason,
+    });
+    return savedPost;
   }
 
   async getMyPosts(

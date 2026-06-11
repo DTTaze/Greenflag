@@ -4,29 +4,36 @@ import { RefreshCw, Search, ShieldCheck } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-import {
-  adminGetCommunityPosts,
-  adminModerateCommunityPost,
-} from "@/src/services/community.service";
+import { forumService } from "@/src/services/forum.service";
 
 import ModerationDetail from "./ModerationDetail";
 import ModerationTable from "./ModerationTable";
 
-function CommunityModeration() {
+function ForumModeration() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("pending");
   const [selectedPost, setSelectedPost] = useState(null);
 
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const data = await adminGetCommunityPosts();
-      setPosts(data);
+      // Gọi API thực tế của Diễn đàn, truyền statusFilter để lấy bài đăng theo trạng thái tương ứng
+      const res = await forumService.getPosts({
+        limit: 100,
+        status: statusFilter,
+      });
+
+      if (res.success && res.data) {
+        setPosts(res.data.items || []);
+      } else {
+        setPosts([]);
+        toast.error(res.message || "Không thể tải danh sách bài viết");
+      }
     } catch (error) {
-      console.error("Failed to fetch admin posts:", error);
-      toast.error("Không thể tải danh sách bài viết");
+      console.error("Failed to fetch admin forum posts:", error);
+      toast.error("Không thể tải danh sách bài viết từ máy chủ");
     } finally {
       setLoading(false);
     }
@@ -34,45 +41,40 @@ function CommunityModeration() {
 
   useEffect(() => {
     fetchPosts();
-  }, []);
+  }, [statusFilter]);
 
   const handleModerate = async (postId, decision) => {
     try {
-      const success = await adminModerateCommunityPost(postId, decision);
-      if (success) {
+      const res = await forumService.moderatePost(postId, decision);
+      if (res.success) {
         toast.success(
           decision === "approved"
             ? "Đã duyệt bài đăng thành công!"
             : "Đã ẩn bài đăng thành công!",
         );
-        fetchPosts(); // Refresh
+        fetchPosts(); // Làm mới danh sách
         if (selectedPost?.id === postId) {
           setSelectedPost(null);
         }
       } else {
-        toast.error("Thực hiện thất bại");
+        toast.error(res.message || "Thực hiện kiểm duyệt thất bại");
       }
     } catch (error) {
       console.error("Moderation error:", error);
-      toast.error("Lỗi khi kiểm duyệt bài viết");
+      toast.error("Lỗi khi kết nối đến máy chủ để kiểm duyệt");
     }
   };
 
   const getFilteredPosts = () => {
     let list = [...posts];
 
-    // Status filter
-    if (statusFilter !== "all") {
-      list = list.filter((p) => p.status === statusFilter);
-    }
-
-    // Search query
+    // Tìm kiếm theo từ khóa (tên tác giả hoặc nội dung)
     if (searchQuery.trim() !== "") {
       const q = searchQuery.toLowerCase();
       list = list.filter(
         (p) =>
-          p.authorName.toLowerCase().includes(q) ||
-          p.content.toLowerCase().includes(q),
+          (p.author?.name && p.author.name.toLowerCase().includes(q)) ||
+          (p.content && p.content.toLowerCase().includes(q)),
       );
     }
 
@@ -80,6 +82,7 @@ function CommunityModeration() {
   };
 
   const formatDate = (isoString) => {
+    if (!isoString) return "";
     return new Date(isoString).toLocaleString("vi-VN", {
       day: "2-digit",
       month: "2-digit",
@@ -94,43 +97,41 @@ function CommunityModeration() {
   return (
     <div className="flex-1 space-y-6">
       {/* Title */}
-      <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+      <div className="flex items-center justify-between border-b border-gray-100 dark:border-zinc-800 pb-4">
         <div>
-          <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight text-gray-950">
-            <ShieldCheck size={26} className="text-emerald-600" />
-            Kiểm duyệt bài viết cộng đồng
+          <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight text-gray-950 dark:text-white">
+            <ShieldCheck size={26} className="text-emerald-600 dark:text-emerald-500" />
+            Kiểm duyệt bài viết diễn đàn
           </h1>
-          <p className="text-sm text-gray-500">
-            Duyệt hoặc ẩn các bài viết chia sẻ hoạt động bảo vệ môi trường của
-            người dùng.
+          <p className="text-sm text-gray-500 dark:text-zinc-400">
+            Phê duyệt hoặc ẩn các bài viết chia sẻ hoạt động sống xanh, bảo vệ môi trường của thành viên.
           </p>
         </div>
         <button
           onClick={fetchPosts}
-          className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-600 transition-colors hover:bg-gray-50"
+          className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 transition-colors hover:bg-gray-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800/80"
         >
           <RefreshCw size={14} /> Làm mới
         </button>
       </div>
 
       {/* Filter bar */}
-      <div className="flex flex-col justify-between gap-4 rounded-xl border border-gray-100 bg-white p-4 shadow-2xs sm:flex-row">
+      <div className="flex flex-col justify-between gap-4 rounded-xl border border-gray-100 bg-white p-4 shadow-2xs sm:flex-row dark:border-zinc-800 dark:bg-zinc-950">
         {/* Search */}
         <div className="relative w-full sm:max-w-xs">
-          <Search className="absolute top-2.5 left-3 h-4 w-4 text-gray-400" />
+          <Search className="absolute top-2.5 left-3 h-4 w-4 text-gray-400 dark:text-zinc-500" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Tìm kiếm tác giả, nội dung..."
-            className="w-full rounded-lg border border-gray-200 bg-gray-50/50 py-2 pr-4 pl-9 text-xs focus:ring-2 focus:ring-emerald-600 focus:outline-none"
+            className="w-full rounded-lg border border-gray-200 bg-gray-50/50 py-2 pr-4 pl-9 text-xs focus:ring-2 focus:ring-emerald-600 focus:outline-none dark:border-zinc-800 dark:bg-zinc-900 dark:text-white dark:focus:ring-emerald-500"
           />
         </div>
 
         {/* Status filters */}
         <div className="flex items-center gap-2 overflow-x-auto">
           {[
-            { id: "all", label: "Tất cả" },
             { id: "pending", label: "Chờ duyệt" },
             { id: "approved", label: "Đã duyệt" },
             { id: "rejected", label: "Đã ẩn" },
@@ -140,8 +141,8 @@ function CommunityModeration() {
               onClick={() => setStatusFilter(tab.id)}
               className={`cursor-pointer rounded-full px-4 py-1.5 text-xs font-bold transition-all ${
                 statusFilter === tab.id
-                  ? "bg-emerald-600 text-white"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  ? "bg-emerald-600 text-white dark:bg-emerald-600"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
               }`}
             >
               {tab.label}
@@ -153,7 +154,7 @@ function CommunityModeration() {
       {/* Content grid */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Table list */}
-        <div className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm lg:col-span-2">
+        <div className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm lg:col-span-2 dark:border-zinc-800 dark:bg-zinc-950">
           <ModerationTable
             posts={filteredPosts}
             selectedPost={selectedPost}
@@ -165,8 +166,8 @@ function CommunityModeration() {
         </div>
 
         {/* Details preview */}
-        <div className="space-y-4 rounded-xl border border-gray-100 bg-white p-5 shadow-sm lg:col-span-1">
-          <h3 className="border-b border-gray-100 pb-2 text-sm font-bold text-gray-900">
+        <div className="space-y-4 rounded-xl border border-gray-100 bg-white p-5 shadow-sm lg:col-span-1 dark:border-zinc-800 dark:bg-zinc-950">
+          <h3 className="border-b border-gray-100 dark:border-zinc-800 pb-2 text-sm font-bold text-gray-900 dark:text-white">
             Chi tiết bài viết
           </h3>
           <ModerationDetail
@@ -180,4 +181,4 @@ function CommunityModeration() {
   );
 }
 
-export default CommunityModeration;
+export default ForumModeration;

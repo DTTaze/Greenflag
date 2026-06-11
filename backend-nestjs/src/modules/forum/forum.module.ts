@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SystemConfigModule } from '@modules/system-config/system-config.module';
 import { UserModule } from '@modules/user/user.module';
 
+import { AdminForumController } from './controllers/admin-forum.controller';
 import { ForumController } from './controllers/forum.controller';
 import { ModerationCron } from './cron/moderation.cron';
 import { PostExpirationCron } from './cron/post-expiration.cron';
@@ -23,7 +24,7 @@ import { PostService } from './services/post.service';
     UserModule,
     SystemConfigModule,
   ],
-  controllers: [ForumController],
+  controllers: [ForumController, AdminForumController],
   providers: [
     PostService,
     CommentService,

@@ -38,14 +38,14 @@ function HomepageSection() {
         reverse
       />
 
-      {/* Feature 3: Community */}
+      {/* Feature 3: Forum */}
       <SectionFeatures
-        badge={t("features.communityBadge")}
+        badge={t("features.forumBadge")}
         imagePath="/images/hand-drawn-people-planting-a-tree.jpg"
-        H2Text={t("features.communityH2")}
-        PText={t("features.communityP")}
-        path="/community"
-        ButtonText={t("features.communityBtn")}
+        H2Text={t("features.forumH2")}
+        PText={t("features.forumP")}
+        path="/forum"
+        ButtonText={t("features.forumBtn")}
       />
 
       {/* Trust & Guarantee Section */}

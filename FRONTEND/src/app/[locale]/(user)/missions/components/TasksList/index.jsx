@@ -41,6 +41,9 @@ const TasksList = ({
   }
 
   const dateLocaleString = locale === "en" ? "en-US" : "vi-VN";
+  const getCompletedTaskTitle = (task) =>
+    task?.title || task?.tasks?.title || t("noTasksTitle");
+  const getCompletedAt = (task) => task?.completed_at || task?.completedAt;
 
   if (selectedTab === "daily") {
     return (
@@ -239,23 +242,27 @@ const TasksList = ({
                     </div>
                     <div className="min-w-0 flex-1">
                       <h3 className="flex items-center gap-1.5 text-xs leading-snug font-bold text-gray-800 dark:text-slate-100">
-                        <span className="truncate">{task.tasks.title}</span>
+                        <span className="truncate">
+                          {getCompletedTaskTitle(task)}
+                        </span>
                         <span className="inline-flex shrink-0 items-center rounded-lg border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-[9px] font-extrabold text-emerald-800 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-200">
                           {t("doneStatus")}
                         </span>
                       </h3>
                       <p className="mt-1 text-[10px] font-semibold text-gray-400 dark:text-slate-400">
                         {t("completedAt", {
-                          date: new Date(task.completed_at).toLocaleDateString(
-                            dateLocaleString,
-                            {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            },
-                          ),
+                          date: getCompletedAt(task)
+                            ? new Date(getCompletedAt(task)).toLocaleDateString(
+                                dateLocaleString,
+                                {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                },
+                              )
+                            : "--",
                         })}
                       </p>
                     </div>

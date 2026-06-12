@@ -45,6 +45,7 @@ export class PartnerCommerceController {
   // --- Products ---
 
   @Post('products')
+  @Roles(ROLE.PARTNER, ROLE.ADMIN, ROLE.USER)
   public async createProduct(
     @RequestUser() user: any,
     @Body() dto: CreateProductDto,
@@ -57,6 +58,7 @@ export class PartnerCommerceController {
   }
 
   @Patch('products/:id')
+  @Roles(ROLE.PARTNER, ROLE.ADMIN, ROLE.USER)
   public async updateProduct(
     @Param('id') id: string,
     @Body() dto: UpdateProductDto,
@@ -68,6 +70,7 @@ export class PartnerCommerceController {
   }
 
   @Delete('products/:id')
+  @Roles(ROLE.PARTNER, ROLE.ADMIN, ROLE.USER)
   public async deleteProduct(
     @Param('id') id: string,
     @RequestUser() user: any,
@@ -113,6 +116,7 @@ export class PartnerCommerceController {
   // --- Transactions ---
 
   @Get('transactions')
+  @Roles(ROLE.PARTNER, ROLE.ADMIN, ROLE.USER)
   public async getMyTransactions(
     @RequestUser() user: any,
   ): Promise<HttpResponse> {
@@ -121,6 +125,7 @@ export class PartnerCommerceController {
   }
 
   @Patch('transactions/:id/decision')
+  @Roles(ROLE.PARTNER, ROLE.ADMIN, ROLE.USER)
   public async makeDecision(
     @Param('id') id: string,
     @Body('decision') decision: TRANSACTION_STATUS,

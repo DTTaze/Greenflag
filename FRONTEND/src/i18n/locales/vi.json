@@ -761,7 +761,9 @@
       "difficulty": "Độ khó",
       "easy": "Dễ",
       "medium": "Trung bình",
-      "hard": "Khó"
+      "hard": "Khó",
+      "expert": "Chuyên gia",
+      "unknown": "Không xác định"
     },
     "list": {
       "noDaily": "Không có nhiệm vụ hàng ngày nào",
@@ -770,7 +772,27 @@
       "coinsReceived": "Xu đã nhận",
       "ranking": "Bảng Xếp Hạng",
       "stats": "Thống Kê Hoạt Động",
-      "streak": "Chuỗi ngày"
+      "streak": "Chuỗi ngày",
+      "todayTasks": "Nhiệm Vụ Hôm Nay",
+      "otherTasks": "Nhiệm Vụ Khác",
+      "completedTasksTitle": "Nhiệm Vụ Đã Hoàn Thành",
+      "allDoneTitle": "Tuyệt vời!",
+      "allDoneDesc": "Bạn đã hoàn thành tất cả nhiệm vụ hôm nay. Hãy quay lại vào ngày mai để tiếp tục chuỗi hoạt động nhé!",
+      "noTasksTitle": "Chưa có nhiệm vụ!",
+      "noTasksDesc": "Hiện tại chưa có nhiệm vụ khác nào khả dụng. Hãy thử hoàn thành các nhiệm vụ hàng ngày trước nhé!",
+      "doneStatus": "✓ Đã xong",
+      "completedAt": "Hoàn thành: {date}",
+      "noCompletedTitle": "Chưa hoàn thành nhiệm vụ nào!",
+      "noCompletedDesc": "Bạn chưa hoàn thành nhiệm vụ nào. Hãy bắt đầu với nhiệm vụ hàng ngày để nhận các phần quà giá trị!"
+    },
+    "card": {
+      "noDescription": "Mô tả nhiệm vụ đang được cập nhật...",
+      "processing": "Đang xử lý...",
+      "completed": "Đã hoàn thành",
+      "pending": "Chờ xác nhận",
+      "claimReward": "Nhận thưởng",
+      "doNow": "Thực hiện ngay",
+      "join": "Tham gia"
     },
     "eventList": {
       "title": "Sự Kiện Môi Trường",

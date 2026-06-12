@@ -68,24 +68,21 @@ function UserItemsTab({ fetchItems }) {
         onCancel={handleCancelForm}
       />
 
-      {/* Add Product Button */}
-      <div className="flex justify-end pt-1">
-        <button
-          onClick={handleAddItem}
-          className="rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/10 transition-all duration-200 hover:bg-emerald-500 active:scale-95"
-        >
-          {t("userItems.addProductBtn")}
-        </button>
-      </div>
-
       {/* Controls Container */}
-      <div className="flex flex-col gap-4 rounded-2xl border border-emerald-250/50 bg-white p-5 shadow-xl backdrop-blur-md dark:border-emerald-500/15 dark:bg-slate-900/40">
+      <div className="flex flex-col gap-4 rounded-2xl border border-emerald-100/70 bg-white p-5 shadow-xl backdrop-blur-md dark:border-emerald-500/15 dark:bg-slate-900/40">
         <MarketSearchBar
           marketSearchText={marketSearchText}
           setMarketSearchText={setMarketSearchText}
           marketListView={marketListView}
           setMarketListView={setMarketListView}
-        />
+        >
+          <button
+            onClick={handleAddItem}
+            className="cursor-pointer rounded-2xl bg-emerald-600 px-5 py-3 text-sm font-semibold whitespace-nowrap text-white shadow-lg shadow-emerald-600/10 transition-all duration-200 hover:bg-emerald-500 active:scale-95"
+          >
+            {t("userItems.addProductBtn")}
+          </button>
+        </MarketSearchBar>
         <MarketFilterButtons
           marketView="my_items"
           marketStatusFilter={marketStatusFilter}

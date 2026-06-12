@@ -58,6 +58,12 @@ function ItemActions({
         isOpen={showDetailsModal}
         onClose={() => setShowDetailsModal(false)}
         item={item}
+        isEditMode={marketView === "my_items"}
+        onEdit={handleEditItem}
+        onPurchase={() => {
+          setShowDetailsModal(false);
+          handlePurchase(item);
+        }}
         getCategoryDisplayName={getCategoryDisplayName}
       />
     </div>

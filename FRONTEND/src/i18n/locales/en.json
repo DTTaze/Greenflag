@@ -761,7 +761,9 @@
         "difficulty": "Difficulty",
         "easy": "Easy",
         "medium": "Medium",
-        "hard": "Hard"
+        "hard": "Hard",
+        "expert": "Expert",
+        "unknown": "Unknown"
       },
       "list": {
         "noDaily": "No daily missions available.",
@@ -770,7 +772,27 @@
         "coinsReceived": "Coins Received",
         "ranking": "Leaderboard",
         "stats": "Activity Stats",
-        "streak": "Day Streak"
+        "streak": "Day Streak",
+        "todayTasks": "Today's Tasks",
+        "otherTasks": "Other Tasks",
+        "completedTasksTitle": "Completed Tasks",
+        "allDoneTitle": "Excellent!",
+        "allDoneDesc": "You have completed all of today's tasks. Come back tomorrow to continue your streak!",
+        "noTasksTitle": "No tasks yet!",
+        "noTasksDesc": "There are no other tasks available right now. Please complete your daily tasks first!",
+        "doneStatus": "✓ Done",
+        "completedAt": "Completed: {date}",
+        "noCompletedTitle": "No tasks completed yet!",
+        "noCompletedDesc": "You haven't completed any tasks yet. Start with daily tasks to get valuable rewards!"
+      },
+      "card": {
+        "noDescription": "Task description is being updated...",
+        "processing": "Processing...",
+        "completed": "Completed",
+        "pending": "Pending confirmation",
+        "claimReward": "Claim reward",
+        "doNow": "Do now",
+        "join": "Join"
       },
       "eventList": {
         "title": "Environmental Events",

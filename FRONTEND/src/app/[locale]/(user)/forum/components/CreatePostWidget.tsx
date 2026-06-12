@@ -32,6 +32,7 @@ const STATIC_TAGS = ["Hỏi đáp", "Chia sẻ", "Tái chế", "Trồng cây", "
 
 export default function CreatePostWidget() {
   const t = useTranslations("forum");
+  const MIN_CONTENT_LENGTH = 10;
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
@@ -394,6 +395,9 @@ export default function CreatePostWidget() {
 
   const hasToken =
     typeof window !== "undefined" ? !!getCookie(ACCESS_TOKEN) : false;
+  const trimmedContent = content.trim();
+  const showContentMinWarning =
+    trimmedContent.length > 0 && trimmedContent.length < MIN_CONTENT_LENGTH;
 
   if (!mounted || !hasToken) {
     return null;
@@ -452,6 +456,11 @@ export default function CreatePostWidget() {
           className="min-h-[120px] w-full resize-none rounded-lg border border-gray-200 bg-white p-3 pb-14 text-[14px] text-gray-900 placeholder-gray-500 shadow-sm transition-all focus:border-green-500 focus:ring-2 focus:ring-green-500/50 focus:outline-none dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder-zinc-500"
           rows={4}
         />
+        {showContentMinWarning && (
+          <p className="mt-2 text-xs font-medium text-rose-600 dark:text-rose-400">
+            {t("contentMinLength")}
+          </p>
+        )}
 
         {/* Mentions Dropdown Suggestions */}
         {showMentionsDropdown && userList.length > 0 && (
@@ -667,8 +676,8 @@ export default function CreatePostWidget() {
             type="button"
             onClick={() => handleSubmit(true)}
             disabled={
-              content.trim().length < 10 ||
-              content.trim().length > 5000 ||
+              trimmedContent.length < MIN_CONTENT_LENGTH ||
+              trimmedContent.length > 5000 ||
               createPostMutation.isPending ||
               isEnhancing
             }
@@ -682,8 +691,8 @@ export default function CreatePostWidget() {
             type="button"
             onClick={() => handleSubmit(false)}
             disabled={
-              content.trim().length < 10 ||
-              content.trim().length > 5000 ||
+              trimmedContent.length < MIN_CONTENT_LENGTH ||
+              trimmedContent.length > 5000 ||
               createPostMutation.isPending ||
               isEnhancing
             }

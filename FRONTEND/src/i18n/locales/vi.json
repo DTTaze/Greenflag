@@ -934,6 +934,7 @@
     "publishDraftRejected": "Bài đăng bị từ chối tự động: {reason}",
     "noOwnPostsDesc": "Bạn chưa có bài viết nào thuộc mục này.",
     "emptyContentError": "Nội dung bài viết không được để trống!",
+    "commentMinLengthError": "Nội dung bình luận phải chứa ít nhất 10 ký tự!",
     "commentLengthError": "Nội dung không được vượt quá 1000 ký tự!",
     "commentImageSizeError": "Ảnh vượt quá dung lượng 5MB cho phép!",
     "commentImageTypeError": "Định dạng tệp không được hỗ trợ!",

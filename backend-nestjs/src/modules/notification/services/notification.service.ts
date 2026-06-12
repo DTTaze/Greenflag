@@ -225,7 +225,7 @@ export class NotificationService {
       const content = payload.amount >= 0
         ? `Bạn đã nhận được ${payload.amount} EcoCoins. Lý do: ${payload.reason || 'Hoàn thành nhiệm vụ'}.`
         : `Bạn đã bị khấu trừ ${Math.abs(payload.amount)} EcoCoins. Lý do: ${payload.reason || 'Khấu trừ hệ thống'}.`;
-      const link = `/user/history`;
+      const link = `/profile/history`;
 
       await this.createNotification(
         payload.userId,
@@ -254,7 +254,7 @@ export class NotificationService {
       );
 
       const content = `Giao dịch đơn hàng #${payload.orderId.substring(0, 8)} đã bị hủy. Bạn được hoàn lại ${payload.amount} EcoCoins.`;
-      const link = `/user/history`;
+      const link = `/profile/history`;
 
       await this.createNotification(
         payload.userId,

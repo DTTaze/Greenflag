@@ -3,6 +3,7 @@ import React from "react";
 import { toast } from "react-toastify";
 
 import QRCodeDisplay from "@/src/components/common/QRCodeDisplay";
+import { formatDate } from "@/src/utils/formatDate";
 import { acceptEvent } from "@/src/utils/api";
 
 const EventDetailsModal = ({
@@ -13,6 +14,11 @@ const EventDetailsModal = ({
   isParticipated,
 }) => {
   if (!isOpen || !event) return null;
+
+  const startAt = event.startTime || event.start_time;
+  const endAt = event.endTime || event.end_time;
+  const registrationDeadline =
+    event.endSign || event.end_sign || event.registration_deadline;
 
   const handleJoinEvent = async () => {
     try {
@@ -47,7 +53,9 @@ const EventDetailsModal = ({
     }
   };
 
-  const isRegistrationOpen = new Date(event.end_time) > new Date();
+  const isRegistrationOpen = registrationDeadline
+    ? new Date(registrationDeadline) > new Date()
+    : false;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
@@ -92,10 +100,7 @@ const EventDetailsModal = ({
                   Bắt đầu
                 </span>
                 <span className="text-xs font-semibold text-gray-700 dark:text-zinc-300">
-                  {new Date(event.start_time).toLocaleString("vi-VN", {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  })}
+                  {formatDate(startAt)}
                 </span>
               </div>
             </div>
@@ -109,10 +114,7 @@ const EventDetailsModal = ({
                   Kết thúc
                 </span>
                 <span className="text-xs font-semibold text-gray-700 dark:text-zinc-300">
-                  {new Date(event.end_time).toLocaleString("vi-VN", {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  })}
+                  {formatDate(endAt)}
                 </span>
               </div>
             </div>
@@ -140,13 +142,7 @@ const EventDetailsModal = ({
                   Hạn đăng ký
                 </span>
                 <span className="text-xs font-semibold text-gray-700 dark:text-zinc-300">
-                  {new Date(event.registration_deadline).toLocaleString(
-                    "vi-VN",
-                    {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                    },
-                  )}
+                  {formatDate(registrationDeadline)}
                 </span>
               </div>
             </div>

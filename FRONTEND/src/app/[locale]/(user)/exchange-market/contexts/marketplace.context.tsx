@@ -144,6 +144,7 @@ export function MarketplaceProvider({
     auth,
     setError,
     fetchRedeemItems,
+    fetchAllItems,
     setMyItems,
   });
 

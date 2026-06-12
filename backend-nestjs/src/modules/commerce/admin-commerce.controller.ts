@@ -79,6 +79,7 @@ export class AdminCommerceController {
       relations: {
         receiverInformation: true,
         item: true,
+        product: true,
         buyer: { profile: true },
         seller: { profile: true },
       },
@@ -109,6 +110,7 @@ export class AdminCommerceController {
         relations: {
           receiverInformation: true,
           item: true,
+          product: true,
           buyer: { profile: true },
           seller: { profile: true },
         },

@@ -1,8 +1,11 @@
 import { format } from "date-fns";
+import { motion } from "framer-motion";
 import { Calendar, Coins, Tag, User, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 import { Dialog, DialogContent, DialogTitle } from "@/src/components/ui/dialog";
+import { useAuthStore } from "@/src/store/auth/authStore";
 
 import { statusConfig } from "../MarketplaceItemCard";
 
@@ -14,9 +17,26 @@ export default function DetailsModal({
   onEdit,
   onPurchase,
 }) {
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const { user } = useAuthStore();
   const t = useTranslations("exchangeMarket");
 
   if (!item) return null;
+
+  const isOwnItem = user && (
+    String(item.sellerId) === String(user.id) ||
+    String(item.seller_id) === String(user.id) ||
+    String(item.creatorId) === String(user.id) ||
+    String(item.creator_id) === String(user.id) ||
+    String(item.owner_id) === String(user.id) ||
+    String(item.ownerId) === String(user.id)
+  );
+
+  const images = item.images && item.images.length > 0
+    ? item.images
+    : item.image
+    ? [item.image]
+    : ["/placeholder.svg"];
 
   const handleEdit = () => {
     if (!item || !item.id) {
@@ -36,13 +56,37 @@ export default function DetailsModal({
       >
         <div className="flex max-h-[90vh] flex-col overflow-hidden md:flex-row">
           {/* Left Panel: Image Section */}
-          <div className="relative flex h-52 w-full shrink-0 items-center justify-center overflow-hidden bg-slate-900 md:h-auto md:w-[45%]">
-            <img
-              src={item.image || "/placeholder.svg"}
+          <div className="relative flex h-64 w-full shrink-0 items-center justify-center overflow-hidden bg-slate-950 md:h-auto md:w-[45%]">
+            <motion.img
+              key={activeImageIndex}
+              src={images[activeImageIndex]}
               alt={item.name}
+              initial={{ opacity: 0.85 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.25 }}
               className="h-full w-full object-cover"
             />
-            <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/50 via-transparent to-transparent md:bg-gradient-to-r" />
+            <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
+            {/* Thumbnail slider absolute overlay at the bottom */}
+            {images.length > 1 && (
+              <div className="absolute bottom-3 left-0 right-0 z-20 flex justify-center gap-1.5 px-3 overflow-x-auto py-1">
+                {images.map((imgUrl, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setActiveImageIndex(idx)}
+                    className={`h-9 w-9 shrink-0 rounded-lg overflow-hidden border transition-all duration-200 ${
+                      idx === activeImageIndex
+                        ? "border-emerald-500 scale-105 shadow-md ring-2 ring-emerald-500/20"
+                        : "border-white/30 hover:border-white/80 opacity-70 hover:opacity-100"
+                    }`}
+                  >
+                    <img src={imgUrl} className="h-full w-full object-cover" alt="" />
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Close Button for Mobile (Floating) */}
             <button
@@ -173,7 +217,15 @@ export default function DetailsModal({
                 {t("common.close")}
               </button>
 
-              {isEditMode ? (
+              {isOwnItem && !isEditMode ? (
+                <button
+                  type="button"
+                  disabled
+                  className="inline-flex justify-center rounded-xl bg-slate-200 dark:bg-zinc-800 px-4.5 py-2.5 text-xs font-bold text-slate-500 dark:text-zinc-400 cursor-not-allowed border border-slate-300 dark:border-zinc-700"
+                >
+                  Sản phẩm của bạn
+                </button>
+              ) : isEditMode ? (
                 <button
                   type="button"
                   className="inline-flex justify-center rounded-xl bg-blue-600 px-4.5 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-500 active:scale-95"

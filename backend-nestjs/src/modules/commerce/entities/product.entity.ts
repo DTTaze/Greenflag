@@ -23,6 +23,8 @@ export class Product extends AuditWithTimezone {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  entityType: string = 'PRODUCT';
+
   @Column({ name: 'seller_id', type: 'uuid' })
   sellerId: string;
 

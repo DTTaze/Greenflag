@@ -15,6 +15,8 @@ import { AuditWithTimezone } from '@shared/common/audit.entity';
 import { TRANSACTION_STATUS } from '@shared/enums';
 
 import { Item } from './item.entity';
+import { Product } from './product.entity';
+
 
 @Entity('transactions')
 export class Transaction extends AuditWithTimezone {
@@ -30,8 +32,12 @@ export class Transaction extends AuditWithTimezone {
   @Column({ name: 'seller_id', type: 'uuid' })
   sellerId: string;
 
-  @Column({ name: 'item_id', type: 'uuid' })
-  itemId: string;
+  @Column({ name: 'item_id', type: 'uuid', nullable: true })
+  itemId?: string;
+
+  @Column({ name: 'product_id', type: 'uuid', nullable: true })
+  productId?: string;
+
 
   @Column({ type: 'varchar', nullable: true })
   name?: string;
@@ -63,9 +69,14 @@ export class Transaction extends AuditWithTimezone {
   @JoinColumn({ name: 'seller_id' })
   seller: User;
 
-  @ManyToOne(() => Item, (item) => item.transactions, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Item, (item) => item.transactions, { onDelete: 'CASCADE', nullable: true })
   @JoinColumn({ name: 'item_id' })
-  item: Item;
+  item?: Item;
+
+  @ManyToOne(() => Product, { onDelete: 'SET NULL', nullable: true })
+  @JoinColumn({ name: 'product_id' })
+  product?: Product;
+
 
   @OneToOne(() => DeliveryOrder, (order) => order.transaction)
   deliveryOrder: DeliveryOrder;

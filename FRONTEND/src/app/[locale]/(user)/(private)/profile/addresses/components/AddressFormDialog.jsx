@@ -136,16 +136,18 @@ function AddressFormDialog({
           {errors.ward && <p className="text-xs text-rose-500 mt-1">{errors.ward}</p>}
         </div>
         
-        <InputField
-          id="specificAddress"
-          label="Địa chỉ cụ thể"
-          name="specificAddress"
-          value={newAddress.specificAddress}
-          onChange={handleInputChange}
-          error={errors.specificAddress}
-        />
-        
         <div className="mb-4">
+          <InputField
+            id="specificAddress"
+            label="Địa chỉ cụ thể"
+            name="specificAddress"
+            value={newAddress.specificAddress}
+            onChange={handleInputChange}
+            error={errors.specificAddress}
+          />
+        </div>
+        
+        <div className="mb-4 mt-6">
           <label className="mb-2 block text-xs font-bold tracking-wider text-zinc-500 dark:text-zinc-400 uppercase">
             Loại địa chỉ
           </label>
@@ -183,23 +185,28 @@ function AddressFormDialog({
             id="isDefault"
             checked={!!newAddress.isDefault}
             onChange={handleDefaultChange}
-            className="mr-2.5 h-5 w-5 rounded border-emerald-200 text-emerald-600 focus:ring-emerald-500/30 focus:ring-offset-0 dark:border-emerald-500/20 dark:bg-zinc-900 cursor-pointer"
+            className="mr-2.5 h-5 w-5 rounded border-slate-350 dark:border-zinc-800 text-emerald-600 accent-emerald-600 focus:ring-emerald-500/30 focus:ring-offset-0 dark:bg-zinc-900 cursor-pointer"
           />
           <label htmlFor="isDefault" className="text-sm font-medium text-zinc-700 dark:text-zinc-300 cursor-pointer select-none">
             Đặt làm địa chỉ mặc định
           </label>
         </div>
         
-        <div className="flex justify-end space-x-2">
-          <Button text="Trở lại" onClick={handleCancel} padding="15px" />
+        <div className="flex justify-end space-x-3 mt-6">
+          <Button
+            variant="outline"
+            text="Trở lại"
+            onClick={handleCancel}
+            className="px-6 h-11 rounded-2xl border-emerald-600/30 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-500/20 dark:text-emerald-400 dark:hover:bg-emerald-950/20 transition-all font-semibold"
+          />
           <Button
             onClick={handleAddOrUpdateAddress}
-            padding="15px"
             disabled={isLoading}
+            className="px-6 h-11 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/10 transition-all font-semibold"
           >
             {isLoading ? (
               <span className="flex items-center gap-2">
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                <span className="h-4.5 w-4.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
                 {editingAddress ? "Đang lưu..." : "Đang xử lý..."}
               </span>
             ) : (

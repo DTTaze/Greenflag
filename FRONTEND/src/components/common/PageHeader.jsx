@@ -23,9 +23,9 @@ export default function PageHeader({
 }) {
   // Theme styling configurations
   const themeClasses = {
-    emerald: "from-[#0B6E4F] via-[#0d7353] to-[#054E37] border-emerald-500/20 shadow-[0_24px_70px_rgba(11,110,79,0.15)]",
-    green: "from-[#064E3B] via-[#0B6E4F] to-[#10B981] border-emerald-250/20 shadow-[0_24px_70px_rgba(6,78,59,0.2)]",
-    blue: "from-[#0B6E4F] via-[#0D9488] to-[#0F766E] border-teal-500/20 shadow-[0_24px_70px_rgba(11,110,79,0.15)]",
+    emerald: "from-brand-emerald via-[#0d7353] to-[#054E37] border-emerald-500/20 shadow-[0_24px_70px_rgba(11,110,79,0.15)]",
+    green: "from-[#064E3B] via-brand-emerald to-[#10B981] border-emerald-250/20 shadow-[0_24px_70px_rgba(6,78,59,0.2)]",
+    blue: "from-brand-emerald via-[#0D9488] to-[#0F766E] border-teal-500/20 shadow-[0_24px_70px_rgba(11,110,79,0.15)]",
   };
 
   return (

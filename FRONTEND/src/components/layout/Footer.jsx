@@ -46,7 +46,7 @@ function Footer() {
                 className="h-9 w-9 object-contain md:h-10 md:w-10"
                 alt="Green Flag Logo"
               />
-              <span className="text-xl font-extrabold tracking-tight text-[#0B6E4F] dark:text-emerald-500">
+              <span className="text-xl font-extrabold tracking-tight text-brand-emerald dark:text-emerald-500">
                 Green Flag
               </span>
             </Link>
@@ -59,7 +59,7 @@ function Footer() {
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-full bg-slate-200/50 p-2 text-slate-500 transition-all duration-300 hover:bg-[#0B6E4F] hover:text-white active:scale-90 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-emerald-600 dark:hover:text-white"
+                  className="rounded-full bg-slate-200/50 p-2 text-slate-500 transition-all duration-300 hover:bg-brand-emerald hover:text-white active:scale-90 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-emerald-600 dark:hover:text-white"
                   aria-label={label}
                 >
                   <Icon className="h-5 w-5" />
@@ -78,7 +78,7 @@ function Footer() {
                 <li key={label}>
                   <Link
                     href={href}
-                    className="transition-colors duration-200 hover:text-[#0B6E4F] dark:hover:text-emerald-400"
+                    className="transition-colors duration-200 hover:text-brand-emerald dark:hover:text-emerald-400"
                   >
                     {label}
                   </Link>
@@ -94,15 +94,15 @@ function Footer() {
             </h3>
             <ul className="space-y-3 text-sm">
               <li className="flex items-center space-x-3">
-                <MapPin className="h-4.5 w-4.5 shrink-0 text-[#0B6E4F] dark:text-emerald-500" />
+                <MapPin className="h-4.5 w-4.5 shrink-0 text-brand-emerald dark:text-emerald-500" />
                 <span>{t("address")}</span>
               </li>
               <li className="flex items-center space-x-3">
-                <Phone className="h-4.5 w-4.5 shrink-0 text-[#0B6E4F] dark:text-emerald-500" />
+                <Phone className="h-4.5 w-4.5 shrink-0 text-brand-emerald dark:text-emerald-500" />
                 <span>{t("phone")}</span>
               </li>
               <li className="flex items-center space-x-3">
-                <Mail className="h-4.5 w-4.5 shrink-0 text-[#0B6E4F] dark:text-emerald-500" />
+                <Mail className="h-4.5 w-4.5 shrink-0 text-brand-emerald dark:text-emerald-500" />
                 <span>{t("email")}</span>
               </li>
             </ul>

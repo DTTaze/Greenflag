@@ -19,6 +19,8 @@ export interface User {
   };
   phone_number?: string;
   last_logined?: string;
+  birthDate?: string;
+  gender?: string;
 }
 
 export interface AuthState {
@@ -57,10 +59,12 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
 
 interface AuthStore extends AuthState {
   dispatch: (action: AuthAction) => void;
+  setUser: (user: User | null) => void;
 }
 
 export const useAuthStore = create<AuthStore>((set) => ({
   isAuthenticated: false,
   user: null,
   dispatch: (action) => set((state) => authReducer(state, action)),
+  setUser: (user) => set((state) => ({ ...state, user })),
 }));

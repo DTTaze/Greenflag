@@ -14,7 +14,7 @@ export default function InteractWithVideo({ video, index }) {
         <HeartButton
           initialLikes={video.likes}
           onLike={(isLiked) => updateLike(index, isLiked)}
-          className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border-none bg-black/50 text-white backdrop-blur-[5px] transition-all duration-200 hover:scale-110 hover:bg-[#0b6e4f]/80"
+          className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border-none bg-black/50 text-white backdrop-blur-[5px] transition-all duration-200 hover:scale-110 hover:bg-brand-emerald/80"
         />
         <div className="mt-1 text-center text-[12px] text-white">
           {video.likes}
@@ -24,7 +24,7 @@ export default function InteractWithVideo({ video, index }) {
       <div className="flex flex-col items-center gap-1">
         <CommentButton
           comments={video.comments}
-          className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border-none bg-black/50 text-white backdrop-blur-[5px] transition-all duration-200 hover:scale-110 hover:bg-[#0b6e4f]/80"
+          className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border-none bg-black/50 text-white backdrop-blur-[5px] transition-all duration-200 hover:scale-110 hover:bg-brand-emerald/80"
         />
         <div className="mt-1 text-center text-[12px] text-white">
           {video.comments}
@@ -35,7 +35,7 @@ export default function InteractWithVideo({ video, index }) {
         <ShareButton
           onShare={() => onShare(videoId)}
           VideoId={videoId}
-          className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border-none bg-black/50 text-white backdrop-blur-[5px] transition-all duration-200 hover:scale-110 hover:bg-[#0b6e4f]/80"
+          className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border-none bg-black/50 text-white backdrop-blur-[5px] transition-all duration-200 hover:scale-110 hover:bg-brand-emerald/80"
         />
         <div className="mt-1 text-center text-[12px] text-white">
           {video.shares}

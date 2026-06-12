@@ -51,12 +51,31 @@ export default function useAddressForm({
       setErrorMessage("");
       try {
         const provResponse: any = await getAllProvinces(token);
-        if (provResponse.code !== 200) {
+        let provinceList = [];
+        if (provResponse) {
+          if (provResponse.success) {
+            const innerData = provResponse.data;
+            if (innerData) {
+              if (Array.isArray(innerData)) {
+                provinceList = innerData;
+              } else if (innerData.code === 200 && Array.isArray(innerData.data)) {
+                provinceList = innerData.data;
+              } else if (Array.isArray(innerData.data)) {
+                provinceList = innerData.data;
+              }
+            }
+          } else if (Array.isArray(provResponse)) {
+            provinceList = provResponse;
+          } else if (Array.isArray(provResponse.data)) {
+            provinceList = provResponse.data;
+          }
+        }
+
+        if (!provinceList || provinceList.length === 0) {
           setErrorMessage("Failed to fetch provinces. Please try again.");
           setIsLoading(false);
           return;
         }
-        const provinceList = provResponse.data;
         setProvinces(provinceList);
 
         if (editingAddress) {
@@ -71,15 +90,30 @@ export default function useAddressForm({
               matchedProvince.ProvinceID,
               token,
             );
-            if (distResponse.code === 200) {
-              districtList = distResponse.data;
-              setDistricts(districtList);
-              const matchedDistrict = districtList.find(
-                (d: any) => d.DistrictName === editingAddress.to_district_name,
-              );
-              if (matchedDistrict) {
-                matchedDistrictId = matchedDistrict.DistrictID;
+            if (distResponse) {
+              if (distResponse.success) {
+                const innerDist = distResponse.data;
+                if (innerDist) {
+                  if (Array.isArray(innerDist)) {
+                    districtList = innerDist;
+                  } else if (innerDist.code === 200 && Array.isArray(innerDist.data)) {
+                    districtList = innerDist.data;
+                  } else if (Array.isArray(innerDist.data)) {
+                    districtList = innerDist.data;
+                  }
+                }
+              } else if (Array.isArray(distResponse)) {
+                districtList = distResponse;
+              } else if (Array.isArray(distResponse.data)) {
+                districtList = distResponse.data;
               }
+            }
+            setDistricts(districtList);
+            const matchedDistrict = districtList.find(
+              (d: any) => d.DistrictName === editingAddress.to_district_name,
+            );
+            if (matchedDistrict) {
+              matchedDistrictId = matchedDistrict.DistrictID;
             }
           }
 
@@ -90,15 +124,30 @@ export default function useAddressForm({
               matchedDistrictId,
               token,
             );
-            if (wardResponse.code === 200) {
-              wardList = wardResponse.data;
-              setWards(wardList);
-              const matchedWard = wardList.find(
-                (w: any) => w.WardName === editingAddress.to_ward_name,
-              );
-              if (matchedWard) {
-                matchedWardCode = matchedWard.WardCode;
+            if (wardResponse) {
+              if (wardResponse.success) {
+                const innerWard = wardResponse.data;
+                if (innerWard) {
+                  if (Array.isArray(innerWard)) {
+                    wardList = innerWard;
+                  } else if (innerWard.code === 200 && Array.isArray(innerWard.data)) {
+                    wardList = innerWard.data;
+                  } else if (Array.isArray(innerWard.data)) {
+                    wardList = innerWard.data;
+                  }
+                }
+              } else if (Array.isArray(wardResponse)) {
+                wardList = wardResponse;
+              } else if (Array.isArray(wardResponse.data)) {
+                wardList = wardResponse.data;
               }
+            }
+            setWards(wardList);
+            const matchedWard = wardList.find(
+              (w: any) => w.WardName === editingAddress.to_ward_name,
+            );
+            if (matchedWard) {
+              matchedWardCode = matchedWard.WardCode;
             }
           }
 
@@ -150,11 +199,28 @@ export default function useAddressForm({
             newAddress.province,
             token,
           );
-          if (response.code === 200) {
-            setDistricts(response.data);
-            setWards([]);
-            setNewAddress((prev: any) => ({ ...prev, district: "", ward: "" }));
+          let districtList = [];
+          if (response) {
+            if (response.success) {
+              const innerData = response.data;
+              if (innerData) {
+                if (Array.isArray(innerData)) {
+                  districtList = innerData;
+                } else if (innerData.code === 200 && Array.isArray(innerData.data)) {
+                  districtList = innerData.data;
+                } else if (Array.isArray(innerData.data)) {
+                  districtList = innerData.data;
+                }
+              }
+            } else if (Array.isArray(response)) {
+              districtList = response;
+            } else if (Array.isArray(response.data)) {
+              districtList = response.data;
+            }
           }
+          setDistricts(districtList);
+          setWards([]);
+          setNewAddress((prev: any) => ({ ...prev, district: "", ward: "" }));
         } catch (error) {
           console.error("Error fetching districts:", error);
         }
@@ -176,10 +242,27 @@ export default function useAddressForm({
             newAddress.district,
             token,
           );
-          if (response.code === 200) {
-            setWards(response.data);
-            setNewAddress((prev: any) => ({ ...prev, ward: "" }));
+          let wardList = [];
+          if (response) {
+            if (response.success) {
+              const innerData = response.data;
+              if (innerData) {
+                if (Array.isArray(innerData)) {
+                  wardList = innerData;
+                } else if (innerData.code === 200 && Array.isArray(innerData.data)) {
+                  wardList = innerData.data;
+                } else if (Array.isArray(innerData.data)) {
+                  wardList = innerData.data;
+                }
+              }
+            } else if (Array.isArray(response)) {
+              wardList = response;
+            } else if (Array.isArray(response.data)) {
+              wardList = response.data;
+            }
           }
+          setWards(wardList);
+          setNewAddress((prev: any) => ({ ...prev, ward: "" }));
         } catch (error) {
           console.error("Error fetching wards:", error);
         }

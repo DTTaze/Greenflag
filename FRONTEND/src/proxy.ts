@@ -6,7 +6,7 @@ import { routing } from "./i18n/routing";
 export const PUBLIC_ROUTES = ["/login", "/register", "/forgot-password"];
 
 export const PROTECTED_ROUTES = [
-  "/user",
+  "/profile",
   "/admin",
   "/forum",
   "/partner",
@@ -129,7 +129,7 @@ export async function proxy(req: NextRequest) {
     !payload?.requirePasswordSetup &&
     cleanPath === "/setup-password"
   ) {
-    let dashboardUrlPath = "/user/account";
+    let dashboardUrlPath = "/profile";
     if (userRole === "admin") {
       dashboardUrlPath = "/admin";
     } else if (userRole === "partner") {
@@ -143,7 +143,7 @@ export async function proxy(req: NextRequest) {
   }
 
   if (isPublicRoute(pathname, locales) && hasValidToken) {
-    const dashboardUrl = new URL(`/${currentLocale}/user/account`, req.url);
+    const dashboardUrl = new URL(`/${currentLocale}/profile`, req.url);
     return NextResponse.redirect(dashboardUrl);
   }
 

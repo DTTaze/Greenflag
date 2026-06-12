@@ -35,7 +35,7 @@ export default function LocaleSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 transition-all hover:bg-gray-50 hover:text-[#0B6E4F] active:scale-95 disabled:pointer-events-none disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-emerald-400"
+        className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 transition-all hover:bg-gray-50 hover:text-brand-emerald active:scale-95 disabled:pointer-events-none disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-emerald-400"
         aria-label={t("changeLanguage")}
         disabled={isPending}
       >
@@ -49,26 +49,26 @@ export default function LocaleSwitcher() {
           onClick={() => handleLocaleChange("vi")}
           className={`flex cursor-pointer items-center justify-between px-3 py-2 text-sm font-semibold ${
             locale === "vi"
-              ? "font-bold text-[#0B6E4F] dark:text-emerald-400"
+              ? "font-bold text-brand-emerald dark:text-emerald-400"
               : "text-gray-700 dark:text-zinc-400"
           }`}
         >
           <span>Tiếng Việt</span>
           {locale === "vi" && (
-            <span className="h-1.5 w-1.5 rounded-full bg-[#0B6E4F] dark:bg-emerald-400" />
+            <span className="h-1.5 w-1.5 rounded-full bg-brand-emerald dark:bg-emerald-400" />
           )}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => handleLocaleChange("en")}
           className={`flex cursor-pointer items-center justify-between px-3 py-2 text-sm font-semibold ${
             locale === "en"
-              ? "font-bold text-[#0B6E4F] dark:text-emerald-400"
+              ? "font-bold text-brand-emerald dark:text-emerald-400"
               : "text-gray-700 dark:text-zinc-400"
           }`}
         >
           <span>English</span>
           {locale === "en" && (
-            <span className="h-1.5 w-1.5 rounded-full bg-[#0B6E4F] dark:bg-emerald-400" />
+            <span className="h-1.5 w-1.5 rounded-full bg-brand-emerald dark:bg-emerald-400" />
           )}
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -3,7 +3,7 @@ import { CheckCircle, Coins, ShoppingBag, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React from "react";
 
-import AddressFormDialog from "@/src/app/[locale]/(user)/(private)/user/address/components/AddressFormDialog";
+import AddressFormDialog from "@/src/app/[locale]/(user)/(private)/profile/addresses/components/AddressFormDialog";
 import ShippingInfoDisplay from "../ShippingInfoDisplay";
 import ShippingInfoModal from "../ShippingInfoModal";
 import TransactionSummary from "../TransactionSummary";

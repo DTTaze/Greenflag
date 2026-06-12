@@ -46,12 +46,8 @@ export const getProvincesQueryFn = async (
   carrier?: string,
   token?: string,
   shopId?: string,
-): Promise<ProvinceResponse[]> => {
-  const response = await getProvincesHandler(carrier, token, shopId);
-  if (!response.success) {
-    throw new Error(response.message || "Failed to fetch provinces");
-  }
-  return response.data;
+): Promise<any> => {
+  return getProvincesHandler(carrier, token, shopId);
 };
 
 export const getDistrictsQueryFn = async (
@@ -59,17 +55,8 @@ export const getDistrictsQueryFn = async (
   carrier?: string,
   token?: string,
   shopId?: string,
-): Promise<DistrictResponse[]> => {
-  const response = await getDistrictsHandler(
-    provinceId,
-    carrier,
-    token,
-    shopId,
-  );
-  if (!response.success) {
-    throw new Error(response.message || "Failed to fetch districts");
-  }
-  return response.data;
+): Promise<any> => {
+  return getDistrictsHandler(provinceId, carrier, token, shopId);
 };
 
 export const getWardsQueryFn = async (
@@ -77,12 +64,8 @@ export const getWardsQueryFn = async (
   carrier?: string,
   token?: string,
   shopId?: string,
-): Promise<WardResponse[]> => {
-  const response = await getWardsHandler(districtId, carrier, token, shopId);
-  if (!response.success) {
-    throw new Error(response.message || "Failed to fetch wards");
-  }
-  return response.data;
+): Promise<any> => {
+  return getWardsHandler(districtId, carrier, token, shopId);
 };
 
 export const getOrdersByBuyerQueryFn = async (): Promise<

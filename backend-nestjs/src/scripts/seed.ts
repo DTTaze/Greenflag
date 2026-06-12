@@ -337,6 +337,26 @@ async function bootstrap() {
         total: 1,
         status: TASK_VISIBILITY.PRIVATE, // Test layout/private states
       },
+      {
+        creatorId: adminUser.id,
+        title: 'Sử dụng túi vải thay thế túi nilon',
+        description: 'Mang theo túi vải canvas cá nhân khi mua sắm tại siêu thị, chợ hoặc cửa hàng tiện lợi.',
+        content: 'Chụp ảnh bạn sử dụng túi vải đựng hàng hóa thanh toán tại quầy thu ngân.',
+        coins: 1200,
+        difficulty: TASK_DIFFICULTY.EASY,
+        total: 1,
+        status: TASK_VISIBILITY.PUBLIC,
+      },
+      {
+        creatorId: partnerUser.id,
+        title: 'Tiết kiệm nước sinh hoạt',
+        description: 'Tận dụng nước rửa rau, vo gạo để tưới cây hoặc lau nhà trong gia đình.',
+        content: 'Chụp ảnh/quay video ngắn cảnh bạn tái sử dụng nước cho mục đích tưới cây.',
+        coins: 1800,
+        difficulty: TASK_DIFFICULTY.MEDIUM,
+        total: 1,
+        status: TASK_VISIBILITY.PUBLIC,
+      },
     ];
 
     const seededTasks = await queryRunner.manager.save(Task, tasksData);
@@ -348,6 +368,8 @@ async function bootstrap() {
       { taskId: seededTasks[2].id, typeId: typeOthers.id },
       { taskId: seededTasks[3].id, typeId: typeDaily.id },
       { taskId: seededTasks[4].id, typeId: typeDaily.id },
+      { taskId: seededTasks[5].id, typeId: typeDaily.id },
+      { taskId: seededTasks[6].id, typeId: typeWeekly.id },
     ]);
 
     // ============================================================================
@@ -455,6 +477,44 @@ async function bootstrap() {
         ],
       },
     ]);
+
+    // 4. Sử dụng túi vải thay thế túi nilon - user (Completed)
+    const tu4 = queryRunner.manager.create(TaskUser, {
+      userId: mainDemoUser.id,
+      taskId: seededTasks[5].id,
+      progressCount: 1,
+      assignedAt: relativeDate(-3),
+      completedAt: relativeDate(-2),
+    });
+    const savedTu4 = await queryRunner.manager.save(TaskUser, tu4);
+    await queryRunner.manager.save(TaskSubmit, {
+      taskUserId: savedTu4.id,
+      description: 'Tôi đã mang túi canvas đi Coopmart mua sắm tối qua.',
+      status: TASK_SUBMIT_STATUS.APPROVED,
+      submittedAt: relativeDate(-3, 1),
+      images: [
+        'https://images.unsplash.com/photo-1544816155-12df9643f363?w=400&auto=format&fit=crop&q=80',
+      ],
+    });
+
+    // 5. Tiết kiệm nước sinh hoạt - user (Completed)
+    const tu5 = queryRunner.manager.create(TaskUser, {
+      userId: mainDemoUser.id,
+      taskId: seededTasks[6].id,
+      progressCount: 1,
+      assignedAt: relativeDate(-2),
+      completedAt: relativeDate(-1),
+    });
+    const savedTu5 = await queryRunner.manager.save(TaskUser, tu5);
+    await queryRunner.manager.save(TaskSubmit, {
+      taskUserId: savedTu5.id,
+      description: 'Nước rửa rau cải xà lách được giữ lại để tưới cho dàn ớt ban công.',
+      status: TASK_SUBMIT_STATUS.APPROVED,
+      submittedAt: relativeDate(-2, 3),
+      images: [
+        'https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=400&auto=format&fit=crop&q=80',
+      ],
+    });
 
     // John User:
     //   Completed: 'Trồng thêm một cây xanh' (HARD, coins=3000) -> approved
@@ -1032,12 +1092,14 @@ async function bootstrap() {
     //    Earned:
     //      - Phân loại rác: 1500 (Task 1)
     //      - Đạp xe: 2000 (Task 2)
+    //      - Túi vải: 1200 (Task 6)
+    //      - Tiết kiệm nước: 1800 (Task 7)
     //      - Event 1: 1000
-    //      Total Earned = 1500 + 2000 + 1000 = 4500 points (rank.amount = 4500)
+    //      Total Earned = 1500 + 2000 + 1200 + 1800 + 1000 = 7500 points (rank.amount = 7500)
     //    Spent:
     //      - Item exchange: 1000 (Bình giữ nhiệt)
     //      Total Spent = 1000
-    //    Balance (coin.amount): 4500 - 1000 = 3500.
+    //    Balance (coin.amount): 7500 - 1000 = 6500.
 
     // 2. johnUser ('johndoe'):
     //    Earned:
@@ -1068,7 +1130,7 @@ async function bootstrap() {
     const balances = [
       { user: adminUser, earned: 10000, balance: 10000 },
       { user: partnerUser, earned: 15000, balance: 15000 },
-      { user: mainDemoUser, earned: 4500, balance: 3500 },
+      { user: mainDemoUser, earned: 7500, balance: 6500 },
       { user: johnUser, earned: 3000, balance: 3000 },
       { user: janeUser, earned: 4500, balance: 2700 },
       { user: zeroUser, earned: 0, balance: 0 },

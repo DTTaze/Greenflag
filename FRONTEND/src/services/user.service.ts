@@ -24,6 +24,8 @@ export const mapUserToStore = (user: any): any => {
     role_id: roleInfo.id,
     roles: roleInfo,
     phone_number: user.phoneNumber || user.profile?.phoneNumber,
+    birthDate: user.birthDate || user.metadata?.birthDate,
+    gender: user.gender || user.metadata?.gender,
   };
 };
 

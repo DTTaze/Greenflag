@@ -183,19 +183,19 @@ function ProfileCard() {
       text: t("myAccount"),
       hasSubmenu: true,
       subItems: [
-        { text: t("viewProfile"), path: "/user/account" },
-        { text: t("address"), path: "/user/address" },
-        { text: t("changePasswordTitle"), path: "/user/change-password" },
-        { text: t("deleteAccount"), path: "/user/delete-account" },
+        { text: t("viewProfile"), path: "/profile" },
+        { text: t("address"), path: "/profile/addresses" },
+        { text: t("changePasswordTitle"), path: "/profile/security" },
+        { text: t("deleteAccount"), path: "/profile/delete-account" },
         {
           text: t("notifications"),
-          path: "/user/notifications",
+          path: "/profile/notifications",
         },
       ],
     },
-    { text: t("completedMissions"), path: "/user/missions" },
-    { text: t("purchaseOrders"), path: "/user/purchase" },
-    { text: t("activityHistory"), path: "/user/history" },
+    { text: t("completedMissions"), path: "/profile/missions" },
+    { text: t("purchaseOrders"), path: "/profile/purchase" },
+    { text: t("activityHistory"), path: "/profile/history" },
   ];
 
   return (

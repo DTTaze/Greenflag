@@ -54,7 +54,7 @@ export default function PartnerLayout({
                 className="h-8 w-8 object-contain"
                 alt="Green Flag Logo"
               />
-              <span className="font-extrabold text-[#0B6E4F] dark:text-emerald-500">
+              <span className="font-extrabold text-brand-emerald dark:text-emerald-500">
                 Partner Hub
               </span>
             </div>

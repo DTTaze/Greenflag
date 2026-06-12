@@ -53,7 +53,7 @@ const EventDetailsModal = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
       <div className="flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-2xl">
         {/* Header with Background Pattern */}
-        <div className="relative shrink-0 bg-gradient-to-r from-[#0B6E4F] to-[#0D7F5C] p-6 text-white">
+        <div className="relative shrink-0 bg-gradient-to-r from-brand-emerald to-[#0D7F5C] p-6 text-white">
           <div className="absolute top-0 right-0 -mt-6 -mr-6 h-24 w-24 rounded-full bg-white/10 blur-xl"></div>
           <button
             onClick={onClose}
@@ -84,7 +84,7 @@ const EventDetailsModal = ({
           {/* Quick Info Grid */}
           <div className="grid grid-cols-1 gap-4 rounded-xl border border-gray-100 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-950/35 p-4 sm:grid-cols-2">
             <div className="flex items-start gap-2.5">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-950/20 text-[#0B6E4F] dark:text-emerald-450">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-950/20 text-brand-emerald dark:text-emerald-450">
                 <Calendar className="h-4 w-4" />
               </div>
               <div>
@@ -101,7 +101,7 @@ const EventDetailsModal = ({
             </div>
 
             <div className="flex items-start gap-2.5">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-950/20 text-[#0B6E4F] dark:text-emerald-450">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-950/20 text-brand-emerald dark:text-emerald-450">
                 <Clock className="h-4 w-4" />
               </div>
               <div>
@@ -118,7 +118,7 @@ const EventDetailsModal = ({
             </div>
 
             <div className="flex items-start gap-2.5">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-950/20 text-[#0B6E4F] dark:text-emerald-450">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-950/20 text-brand-emerald dark:text-emerald-450">
                 <MapPin className="h-4 w-4" />
               </div>
               <div>
@@ -132,7 +132,7 @@ const EventDetailsModal = ({
             </div>
 
             <div className="flex items-start gap-2.5">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-950/20 text-[#0B6E4F] dark:text-emerald-450">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-950/20 text-brand-emerald dark:text-emerald-450">
                 <Clock className="h-4 w-4" />
               </div>
               <div>
@@ -155,7 +155,7 @@ const EventDetailsModal = ({
           {/* Participation State */}
           {isParticipated ? (
             <div className="space-y-3 rounded-xl border border-emerald-100 dark:border-emerald-900/30 bg-emerald-50/20 dark:bg-emerald-950/10 p-5 text-center">
-              <span className="block text-[10px] font-extrabold tracking-wider text-[#0B6E4F] dark:text-emerald-400 uppercase">
+              <span className="block text-[10px] font-extrabold tracking-wider text-brand-emerald dark:text-emerald-400 uppercase">
                 Vé sự kiện của bạn
               </span>
               <div className="mx-auto inline-block rounded-xl border border-emerald-100/30 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-3.5 shadow-sm">
@@ -169,7 +169,7 @@ const EventDetailsModal = ({
           ) : isRegistrationOpen ? (
             <button
               onClick={handleJoinEvent}
-              className="w-full cursor-pointer rounded-xl bg-gradient-to-r from-[#0B6E4F] to-[#0D7F5C] py-3.5 text-center text-sm font-bold text-white shadow-md shadow-[#0B6E4F]/10 transition-all duration-300 hover:scale-[1.01] hover:shadow-lg hover:shadow-[#0B6E4F]/20 active:scale-[0.99]"
+              className="w-full cursor-pointer rounded-xl bg-gradient-to-r from-brand-emerald to-[#0D7F5C] py-3.5 text-center text-sm font-bold text-white shadow-md shadow-brand-emerald/10 transition-all duration-300 hover:scale-[1.01] hover:shadow-lg hover:shadow-brand-emerald/20 active:scale-[0.99]"
             >
               Tham gia sự kiện (+{event.coins || 0} Xu)
             </button>

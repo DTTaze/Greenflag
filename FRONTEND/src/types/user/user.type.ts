@@ -31,6 +31,8 @@ export interface UserType {
   avatarUrl?: string;
   profile?: UserProfileType;
   coin?: UserCoinType;
+  birthDate?: string;
+  gender?: string;
 }
 
 export interface RankType {

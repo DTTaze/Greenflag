@@ -863,6 +863,8 @@
     "imageSizeError": "Image {name} exceeds the maximum size of 5MB!",
     "imageTypeError": "File format of {name} is not supported!",
     "imageMaxCount": "You can upload a maximum of 4 images.",
+    "tagMaxCount": "You can select a maximum of 5 tags.",
+    "tagMaxLength": "Each tag must not exceed 50 characters.",
     "comments": "Comments ({count})",
     "writeCommentPlaceholder": "Write a comment...",
     "commentInputAria": "Comment",

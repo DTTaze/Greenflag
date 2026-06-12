@@ -78,11 +78,11 @@ export default function SidebarPartner({
       path: "/partner/reports",
       icon: <BarChart2 size={20} />,
     },
-    {
-      label: t("profile.title") || "Hồ sơ đối tác",
-      path: "/partner/profile",
-      icon: <User size={20} />,
-    },
+    // {
+    //   label: t("profile.title") || "Hồ sơ đối tác",
+    //   path: "/partner/profile",
+    //   icon: <User size={20} />,
+    // },
   ];
 
   return (

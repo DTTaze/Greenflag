@@ -170,6 +170,10 @@ export default function CreatePostWidget() {
       );
     } else {
       // Doesn't exist -> Add it
+      if (tags.length >= 5) {
+        toast.warning(t("tagMaxCount"));
+        return;
+      }
       setTags([...tags, tagToToggle]);
     }
   };
@@ -180,8 +184,18 @@ export default function CreatePostWidget() {
     const trimmed = customTagInput.trim();
     if (!trimmed) return;
 
+    if (tags.length >= 5) {
+      toast.warning(t("tagMaxCount"));
+      return;
+    }
+
     // FRONTEND FILTER: Strip out excessive whitespace and duplicate # characters
     const cleanString = trimmed.replace(/#/g, "").trim().replace(/\s+/g, " ");
+
+    if (cleanString.length > 50) {
+      toast.warning(t("tagMaxLength"));
+      return;
+    }
 
     if (cleanString.length > 0 && !isTagExists(cleanString)) {
       // Sentence casing (e.g. "tái chế" -> "Tái chế")
@@ -216,7 +230,7 @@ export default function CreatePostWidget() {
         }
         if (hashtags && hashtags.length > 0) {
           setTopic(hashtags[0]);
-          setTags(hashtags);
+          setTags(hashtags.slice(0, 5));
         }
 
         toast.success(t("aiSuccess"));
@@ -653,7 +667,10 @@ export default function CreatePostWidget() {
             type="button"
             onClick={() => handleSubmit(true)}
             disabled={
-              !content.trim() || createPostMutation.isPending || isEnhancing
+              content.trim().length < 10 ||
+              content.trim().length > 5000 ||
+              createPostMutation.isPending ||
+              isEnhancing
             }
             className="dark:text-gray-250 cursor-pointer rounded-lg bg-gray-100 px-4 py-2 text-[14px] font-semibold text-gray-700 transition hover:bg-gray-200 focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-800 dark:hover:bg-gray-700"
           >
@@ -665,7 +682,10 @@ export default function CreatePostWidget() {
             type="button"
             onClick={() => handleSubmit(false)}
             disabled={
-              !content.trim() || createPostMutation.isPending || isEnhancing
+              content.trim().length < 10 ||
+              content.trim().length > 5000 ||
+              createPostMutation.isPending ||
+              isEnhancing
             }
             className="flex transform cursor-pointer items-center gap-2 rounded-lg bg-[#2F9E44] px-5 py-2 text-[14px] font-bold text-white shadow-xs transition hover:bg-[#1F6F2E] focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
           >

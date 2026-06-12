@@ -863,6 +863,8 @@
     "imageSizeError": "Ảnh {name} vượt quá dung lượng 5MB cho phép!",
     "imageTypeError": "Định dạng tệp {name} không hỗ trợ!",
     "imageMaxCount": "Bạn chỉ được chọn tối đa 4 ảnh cho mỗi bài viết.",
+    "tagMaxCount": "Bạn chỉ được chọn tối đa 5 thẻ.",
+    "tagMaxLength": "Mỗi thẻ không được dài quá 50 ký tự.",
     "comments": "Bình luận ({count})",
     "writeCommentPlaceholder": "Viết bình luận của bạn…",
     "commentInputAria": "Bình luận",

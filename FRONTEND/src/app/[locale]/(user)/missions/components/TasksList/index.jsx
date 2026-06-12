@@ -93,7 +93,7 @@ const TasksList = ({
                 )}
             </div>
           ) : (
-            <Card className="shadow-3xs mx-auto flex max-w-lg flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white/50 px-4 py-16 text-center dark:border-zinc-800 dark:bg-zinc-900/50">
+            <Card className="shadow-3xs mx-auto flex max-w-lg flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white/50 px-4 py-16 text-center dark:border-emerald-500/15 dark:bg-slate-900/80">
               <img
                 src={imgSrc}
                 alt="All done!"
@@ -166,7 +166,7 @@ const TasksList = ({
                 )}
             </div>
           ) : (
-            <Card className="shadow-3xs mx-auto flex max-w-lg flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white/50 px-4 py-16 text-center dark:border-zinc-800 dark:bg-zinc-900/50">
+            <Card className="shadow-3xs mx-auto flex max-w-lg flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white/50 px-4 py-16 text-center dark:border-zinc-800 dark:bg-slate-900/80">
               <img
                 src={imgSrc}
                 alt="No tasks"
@@ -228,7 +228,7 @@ const TasksList = ({
                 .map((task) => (
                   <Card
                     key={task.id}
-                    className="shadow-3xs flex items-center gap-3.5 rounded-2xl border border-gray-200 bg-gray-50/50 p-4.5 transition-all duration-300 hover:border-emerald-300/40 hover:bg-emerald-50/5 hover:shadow-xs dark:border-zinc-800 dark:bg-zinc-900/40 dark:hover:border-green-500/40 dark:hover:bg-green-500/10"
+                    className="shadow-3xs flex items-center gap-3.5 rounded-2xl border border-gray-200 bg-gray-50/50 p-4.5 transition-all duration-300 hover:border-emerald-300/40 hover:bg-emerald-50/5 hover:shadow-xs dark:border-zinc-800 dark:bg-slate-900/80 dark:hover:border-green-500/40 dark:hover:bg-green-500/10"
                   >
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-emerald-100 bg-emerald-50 dark:border-emerald-400/30 dark:bg-emerald-400/10">
                       <img
@@ -263,7 +263,7 @@ const TasksList = ({
                 ))}
             </div>
           ) : (
-            <Card className="shadow-3xs mx-auto flex max-w-lg flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white/50 px-4 py-16 text-center dark:border-zinc-800 dark:bg-zinc-900/50">
+            <Card className="shadow-3xs mx-auto flex max-w-lg flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white/50 px-4 py-16 text-center dark:border-zinc-800 dark:bg-slate-900/80">
               <img
                 src={imgSrc}
                 alt="No tasks"

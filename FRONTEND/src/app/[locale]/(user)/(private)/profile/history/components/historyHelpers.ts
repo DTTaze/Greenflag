@@ -73,12 +73,20 @@ export const aggregateActivityLogs = (
 
   const eventActivities = eventsData.map((e) => {
     const eventObj = e.event || e.Event;
+    const completedAt = e.completedAt || e.completed_at;
+    const joinedAt = e.joinedAt || e.joined_at;
+    const createdAt = e.createdAt || e.created_at;
+
     return {
       id: `act-event-${e.id}`,
       category: "event",
       title: eventObj?.title || "Sự kiện môi trường",
-      status: e.completed_at ? "Đã check-in" : "Đã đăng ký",
-      date: new Date(e.joined_at || e.created_at),
+      statusKey: completedAt
+        ? "statusCompleted"
+        : joinedAt
+          ? "statusCheckin"
+          : "statusRegistered",
+      date: new Date(completedAt || joinedAt || createdAt),
       details: `Địa điểm: ${eventObj?.location || "Trực tuyến"}`,
     };
   });

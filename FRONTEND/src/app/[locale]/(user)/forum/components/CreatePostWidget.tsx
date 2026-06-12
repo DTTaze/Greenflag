@@ -32,6 +32,7 @@ const STATIC_TAGS = ["Hỏi đáp", "Chia sẻ", "Tái chế", "Trồng cây", "
 
 export default function CreatePostWidget() {
   const t = useTranslations("forum");
+  const MIN_CONTENT_LENGTH = 10;
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
@@ -380,6 +381,9 @@ export default function CreatePostWidget() {
 
   const hasToken =
     typeof window !== "undefined" ? !!getCookie(ACCESS_TOKEN) : false;
+  const trimmedContent = content.trim();
+  const showContentMinWarning =
+    trimmedContent.length > 0 && trimmedContent.length < MIN_CONTENT_LENGTH;
 
   if (!mounted || !hasToken) {
     return null;
@@ -438,6 +442,11 @@ export default function CreatePostWidget() {
           className="min-h-[120px] w-full resize-none rounded-lg border border-gray-200 bg-white p-3 pb-14 text-[14px] text-gray-900 placeholder-gray-500 shadow-sm transition-all focus:border-green-500 focus:ring-2 focus:ring-green-500/50 focus:outline-none dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder-zinc-500"
           rows={4}
         />
+        {showContentMinWarning && (
+          <p className="mt-2 text-xs font-medium text-rose-600 dark:text-rose-400">
+            {t("contentMinLength")}
+          </p>
+        )}
 
         {/* Mentions Dropdown Suggestions */}
         {showMentionsDropdown && userList.length > 0 && (
@@ -653,7 +662,10 @@ export default function CreatePostWidget() {
             type="button"
             onClick={() => handleSubmit(true)}
             disabled={
-              !content.trim() || createPostMutation.isPending || isEnhancing
+              !trimmedContent ||
+              showContentMinWarning ||
+              createPostMutation.isPending ||
+              isEnhancing
             }
             className="dark:text-gray-250 cursor-pointer rounded-lg bg-gray-100 px-4 py-2 text-[14px] font-semibold text-gray-700 transition hover:bg-gray-200 focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-800 dark:hover:bg-gray-700"
           >
@@ -665,7 +677,10 @@ export default function CreatePostWidget() {
             type="button"
             onClick={() => handleSubmit(false)}
             disabled={
-              !content.trim() || createPostMutation.isPending || isEnhancing
+              !trimmedContent ||
+              showContentMinWarning ||
+              createPostMutation.isPending ||
+              isEnhancing
             }
             className="flex transform cursor-pointer items-center gap-2 rounded-lg bg-[#2F9E44] px-5 py-2 text-[14px] font-bold text-white shadow-xs transition hover:bg-[#1F6F2E] focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
           >

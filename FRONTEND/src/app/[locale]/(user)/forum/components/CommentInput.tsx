@@ -22,6 +22,7 @@ export default function CommentInput({
   profileName,
 }: CommentInputProps) {
   const t = useTranslations("forum");
+  const MIN_COMMENT_LENGTH = 10;
 
   const defaultPlaceholder = placeholder || t("writeCommentPlaceholder");
   const defaultProfileName = profileName || t("user");
@@ -30,6 +31,9 @@ export default function CommentInput({
   const [image, setImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const trimmedContent = content.trim();
+  const showCommentMinWarning =
+    trimmedContent.length > 0 && trimmedContent.length < MIN_COMMENT_LENGTH;
 
   // Clean up URL object on unmount to prevent memory leaks
   const activePreviewRef = useRef<string | null>(null);
@@ -81,8 +85,13 @@ export default function CommentInput({
   };
 
   const handleSubmitClick = async () => {
-    const trimmed = content.trim();
+    const trimmed = trimmedContent;
     if (!trimmed && !image) return;
+
+    if (trimmed && trimmed.length < MIN_COMMENT_LENGTH) {
+      toast.error(t("commentMinLengthError"));
+      return;
+    }
 
     if (trimmed.length > 1000) {
       toast.error(t("commentLengthError"));
@@ -136,6 +145,11 @@ export default function CommentInput({
               }
             }}
           />
+          {showCommentMinWarning && (
+            <p className="mt-2 text-xs font-medium text-rose-600 dark:text-rose-400">
+              {t("commentMinLengthError")}
+            </p>
+          )}
           <span className="absolute right-3 bottom-2 text-[10px] font-medium text-[#9E9E9E] dark:text-gray-500">
             {content.length}/1000
           </span>
@@ -163,7 +177,9 @@ export default function CommentInput({
         <button
           type="button"
           onClick={handleSubmitClick}
-          disabled={(!content.trim() && !image) || isPending}
+          disabled={
+            (!trimmedContent && !image) || showCommentMinWarning || isPending
+          }
           className="flex h-11 w-11 shrink-0 transform cursor-pointer items-center justify-center rounded-xl bg-[#2F9E44] p-3 text-white transition-colors hover:bg-[#1F6F2E] focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 focus-visible:outline-none active:scale-95 disabled:opacity-50"
         >
           {isPending ? (

@@ -110,7 +110,7 @@ export default function DetailsModal({
                 </div>
                 <div className="space-y-0.5 text-right">
                   <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
-                    Số lượng còn lại
+                    {t("detailsModal.stockLabel")}
                   </span>
                   <div className="text-slate-850 dark:text-zinc-250 text-base font-bold">
                     {item.stock}

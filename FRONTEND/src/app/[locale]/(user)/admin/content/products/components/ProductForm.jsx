@@ -37,6 +37,7 @@ export default function ProductForm({
     name: "",
     description: "",
     price: "",
+    stock: 1,
     category: "",
     product_status: "",
     post_status: "",
@@ -50,6 +51,7 @@ export default function ProductForm({
         name: initialData?.name || "",
         description: initialData?.description || "",
         price: initialData?.price || "",
+        stock: initialData?.stock || 0,
         category: initialData?.category || "",
         product_status: initialData?.product_status || initialData?.productStatus || "",
         post_status: initialData?.post_status || initialData?.postStatus || "",
@@ -61,6 +63,7 @@ export default function ProductForm({
         name: "",
         description: "",
         price: "",
+        stock: 1,
         category: "",
         product_status: "",
         post_status: "",
@@ -84,6 +87,8 @@ export default function ProductForm({
     }
     const payload = {
       ...formData,
+      price: formData.price ? parseInt(String(formData.price), 10) : undefined,
+      stock: formData.stock ? parseInt(String(formData.stock), 10) : 0,
       seller_id: formData.seller_id || user.id,
     };
     handleSubmit(payload, mode);
@@ -138,6 +143,22 @@ export default function ProductForm({
               />
             </div>
             <div className="flex flex-col gap-2">
+              <Label htmlFor="stock">Số lượng tồn kho</Label>
+              <Input
+                id="stock"
+                name="stock"
+                type="number"
+                value={formData.stock}
+                onChange={handleChange}
+                required
+                min="0"
+                placeholder="1"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-2">
               <Label htmlFor="category">Danh mục</Label>
               <select
                 id="category"
@@ -155,9 +176,6 @@ export default function ProductForm({
                 ))}
               </select>
             </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
               <Label htmlFor="product_status">Tình trạng sản phẩm</Label>
               <select
@@ -173,23 +191,24 @@ export default function ProductForm({
                 <option value="used">Đã sử dụng</option>
               </select>
             </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="post_status">Trạng thái bài đăng</Label>
-              <select
-                id="post_status"
-                name="post_status"
-                value={formData.post_status}
-                onChange={handleChange}
-                required
-                className="h-8 w-full rounded-lg border border-emerald-600/20 bg-transparent px-2.5 py-1 text-sm focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600/20 focus:outline-none dark:border-zinc-800 dark:bg-slate-800 dark:focus:border-emerald-500"
-              >
-                <option value="">Chọn trạng thái</option>
-                <option value="public">Công khai</option>
-                <option value="private">Riêng tư</option>
-                <option value="pending">Chờ duyệt</option>
-                <option value="rejected">Từ chối</option>
-              </select>
-            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="post_status">Trạng thái bài đăng</Label>
+            <select
+              id="post_status"
+              name="post_status"
+              value={formData.post_status}
+              onChange={handleChange}
+              required
+              className="h-8 w-full rounded-lg border border-emerald-600/20 bg-transparent px-2.5 py-1 text-sm focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600/20 focus:outline-none dark:border-zinc-800 dark:bg-slate-800 dark:focus:border-emerald-500"
+            >
+              <option value="">Chọn trạng thái</option>
+              <option value="public">Công khai</option>
+              <option value="private">Riêng tư</option>
+              <option value="pending">Chờ duyệt</option>
+              <option value="rejected">Từ chối</option>
+            </select>
           </div>
 
           <DialogFooter className="mt-6 border-t border-emerald-600/20 pt-4 dark:border-zinc-800/80">

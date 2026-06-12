@@ -10,11 +10,9 @@ import {
   Coins,
   Gift,
   LayoutDashboard,
-  ListPlus,
   LogOut,
   MessageSquare,
   Settings,
-  ShieldCheck,
   ShoppingCart,
   Truck,
   Users,
@@ -22,8 +20,6 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import LocaleSwitcher from "@/src/components/layout/LocaleSwitcher";
-import ThemeSwitcher from "@/src/components/layout/ThemeSwitcher";
 import { useNotification } from "@/src/components/ui/NotificationProvider";
 import { Link, usePathname, useRouter } from "@/src/i18n/navigation";
 import { useAuthStore } from "@/src/store/auth/authStore";
@@ -160,15 +156,13 @@ export default function SidebarAdmin({
 
       {/* Drawer Content */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex flex-col border-r border-gray-200 bg-white transition-all duration-300 md:sticky md:top-0 md:translate-x-0 dark:border-zinc-800 dark:bg-zinc-950 ${
-          isCollapsed ? "w-16" : "w-72"
-        } ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
+        className={`fixed inset-y-0 left-0 z-50 flex flex-col border-r border-gray-200 bg-white transition-all duration-300 md:sticky md:top-0 md:translate-x-0 dark:border-zinc-800 dark:bg-zinc-950 ${isCollapsed ? "w-16" : "w-72"
+          } ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
       >
         {/* Header/Logo */}
         <div
-          className={`flex h-16 items-center border-b border-gray-200 px-4 dark:border-zinc-800 ${
-            isCollapsed ? "justify-center" : "justify-between"
-          }`}
+          className={`flex h-16 items-center border-b border-gray-200 px-4 dark:border-zinc-800 ${isCollapsed ? "justify-center" : "justify-between"
+            }`}
         >
           <Link
             href="/"
@@ -199,9 +193,8 @@ export default function SidebarAdmin({
         {/* User Info Section */}
         {userInfo && userInfo.id !== 0 && (
           <div
-            className={`flex items-center gap-3 border-b border-gray-200 px-4 py-4 dark:border-zinc-800 ${
-              isCollapsed ? "justify-center" : ""
-            }`}
+            className={`flex items-center gap-3 border-b border-gray-200 px-4 py-4 dark:border-zinc-800 ${isCollapsed ? "justify-center" : ""
+              }`}
           >
             {userInfo.avatar_url ? (
               <img
@@ -247,21 +240,18 @@ export default function SidebarAdmin({
                     <li key={item.textKey}>
                       <button
                         onClick={() => handleNavigation(item.path)}
-                        className={`flex w-full items-center gap-3.5 py-2.5 transition-all duration-200 ${
-                          isCollapsed ? "justify-center px-0" : "px-4"
-                        } ${
-                          selected
+                        className={`flex w-full items-center gap-3.5 py-2.5 transition-all duration-200 ${isCollapsed ? "justify-center px-0" : "px-4"
+                          } ${selected
                             ? "bg-emerald-50 font-semibold text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400"
                             : "text-gray-650 hover:bg-gray-50 hover:text-gray-950 dark:text-zinc-400 dark:hover:bg-zinc-900/50 dark:hover:text-zinc-100"
-                        }`}
+                          }`}
                         title={isCollapsed ? t(item.textKey) : undefined}
                       >
                         <span
-                          className={`transition-colors ${
-                            selected
-                              ? "text-emerald-600 dark:text-emerald-400"
-                              : "text-gray-400 dark:text-zinc-500"
-                          }`}
+                          className={`transition-colors ${selected
+                            ? "text-emerald-600 dark:text-emerald-400"
+                            : "text-gray-400 dark:text-zinc-500"
+                            }`}
                         >
                           {item.icon}
                         </span>
@@ -281,9 +271,8 @@ export default function SidebarAdmin({
         <div className="border-t border-gray-200 p-4 dark:border-zinc-800">
           <button
             onClick={handleLogout}
-            className={`flex w-full items-center gap-3 rounded-2xl py-3 text-sm font-semibold text-red-600 transition-colors duration-150 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/10 ${
-              isCollapsed ? "justify-center px-0" : "px-4"
-            }`}
+            className={`flex w-full items-center gap-3 rounded-2xl py-3 text-sm font-semibold text-red-600 transition-colors duration-150 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/10 ${isCollapsed ? "justify-center px-0" : "px-4"
+              }`}
             title={isCollapsed ? t("logout") : undefined}
           >
             <LogOut size={20} />

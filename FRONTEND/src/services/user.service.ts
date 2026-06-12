@@ -124,6 +124,10 @@ export const rearrangeRank = () => {
   return axiosClient.post("/admin/ranks/rearrange");
 };
 
+export const getRanks = () => {
+  return axiosClient.get("/ranks");
+};
+
 export const getUserById = (id: number | string) => {
   return axiosClient.get(`/admin/users/${id}`);
 };

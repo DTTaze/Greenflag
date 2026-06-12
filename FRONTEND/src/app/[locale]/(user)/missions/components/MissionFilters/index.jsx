@@ -1,5 +1,6 @@
 "use client";
 
+import { Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React from "react";
 
@@ -21,7 +22,7 @@ function MissionFilters({
   const t = useTranslations("missions.filters");
 
   return (
-    <div className="space-y-5 rounded-t-3xl border-t border-x border-emerald-200/70 bg-emerald-50/90 p-6 shadow-lg dark:border-emerald-500/20 dark:bg-slate-900/80">
+    <div className="space-y-5 rounded-t-3xl border-x border-t border-emerald-200/70 bg-emerald-50/90 p-6 shadow-lg dark:border-emerald-500/20 dark:bg-slate-900/80">
       {/* Search bar and Coin sort */}
       <div className="flex flex-col gap-4 sm:flex-row">
         <div className="relative flex-1">
@@ -80,10 +81,11 @@ function MissionFilters({
                   setDailyCurrentPage(1);
                   setOtherCurrentPage(1);
                 }}
-                className={`cursor-pointer rounded-xl border px-4 py-2.5 text-xs font-bold transition-all duration-200 active:scale-95 ${categoryFilter === cat.value
+                className={`cursor-pointer rounded-xl border px-4 py-2.5 text-xs font-bold transition-all duration-200 active:scale-95 ${
+                  categoryFilter === cat.value
                     ? "border-[#0B6E4F] bg-[#0B6E4F] text-white shadow-md shadow-[#0B6E4F]/10 dark:border-emerald-400 dark:bg-emerald-500 dark:text-slate-950 dark:shadow-emerald-500/20"
                     : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-900 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-200 dark:hover:border-emerald-500/50 dark:hover:bg-slate-700/80 dark:hover:text-white"
-                  }`}
+                }`}
               >
                 {cat.label}
               </button>
@@ -93,7 +95,7 @@ function MissionFilters({
 
         {/* Group 2: Độ khó */}
         <div className="flex flex-col gap-3">
-          <span className="text-xs font-semibold text-gray-500 dark:text-zinc-400 uppercase tracking-wider">
+          <span className="text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-zinc-400">
             {t("difficulty")}
           </span>
           <div className="flex flex-wrap gap-2">
@@ -121,10 +123,11 @@ function MissionFilters({
                     setFilter(diff.value);
                     setPage(1);
                   }}
-                  className={`px-4 py-2 text-sm font-semibold rounded-full cursor-pointer transition-all duration-200 active:scale-95 ${activeFilter === diff.value
-                      ? "border border-[#0B6E4F] bg-[#0B6E4F] text-white shadow-sm dark:border-emerald-500 dark:bg-emerald-500/20 dark:text-emerald-450"
-                      : "border border-gray-200 bg-white text-gray-650 dark:border-zinc-800 dark:bg-zinc-950 text-gray-700 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-850"
-                    }`}
+                  className={`cursor-pointer rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 active:scale-95 ${
+                    activeFilter === diff.value
+                      ? "dark:text-emerald-450 border border-[#0B6E4F] bg-[#0B6E4F] text-white shadow-sm dark:border-emerald-500 dark:bg-emerald-500/20"
+                      : "text-gray-650 dark:hover:bg-zinc-850 border border-gray-200 bg-white text-gray-700 hover:bg-gray-100 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300"
+                  }`}
                 >
                   {diff.label}
                 </button>
@@ -135,8 +138,8 @@ function MissionFilters({
       </div>
 
       {/* NỬA PHẢI: Nút Sắp xếp */}
-      <div className="flex items-center gap-3 lg:shrink-0 mt-4 lg:mt-0 lg:self-start">
-        <span className="text-xs font-semibold text-gray-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">
+      <div className="mt-4 flex items-center gap-3 lg:mt-0 lg:shrink-0 lg:self-start">
+        <span className="text-xs font-semibold tracking-wider whitespace-nowrap text-gray-500 uppercase dark:text-zinc-400">
           {t("sortBy")}
         </span>
         <select
@@ -146,7 +149,7 @@ function MissionFilters({
             setDailyCurrentPage(1);
             setOtherCurrentPage(1);
           }}
-          className="bg-gray-50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-zinc-100 text-sm rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-green-500/50 cursor-pointer transition-all duration-200"
+          className="cursor-pointer rounded-xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-900 transition-all duration-200 outline-none focus:ring-2 focus:ring-green-500/50 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100"
         >
           <option value="none">{t("default")}</option>
           <option value="desc">{t("coinsDesc")}</option>

@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { CACHE_KEYS } from '@shared/cache-key';
 import { CACHE_TTL, ERR_CODE, INJECTION_TOKEN } from '@shared/constants';
+import { ROLE } from '@shared/enums';
 import {
   OperationResult,
   generateNotFoundResult,
@@ -68,6 +69,22 @@ export class RankService extends BaseCRUDService<Rank> {
       return generateSuccessResult(result);
     } catch (error) {
       console.error('Error rearranging ranks:', error);
+      throw error;
+    }
+  }
+
+  async getAllRanks(): Promise<OperationResult<Rank[]>> {
+    try {
+      const ranks = await this.rankRepository
+        .createQueryBuilder('rank')
+        .leftJoinAndSelect('rank.user', 'user')
+        .leftJoinAndSelect('user.profile', 'profile')
+        .where('user.role = :role', { role: ROLE.USER })
+        .orderBy('rank.amount', 'DESC')
+        .getMany();
+      return generateSuccessResult(ranks);
+    } catch (error) {
+      console.error('Error fetching ranks:', error);
       throw error;
     }
   }

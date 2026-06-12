@@ -14,6 +14,11 @@ import { RankService } from '../services/rank.service';
 export class RankController {
   constructor(private readonly rankService: RankService) {}
 
+  @Get()
+  async getRanks(): Promise<HttpResponse> {
+    return this.rankService.getAllRanks();
+  }
+
   @Get(':id')
   async getRank(@Param('id') id: string): Promise<HttpResponse> {
     return this.rankService.getRankById(id);

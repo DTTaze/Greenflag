@@ -11,7 +11,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import { useNotification } from "@/src/components/ui/NotificationProvider";
-import { Link, usePathname, useRouter } from "@/src/i18n/navigation";
+import { Link, usePathname } from "@/src/i18n/navigation";
 import { useAuthStore } from "@/src/store/auth/authStore";
 import { getUser, getUserAvatarById, logoutUser } from "@/src/utils/api";
 
@@ -23,7 +23,6 @@ import ProfileDropdown from "./ProfileDropdown";
 import ThemeSwitcher from "./ThemeSwitcher";
 
 function UserHeader() {
-  const router = useRouter();
   const pathname = usePathname();
   const { notify } = useNotification();
   const { isAuthenticated, user, dispatch } = useAuthStore();
@@ -88,7 +87,9 @@ function UserHeader() {
       await logoutUser();
       dispatch({ type: "LOGOUT" });
       notify("success", t("logoutSuccess"));
-      router.push("/login");
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 800);
     } catch (error) {
       console.error("Lỗi khi đăng xuất:", error);
       notify("error", t("logoutError"));

@@ -14,9 +14,10 @@ export const loginUser = (data: any): Promise<any> => {
 };
 
 export const logoutUser = async (): Promise<any> => {
-  // Remove access token cookie used by axiosClient interceptors
+  // Clear access token and potential refresh token cookies
   try {
     deleteCookie(ACCESS_TOKEN, { path: "/" });
+    deleteCookie("refresh_token", { path: "/" });
   } catch (e) {
     // ignore
   }
@@ -28,11 +29,13 @@ export const logoutUser = async (): Promise<any> => {
     // ignore
   }
 
-  // Also remove legacy localStorage keys if present
+  // Clear user-related local storage items
   try {
     if (typeof window !== "undefined") {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
+      localStorage.removeItem("user_avatar_url");
+      localStorage.removeItem("partner_profile_meta");
     }
   } catch (e) {
     // ignore

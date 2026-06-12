@@ -22,6 +22,12 @@ export const updateAvatarHandler = async (
   return UserService.updateAvatar(file);
 };
 
+export const getUserByIdHandler = async (
+  id: string,
+): Promise<ApiResponse<UserType>> => {
+  return UserService.getUserById(id);
+};
+
 // --- Task & Item Integration ---
 
 export const getUserTasksCompletedHandler = async (): Promise<

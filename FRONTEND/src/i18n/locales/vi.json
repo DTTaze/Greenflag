@@ -438,6 +438,36 @@
         "generateFailed": "Không thể tạo mã QR. Vui lòng thử lại."
       }
     },
+    "scanner": {
+      "title": "Máy quét mã QR sự kiện",
+      "subtitle": "Sử dụng camera của thiết bị để quét mã QR điểm danh khách dự sự kiện.",
+      "panelTitle": "Cấu hình & Trạng thái",
+      "panelDesc": "Chọn sự kiện trước khi bắt đầu quét.",
+      "loading": "Đang tải danh sách sự kiện...",
+      "noEventsTitle": "Không tìm thấy sự kiện nào!",
+      "noEventsDesc": "Bạn phải tạo ít nhất một sự kiện trong trang Sự kiện trước khi sử dụng máy quét.",
+      "selectEvent": "Chọn sự kiện",
+      "lastResult": "Kết quả quét gần nhất",
+      "reset": "Reset",
+      "notReadyTitle": "Chưa sẵn sàng",
+      "notReadyDesc": "Vui lòng chọn hoặc tạo sự kiện để khởi động Camera.",
+      "success": "Thành công!",
+      "error": "Lỗi xác thực!",
+      "processing": "Đang xử lý...",
+      "warnSelectEvent": "Vui lòng chọn một sự kiện trước khi quét!",
+      "errOtherEventTicket": "Mã vé này thuộc về sự kiện khác!",
+      "successCheckin": "Check-in thành công cho người tham gia!",
+      "errInvalidQrOrCheckedIn": "Mã QR không hợp lệ hoặc đã được sử dụng!",
+      "errLoadEventsFailed": "Không thể tải danh sách sự kiện.",
+      "loadingUser": "Đang tải thông tin người dùng...",
+      "days": "ngày",
+      "errors": {
+        "eventCheckinAlready": "Người tham gia này đã điểm danh (check-in) rồi.",
+        "eventUserNotFound": "Người tham gia này chưa đăng ký sự kiện này.",
+        "eventNotFound": "Không tìm thấy sự kiện.",
+        "userNotFound": "Không tìm thấy người dùng."
+      }
+    },
     "inventory": {
       "title": "Kho quà tặng",
       "subtitle": "Quản lý kho hàng quà tặng, số lượng tồn kho và điểm thưởng của đối tác.",
@@ -923,6 +953,9 @@
     "selectAttachedEvent": "Chọn sự kiện đính kèm",
     "loadingEvents": "Đang tải danh sách sự kiện...",
     "noRegisteredEvents": "Bạn chưa đăng ký tham gia sự kiện nào gần đây.",
+    "noEventsAvailable": "Không có sự kiện nào đang diễn ra hoặc sắp diễn ra.",
+    "noEventsFound": "Không tìm thấy sự kiện phù hợp với từ khóa tìm kiếm.",
+    "searchEventsPlaceholder": "Tìm kiếm sự kiện theo tên...",
     "browsePublicEvents": "Duyệt sự kiện công khai",
     "onlineEvent": "Sự kiện Online",
     "eventStatusUpcoming": "Sắp diễn ra",

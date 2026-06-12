@@ -71,15 +71,17 @@ export const aggregateActivityLogs = (
     },
   }));
 
-  const eventActivities = eventsData.map((e) => ({
-    id: `act-event-${e.id}`,
-    category: "event",
-    title: e.event?.title || e.Event?.title || "Sự kiện môi trường",
-    statusKey:
-      e.completedAt || e.completed_at ? "statusCheckin" : "statusRegistered",
-    date: new Date(e.joinedAt || e.joined_at || e.createdAt || e.created_at),
-    details: e.event?.location || e.Event?.location || "Trực tuyến",
-  }));
+  const eventActivities = eventsData.map((e) => {
+    const eventObj = e.event || e.Event;
+    return {
+      id: `act-event-${e.id}`,
+      category: "event",
+      title: eventObj?.title || "Sự kiện môi trường",
+      status: e.completed_at ? "Đã check-in" : "Đã đăng ký",
+      date: new Date(e.joined_at || e.created_at),
+      details: `Địa điểm: ${eventObj?.location || "Trực tuyến"}`,
+    };
+  });
 
   const combinedActivities = [...taskActivities, ...eventActivities].sort(
     (a, b) => b.date.getTime() - a.date.getTime(),

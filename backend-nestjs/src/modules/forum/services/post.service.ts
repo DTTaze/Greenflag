@@ -1,7 +1,8 @@
 import { ChatGroq } from '@langchain/groq';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -24,6 +25,7 @@ import {
   getStorageFolder,
 } from '@shared/constants';
 import {
+  EVENT_STATUS,
   FORUM_POST_STATUS,
   FORUM_VOTE_TYPE,
   ROLE,
@@ -31,6 +33,7 @@ import {
 } from '@shared/enums';
 import { handleVote } from '@shared/helpers/vote-handler.helper';
 
+import { Event } from '@modules/event/entities/event.entity';
 import {
   CreatePostDTO,
   GetPostsQueryDTO,
@@ -49,6 +52,8 @@ export class PostService implements OnModuleInit {
   constructor(
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
+    @InjectRepository(Event)
+    private readonly eventRepository: Repository<Event>,
     private readonly dataSource: DataSource,
     private readonly configService: ConfigService,
     private readonly moderationService: ModerationService,
@@ -158,6 +163,20 @@ Output STRICTLY as a JSON object:
     userRole: ROLE = ROLE.USER,
     files?: Express.Multer.File[],
   ): Promise<Post> {
+    if (dto.attachedEventId) {
+      const event = await this.eventRepository.findOne({
+        where: {
+          id: dto.attachedEventId,
+          status: In([EVENT_STATUS.UPCOMING, EVENT_STATUS.ONGOING]),
+        },
+      });
+      if (!event) {
+        throw new BadRequestException(
+          'Sự kiện đính kèm không tồn tại hoặc đã kết thúc',
+        );
+      }
+    }
+
     const isAdmin = userRole === ROLE.ADMIN;
     let status = FORUM_POST_STATUS.APPROVED;
     const flaggedReason: string | null = null;
@@ -583,6 +602,25 @@ Output STRICTLY as a JSON object:
       post.tags = tagsVal;
     } else if (dto.tags !== undefined) {
       post.tags = dto.tags;
+    }
+
+    if (dto.attachedEventId !== undefined) {
+      if (dto.attachedEventId) {
+        const event = await this.eventRepository.findOne({
+          where: {
+            id: dto.attachedEventId,
+            status: In([EVENT_STATUS.UPCOMING, EVENT_STATUS.ONGOING]),
+          },
+        });
+        if (!event) {
+          throw new BadRequestException(
+            'Sự kiện đính kèm không tồn tại hoặc đã kết thúc',
+          );
+        }
+        post.eventId = dto.attachedEventId;
+      } else {
+        post.eventId = null;
+      }
     }
 
     const isDraftVal =

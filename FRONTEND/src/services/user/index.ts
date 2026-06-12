@@ -19,6 +19,8 @@ export const UserService = {
     });
   },
 
+  getUserById: (id: string): Promise<any> => axiosClient.get(`/users/${id}`),
+
   // --- Task & Item integration ---
   getUserTasksCompleted: (): Promise<any> =>
     axiosClient.get("/users/task/completed"),

@@ -13,6 +13,7 @@ export interface UpdatePostPayload {
   images?: string[];
   tags?: string[];
   category?: string;
+  attachedEventId?: string | null;
 }
 
 export interface CreateCommentPayload {

@@ -16,7 +16,7 @@ import { eventServices } from ".";
 export const getAllEventsHandler = async (
   showDeleted?: boolean,
 ): Promise<ApiResponse<EventResponse[]>> => {
-  return eventServices.getAllEvents(showDeleted);
+  return eventServices.getAllEvents({ showDeleted });
 };
 
 export const getEventByIdHandler = async (

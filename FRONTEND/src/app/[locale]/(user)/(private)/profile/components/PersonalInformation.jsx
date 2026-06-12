@@ -414,7 +414,7 @@ function PersonalInformation() {
               <img
                 className="h-64 w-64 rounded-3xl border border-emerald-200/60 object-contain dark:border-emerald-500/15"
                 alt={t("qrCodeBtn")}
-                src={`data:image/png;base64,${qrCode}`}
+                src={qrCode.startsWith("data:") ? qrCode : `data:image/png;base64,${qrCode}`}
               />
             ) : (
               <div className="flex h-64 w-64 items-center justify-center rounded-3xl bg-zinc-100 text-sm text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400">

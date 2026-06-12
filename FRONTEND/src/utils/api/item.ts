@@ -26,9 +26,9 @@ const mapToItemDto = (raw: any) => {
     stock: data.stock ? parseInt(data.stock, 10) : undefined,
     description: data.description,
     status: data.status,
-    purchase_limit_per_day: data.purchase_limit_per_day
+    purchase_limit_per_day: (data.purchase_limit_per_day !== null && data.purchase_limit_per_day !== undefined && data.purchase_limit_per_day !== "")
       ? parseInt(data.purchase_limit_per_day, 10)
-      : undefined,
+      : null,
     weight: data.weight ? parseInt(data.weight, 10) : undefined,
     length: data.length ? parseInt(data.length, 10) : undefined,
     width: data.width ? parseInt(data.width, 10) : undefined,
@@ -57,7 +57,7 @@ export const deleteItem = (itemId: string | number) => {
 };
 
 export const createItem = (data: any) => {
-  return axiosClient.post(`${getCommercePrefix()}/items`, mapToItemDto(data));
+  return axiosClient.post("/partner/commerce/items", mapToItemDto(data));
 };
 
 export const updateItem = (itemId: string | number, data: any) => {
@@ -69,7 +69,7 @@ export const updateItem = (itemId: string | number, data: any) => {
 
 export const createProduct = (formData: any) => {
   return axiosClient.post(
-    `${getCommercePrefix()}/products`,
+    "/partner/commerce/products",
     mapToProductDto(formData),
   );
 };

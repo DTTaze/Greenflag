@@ -250,7 +250,7 @@ export function useMarketplaceCrud({
             canPurchase:
               (response.data.postStatus || response.data.post_status) ===
               "public",
-            purchaseLimitPerDay: response.data.purchase_limit_per_day,
+            purchaseLimitPerDay: response.data.purchaseLimitPerDay || response.data.purchase_limit_per_day,
             weight: response.data.weight,
             length: response.data.length,
             width: response.data.width,
@@ -284,7 +284,7 @@ export function useMarketplaceCrud({
               (response.data.postStatus || response.data.post_status) ===
               "public",
             seller: auth.user?.username || t("categories.unknown"),
-            purchaseLimitPerDay: response.data.purchase_limit_per_day,
+            purchaseLimitPerDay: response.data.purchaseLimitPerDay || response.data.purchase_limit_per_day,
             weight: response.data.weight,
             length: response.data.length,
             width: response.data.width,

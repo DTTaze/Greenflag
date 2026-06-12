@@ -39,7 +39,7 @@ export default function ItemForm({
 
   useEffect(() => {
     if (mode === "edit" && initialData) {
-      const limit = initialData?.purchase_limit_per_day;
+      const limit = initialData?.purchase_limit_per_day ?? initialData?.purchaseLimitPerDay;
       const parsedLimit = (limit === "Không giới hạn" || limit === null || limit === undefined || limit === "") ? "" : limit;
       setIsLimited(parsedLimit !== "");
       setFormData({
@@ -263,6 +263,7 @@ export default function ItemForm({
                   name="purchase_limit_per_day"
                   type="number"
                   min="1"
+                  step="1"
                   value={formData.purchase_limit_per_day}
                   onChange={handleChange}
                   required

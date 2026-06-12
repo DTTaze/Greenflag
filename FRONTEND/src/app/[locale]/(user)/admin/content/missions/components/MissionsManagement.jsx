@@ -70,16 +70,25 @@ export default function TasksManagement() {
   };
 
   const handleSubmitTask = async (data, mode) => {
+    // Strip `id` and cast numeric values to align with CreateTaskDto/UpdateTaskDto
+    const payload = {
+      title: data.title,
+      description: data.description,
+      coins: data.coins ? Number(data.coins) : 0,
+      difficulty: data.difficulty,
+      total: data.total ? Number(data.total) : undefined,
+    };
+
     if (mode === "add") {
       try {
-        await createTaskMutation.mutateAsync(data);
+        await createTaskMutation.mutateAsync(payload);
         alert("Thêm nhiệm vụ thành công!");
       } catch (e) {
         alert(e.message || "Thêm nhiệm vụ thất bại!");
       }
     } else if (mode === "edit") {
       try {
-        await updateTaskMutation.mutateAsync({ id: data.id, payload: data });
+        await updateTaskMutation.mutateAsync({ id: data.id, payload });
         alert("Cập nhật nhiệm vụ thành công!");
       } catch (e) {
         alert(e.message || "Cập nhật nhiệm vụ thất bại!");

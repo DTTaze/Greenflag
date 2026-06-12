@@ -29,6 +29,7 @@ interface RawProductData {
   stock?: number;
   creator?: { username?: string };
   purchase_limit_per_day?: number;
+  purchaseLimitPerDay?: number;
   weight?: number;
   length?: number;
   width?: number;
@@ -78,7 +79,7 @@ export function useMarketplaceData(userId?: number | string) {
           stock: item.stock || 0,
           canPurchase: item.status === "available",
           seller: item.creator?.username || t("categories.unknown"),
-          purchaseLimitPerDay: item.purchase_limit_per_day,
+          purchaseLimitPerDay: item.purchaseLimitPerDay || item.purchase_limit_per_day,
           weight: item.weight,
           length: item.length,
           width: item.width,
@@ -111,7 +112,7 @@ export function useMarketplaceData(userId?: number | string) {
           stock: item.stock || 0,
           canPurchase: item.post_status === "public",
           seller: item.creator?.username || t("categories.unknown"),
-          purchaseLimitPerDay: item.purchase_limit_per_day,
+          purchaseLimitPerDay: item.purchaseLimitPerDay || item.purchase_limit_per_day,
           weight: item.weight,
           length: item.length,
           width: item.width,
@@ -143,7 +144,7 @@ export function useMarketplaceData(userId?: number | string) {
           stock: item.stock || 0,
           canPurchase: item.post_status === "public",
           seller: item.creator?.username || t("categories.unknown"),
-          purchaseLimitPerDay: item.purchase_limit_per_day,
+          purchaseLimitPerDay: item.purchaseLimitPerDay || item.purchase_limit_per_day,
           weight: item.weight,
           length: item.length,
           width: item.width,

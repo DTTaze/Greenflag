@@ -119,7 +119,8 @@ export const itemColumns = [
     field: "purchase_limit_per_day",
     headerName: "Giới hạn lượt mua/ngày",
     width: 200,
-    valueGetter: (params: any) => params || "Không giới hạn",
+    valueGetter: (_value: any, row: any) =>
+      row.purchaseLimitPerDay || row.purchase_limit_per_day || "Không giới hạn",
   },
   {
     field: "updated_at",

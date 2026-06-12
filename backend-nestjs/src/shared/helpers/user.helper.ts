@@ -13,5 +13,6 @@ export function extractUserPublicInfo(user: User): UserAuthProfile {
     streak: user.profile?.streak,
     lastCompletedTask: user.profile?.lastCompletedTask,
     avatarUrl: user.avatarUrl,
+    coins: user.coin ? { amount: user.coin.amount } : undefined,
   };
 }

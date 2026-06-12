@@ -222,7 +222,9 @@ export class NotificationService {
         `Handling notification.coin_received event for user ${payload.userId}`,
       );
 
-      const content = `Bạn đã nhận được ${payload.amount} EcoCoins. Lý do: ${payload.reason || 'Hoàn thành nhiệm vụ'}.`;
+      const content = payload.amount >= 0
+        ? `Bạn đã nhận được ${payload.amount} EcoCoins. Lý do: ${payload.reason || 'Hoàn thành nhiệm vụ'}.`
+        : `Bạn đã bị khấu trừ ${Math.abs(payload.amount)} EcoCoins. Lý do: ${payload.reason || 'Khấu trừ hệ thống'}.`;
       const link = `/user/history`;
 
       await this.createNotification(

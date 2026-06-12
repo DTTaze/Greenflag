@@ -12,6 +12,9 @@ export interface AdminUpdateUserPayload {
   fullName?: string;
   phoneNumber?: string;
   role?: string;
+  status?: string;
+  coinAdjustment?: number;
+  coinAdjustmentReason?: string;
 }
 
 export interface LockAccountPayload {

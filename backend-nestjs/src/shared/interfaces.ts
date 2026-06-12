@@ -27,6 +27,9 @@ export interface UserAuthProfile {
   companyId?: string;
   status?: string;
   phone?: string;
+  coins?: {
+    amount: number;
+  };
 }
 
 export interface UserAuthSocialProfile {

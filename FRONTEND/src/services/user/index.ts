@@ -42,6 +42,15 @@ export const UserService = {
   adminDeleteUser: (id: string): Promise<any> =>
     axiosClient.delete(`/admin/users/${id}`),
 
+  adminCreateUser: (data: any): Promise<any> =>
+    axiosClient.post("/admin/users", data),
+
+  adminRestoreUser: (id: string): Promise<any> =>
+    axiosClient.patch(`/admin/users/${id}/restore`),
+
+  adminHardDeleteUser: (id: string): Promise<any> =>
+    axiosClient.delete(`/admin/users/${id}/hard-delete`),
+
   // --- Ranks ---
   getRank: (id: string): Promise<any> => axiosClient.get(`/ranks/${id}`),
 

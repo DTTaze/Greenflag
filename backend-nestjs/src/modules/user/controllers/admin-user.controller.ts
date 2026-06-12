@@ -7,6 +7,8 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
+  Post,
   Put,
   Query,
   UseGuards,
@@ -23,7 +25,7 @@ import { AuthGuard } from '@shared/guards/auth.guard';
 import { RolesGuard } from '@shared/guards/roles.guard';
 import { extractUserPublicInfo } from '@shared/helpers/user.helper';
 
-import { AdminUpdateUserDto } from '../dtos/user.dto';
+import { AdminUpdateUserDto, CreateUserDto } from '../dtos/user.dto';
 import { UserService } from '../services/user.service';
 
 @ApiTags('Admin Users')
@@ -40,6 +42,11 @@ export class AdminUserController {
   ): Promise<HttpResponse> {
     const withDeleted = showDeleted === 'true';
     return this.userService.getAllUsers(withDeleted);
+  }
+
+  @Post()
+  async createUser(@Body() dto: CreateUserDto): Promise<HttpResponse> {
+    return this.userService.createUser(dto);
   }
 
   @Get('dashboard-stats')
@@ -102,8 +109,18 @@ export class AdminUserController {
     return this.userService.updateUserById(id, dto);
   }
 
+  @Patch(':id/restore')
+  async restoreUser(@Param('id') id: string): Promise<HttpResponse> {
+    return this.userService.restoreUser(id);
+  }
+
   @Delete(':id')
   async handleDeleteUser(@Param('id') id: string): Promise<HttpResponse> {
     return this.userService.deleteUser(id);
+  }
+
+  @Delete(':id/hard-delete')
+  async handleHardDeleteUser(@Param('id') id: string): Promise<HttpResponse> {
+    return this.userService.hardDeleteUser(id);
   }
 }

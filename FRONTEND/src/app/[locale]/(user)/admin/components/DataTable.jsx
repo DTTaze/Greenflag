@@ -6,6 +6,7 @@ import {
   Eye,
   Pencil,
   Plus,
+  RotateCcw,
   Search,
   Trash2,
 } from "lucide-react";
@@ -19,6 +20,8 @@ export default function DataTable({
   onAdd,
   onEdit,
   onDelete,
+  onRestore,
+  onHardDelete,
   onView,
   onRowClick,
   onBulkDelete,
@@ -366,7 +369,7 @@ export default function DataTable({
                         // If the row itself is soft-deleted
                         if (col.field === "status") {
                           cellContent = (
-                            <span className="inline-flex items-center justify-center rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-650 dark:border-red-900/20 dark:bg-red-950/30 dark:text-red-400">
+                            <span className="inline-flex items-center justify-center rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-600 dark:border-red-900/20 dark:bg-red-950/30 dark:text-red-400">
                               Đã xóa
                             </span>
                           );
@@ -378,7 +381,7 @@ export default function DataTable({
                           cellContent = (
                             <span className="inline-flex items-center gap-1.5">
                               {cellContent}
-                              <span className="inline-flex items-center justify-center rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-red-605 dark:border-red-900/20 dark:bg-red-950/30 dark:text-red-400">
+                              <span className="inline-flex items-center justify-center rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-red-600 dark:border-red-900/20 dark:bg-red-950/30 dark:text-red-400">
                                 Đã xóa
                               </span>
                             </span>
@@ -397,7 +400,7 @@ export default function DataTable({
                     })}
 
                     {/* Actions Cell */}
-                    {(onView || onEdit || onDelete) && (
+                    {(onView || onEdit || onDelete || onRestore || onHardDelete) && (
                       <td className="py-4 px-6 text-right actions-cell">
                         <div className="inline-flex gap-2" onClick={(e) => e.stopPropagation()}>
                           {onView && (
@@ -409,7 +412,7 @@ export default function DataTable({
                               <Eye size={16} />
                             </button>
                           )}
-                          {onEdit && (
+                          {!hasDeletedAt && onEdit && (
                             <button
                               onClick={() => onEdit(row)}
                               className="rounded-md p-1.5 text-emerald-600 transition-colors hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-500/10"
@@ -418,11 +421,29 @@ export default function DataTable({
                               <Pencil size={16} />
                             </button>
                           )}
-                          {onDelete && (
+                          {!hasDeletedAt && onDelete && (
                             <button
                               onClick={() => onDelete(row)}
                               className="rounded-md p-1.5 text-rose-600 transition-colors hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10"
                               title={t("delete")}
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          )}
+                          {hasDeletedAt && onRestore && (
+                            <button
+                              onClick={() => onRestore(row)}
+                              className="rounded-md p-1.5 text-emerald-600 transition-colors hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-500/10"
+                              title={t("restore") || "Khôi phục"}
+                            >
+                              <RotateCcw size={16} />
+                            </button>
+                          )}
+                          {hasDeletedAt && onHardDelete && (
+                            <button
+                              onClick={() => onHardDelete(row)}
+                              className="rounded-md p-1.5 text-rose-650 transition-colors hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10"
+                              title={t("hardDelete") || "Xóa vĩnh viễn"}
                             >
                               <Trash2 size={16} />
                             </button>

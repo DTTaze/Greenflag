@@ -830,6 +830,16 @@ export class AuthService {
     }
   }
 
+  public async getWhoAmI(userId: string): Promise<User | null> {
+    const userRes = await this.userService.findByID(userId, {
+      relations: { profile: true, coin: true },
+    });
+    if (!userRes.success || !userRes.data) {
+      return null;
+    }
+    return userRes.data;
+  }
+
   public verifyUserStatus(user: User): OperationResult {
     if (user.status !== ENTITY_STATUS.ACTIVE) {
       return generateForbiddenResult(

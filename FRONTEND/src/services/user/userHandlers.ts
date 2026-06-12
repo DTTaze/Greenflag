@@ -69,6 +69,24 @@ export const adminDeleteUserHandler = async (
   return UserService.adminDeleteUser(id);
 };
 
+export const adminCreateUserHandler = async (
+  data: any,
+): Promise<ApiResponse<UserType>> => {
+  return UserService.adminCreateUser(data);
+};
+
+export const adminRestoreUserHandler = async (
+  id: string,
+): Promise<ApiResponse<UserType>> => {
+  return UserService.adminRestoreUser(id);
+};
+
+export const adminHardDeleteUserHandler = async (
+  id: string,
+): Promise<ApiResponse<void>> => {
+  return UserService.adminHardDeleteUser(id);
+};
+
 // --- Rank Handlers ---
 
 export const getRankHandler = async (

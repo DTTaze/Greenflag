@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React from "react";
 
 export type StatusType =
@@ -74,16 +75,27 @@ const statusConfig: Record<
 };
 
 export function StatusBadge({ status, className = "" }: StatusBadgeProps) {
+  const t = useTranslations("status");
   const normalizedStatus = status.toUpperCase() as StatusType;
   const config = statusConfig[normalizedStatus] || statusConfig.INACTIVE;
 
   const combinedClasses = `${config.light} ${config.dark}`;
 
+  let label = status;
+  try {
+    const key = status.toLowerCase();
+    if (t.has(key)) {
+      label = t(key);
+    }
+  } catch (e) {
+    // fallback
+  }
+
   return (
     <span
       className={`inline-flex items-center justify-center rounded-full border px-2.5 py-1 text-xs font-semibold transition-colors ${combinedClasses} ${className}`}
     >
-      {status}
+      {label}
     </span>
   );
 }

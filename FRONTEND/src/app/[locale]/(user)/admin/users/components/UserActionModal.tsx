@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, Lock, Trash2, Unlock, X } from "lucide-react";
+import { AlertTriangle, Lock, RotateCcw, Trash2, Unlock, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -8,9 +8,9 @@ import { AdminUserDTO } from "@/src/types/admin";
 
 interface UserActionModalProps {
   user: AdminUserDTO;
-  actionType: "lock" | "unlock" | "delete";
+  actionType: "lock" | "unlock" | "delete" | "restore" | "hard-delete";
   onConfirm: (
-    actionType: "lock" | "unlock" | "delete",
+    actionType: "lock" | "unlock" | "delete" | "restore" | "hard-delete",
     reason?: string,
   ) => void;
   onCancel: () => void;
@@ -52,6 +52,24 @@ export default function UserActionModal({
       buttonText: t("delete"),
       buttonClass:
         "bg-rose-600 hover:bg-rose-700 dark:bg-rose-500 dark:hover:bg-rose-600",
+    },
+    restore: {
+      icon: RotateCcw,
+      title: t("restore") || "Restore",
+      confirmText: t("confirmRestore") || "Are you sure you want to restore this user account?",
+      description: t("confirmRestore") || "Are you sure you want to restore this user account?",
+      buttonText: t("restore") || "Restore",
+      buttonClass:
+        "bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600",
+    },
+    "hard-delete": {
+      icon: Trash2,
+      title: t("hardDelete") || "Hard Delete",
+      confirmText: t("confirmHardDelete") || "Are you sure you want to permanently delete this user? This action is irreversible.",
+      description: t("confirmHardDelete") || "Are you sure you want to permanently delete this user? This action is irreversible.",
+      buttonText: t("hardDelete") || "Hard Delete",
+      buttonClass:
+        "bg-red-700 hover:bg-red-800 dark:bg-red-650 dark:hover:bg-red-700",
     },
   };
 

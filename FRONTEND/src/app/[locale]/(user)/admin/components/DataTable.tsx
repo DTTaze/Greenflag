@@ -7,6 +7,7 @@ import {
   Eye,
   Pencil,
   Plus,
+  RotateCcw,
   Search,
   Trash2,
 } from "lucide-react";
@@ -34,6 +35,8 @@ interface DataTableProps<T = any> {
   onAdd?: () => void;
   onEdit?: (row: T) => void;
   onDelete?: (row: T) => void;
+  onRestore?: (row: T) => void;
+  onHardDelete?: (row: T) => void;
   onView?: (row: T) => void;
   onRowClick?: (row: T) => void;
   onBulkDelete?: (ids: (string | number)[]) => void;
@@ -50,6 +53,8 @@ export default function DataTable<T extends { id: string | number }>({
   onAdd,
   onEdit,
   onDelete,
+  onRestore,
+  onHardDelete,
   onView,
   onRowClick,
   onBulkDelete,
@@ -474,7 +479,7 @@ export default function DataTable<T extends { id: string | number }>({
                             String(fieldKey).toLowerCase().includes("status"))
                         ) {
                           cellContent = (
-                            <span className="text-red-650 inline-flex items-center justify-center rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-semibold dark:border-red-900/20 dark:bg-red-950/30 dark:text-red-400">
+                            <span className="text-red-600 inline-flex items-center justify-center rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-semibold dark:border-red-900/20 dark:bg-red-950/30 dark:text-red-400">
                               Đã xóa
                             </span>
                           );
@@ -511,7 +516,7 @@ export default function DataTable<T extends { id: string | number }>({
                     })}
 
                     {/* Actions Cell */}
-                    {(onView || onEdit || onDelete) && (
+                    {(onView || onEdit || onDelete || onRestore || onHardDelete) && (
                       <td className="actions-cell px-6 py-4 text-right">
                         <div
                           className="inline-flex gap-2"
@@ -526,7 +531,7 @@ export default function DataTable<T extends { id: string | number }>({
                               <Eye size={16} />
                             </button>
                           )}
-                          {onEdit && (
+                          {!hasDeletedAt && onEdit && (
                             <button
                               onClick={() => onEdit(row)}
                               className="rounded-md p-1.5 text-emerald-600 transition-colors hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-500/10"
@@ -535,11 +540,29 @@ export default function DataTable<T extends { id: string | number }>({
                               <Pencil size={16} />
                             </button>
                           )}
-                          {onDelete && (
+                          {!hasDeletedAt && onDelete && (
                             <button
                               onClick={() => onDelete(row)}
                               className="rounded-md p-1.5 text-rose-600 transition-colors hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10"
                               title={t("delete")}
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          )}
+                          {hasDeletedAt && onRestore && (
+                            <button
+                              onClick={() => onRestore(row)}
+                              className="rounded-md p-1.5 text-emerald-600 transition-colors hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-500/10"
+                              title={t("restore") || "Khôi phục"}
+                            >
+                              <RotateCcw size={16} />
+                            </button>
+                          )}
+                          {hasDeletedAt && onHardDelete && (
+                            <button
+                              onClick={() => onHardDelete(row)}
+                              className="rounded-md p-1.5 text-rose-650 transition-colors hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10"
+                              title={t("hardDelete") || "Xóa vĩnh viễn"}
                             >
                               <Trash2 size={16} />
                             </button>

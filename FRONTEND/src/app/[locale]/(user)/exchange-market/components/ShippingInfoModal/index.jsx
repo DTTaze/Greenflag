@@ -3,6 +3,7 @@ import { Star, Truck, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { forwardRef, useEffect, useState } from "react";
 
+import AddressFormDialog from "@/src/app/[locale]/(user)/(private)/user/address/components/AddressFormDialog";
 import { useAuthStore } from "@/src/store/auth/authStore";
 import { getReceiverInfoByUserId } from "@/src/utils/api";
 
@@ -10,6 +11,7 @@ const ShippingInfoModal = forwardRef(({ isOpen, onClose, onSelect }, ref) => {
   const t = useTranslations("exchangeMarket");
   const [shippingOptions, setShippingOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isAddressFormOpen, setIsAddressFormOpen] = useState(false);
   const { user } = useAuthStore();
 
   useEffect(() => {
@@ -75,9 +77,18 @@ const ShippingInfoModal = forwardRef(({ isOpen, onClose, onSelect }, ref) => {
                   <div className="h-24 rounded-lg border border-emerald-200/50 bg-slate-50/50 dark:border-emerald-500/10 dark:bg-slate-900/30"></div>
                 </div>
               ) : shippingOptions.length === 0 ? (
-                <p className="py-6 text-center text-sm text-slate-400">
-                  {t("shipping.emptySaved")}
-                </p>
+                <div className="py-6 text-center">
+                  <p className="text-sm text-slate-400 mb-4">
+                    {t("shipping.emptySaved") || "Chưa có địa chỉ nào được lưu."}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setIsAddressFormOpen(true)}
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 px-4 py-2 text-sm font-bold text-white transition duration-200 active:scale-[0.98] shadow-md shadow-emerald-950/20 cursor-pointer"
+                  >
+                    + Thêm địa chỉ mới
+                  </button>
+                </div>
               ) : (
                 <div className="space-y-3">
                   {shippingOptions.map((option) => (
@@ -115,6 +126,14 @@ const ShippingInfoModal = forwardRef(({ isOpen, onClose, onSelect }, ref) => {
                       </p>
                     </button>
                   ))}
+
+                  <button
+                    type="button"
+                    onClick={() => setIsAddressFormOpen(true)}
+                    className="w-full rounded-xl border border-dashed border-emerald-500/35 bg-emerald-50/5 p-4 text-center text-sm font-semibold text-emerald-500 hover:border-emerald-450 hover:bg-emerald-50/10 dark:border-emerald-500/20 dark:bg-slate-950/20 dark:hover:border-emerald-500/30 dark:hover:bg-slate-900/40 transition duration-200 cursor-pointer"
+                  >
+                    + Thêm địa chỉ mới
+                  </button>
                 </div>
               )}
             </div>
@@ -128,6 +147,20 @@ const ShippingInfoModal = forwardRef(({ isOpen, onClose, onSelect }, ref) => {
                 {t("common.cancel")}
               </button>
             </div>
+
+            {/* Address Form Dialog Overlay */}
+            {isAddressFormOpen && (
+              <AddressFormDialog
+                isOpen={isAddressFormOpen}
+                onClose={() => setIsAddressFormOpen(false)}
+                editingAddress={null}
+                userId={user?.id}
+                onSuccess={(savedAddress) => {
+                  setIsAddressFormOpen(false);
+                  handleSelect(savedAddress);
+                }}
+              />
+            )}
           </motion.div>
         </div>
       )}

@@ -3,6 +3,7 @@ import { CheckCircle, Coins, ShoppingBag, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React from "react";
 
+import AddressFormDialog from "@/src/app/[locale]/(user)/(private)/user/address/components/AddressFormDialog";
 import ShippingInfoDisplay from "../ShippingInfoDisplay";
 import ShippingInfoModal from "../ShippingInfoModal";
 import TransactionSummary from "../TransactionSummary";
@@ -23,6 +24,7 @@ export default function PurchaseModal({
     isProcessing,
     shippingInfo,
     shippingFee,
+    previewError,
     isShippingModalOpen,
     isLoadingShipping,
     currentStock,
@@ -36,6 +38,13 @@ export default function PurchaseModal({
     handleChangeShipping,
     handleSelectShipping,
     setIsShippingModalOpen,
+    isAddressFormOpen,
+    setIsAddressFormOpen,
+    editingAddressForModal,
+    handleAddAddress,
+    handleEditAddress,
+    handleAddressSuccess,
+    user,
   } = usePurchaseModal({ isOpen, onClose, item, userCoins, onConfirm });
 
   return (
@@ -77,7 +86,33 @@ export default function PurchaseModal({
                 isLoadingShipping={isLoadingShipping}
                 shippingInfo={shippingInfo}
                 onChangeShipping={handleChangeShipping}
+                onAddAddress={handleAddAddress}
               />
+
+              {previewError && (
+                <div className="rounded-xl border border-red-200 bg-red-50 p-3.5 text-xs font-semibold text-red-650 dark:border-red-500/25 dark:bg-red-950/20 dark:text-red-400">
+                  <div className="flex flex-col gap-2">
+                    <p className="leading-relaxed">{previewError}</p>
+                    <div className="flex items-center gap-2 pt-1 border-t border-red-200/50 dark:border-red-500/10">
+                      <button
+                        type="button"
+                        onClick={handleEditAddress}
+                        className="text-[11px] font-bold text-red-700 hover:text-red-800 hover:underline dark:text-red-300 dark:hover:text-red-200 transition-all cursor-pointer"
+                      >
+                        Sửa địa chỉ
+                      </button>
+                      <span className="text-red-300 dark:text-red-800/80">|</span>
+                      <button
+                        type="button"
+                        onClick={handleChangeShipping}
+                        className="text-[11px] font-bold text-red-700 hover:text-red-800 hover:underline dark:text-red-300 dark:hover:text-red-200 transition-all cursor-pointer"
+                      >
+                        Chọn địa chỉ khác
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Item Details */}
               <div className="flex gap-4 border-b border-emerald-100 pt-1 pb-5 dark:border-emerald-500/10">
@@ -92,7 +127,7 @@ export default function PurchaseModal({
                   <h3 className="truncate text-sm font-semibold text-slate-800 dark:text-white">
                     {item.name}
                   </h3>
-                  <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+                  <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-slate-550 dark:text-slate-400">
                     {item.description}
                   </p>
                   <div className="mt-1.5 flex items-center justify-between">
@@ -100,11 +135,20 @@ export default function PurchaseModal({
                       <span>{item.price}</span>
                       <Coins className="ml-1 h-3.5 w-3.5" />
                     </div>
-                    <span className="text-[11px] text-slate-500">
-                      {t("purchaseModal.remainingLabel", {
-                        count: currentStock,
-                      })}
-                    </span>
+                    <div className="flex flex-col items-end gap-0.5">
+                      <span className="text-[11px] text-slate-550 dark:text-slate-450">
+                        {t("purchaseModal.remainingLabel", {
+                          count: currentStock,
+                        })}
+                      </span>
+                      {item.purchaseLimitPerDay && item.purchaseLimitPerDay > 0 && (
+                        <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                          {t("purchaseModal.limitLabel", {
+                            count: item.purchaseLimitPerDay,
+                          })}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -159,9 +203,9 @@ export default function PurchaseModal({
                 </button>
                 <button
                   onClick={handleConfirm}
-                  disabled={!canPurchase || isProcessing || !shippingInfo}
+                  disabled={!canPurchase || isProcessing || !shippingInfo || !!previewError}
                   className={`flex flex-1 items-center justify-center rounded-lg py-2.5 text-sm font-semibold text-white shadow-lg transition-all duration-200 ${
-                    canPurchase && !isProcessing && shippingInfo
+                    canPurchase && !isProcessing && shippingInfo && !previewError
                       ? "bg-emerald-600 shadow-emerald-600/10 hover:bg-emerald-500 active:scale-[0.98]"
                       : "cursor-not-allowed border border-emerald-500/10 bg-slate-800/50 text-slate-500 dark:border-slate-700/30 dark:bg-slate-800"
                   }`}
@@ -192,6 +236,17 @@ export default function PurchaseModal({
               onClose={() => setIsShippingModalOpen(false)}
               onSelect={handleSelectShipping}
               ref={shippingModalRef}
+            />
+          )}
+
+          {/* Address Form Dialog Overlay */}
+          {isAddressFormOpen && (
+            <AddressFormDialog
+              isOpen={isAddressFormOpen}
+              onClose={() => setIsAddressFormOpen(false)}
+              editingAddress={editingAddressForModal}
+              userId={user?.id}
+              onSuccess={handleAddressSuccess}
             />
           )}
         </div>

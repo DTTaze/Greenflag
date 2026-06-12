@@ -3,6 +3,8 @@
 import { useTranslations } from "next-intl";
 import React, { useCallback, useState } from "react";
 
+import { useAuthStore } from "@/src/store/auth/authStore";
+
 import {
   createProduct,
   deleteProduct,
@@ -83,7 +85,7 @@ export function useMarketplaceCrud({
   const confirmPurchase = useCallback(
     async (
       quantity: number,
-      shippingInfo: { receiver_information_id: number },
+      shippingInfo: any,
     ) => {
       if (!selectedItem) {
         setError(t("errors.noItemSelected"));
@@ -111,15 +113,30 @@ export function useMarketplaceCrud({
           name: selectedItem.name,
           quantity: quantity,
           receiver_information_id: shippingInfo.receiver_information_id,
+          to_name: shippingInfo.to_name || shippingInfo.toName || "Recipient",
+          to_phone: shippingInfo.to_phone || shippingInfo.toPhone || "",
+          to_address: shippingInfo.to_address || shippingInfo.toAddress || "",
         };
 
-        const response = await purchaseItem(
+        const response = (await purchaseItem(
           auth.user.id,
           selectedItem.id,
           purchaseData,
-        );
+        )) as any;
 
-        if (response.data?.job_id) {
+        if (response.success && (response.data?.jobId || response.data?.job_id)) {
+          // Update coins balance in local state store immediately
+          const currentAmount = auth.user?.coins?.amount || 0;
+          const newAmount = Math.max(0, currentAmount - totalCost);
+          useAuthStore.getState().dispatch({
+            type: "UPDATE_USER",
+            payload: {
+              coins: {
+                amount: newAmount,
+              },
+            },
+          });
+
           setTransactionStatus("success");
           setIsModalOpen(false);
           setSelectedItem(null);
@@ -129,12 +146,22 @@ export function useMarketplaceCrud({
         } else {
           throw new Error(t("errors.txNoCode"));
         }
-      } catch (error: unknown) {
+      } catch (error: any) {
         setTransactionStatus("failed");
-        const err = error as { message?: string };
+        const apiError = error.response?.data;
+        let errorMessage = "";
+
+        if (apiError?.code === "exceeded_daily_limit") {
+          errorMessage = t("errors.exceededDailyLimit");
+        } else if (apiError?.code === "insufficient_balance") {
+          errorMessage = t("errors.insufficientCoinsTx");
+        } else {
+          errorMessage = apiError?.message || error.message || t("common.tryAgain");
+        }
+
         setError(
           t("errors.txFailed", {
-            message: err.message || t("common.tryAgain"),
+            message: errorMessage,
           }),
         );
         console.error("Lỗi khi xử lý giao dịch:", error);

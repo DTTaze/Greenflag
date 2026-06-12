@@ -192,6 +192,14 @@ export class DeliveryController {
       data = await (provider as any).previewOrder(tempAccount, dto);
     } else {
       data = await provider.calculateFee(tempAccount, {
+        senderAddress: dto.from_name ? {
+          name: dto.from_name,
+          phone: dto.from_phone,
+          address: dto.from_address,
+          wardName: dto.from_ward_name || '',
+          districtName: dto.from_district_name || '',
+          provinceName: dto.from_province_name || '',
+        } : undefined,
         receiverAddress: {
           name: dto.to_name,
           phone: dto.to_phone,

@@ -6,6 +6,7 @@ export default function ShippingInfoDisplay({
   isLoadingShipping,
   shippingInfo,
   onChangeShipping,
+  onAddAddress,
 }) {
   const t = useTranslations("exchangeMarket");
 
@@ -16,13 +17,15 @@ export default function ShippingInfoDisplay({
           <MapPin size={14} className="text-emerald-500" />
           {t("shipping.title")}
         </h3>
-        <button
-          onClick={onChangeShipping}
-          className="flex items-center gap-0.5 text-xs font-medium text-emerald-400 transition-colors duration-150 hover:text-emerald-300"
-        >
-          {t("shipping.btnChange")}
-          <ArrowRight size={12} />
-        </button>
+        {shippingInfo && (
+          <button
+            onClick={onChangeShipping}
+            className="flex items-center gap-0.5 text-xs font-medium text-emerald-400 transition-colors duration-150 hover:text-emerald-300"
+          >
+            {t("shipping.btnChange")}
+            <ArrowRight size={12} />
+          </button>
+        )}
       </div>
 
       {isLoadingShipping ? (
@@ -48,10 +51,17 @@ export default function ShippingInfoDisplay({
           </p>
         </div>
       ) : (
-        <div className="rounded-lg border border-red-900/30 bg-red-950/10 p-4 text-center">
-          <p className="text-xs font-medium text-red-400">
-            {t("shipping.empty")}
+        <div className="rounded-lg border border-dashed border-slate-800 bg-slate-950/20 p-5 text-center">
+          <p className="text-xs font-medium text-slate-400 mb-3 leading-relaxed">
+            {t("shipping.empty") || "Bạn chưa cấu hình địa chỉ nhận hàng."}
           </p>
+          <button
+            type="button"
+            onClick={onAddAddress}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 px-3 py-1.5 text-xs font-bold text-white transition-all duration-150 active:scale-[0.98] shadow-md shadow-emerald-950/20 cursor-pointer"
+          >
+            + Thêm địa chỉ mới
+          </button>
         </div>
       )}
     </div>

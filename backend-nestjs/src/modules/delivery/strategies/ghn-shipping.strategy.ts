@@ -13,6 +13,7 @@ import { DELIVERY_ORDER_STATUS } from '@shared/enums';
 import { DeliveryAccount } from '../entities/delivery-account.entity';
 import {
   IShippingProvider,
+  ShippingAddress,
   StandardShippingPayload,
   StandardShippingResponse,
 } from '../interfaces/shipping-provider.interface';
@@ -32,8 +33,21 @@ export class GhnShippingStrategy implements IShippingProvider {
   }
 
   private buildHeaders(account: DeliveryAccount) {
-    const token = account.apiConfig?.token || '';
-    const shopId = account.apiConfig?.shop_id;
+    const dbToken = account.apiConfig?.token;
+    const isMockToken = !dbToken || dbToken.startsWith('sample-');
+
+    const token = !isMockToken
+      ? dbToken
+      : this.configService.get<string>('GHN_TOKEN') ||
+        process.env.GHN_TOKEN ||
+        'c3f24415-29b9-11f0-9b81-222185cb68c8';
+
+    const shopId = !isMockToken && account.apiConfig?.shop_id
+      ? account.apiConfig.shop_id
+      : this.configService.get<string>('GHN_SHOP_ID') ||
+        process.env.GHN_SHOP_ID ||
+        '196506';
+
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       Token: token,
@@ -97,28 +111,145 @@ export class GhnShippingStrategy implements IShippingProvider {
     }
   }
 
+  private cleanAddressName(name: string): string {
+    if (!name) return '';
+    let cleaned = name.toLowerCase().trim();
+    if (cleaned === 'hcm' || cleaned === 'tp. hcm' || cleaned === 'tphcm' || cleaned === 'tp.hcm') {
+      cleaned = 'ho chi minh';
+    }
+    if (cleaned === 'ha noi' || cleaned === 'hn' || cleaned === 'tp. ha noi') {
+      cleaned = 'ha noi';
+    }
+    return cleaned
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
+      .replace(/\b(tinh|thanh pho|tp|quan|huyen|phuong|xa|thi tran|thi xa)\b/g, '') // Remove prefixes
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  private async resolveAddressIds(
+    account: DeliveryAccount,
+    address: ShippingAddress,
+  ): Promise<{ districtId: number; wardCode: string } | null> {
+    try {
+      // 1. Get provinces
+      const provinceRes = await this.getProvinces(account);
+      const provinces = provinceRes?.data || [];
+      const provinceNameClean = this.cleanAddressName(address.provinceName);
+
+      // Match province by name
+      let matchedProvince = provinces.find(
+        (p: any) => this.cleanAddressName(p.ProvinceName) === provinceNameClean,
+      );
+      if (!matchedProvince) {
+        matchedProvince = provinces.find(
+          (p: any) =>
+            this.cleanAddressName(p.ProvinceName).includes(provinceNameClean) ||
+            provinceNameClean.includes(this.cleanAddressName(p.ProvinceName)),
+        );
+      }
+      if (!matchedProvince) {
+        this.logger.warn(`Province not found for: ${address.provinceName}`);
+        return null;
+      }
+
+      // 2. Get districts in this province
+      const districtRes = await this.getDistricts(
+        account,
+        matchedProvince.ProvinceID,
+      );
+      const districts = districtRes?.data || [];
+      const districtNameClean = this.cleanAddressName(address.districtName);
+
+      // Try exact match first
+      let matchedDistrict = districts.find(
+        (d: any) => this.cleanAddressName(d.DistrictName) === districtNameClean,
+      );
+      if (!matchedDistrict) {
+        matchedDistrict = districts.find(
+          (d: any) =>
+            this.cleanAddressName(d.DistrictName).includes(districtNameClean) ||
+            districtNameClean.includes(this.cleanAddressName(d.DistrictName)),
+        );
+      }
+      if (!matchedDistrict) {
+        this.logger.warn(
+          `District not found for: ${address.districtName} in province: ${matchedProvince.ProvinceName}`,
+        );
+        return null;
+      }
+
+      // 3. Get wards in this district
+      const wardRes = await this.getWards(account, matchedDistrict.DistrictID);
+      const wards = wardRes?.data || [];
+      const wardNameClean = this.cleanAddressName(address.wardName);
+
+      // Try exact match first
+      let matchedWard = wards.find(
+        (w: any) => this.cleanAddressName(w.WardName) === wardNameClean,
+      );
+      if (!matchedWard) {
+        matchedWard = wards.find(
+          (w: any) =>
+            this.cleanAddressName(w.WardName).includes(wardNameClean) ||
+            wardNameClean.includes(this.cleanAddressName(w.WardName)),
+        );
+      }
+      if (!matchedWard) {
+        this.logger.warn(
+          `Ward not found for: ${address.wardName} in district: ${matchedDistrict.DistrictName}`,
+        );
+        return null;
+      }
+
+      return {
+        districtId: parseInt(matchedDistrict.DistrictID, 10),
+        wardCode: String(matchedWard.WardCode),
+      };
+    } catch (error) {
+      this.logger.error(`Error resolving address IDs: ${error.message}`);
+      return null;
+    }
+  }
+
   public async calculateFee(
     account: DeliveryAccount,
     payload: StandardShippingPayload,
+    serviceTypeId: number = 2,
   ): Promise<number> {
-    const ghnPayload = this.mapToGhnPayload(payload);
-    const url = `${this.baseUrl}/v2/shipping-order/preview`;
-    const response = await firstValueFrom(
-      this.httpService.post(url, ghnPayload, {
-        headers: this.buildHeaders(account),
-      }),
-    );
-    return Number(response.data?.data?.total_fee) || 0;
+    const ghnPayload = await this.mapToGhnPayload(account, payload, serviceTypeId);
+    const url = `${this.baseUrl}/v2/shipping-order/fee`;
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post(url, ghnPayload, {
+          headers: this.buildHeaders(account),
+        }),
+      );
+      return Number(response.data?.data?.total_fee) || 0;
+    } catch (error) {
+      if (serviceTypeId === 2) {
+        this.logger.warn(
+          `calculateFee with service_type_id 2 failed: ${error.message}. Retrying with service_type_id 5...`,
+        );
+        return this.calculateFee(account, payload, 5);
+      }
+      this.logger.error(
+        `GHN calculateFee failed: ${error.response?.data ? JSON.stringify(error.response.data) : error.message}`,
+      );
+      throw error;
+    }
   }
 
   public async createOrder(
     account: DeliveryAccount,
     payload: StandardShippingPayload,
+    serviceTypeId: number = 2,
   ): Promise<StandardShippingResponse> {
     const tracer = trace.getTracer('ghn-shipping');
     return tracer.startActiveSpan('ghn-create-order', async (span) => {
       try {
-        const ghnPayload = this.mapToGhnPayload(payload);
+        const ghnPayload = await this.mapToGhnPayload(account, payload, serviceTypeId);
         const url = `${this.baseUrl}/v2/shipping-order/create`;
 
         span.setAttribute('http.url', url);
@@ -167,6 +298,16 @@ export class GhnShippingStrategy implements IShippingProvider {
           rawResponse: response.data,
         };
       } catch (error) {
+        if (serviceTypeId === 2) {
+          this.logger.warn(
+            `createOrder with service_type_id 2 failed: ${error.message}. Retrying with service_type_id 5...`,
+          );
+          span.end();
+          return this.createOrder(account, payload, 5);
+        }
+        this.logger.error(
+          `GHN createOrder failed: ${error.response?.data ? JSON.stringify(error.response.data) : error.message}`,
+        );
         span.recordException(error);
         span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
         throw error;
@@ -255,7 +396,24 @@ export class GhnShippingStrategy implements IShippingProvider {
     return data;
   }
 
-  private mapToGhnPayload(payload: StandardShippingPayload) {
+  private async mapToGhnPayload(
+    account: DeliveryAccount,
+    payload: StandardShippingPayload,
+    serviceTypeId: number = 2,
+  ) {
+    const toAddressIds = await this.resolveAddressIds(
+      account,
+      payload.receiverAddress,
+    );
+    const fromAddressIds = payload.senderAddress
+      ? await this.resolveAddressIds(account, payload.senderAddress)
+      : null;
+
+    const to_district_id = toAddressIds?.districtId || 1442;
+    const to_ward_code = toAddressIds?.wardCode || '20107';
+    const from_district_id = fromAddressIds?.districtId || 1442;
+    const from_ward_code = fromAddressIds?.wardCode || '20107';
+
     return {
       payment_type_id: 1, // Shop pays fee
       note: 'Giao hang tu heartify platform',
@@ -266,11 +424,17 @@ export class GhnShippingStrategy implements IShippingProvider {
       to_ward_name: payload.receiverAddress.wardName,
       to_district_name: payload.receiverAddress.districtName,
       to_province_name: payload.receiverAddress.provinceName,
+
+      to_district_id: parseInt(to_district_id as any, 10),
+      to_ward_code: String(to_ward_code),
+      from_district_id: parseInt(from_district_id as any, 10),
+      from_ward_code: String(from_ward_code),
+
       weight: payload.weight,
       length: payload.length || 10,
       width: payload.width || 10,
       height: payload.height || 10,
-      service_type_id: 2,
+      service_type_id: serviceTypeId,
       cod_amount: payload.codAmount,
       items: payload.items.map((i) => ({
         name: i.name,

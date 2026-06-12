@@ -18,7 +18,6 @@ import { useAuthStore } from "@/src/store/auth/authStore";
 
 import { MarketplaceContext } from "../../layout";
 import DetailsModal from "../DetailsModal";
-import PurchaseModal from "../PurchaseModal";
 
 export const statusConfig = {
   public: { name: "Đang hiển thị", color: "text-green-605", Icon: CheckCircle },
@@ -49,7 +48,6 @@ const MarketplaceItemCard = ({
 }) => {
   const t = useTranslations("exchangeMarket");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [currentStock, setCurrentStock] = useState(item.stock);
   const [currentStatus, setCurrentStatus] = useState(item.postStatus);
@@ -86,7 +84,6 @@ const MarketplaceItemCard = ({
         return;
       }
       handlePurchase(item);
-      setShowPurchaseModal(true);
     } else {
       setShowDetailsModal(true);
     }
@@ -121,7 +118,7 @@ const MarketplaceItemCard = ({
         </div>
 
         {/* Item Details */}
-        <div className={`p-5 pb-0 ${showPurchaseModal || showDetailsModal ? "blur-sm" : ""}`}>
+        <div className={`p-5 pb-0 ${showDetailsModal ? "blur-sm" : ""}`}>
           <h3 className="truncate text-sm leading-snug font-bold text-slate-800 dark:text-zinc-200 transition-colors group-hover:text-emerald-700 dark:group-hover:text-emerald-400">
             {item.name}
           </h3>
@@ -147,7 +144,7 @@ const MarketplaceItemCard = ({
           className={`flex items-center justify-between border-t border-emerald-100 dark:border-emerald-500/10 pt-4 transition-all duration-300 ${viewMode === "all_items" || viewMode === "redeem"
             ? "group-hover:blur-xs"
             : ""
-            } ${showPurchaseModal || showDetailsModal ? "blur-sm" : ""}`}
+            } ${showDetailsModal ? "blur-sm" : ""}`}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
@@ -205,21 +202,6 @@ const MarketplaceItemCard = ({
           onConfirm={confirmDelete}
           title={t("list.deleteTitle")}
           message={t("list.deleteMessage")}
-        />
-      )}
-
-      {/* Purchase Modal */}
-      {showPurchaseModal && (
-        <PurchaseModal
-          isOpen={showPurchaseModal}
-          onClose={() => setShowPurchaseModal(false)}
-          item={item}
-          userCoins={user?.coins?.amount || 0}
-          onConfirm={(quantity, shippingInfo) => {
-            confirmPurchase(quantity, shippingInfo);
-            setShowPurchaseModal(false);
-            if (fetchItems) fetchItems();
-          }}
         />
       )}
 

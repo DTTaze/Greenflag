@@ -73,11 +73,11 @@ export default function SidebarPartner({
       path: "/partner/inventory",
       icon: <Package size={20} />,
     },
-    {
-      label: t("reports.title") || "Báo cáo",
-      path: "/partner/reports",
-      icon: <BarChart2 size={20} />,
-    },
+    // {
+    //   label: t("reports.title") || "Báo cáo",
+    //   path: "/partner/reports",
+    //   icon: <BarChart2 size={20} />,
+    // },
     // {
     //   label: t("profile.title") || "Hồ sơ đối tác",
     //   path: "/partner/profile",

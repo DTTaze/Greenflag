@@ -710,7 +710,8 @@
         "completedTasks": "Missions Completed",
         "coinsReceived": "Coins Received",
         "ranking": "Leaderboard",
-        "stats": "Activity Stats"
+        "stats": "Activity Stats",
+        "streak": "Day Streak"
       },
       "eventList": {
         "title": "Environmental Events",

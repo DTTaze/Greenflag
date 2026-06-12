@@ -710,7 +710,8 @@
       "completedTasks": "Nhiệm vụ đã xong",
       "coinsReceived": "Xu đã nhận",
       "ranking": "Bảng Xếp Hạng",
-      "stats": "Thống Kê Hoạt Động"
+      "stats": "Thống Kê Hoạt Động",
+      "streak": "Chuỗi ngày"
     },
     "eventList": {
       "title": "Sự Kiện Môi Trường",

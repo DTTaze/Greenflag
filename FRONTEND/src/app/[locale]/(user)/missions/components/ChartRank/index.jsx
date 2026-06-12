@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { getUserById, rearrangeRank } from "@/src/utils/api";
+import { getRanks, mapUserToStore } from "@/src/utils/api";
 
 function Ranking() {
   const [rankData, setRankData] = useState({
@@ -15,39 +15,26 @@ function Ranking() {
     const fetchRankingData = async () => {
       try {
         setLoading(true);
-        const response = await rearrangeRank();
+        const response = await getRanks();
         console.log("ranking response: ", response);
 
         if (response.data && response.success) {
           const ranks = response.data;
 
-          // Fetch user details for each rank
-          const ranksWithUserDetails = await Promise.all(
-            ranks.map(async (rank) => {
-              try {
-                const userResponse = await getUserById(rank.user_id);
-                console.log("user response in ranking", userResponse);
-
-                if (userResponse.data && userResponse.success) {
-                  return {
-                    ...rank,
-                    user: userResponse.data,
-                  };
-                }
-                return null; // Return null if user fetch fails
-              } catch (err) {
-                console.error(
-                  `Error fetching user details for user_id ${rank.user_id}:`,
-                  err,
-                );
-                return null; // Return null if there's an error
-              }
-            }),
-          );
+          // Map user using mapUserToStore to ensure consistent field names (full_name, avatar_url, roles, etc.)
+          const ranksWithMappedUsers = ranks.map((rank) => {
+            if (rank && rank.user) {
+              return {
+                ...rank,
+                user: mapUserToStore(rank.user),
+              };
+            }
+            return null;
+          });
 
           // Filter out null values and users with role_id !== 2
-          const filteredRanks = ranksWithUserDetails.filter(
-            (rank) => rank !== null && rank.user && rank.user.roles.id === 2,
+          const filteredRanks = ranksWithMappedUsers.filter(
+            (rank) => rank !== null && rank.user && rank.user.role_id === 2,
           );
 
           // Transform the data for the chart
@@ -60,7 +47,7 @@ function Ranking() {
           };
 
           setRankData(transformedData);
-          console.log("filteredRanks data: ", ranksWithUserDetails);
+          console.log("filteredRanks data: ", filteredRanks);
         }
       } catch (err) {
         console.error("Error fetching ranking data:", err);

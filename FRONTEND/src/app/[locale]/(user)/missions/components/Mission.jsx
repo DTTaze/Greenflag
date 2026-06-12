@@ -5,15 +5,17 @@ import React from "react";
 import { ToastContainer } from "react-toastify";
 
 import Calendar from "./Calendar/index.jsx";
-import Ranking from "./ChartRank/index.jsx";
 import EventBanner from "./EventBanner/index.jsx";
 import EventList from "./EventList/index.jsx";
 import useMission from "./hooks/useMission";
 import MissionFilters from "./MissionFilters/index.jsx";
 import MissionHeader from "./MissionHeader/index.jsx";
+import MissionSidebarStats from "./MissionSidebarStats/index.jsx";
 import MissionSkeleton from "./MissionSkeleton/index.jsx";
+import MissionStatsBar from "./MissionStatsBar/index.jsx";
 import MissionTabs from "./MissionTabs/index.jsx";
 import QrTaskSubmissionModal from "./QrTaskSubmissionModal/index.jsx";
+import SidebarRankingCard from "./SidebarRankingCard/index.jsx";
 import TasksList from "./TasksList/index.jsx";
 import TaskSubmissionModal from "./TaskSubmissionModal/index.jsx";
 
@@ -122,39 +124,14 @@ function Mission() {
         </div>
 
         {/* Progress Dashboard / Activity Stats - Horizontal Bar */}
-        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3 rounded-3xl border border-gray-200 dark:border-zinc-800/80 bg-white dark:bg-zinc-900 p-6 shadow-sm">
-          <div className="flex items-center gap-4 rounded-2xl border border-orange-100 dark:border-orange-900/20 bg-orange-50/40 dark:bg-orange-950/10 p-4 transition-all hover:shadow-xs">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-orange-100 dark:bg-orange-950/50 text-orange-600 dark:text-orange-400">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
-            </div>
-            <div>
-              <p className="text-[10px] font-extrabold tracking-wider text-orange-700/80 uppercase dark:text-orange-400/80">Chuỗi ngày</p>
-              <p className="text-xl font-black text-orange-600 dark:text-orange-400">{userInfo?.streak || 0} ngày 🔥</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4 rounded-2xl border border-green-100 dark:border-green-900/20 bg-green-50/40 dark:bg-green-950/10 p-4 transition-all hover:shadow-xs">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-green-100 dark:bg-green-950/50 text-green-600 dark:text-green-400">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-            </div>
-            <div>
-              <p className="text-[10px] font-extrabold tracking-wider text-green-700/80 uppercase dark:text-green-400/80">Nhiệm vụ đã xong</p>
-              <p className="text-xl font-black text-green-600 dark:text-green-400">{completedTasks.length}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4 rounded-2xl border border-amber-100 dark:border-amber-900/20 bg-amber-50/40 dark:bg-amber-950/10 p-4 transition-all hover:shadow-xs">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-100 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6"><circle cx="12" cy="12" r="8"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-            </div>
-            <div>
-              <p className="text-[10px] font-extrabold tracking-wider text-amber-700/80 uppercase dark:text-amber-400/80">Xu đã nhận</p>
-              <p className="text-xl font-black text-amber-600 dark:text-amber-400">
-                {completedTasks.reduce((sum, task) => sum + (task.coin || task.coins || 0), 0)} xu 🪙
-              </p>
-            </div>
-          </div>
-        </div>
+        <MissionStatsBar
+          streak={userInfo?.streak}
+          completedCount={completedTasks.length}
+          coinsReceived={completedTasks.reduce(
+            (sum, task) => sum + (task.coin || task.coins || 0),
+            0,
+          )}
+        />
 
         {/* Main Content */}
         <div className="flex flex-col gap-8 lg:flex-row">
@@ -240,43 +217,15 @@ function Mission() {
             />
 
             {/* Ranking Component */}
-            <div className="overflow-hidden rounded-2xl border border-emerald-200/70 bg-emerald-50/80 shadow-2xl shadow-emerald-200/30 transition-colors duration-300 dark:border-emerald-500/20 dark:bg-slate-900/80 dark:shadow-emerald-950/20 dark:backdrop-blur">
-              <div className="border-b border-emerald-100 bg-teal-50/70 p-4 transition-colors duration-300 dark:border-emerald-500/20 dark:bg-[#064E3B]/20">
-                <h2 className="text-sm font-extrabold tracking-wider text-emerald-900 uppercase dark:text-slate-100">
-                  {t("ranking")}
-                </h2>
-              </div>
-              <div className="p-4">
-                <Ranking />
-              </div>
-            </div>
+            <SidebarRankingCard />
 
             {/* Stats Card */}
-            <div className="rounded-2xl border border-emerald-200/70 bg-emerald-50/90 p-5 shadow-2xl shadow-emerald-200/30 transition-colors duration-300 dark:border-emerald-500/20 dark:bg-slate-900/80 dark:shadow-emerald-950/20 dark:backdrop-blur">
-              <h2 className="mb-4 text-sm font-extrabold tracking-wider text-emerald-900 uppercase dark:text-slate-100">
-                {t("stats")}
-              </h2>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-xl border border-emerald-200/60 bg-emerald-100/70 p-4 text-center transition-colors duration-300 dark:border-emerald-500/15 dark:bg-emerald-500/10">
-                  <p className="text-2xl font-black text-emerald-700 dark:text-emerald-300">
-                    {completedTasks.length}
-                  </p>
-                  <p className="mt-1 text-[10px] leading-snug font-bold tracking-wide text-emerald-800 uppercase dark:text-emerald-200/80">
-                    {t("completedTasks")}
-                  </p>
-                </div>
-                <div className="rounded-xl border border-emerald-200/60 bg-emerald-100/70 p-4 text-center transition-colors duration-300 dark:border-emerald-500/15 dark:bg-emerald-500/10">
-                  <p className="text-2xl font-black text-emerald-700 dark:text-emerald-300">
-                    {completedTasks.reduce((sum, task) => {
-                      return sum + (task.coin || task.coins || 0);
-                    }, 0)}
-                  </p>
-                  <p className="mt-1 text-[10px] leading-snug font-bold tracking-wide text-emerald-800 uppercase dark:text-emerald-200/80">
-                    {t("coinsReceived")}
-                  </p>
-                </div>
-              </div>
-            </div>
+            <MissionSidebarStats
+              completedCount={completedTasks.length}
+              coinsReceived={completedTasks.reduce((sum, task) => {
+                return sum + (task.coin || task.coins || 0);
+              }, 0)}
+            />
           </div>
         </div>
       </div>

@@ -3,7 +3,6 @@
 import {
   BarChart2,
   Calendar,
-  ClipboardList,
   LayoutDashboard,
   LogOut,
   Package,
@@ -16,7 +15,7 @@ import React from "react";
 
 import LocaleSwitcher from "@/src/components/layout/LocaleSwitcher";
 import ThemeSwitcher from "@/src/components/layout/ThemeSwitcher";
-import { Link, usePathname, useRouter } from "@/src/i18n/navigation";
+import { Link, usePathname } from "@/src/i18n/navigation";
 import { useAuthStore } from "@/src/store/auth/authStore";
 import { logoutUser } from "@/src/utils/api";
 
@@ -38,17 +37,15 @@ export default function SidebarPartner({
 }: SidebarPartnerProps) {
   const t = useTranslations("partner");
   const pathname = usePathname();
-  const router = useRouter();
   const { user, dispatch } = useAuthStore();
-  const userRoleName = (user?.role || user?.roles?.name || "").toLowerCase();
-  const isAdmin = userRoleName === "admin" || user?.roles?.id === 1;
+  const isAdmin = user?.role === "admin" || user?.role_id === 1;
 
   const handleLogout = async () => {
     try {
       await logoutUser();
       dispatch({ type: "LOGOUT" });
-      router.push("/login");
       onClose();
+      window.location.href = "/login";
     } catch (error) {
       console.error("Lỗi khi đăng xuất đối tác:", error);
     }

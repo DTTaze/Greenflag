@@ -1,20 +1,10 @@
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
-import React from "react";
 
-import GlobalSearchBar from "@/src/components/common/GlobalSearchBar";
-import PageHeader from "@/src/components/common/PageHeader";
+import CoinBalance from "@/src/app/[locale]/(user)/exchange-market/components/CoinBalance";
 
-/**
- * Header component for the mission page
- */
-const MissionHeader = ({
-  userInfo,
-  loading,
-  searchQuery,
-  setSearchQuery,
-}) => {
+const MissionHeader = ({ userInfo, loading, searchQuery, setSearchQuery }) => {
   const t = useTranslations("missions.header");
 
   if (loading) {
@@ -68,4 +58,3 @@ const MissionHeader = ({
 };
 
 export default MissionHeader;
-

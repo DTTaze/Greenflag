@@ -431,6 +431,36 @@
         "generateFailed": "Unable to create QR code. Please try again."
       }
     },
+    "scanner": {
+      "title": "Event QR Scanner",
+      "subtitle": "Use your device's camera to scan QR codes for event check-in.",
+      "panelTitle": "Configuration & Status",
+      "panelDesc": "Select an event before starting the scan.",
+      "loading": "Loading events...",
+      "noEventsTitle": "No events found!",
+      "noEventsDesc": "You must create at least one event in the Events page before using the scanner.",
+      "selectEvent": "Select Event",
+      "lastResult": "Last Scanned Raw Result",
+      "reset": "Reset",
+      "notReadyTitle": "Not Ready",
+      "notReadyDesc": "Please select or create an event to activate the camera.",
+      "success": "Success!",
+      "error": "Validation Error!",
+      "processing": "Processing check-in...",
+      "warnSelectEvent": "Please select an event before scanning!",
+      "errOtherEventTicket": "This ticket belongs to another event!",
+      "successCheckin": "Check-in successful for attendee!",
+      "errInvalidQrOrCheckedIn": "Invalid QR code or already checked in!",
+      "errLoadEventsFailed": "Unable to load events.",
+      "loadingUser": "Loading user details...",
+      "days": "days",
+      "errors": {
+        "eventCheckinAlready": "This user has already checked in to this event.",
+        "eventUserNotFound": "This user is not registered for this event.",
+        "eventNotFound": "Event not found.",
+        "userNotFound": "User not found."
+      }
+    },
     "inventory": {
       "title": "Gift Inventory",
       "subtitle": "Manage reward stock, quantities, and redemption points for partners.",

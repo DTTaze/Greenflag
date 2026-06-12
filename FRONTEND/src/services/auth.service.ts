@@ -1,4 +1,5 @@
 import { deleteCookie } from "cookies-next/client";
+import QRCode from "qrcode";
 
 import { queryClient } from "@/src/lib/react-query/queryClient";
 import axiosClient from "@/src/services";
@@ -55,8 +56,12 @@ export const resetPassword = (
   return axiosClient.post("/auth/reset-password", { token, newPassword });
 };
 
-export const getQR = (text: string): Promise<any> => {
-  // Mock QR or call backend QR generator if it maps to event.
-  // GHN or Event generation has its own QR path.
-  return Promise.resolve({ success: true, data: { qrCode: text } });
+export const getQR = async (text: string): Promise<any> => {
+  try {
+    const url = await QRCode.toDataURL(text, { margin: 1, width: 300 });
+    return { success: true, data: url };
+  } catch (error: any) {
+    console.error("Failed to generate QR code:", error);
+    return { success: false, message: error?.message || "Failed to generate QR code" };
+  }
 };

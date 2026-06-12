@@ -40,9 +40,9 @@ const EventList = ({ userInfo }) => {
         setEventUser(eventUserSignedData);
 
         // Extract Event objects from eventUser data
-        const eventSignedData = eventUserSignedData.map(
-          (eventUser) => eventUser.Event,
-        );
+        const eventSignedData = eventUserSignedData
+          .map((eventUser) => eventUser?.event || eventUser?.Event)
+          .filter(Boolean);
         setEventsSigned(eventSignedData);
 
         // Fetch all events
@@ -84,7 +84,7 @@ const EventList = ({ userInfo }) => {
   };
 
   const isEventParticipated = (eventId) => {
-    return eventUser.some((eventUser) => eventUser.Event.id === eventId);
+    return eventUser.some((eventUser) => (eventUser?.event?.id || eventUser?.Event?.id) === eventId);
   };
 
   const getCurrentEvents = () => {
@@ -228,10 +228,10 @@ const EventList = ({ userInfo }) => {
             <div className="space-y-3">
               {getPaginatedEvents().map((event) => (
                 <EventCard
-                  key={event.id}
+                  key={event?.id}
                   event={event}
                   onOpenModal={handleOpenModal}
-                  isParticipated={isEventParticipated(event.id)}
+                  isParticipated={isEventParticipated(event?.id)}
                 />
               ))}
             </div>

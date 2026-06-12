@@ -73,6 +73,12 @@ export class UserController {
     return this.transactionService.getItemsByUserId(userId);
   }
 
+  @Get(':id')
+  @UseGuards(AuthGuard)
+  async getUserByID(@Param('id') id: string): Promise<HttpResponse> {
+    return this.userService.getUserByID(id);
+  }
+
   @Put('me/avatar')
   @UseGuards(AuthGuard)
   @UseInterceptors(FileInterceptor('avatar'))

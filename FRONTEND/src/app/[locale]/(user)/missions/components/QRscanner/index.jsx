@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-export default function QRscanner({ onScan, onError, style }) {
+export default function QRscanner({ onScan, onError, style, scannerControlsRef }) {
   const scannerRef = useRef(null);
   const [isScanning, setIsScanning] = useState(false);
   const [message, setMessage] = useState(
@@ -109,6 +109,30 @@ export default function QRscanner({ onScan, onError, style }) {
     }
   };
 
+  useEffect(() => {
+    if (scannerControlsRef) {
+      scannerControlsRef.current = {
+        resume: handleResume,
+        pause: () => {
+          if (scannerRef.current) {
+            try {
+              scannerRef.current.pause();
+              setIsScanning(true);
+              setMessage("Đang tạm dừng...");
+            } catch (e) {
+              console.warn("Pause error:", e);
+            }
+          }
+        },
+      };
+    }
+    return () => {
+      if (scannerControlsRef) {
+        scannerControlsRef.current = null;
+      }
+    };
+  }, [scannerControlsRef, hasPermission]);
+
   return (
     <div className="w-full text-center">
       <div className="mb-3 rounded-xl border border-gray-100 bg-gray-50 p-3 text-xs font-semibold tracking-wide text-gray-500 uppercase">
@@ -119,7 +143,7 @@ export default function QRscanner({ onScan, onError, style }) {
         <div className="space-y-4">
           <div
             id="qr-reader"
-            className="mx-auto w-full max-w-[400px] overflow-hidden rounded-xl border border-gray-200 bg-black shadow-2xs"
+            className="mx-auto w-full max-w-[400px] overflow-hidden rounded-xl border border-gray-200 shadow-2xs"
             style={style}
           >
             <div id="qr-reader-results"></div>

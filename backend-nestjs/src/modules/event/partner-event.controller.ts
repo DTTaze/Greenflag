@@ -108,4 +108,14 @@ export class PartnerEventController {
       isAdmin,
     );
   }
+
+  @Delete(':id')
+  @ApiOperation({ summary: "Delete partner's own event" })
+  async deleteEvent(
+    @Param('id') eventId: string,
+    @RequestUser() reqUser: any,
+  ): Promise<HttpResponse> {
+    const isAdmin = reqUser.role === ROLE.ADMIN;
+    return this.eventService.deleteEvent(eventId, reqUser.id, isAdmin);
+  }
 }

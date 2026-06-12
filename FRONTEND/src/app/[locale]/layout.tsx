@@ -28,6 +28,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Green Flag",
   description: "Protect the environment",
+  icons: {
+    icon: "/images/Logo-Greenflag.png",
+  },
 };
 
 export default async function RootLayout({

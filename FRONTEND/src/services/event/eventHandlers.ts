@@ -98,6 +98,12 @@ export const partnerDeleteParticipantHandler = async (
   return eventServices.partnerDeleteParticipant(eventUserId);
 };
 
+export const partnerDeleteEventHandler = async (
+  eventId: string,
+): Promise<ApiResponse<void>> => {
+  return eventServices.partnerDeleteEvent(eventId);
+};
+
 // --- Admin Handlers ---
 
 export const adminCreateEventHandler = async (

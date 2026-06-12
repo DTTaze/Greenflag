@@ -36,6 +36,9 @@ const EventDetailsModal = ({
         },
       });
       onClose();
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.error("Error joining event:", error);
       toast.error("❌ Không thể tham gia sự kiện", {

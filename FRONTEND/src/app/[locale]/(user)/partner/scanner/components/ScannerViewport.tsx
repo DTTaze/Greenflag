@@ -8,6 +8,7 @@ interface ScannerViewportProps {
   selectedEventId: string;
   isProcessing: boolean;
   scanStatus: "idle" | "success" | "error";
+  errorMessage: string;
   scannerControlsRef: React.MutableRefObject<any>;
   onScan: (qrData: string) => void;
 }
@@ -16,6 +17,7 @@ export function ScannerViewport({
   selectedEventId,
   isProcessing,
   scanStatus,
+  errorMessage,
   scannerControlsRef,
   onScan,
 }: ScannerViewportProps) {
@@ -122,8 +124,8 @@ export function ScannerViewport({
                       size={40}
                       className="animate-bounce text-red-500"
                     />
-                    <span className="text-sm font-semibold text-white">
-                      {t("scanner.error")}
+                    <span className="text-sm font-semibold text-white px-4 text-center">
+                      {errorMessage || t("scanner.error")}
                     </span>
                   </>
                 ) : (

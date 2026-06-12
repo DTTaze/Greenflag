@@ -440,13 +440,16 @@
     },
     "scanner": {
       "title": "Máy quét mã QR sự kiện",
-      "subtitle": "Sử dụng camera của thiết bị để quét mã QR điểm danh khách dự sự kiện.",
+      "subtitle": "Sử dụng camera của thiết bị để quét mã QR điểm danh khách vào và ra sự kiện.",
       "panelTitle": "Cấu hình & Trạng thái",
-      "panelDesc": "Chọn sự kiện trước khi bắt đầu quét.",
+      "panelDesc": "Chọn sự kiện và chế độ điểm danh trước khi bắt đầu quét.",
       "loading": "Đang tải danh sách sự kiện...",
       "noEventsTitle": "Không tìm thấy sự kiện nào!",
       "noEventsDesc": "Bạn phải tạo ít nhất một sự kiện trong trang Sự kiện trước khi sử dụng máy quét.",
       "selectEvent": "Chọn sự kiện",
+      "scanModeLabel": "Chế độ quét",
+      "checkIn": "Điểm danh vào (Check In)",
+      "checkOut": "Điểm danh ra (Check Out)",
       "lastResult": "Kết quả quét gần nhất",
       "reset": "Reset",
       "notReadyTitle": "Chưa sẵn sàng",
@@ -457,15 +460,18 @@
       "warnSelectEvent": "Vui lòng chọn một sự kiện trước khi quét!",
       "errOtherEventTicket": "Mã vé này thuộc về sự kiện khác!",
       "successCheckin": "Check-in thành công cho người tham gia!",
+      "successCheckout": "Check-out thành công cho người tham gia!",
       "errInvalidQrOrCheckedIn": "Mã QR không hợp lệ hoặc đã được sử dụng!",
       "errLoadEventsFailed": "Không thể tải danh sách sự kiện.",
       "loadingUser": "Đang tải thông tin người dùng...",
       "days": "ngày",
       "errors": {
         "eventCheckinAlready": "Người tham gia này đã điểm danh (check-in) rồi.",
-        "eventUserNotFound": "Người tham gia này chưa đăng ký sự kiện này.",
+        "eventUserNotFound": "Không tìm thấy người dùng trong sự kiện này.",
         "eventNotFound": "Không tìm thấy sự kiện.",
-        "userNotFound": "Không tìm thấy người dùng."
+        "userNotFound": "Không tìm thấy người dùng.",
+        "eventNotCheckedIn": "Người tham gia này chưa điểm danh vào sự kiện.",
+        "eventCheckoutAlready": "Người tham gia này đã điểm danh ra (check-out) rồi."
       }
     },
     "inventory": {

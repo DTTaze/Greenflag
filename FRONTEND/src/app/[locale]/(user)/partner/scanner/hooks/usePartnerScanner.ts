@@ -20,6 +20,8 @@ export function usePartnerScanner() {
   );
   const [scannedResult, setScannedResult] = useState<string>("");
   const [scannedUser, setScannedUser] = useState<UserType | null>(null);
+  const [scanMode, setScanMode] = useState<"check-in" | "check-out">("check-in");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const scannerControlsRef = useRef<any>(null);
 
@@ -88,6 +90,8 @@ export function usePartnerScanner() {
 
     setIsProcessing(true);
     setScannedResult(qrData);
+    setScannedUser(null);
+    setErrorMessage("");
 
     // Pause scanner
     if (scannerControlsRef.current) {
@@ -105,12 +109,17 @@ export function usePartnerScanner() {
       if (parsed.userId) userId = parsed.userId;
       else if (parsed.user_id) userId = parsed.user_id;
       if (parsed.eventId && parsed.eventId !== selectedEventId) {
-        toast.error(t("scanner.errOtherEventTicket"));
+        const errorMsg = t("scanner.errOtherEventTicket");
+        setErrorMessage(errorMsg);
+        toast.error(errorMsg);
         setScanStatus("error");
         playBeep(false);
+        setScannedResult("");
+        setScannedUser(null);
         setTimeout(() => {
           setIsProcessing(false);
           setScanStatus("idle");
+          setErrorMessage("");
           // Resume scanner
           if (scannerControlsRef.current) {
             try {
@@ -131,15 +140,23 @@ export function usePartnerScanner() {
     }
 
     try {
-      await eventServices.partnerCheckIn(
-        selectedEventId,
-        userId,
-      );
+      if (scanMode === "check-in") {
+        await eventServices.partnerCheckIn(
+          selectedEventId,
+          userId,
+        );
+        toast.success(t("scanner.successCheckin"));
+      } else {
+        await eventServices.partnerCheckOut(
+          selectedEventId,
+          userId,
+        );
+        toast.success(t("scanner.successCheckout"));
+      }
 
       // Flash green, beep, toast success
       setScanStatus("success");
       playBeep(true);
-      toast.success(t("scanner.successCheckin"));
 
       // Fetch user profile info
       try {
@@ -157,6 +174,8 @@ export function usePartnerScanner() {
       // Flash red, beep, toast error
       setScanStatus("error");
       playBeep(false);
+      setScannedResult("");
+      setScannedUser(null);
 
       const getErrorMessage = (err: any): string => {
         const serverCode = err?.response?.data?.code;
@@ -164,6 +183,12 @@ export function usePartnerScanner() {
 
         if (serverCode === "event_checkin_already") {
           return t("scanner.errors.eventCheckinAlready");
+        }
+        if (serverCode === "event_checkout_already") {
+          return t("scanner.errors.eventCheckoutAlready");
+        }
+        if (serverCode === "event_not_checked_in") {
+          return t("scanner.errors.eventNotCheckedIn");
         }
         if (serverCode === "event_user_not_found") {
           return t("scanner.errors.eventUserNotFound");
@@ -184,7 +209,9 @@ export function usePartnerScanner() {
         return t("scanner.errInvalidQrOrCheckedIn");
       };
 
-      toast.error(getErrorMessage(error));
+      const errorMsg = getErrorMessage(error);
+      setErrorMessage(errorMsg);
+      toast.error(errorMsg);
     } finally {
       // Reset scanning state after 2 seconds debounce
       setTimeout(() => {
@@ -206,6 +233,7 @@ export function usePartnerScanner() {
     setScannedResult("");
     setScannedUser(null);
     setScanStatus("idle");
+    setErrorMessage("");
     setIsProcessing(false);
     if (scannerControlsRef.current) {
       try {
@@ -222,11 +250,14 @@ export function usePartnerScanner() {
     events,
     selectedEventId,
     setSelectedEventId,
+    scanMode,
+    setScanMode,
     loadingEvents,
     isProcessing,
     scanStatus,
     scannedResult,
     scannedUser,
+    errorMessage,
     scannerControlsRef,
     handleQRCode,
     handleReset,

@@ -10,9 +10,12 @@ export default function PartnerScannerPage() {
     events,
     selectedEventId,
     setSelectedEventId,
+    scanMode,
+    setScanMode,
     loadingEvents,
     isProcessing,
     scanStatus,
+    errorMessage,
     scannedResult,
     scannedUser,
     scannerControlsRef,
@@ -31,6 +34,8 @@ export default function PartnerScannerPage() {
           events={events}
           selectedEventId={selectedEventId}
           setSelectedEventId={setSelectedEventId}
+          scanMode={scanMode}
+          setScanMode={setScanMode}
           loadingEvents={loadingEvents}
           scannedResult={scannedResult}
           scannedUser={scannedUser}
@@ -42,6 +47,7 @@ export default function PartnerScannerPage() {
           selectedEventId={selectedEventId}
           isProcessing={isProcessing}
           scanStatus={scanStatus}
+          errorMessage={errorMessage}
           scannerControlsRef={scannerControlsRef}
           onScan={handleQRCode}
         />

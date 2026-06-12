@@ -23,6 +23,8 @@ interface ScannerConfigPanelProps {
   events: EventType[];
   selectedEventId: string;
   setSelectedEventId: (id: string) => void;
+  scanMode: "check-in" | "check-out";
+  setScanMode: (mode: "check-in" | "check-out") => void;
   loadingEvents: boolean;
   scannedResult: string;
   scannedUser: UserType | null;
@@ -33,12 +35,15 @@ export function ScannerConfigPanel({
   events,
   selectedEventId,
   setSelectedEventId,
+  scanMode,
+  setScanMode,
   loadingEvents,
   scannedResult,
   scannedUser,
   onReset,
 }: ScannerConfigPanelProps) {
   const t = useTranslations("partner");
+  const selectedEvent = events.find((evt) => evt.id === selectedEventId);
 
   return (
     <Card className="flex flex-col justify-between rounded-[1.75rem] border border-emerald-200/50 bg-white/85 p-6 shadow-xs backdrop-blur-xl transition-all duration-300 hover:shadow-md dark:border-emerald-500/20 dark:bg-slate-900/80">
@@ -76,7 +81,9 @@ export function ScannerConfigPanel({
                     onValueChange={(val) => setSelectedEventId(val || "")}
                   >
                     <SelectTrigger className="w-full rounded-2xl border border-emerald-200/40 bg-emerald-50/10 px-4 py-3 text-sm text-gray-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200/50 dark:border-emerald-800/30 dark:bg-gray-950 dark:text-gray-100 h-auto flex justify-between items-center">
-                      <SelectValue placeholder={t("scanner.selectEvent")} />
+                      <SelectValue placeholder={t("scanner.selectEvent")}>
+                        {selectedEvent ? (selectedEvent.title || selectedEvent.description) : undefined}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent className="bg-white dark:bg-zinc-900 border border-emerald-200/50 dark:border-emerald-500/20">
                       {events.map((evt) => (
@@ -88,6 +95,37 @@ export function ScannerConfigPanel({
                   </Select>
                 </div>
               </label>
+
+              {/* Scan Mode Toggle */}
+              <div className="space-y-2">
+                <span className="block text-sm font-semibold text-gray-700 dark:text-gray-200">
+                  {t("scanner.scanModeLabel")}
+                </span>
+                <div className="grid grid-cols-2 p-1 rounded-2xl bg-emerald-50/10 border border-emerald-200/40 dark:bg-gray-950 dark:border-emerald-800/30">
+                  <button
+                    type="button"
+                    onClick={() => setScanMode("check-in")}
+                    className={`py-2.5 rounded-xl text-sm font-bold transition-all duration-300 cursor-pointer ${
+                      scanMode === "check-in"
+                        ? "bg-emerald-600 text-white shadow-sm dark:bg-emerald-500 dark:text-zinc-950"
+                        : "text-gray-550 hover:bg-emerald-500/5 hover:text-emerald-700 dark:text-zinc-400 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400"
+                    }`}
+                  >
+                    {t("scanner.checkIn")}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setScanMode("check-out")}
+                    className={`py-2.5 rounded-xl text-sm font-bold transition-all duration-300 cursor-pointer ${
+                      scanMode === "check-out"
+                        ? "bg-emerald-600 text-white shadow-sm dark:bg-emerald-500 dark:text-zinc-950"
+                        : "text-gray-550 hover:bg-emerald-500/5 hover:text-emerald-700 dark:text-zinc-400 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400"
+                    }`}
+                  >
+                    {t("scanner.checkOut")}
+                  </button>
+                </div>
+              </div>
             </div>
           )}
 

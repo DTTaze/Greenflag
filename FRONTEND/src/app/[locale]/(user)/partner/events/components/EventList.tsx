@@ -108,31 +108,44 @@ export function EventList({
                       : "border-emerald-100/60 bg-emerald-50/20 hover:border-emerald-200 dark:border-emerald-900/30 dark:bg-emerald-950/10 dark:hover:border-emerald-800/50"
                   }`}
                 >
-                  <div className="min-w-0 flex-1 space-y-1.5">
-                    <div className="flex items-center gap-2">
-                      <h3 className="truncate text-sm font-bold text-gray-900 dark:text-white">
-                        {event.title}
-                      </h3>
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${STATUS_STYLES[event.status] || STATUS_STYLES.finished}`}
-                      >
-                        {event.status}
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 dark:text-slate-400">
-                      <span className="inline-flex items-center gap-1">
-                        <MapPin className="h-3 w-3" />
-                        {event.location || "—"}
-                      </span>
-                      <span className="inline-flex items-center gap-1">
-                        <Users className="h-3 w-3" />
-                        {event.eventUsers?.length ?? 0}/{event.capacity}{" "}
-                        {labels.participants}
-                      </span>
-                      <span className="inline-flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        {formatDateTime(event.startTime)}
-                      </span>
+                  <div className="flex items-center gap-4 min-w-0 flex-1">
+                    {event.images && event.images.length > 0 ? (
+                      <img
+                        src={event.images[0]}
+                        alt={event.title}
+                        className="h-12 w-12 object-cover rounded-xl border border-emerald-100 dark:border-slate-800 shadow-xs shrink-0"
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-12 w-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 shrink-0">
+                        <Calendar size={20} />
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1 space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <h3 className="truncate text-sm font-bold text-gray-900 dark:text-white">
+                          {event.title}
+                        </h3>
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${STATUS_STYLES[event.status] || STATUS_STYLES.finished}`}
+                        >
+                          {event.status}
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 dark:text-slate-400">
+                        <span className="inline-flex items-center gap-1">
+                          <MapPin className="h-3 w-3" />
+                          {event.location || "—"}
+                        </span>
+                        <span className="inline-flex items-center gap-1">
+                          <Users className="h-3 w-3" />
+                          {event.eventUsers?.length ?? 0}/{event.capacity}{" "}
+                          {labels.participants}
+                        </span>
+                        <span className="inline-flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          {formatDateTime(event.startTime)}
+                        </span>
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 ml-4 shrink-0">
@@ -155,9 +168,7 @@ export function EventList({
                       size="sm"
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (window.confirm(labels.deleteConfirm || "Are you sure?")) {
-                          onDeleteEvent(event.id);
-                        }
+                        onDeleteEvent(event.id);
                       }}
                       className="rounded-xl border-rose-200 text-rose-600 transition-all duration-200 hover:bg-rose-50 hover:text-rose-700 dark:border-rose-900/40 dark:text-rose-450 dark:hover:bg-rose-950/30"
                     >

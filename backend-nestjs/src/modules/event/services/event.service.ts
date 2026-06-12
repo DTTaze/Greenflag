@@ -118,6 +118,8 @@ export class EventService extends BaseCRUDService<Event> {
           uploadedImageUrls.push(result.secure_url);
         }
       }
+    } else if (dto.images?.length) {
+      uploadedImageUrls.push(...dto.images);
     }
 
     const event = await this.eventRepository.save({
@@ -193,6 +195,8 @@ export class EventService extends BaseCRUDService<Event> {
         }
       }
       updateFields.images = uploadedImageUrls;
+    } else if (dto.images !== undefined) {
+      updateFields.images = dto.images;
     }
 
     await this.eventRepository.update(eventId, updateFields);

@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsEnum,
   IsInt,
   IsOptional,
@@ -50,6 +51,11 @@ export class CreateItemDto {
   @IsInt()
   @Min(1)
   height: number;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  images?: string[];
 }
 
 export class UpdateItemDto {
@@ -99,6 +105,11 @@ export class UpdateItemDto {
   @Min(1)
   @IsOptional()
   height?: number;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  images?: string[];
 }
 
 export class PurchaseItemDto {

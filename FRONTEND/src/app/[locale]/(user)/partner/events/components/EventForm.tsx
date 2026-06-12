@@ -1,5 +1,6 @@
 "use client";
 
+import { UploadCloud, X } from "lucide-react";
 import React from "react";
 
 import { Button } from "@/src/components/ui/button";
@@ -10,7 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/src/components/ui/card";
-import { CreateEventPayload } from "@/src/types/event/event.payload";
+import { Input } from "@/src/components/ui/input";
+import { Label } from "@/src/components/ui/label";
 
 type EventFormLabels = {
   createTitle: string;
@@ -34,31 +36,40 @@ type EventFormLabels = {
   editTitle?: string;
   editDescription?: string;
   cancelBtn?: string;
+  uploadImageLabel: string;
+  clickToUpload: string;
+  supportText: string;
 };
 
 type EventFormProps = {
-  form: CreateEventPayload;
-  onFieldChange: (field: keyof CreateEventPayload, value: string | number) => void;
+  register: any;
+  errors: any;
   saving: boolean;
-  error: string;
-  onSubmit: (e: React.FormEvent) => void;
+  onSubmit: (e: any) => void;
   onReset: () => void;
   labels: EventFormLabels;
   isEditing?: boolean;
+  selectedImages: File[];
+  previewUrls: string[];
+  onImagesChange: (files: File[]) => void;
+  onRemoveImage: () => void;
 };
 
 const INPUT_CLASS =
-  "mt-2 w-full rounded-2xl border border-emerald-200/40 bg-emerald-50/10 px-4 py-3 text-sm text-gray-900 transition outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200/50 dark:border-emerald-800/30 dark:bg-gray-950 dark:text-gray-100";
+  "mt-2 w-full rounded-2xl border border-emerald-200/40 bg-emerald-50/10 px-4 py-3 text-sm text-gray-900 transition outline-none focus:border-emerald-400 focus:focus-visible:border-emerald-400 focus:ring-2 focus:ring-emerald-200/50 dark:border-emerald-800/30 dark:bg-gray-950 dark:text-gray-100 h-auto";
 
 export function EventForm({
-  form,
-  onFieldChange,
+  register,
+  errors,
   saving,
-  error,
   onSubmit,
   onReset,
   labels,
   isEditing = false,
+  selectedImages,
+  previewUrls,
+  onImagesChange,
+  onRemoveImage,
 }: EventFormProps) {
   return (
     <Card className="rounded-[1.75rem] border border-emerald-200/50 bg-white/85 p-6 shadow-xs backdrop-blur-xl transition-all duration-300 hover:shadow-md dark:border-emerald-500/20 dark:bg-slate-900/80">
@@ -73,99 +84,177 @@ export function EventForm({
       <CardContent className="space-y-5 p-0">
         <form onSubmit={onSubmit} className="space-y-5">
           {/* Title */}
-          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200">
-            {labels.titleLabel}
-            <input
-              value={form.title}
-              onChange={(e) => onFieldChange("title", e.target.value)}
+          <div className="flex flex-col gap-2">
+            <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+              {labels.titleLabel}
+            </Label>
+            <Input
               placeholder={labels.titlePlaceholder}
               className={INPUT_CLASS}
+              {...register("title")}
             />
-          </label>
+            {errors.title?.message && (
+              <p className="text-xs font-semibold text-rose-600 mt-1">{errors.title.message}</p>
+            )}
+          </div>
 
           {/* Description */}
-          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200">
-            {labels.descriptionLabel}
+          <div className="flex flex-col gap-2">
+            <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+              {labels.descriptionLabel}
+            </Label>
             <textarea
-              value={form.description}
-              onChange={(e) => onFieldChange("description", e.target.value)}
               placeholder={labels.descriptionPlaceholder}
               rows={3}
               className={`${INPUT_CLASS} resize-none`}
+              {...register("description")}
             />
-          </label>
+            {errors.description?.message && (
+              <p className="text-xs font-semibold text-rose-600 mt-1">{errors.description.message}</p>
+            )}
+          </div>
 
           {/* Location */}
-          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200">
-            {labels.locationLabel}
-            <input
-              value={form.location}
-              onChange={(e) => onFieldChange("location", e.target.value)}
+          <div className="flex flex-col gap-2">
+            <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+              {labels.locationLabel}
+            </Label>
+            <Input
               placeholder={labels.locationPlaceholder}
               className={INPUT_CLASS}
+              {...register("location")}
             />
-          </label>
+            {errors.location?.message && (
+              <p className="text-xs font-semibold text-rose-600 mt-1">{errors.location.message}</p>
+            )}
+          </div>
 
           {/* Capacity + Coins */}
           <div className="grid grid-cols-2 gap-4">
-            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200">
-              {labels.capacityLabel}
-              <input
+            <div className="flex flex-col gap-2">
+              <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                {labels.capacityLabel}
+              </Label>
+              <Input
                 type="number"
                 min={1}
-                value={form.capacity}
-                onChange={(e) => onFieldChange("capacity", Number(e.target.value))}
                 className={INPUT_CLASS}
+                {...register("capacity", { valueAsNumber: true })}
               />
-            </label>
-            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200">
-              {labels.coinsLabel}
-              <input
+              {errors.capacity?.message && (
+                <p className="text-xs font-semibold text-rose-600 mt-1">{errors.capacity.message}</p>
+              )}
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                {labels.coinsLabel}
+              </Label>
+              <Input
                 type="number"
                 min={0}
-                value={form.coins}
-                onChange={(e) => onFieldChange("coins", Number(e.target.value))}
                 className={INPUT_CLASS}
+                {...register("coins", { valueAsNumber: true })}
               />
-            </label>
+              {errors.coins?.message && (
+                <p className="text-xs font-semibold text-rose-600 mt-1">{errors.coins.message}</p>
+              )}
+            </div>
           </div>
 
           {/* Registration Deadline */}
-          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200">
-            {labels.endSignLabel}
-            <input
+          <div className="flex flex-col gap-2">
+            <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+              {labels.endSignLabel}
+            </Label>
+            <Input
               type="datetime-local"
-              value={form.end_sign}
-              onChange={(e) => onFieldChange("end_sign", e.target.value)}
               className={INPUT_CLASS}
+              {...register("end_sign")}
             />
-          </label>
+            {errors.end_sign?.message && (
+              <p className="text-xs font-semibold text-rose-600 mt-1">{errors.end_sign.message}</p>
+            )}
+          </div>
 
           {/* Start + End Time */}
           <div className="grid grid-cols-2 gap-4">
-            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200">
-              {labels.startTimeLabel}
-              <input
+            <div className="flex flex-col gap-2">
+              <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                {labels.startTimeLabel}
+              </Label>
+              <Input
                 type="datetime-local"
-                value={form.start_time}
-                onChange={(e) => onFieldChange("start_time", e.target.value)}
                 className={INPUT_CLASS}
+                {...register("start_time")}
               />
-            </label>
-            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200">
-              {labels.endTimeLabel}
-              <input
+              {errors.start_time?.message && (
+                <p className="text-xs font-semibold text-rose-600 mt-1">{errors.start_time.message}</p>
+              )}
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                {labels.endTimeLabel}
+              </Label>
+              <Input
                 type="datetime-local"
-                value={form.end_time}
-                onChange={(e) => onFieldChange("end_time", e.target.value)}
                 className={INPUT_CLASS}
+                {...register("end_time")}
               />
-            </label>
+              {errors.end_time?.message && (
+                <p className="text-xs font-semibold text-rose-600 mt-1">{errors.end_time.message}</p>
+              )}
+            </div>
           </div>
 
-          {error && (
-            <p className="text-sm font-semibold text-rose-600">{error}</p>
-          )}
+          {/* Event Image Upload Section */}
+          <div className="flex flex-col gap-2">
+            <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+              {labels.uploadImageLabel}
+            </Label>
+            <div className="relative mt-1 flex justify-center rounded-2xl border border-dashed border-emerald-250/50 bg-emerald-50/5 px-6 py-6 transition duration-200 hover:border-emerald-400 hover:bg-emerald-50/10 dark:border-emerald-800/30 dark:bg-zinc-950/20 dark:hover:border-emerald-600">
+              {previewUrls && previewUrls.length > 0 ? (
+                <div className="relative group w-full max-w-[150px] aspect-square rounded-2xl overflow-hidden border border-emerald-100 dark:border-zinc-800 shadow-xs">
+                  <img
+                    src={previewUrls[0]}
+                    alt="Preview"
+                    className="h-full w-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon-sm"
+                      onClick={onRemoveImage}
+                      className="rounded-full h-8 w-8 p-0"
+                    >
+                      <X size={16} />
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center cursor-pointer space-y-2 text-center w-full">
+                  <UploadCloud className="h-8 w-8 text-emerald-500/70" />
+                  <span className="text-xs font-semibold text-gray-600 dark:text-slate-355">
+                    {labels.clickToUpload}
+                  </span>
+                  <span className="text-[10px] text-gray-400 dark:text-slate-500 font-medium">
+                    {labels.supportText}
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files || []);
+                      if (files.length > 0) {
+                        onImagesChange(files);
+                      }
+                    }}
+                    className="hidden"
+                  />
+                </label>
+              )}
+            </div>
+          </div>
 
           {/* Actions */}
           <div className="flex flex-wrap gap-3 pt-2">

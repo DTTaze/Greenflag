@@ -9,6 +9,7 @@ export interface CreateEventPayload {
   end_sign: string;
   start_time: string;
   end_time: string;
+  images?: string[];
 }
 
 export interface UpdateEventPayload {
@@ -20,6 +21,7 @@ export interface UpdateEventPayload {
   start_time?: string;
   end_time?: string;
   status?: EVENT_STATUS;
+  images?: string[];
 }
 
 export interface CheckInOutPayload {

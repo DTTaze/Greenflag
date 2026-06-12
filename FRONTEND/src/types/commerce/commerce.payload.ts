@@ -35,6 +35,7 @@ export interface CreateItemPayload {
   length: number;
   width: number;
   height: number;
+  images?: string[];
 }
 
 export interface UpdateItemPayload {
@@ -48,6 +49,7 @@ export interface UpdateItemPayload {
   length?: number;
   width?: number;
   height?: number;
+  images?: string[];
 }
 
 export interface PurchaseItemPayload {

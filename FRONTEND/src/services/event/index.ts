@@ -8,7 +8,13 @@ const buildEventFormData = (payload: any, images?: File[]): FormData => {
   const formData = new FormData();
   Object.keys(payload).forEach((key) => {
     if (payload[key] !== undefined && payload[key] !== null) {
-      formData.append(key, String(payload[key]));
+      if (key === "images" && Array.isArray(payload[key])) {
+        payload[key].forEach((imgUrl: string) => {
+          formData.append("images", imgUrl);
+        });
+      } else {
+        formData.append(key, String(payload[key]));
+      }
     }
   });
   if (images && images.length > 0) {

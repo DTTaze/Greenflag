@@ -36,11 +36,11 @@ export default function OrdersManagement() {
   }, []);
 
   const handleEditOrder = (order) => {
-    alert(`Vui lòng liên hệ người tạo đơn hàng: ${order.User.email}`);
+    alert(`Vui lòng liên hệ người tạo đơn hàng: ${order?.User?.email || order?.buyer?.email || order?.seller?.email || "Không xác định"}`);
   };
 
   const handleCancelOrder = async (order) => {
-    alert(`Vui lòng liên hệ người tạo đơn hàng: ${order.User.email}`);
+    alert(`Vui lòng liên hệ người tạo đơn hàng: ${order?.User?.email || order?.buyer?.email || order?.seller?.email || "Không xác định"}`);
   };
 
   const handleSubmitOrder = async (data, mode) => {
@@ -71,6 +71,7 @@ export default function OrdersManagement() {
         onAdd={false}
         onEdit={handleEditOrder}
         onDelete={handleCancelOrder}
+        enableSelection={false}
         loading={loading}
       />
       <OrderForm

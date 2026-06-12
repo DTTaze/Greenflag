@@ -1,6 +1,6 @@
 "use client";
 
-import { RefreshCw, Search, ShieldCheck } from "lucide-react";
+import { RefreshCw, Search, ShieldCheck, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -160,9 +160,9 @@ function ForumModeration() {
       </div>
 
       {/* Content grid */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="flex flex-col gap-6 md:flex-row">
         {/* Table list */}
-        <div className="overflow-hidden rounded-xl border border-emerald-200/60 bg-white shadow-sm lg:col-span-2 dark:border-emerald-500/15 dark:bg-zinc-950">
+        <div className={`overflow-hidden rounded-xl border border-emerald-200/60 bg-white shadow-sm transition-all duration-300 dark:border-emerald-500/15 dark:bg-zinc-950 ${selectedPost ? "w-full md:w-3/5" : "w-full"}`}>
           <ModerationTable
             posts={filteredPosts}
             selectedPost={selectedPost}
@@ -174,16 +174,27 @@ function ForumModeration() {
         </div>
 
         {/* Details preview */}
-        <div className="space-y-4 rounded-xl border border-emerald-200/60 bg-white p-5 shadow-sm lg:col-span-1 dark:border-emerald-500/15 dark:bg-zinc-950">
-          <h3 className="border-b border-emerald-100 pb-2 text-sm font-bold text-gray-900 dark:border-emerald-500/10 dark:text-white">
-            Chi tiết bài viết
-          </h3>
-          <ModerationDetail
-            selectedPost={selectedPost}
-            formatDate={formatDate}
-            handleModerate={handleModerate}
-          />
-        </div>
+        {selectedPost && (
+          <div className="w-full space-y-4 rounded-xl border border-emerald-200/60 bg-white p-5 shadow-sm transition-all duration-300 md:w-2/5 dark:border-emerald-500/15 dark:bg-zinc-950">
+            <div className="flex items-center justify-between border-b border-emerald-100 pb-2 dark:border-emerald-500/10">
+              <h3 className="text-sm font-bold text-gray-900 dark:text-white">
+                Chi tiết bài viết
+              </h3>
+              <button
+                onClick={() => setSelectedPost(null)}
+                className="cursor-pointer rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+                title="Đóng chi tiết"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <ModerationDetail
+              selectedPost={selectedPost}
+              formatDate={formatDate}
+              handleModerate={handleModerate}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

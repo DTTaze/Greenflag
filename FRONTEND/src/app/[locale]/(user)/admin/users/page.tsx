@@ -183,7 +183,7 @@ export default function UserManagementPage() {
         onEdit={handleEditUser}
         onDelete={handleDeleteUser}
         loading={isLoading}
-        enableSelection={true}
+        enableSelection={false}
         showDeleted={showDeleted}
         onToggleShowDeleted={setShowDeleted}
       />

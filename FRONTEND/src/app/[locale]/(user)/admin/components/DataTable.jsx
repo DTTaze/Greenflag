@@ -1,5 +1,5 @@
-"use client";
-
+import React, { useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import {
   ChevronLeft,
   ChevronRight,
@@ -20,10 +20,15 @@ export default function DataTable({
   onEdit,
   onDelete,
   onView,
+  onRowClick,
+  onBulkDelete,
   loading = false,
+  enableSelection = true,
   showDeleted = false,
   onToggleShowDeleted,
 }) {
+  const t = useTranslations("admin.common");
+  const colT = useTranslations("admin.columns");
   const { user } = useAuthStore();
   const isAdmin = (user?.role || user?.roles?.name || "").toLowerCase() === "admin";
   const [searchQuery, setSearchQuery] = useState("");
@@ -93,7 +98,7 @@ export default function DataTable({
               />
               <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-emerald-500"></div>
               <span className="text-sm font-medium text-gray-600 dark:text-zinc-400 whitespace-nowrap">
-                Hiển thị dữ liệu đã xóa
+                {t("showDeleted")}
               </span>
             </label>
           )}
@@ -105,7 +110,7 @@ export default function DataTable({
             </span>
             <input
               type="text"
-              placeholder="Search records..."
+              placeholder={t("searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full rounded-lg border border-gray-200 bg-transparent py-2 pr-4 pl-9 text-sm transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none dark:border-zinc-850 dark:bg-zinc-950 dark:text-zinc-200 dark:focus:border-emerald-500"
@@ -119,11 +124,43 @@ export default function DataTable({
               className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-emerald-700"
             >
               <Plus size={16} />
-              <span>Add New</span>
+              <span>{t("addNew")}</span>
             </button>
           )}
         </div>
       </div>
+
+      {/* Floating/Contextual Bulk Actions Toolbar */}
+      {selectedIds.size > 0 && onBulkDelete && (
+        <div className="flex items-center justify-between border-b border-emerald-100 bg-emerald-50/80 px-6 py-3.5 dark:border-emerald-900/20 dark:bg-emerald-950/20">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span>
+            <span className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
+              {t("selectedCount", { count: selectedIds.size })}
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSelectedIds(new Set())}
+              className="cursor-pointer text-xs font-semibold text-gray-500 hover:text-gray-800 dark:text-zinc-400 dark:hover:text-zinc-200"
+            >
+              {t("clearSelection")}
+            </button>
+            <button
+              onClick={() => {
+                if (window.confirm(t("confirmBulkDelete", { count: selectedIds.size }))) {
+                  onBulkDelete(Array.from(selectedIds));
+                  setSelectedIds(new Set());
+                }
+              }}
+              className="flex cursor-pointer items-center gap-1.5 rounded-lg bg-rose-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-rose-700"
+            >
+              <Trash2 size={13} />
+              {t("deleteSelected")}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Table grid container */}
       <div className="overflow-x-auto">
@@ -131,20 +168,45 @@ export default function DataTable({
           <thead>
             <tr className="bg-gray-50/80 dark:bg-zinc-900/50 border-b border-gray-200 dark:border-zinc-800">
               {/* Checkbox Column */}
-              <th scope="col" className="w-4 p-4">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={isAllSelected}
-                    onChange={handleSelectAll}
-                    className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-emerald-600 focus:ring-emerald-500 dark:border-zinc-700 dark:bg-zinc-800 dark:focus:ring-emerald-500"
-                  />
-                </div>
-              </th>
+              {enableSelection && (
+                <th scope="col" className="w-4 p-4">
+                  <div className="flex items-center">
+                    <label className="relative flex cursor-pointer items-center">
+                      <input
+                        type="checkbox"
+                        checked={isAllSelected}
+                        onChange={handleSelectAll}
+                        className="sr-only peer"
+                      />
+                      <div className={`h-4 w-4 rounded border flex items-center justify-center transition-all ${
+                        isAllSelected 
+                          ? "bg-emerald-600 border-emerald-600 text-white dark:bg-emerald-500 dark:border-emerald-500" 
+                          : "border-gray-300 bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800"
+                      }`}>
+                        {isAllSelected && (
+                          <svg className="h-2.5 w-2.5 fill-current text-white" viewBox="0 0 20 20">
+                            <path d="M0 11l2-2 5 5L18 3l2 2L7 18z" />
+                          </svg>
+                        )}
+                      </div>
+                    </label>
+                  </div>
+                </th>
+              )}
 
               {/* Data Columns */}
               {columns.map((col, index) => {
-                const headerText = col.header || col.headerName;
+                let headerText = col.header || col.headerName;
+                if (col.field) {
+                  try {
+                    const key = String(col.field);
+                    if (colT.has(key)) {
+                      headerText = colT(key);
+                    }
+                  } catch (e) {
+                    // fallback
+                  }
+                }
                 return (
                   <th
                     key={index}
@@ -163,7 +225,7 @@ export default function DataTable({
                   scope="col"
                   className="w-[150px] py-4 px-6 text-right text-xs uppercase tracking-wider font-semibold text-gray-500 dark:text-zinc-400 whitespace-nowrap"
                 >
-                  Thao tác
+                  {t("actions")}
                 </th>
               )}
             </tr>
@@ -172,11 +234,18 @@ export default function DataTable({
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={columns.length + 2} className="py-20 text-center">
+                <td
+                  colSpan={
+                    columns.length +
+                    (enableSelection ? 1 : 0) +
+                    (onView || onEdit || onDelete ? 1 : 0)
+                  }
+                  className="py-20 text-center"
+                >
                   <div className="flex flex-col items-center justify-center gap-3">
                     <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-600 border-t-transparent dark:border-emerald-500"></div>
                     <span className="text-sm text-gray-500 dark:text-zinc-400">
-                      Loading data...
+                      {t("loading")}
                     </span>
                   </div>
                 </td>
@@ -184,10 +253,14 @@ export default function DataTable({
             ) : paginatedRows.length === 0 ? (
               <tr>
                 <td
-                  colSpan={columns.length + 2}
+                  colSpan={
+                    columns.length +
+                    (enableSelection ? 1 : 0) +
+                    (onView || onEdit || onDelete ? 1 : 0)
+                  }
                   className="py-16 text-center text-gray-500 dark:text-zinc-400"
                 >
-                  No records found
+                  {t("noRecords")}
                 </td>
               </tr>
             ) : (
@@ -197,23 +270,63 @@ export default function DataTable({
                 return (
                   <tr
                     key={row.id || index}
+                    onClick={(e) => {
+                      const target = e.target;
+                      if (
+                        target.closest(".selection-cell") ||
+                        target.closest(".actions-cell") ||
+                        target.closest('input[type="checkbox"]')
+                      ) {
+                        return;
+                      }
+                      if (onRowClick) {
+                        onRowClick(row);
+                      } else if (onView) {
+                        onView(row);
+                      } else if (onEdit) {
+                        onEdit(row);
+                      }
+                    }}
                     className={`even:bg-gray-50/30 dark:even:bg-zinc-950/30 hover:bg-gray-100/50 dark:hover:bg-zinc-800/50 transition-colors duration-150 border-b border-gray-100 dark:border-zinc-800/50 last:border-0 ${
                       isSelected
                         ? "bg-emerald-50/10 dark:bg-emerald-950/20 even:bg-emerald-50/10 dark:even:bg-emerald-950/20"
                         : ""
-                    } ${hasDeletedAt ? "opacity-60 bg-red-50/5 dark:bg-red-950/5" : ""}`}
+                    } ${hasDeletedAt ? "opacity-60 bg-red-50/5 dark:bg-red-950/5" : ""} ${
+                      onRowClick || onView || onEdit ? "cursor-pointer" : ""
+                    }`}
                   >
                     {/* Selection checkbox */}
-                    <td className="w-4 p-4">
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => handleSelectRow(row.id)}
-                          className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-emerald-600 focus:ring-emerald-500 dark:border-zinc-700 dark:bg-zinc-850"
-                        />
-                      </div>
-                    </td>
+                    {enableSelection && (
+                      <td
+                        className="w-4 p-4 selection-cell cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSelectRow(row.id);
+                        }}
+                      >
+                        <div className="flex items-center">
+                          <div className="relative flex items-center">
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              readOnly
+                              className="sr-only peer"
+                            />
+                            <div className={`h-4 w-4 rounded border flex items-center justify-center transition-all ${
+                              isSelected 
+                                ? "bg-emerald-600 border-emerald-600 text-white dark:bg-emerald-500 dark:border-emerald-500" 
+                                : "border-gray-300 bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800"
+                            }`}>
+                              {isSelected && (
+                                <svg className="h-2.5 w-2.5 fill-current text-white" viewBox="0 0 20 20">
+                                  <path d="M0 11l2-2 5 5L18 3l2 2L7 18z" />
+                                </svg>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    )}
 
                     {/* Data Cells */}
                     {columns.map((col, colIndex) => {
@@ -285,13 +398,13 @@ export default function DataTable({
 
                     {/* Actions Cell */}
                     {(onView || onEdit || onDelete) && (
-                      <td className="py-4 px-6 text-right">
-                        <div className="inline-flex gap-2">
+                      <td className="py-4 px-6 text-right actions-cell">
+                        <div className="inline-flex gap-2" onClick={(e) => e.stopPropagation()}>
                           {onView && (
                             <button
                               onClick={() => onView(row)}
                               className="rounded-md p-1.5 text-sky-600 transition-colors hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-500/10"
-                              title="Chi tiết"
+                              title={t("view")}
                             >
                               <Eye size={16} />
                             </button>
@@ -300,7 +413,7 @@ export default function DataTable({
                             <button
                               onClick={() => onEdit(row)}
                               className="rounded-md p-1.5 text-emerald-600 transition-colors hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-500/10"
-                              title="Chỉnh sửa"
+                              title={t("edit")}
                             >
                               <Pencil size={16} />
                             </button>
@@ -309,7 +422,7 @@ export default function DataTable({
                             <button
                               onClick={() => onDelete(row)}
                               className="rounded-md p-1.5 text-rose-600 transition-colors hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10"
-                              title="Xóa"
+                              title={t("delete")}
                             >
                               <Trash2 size={16} />
                             </button>
@@ -329,24 +442,24 @@ export default function DataTable({
       {!loading && filteredRows.length > 0 && (
         <div className="flex flex-col items-center justify-between gap-4 border-t border-gray-100 dark:border-zinc-800/50 bg-white dark:bg-zinc-900 p-6 sm:flex-row text-sm text-gray-500 dark:text-zinc-400">
           <div>
-            Showing{" "}
+            {t("showing")}{" "}
             <span className="font-semibold text-gray-700 dark:text-zinc-200">
               {(currentPage - 1) * pageSize + 1}
             </span>{" "}
-            to{" "}
+            {t("to")}{" "}
             <span className="font-semibold text-gray-700 dark:text-zinc-200">
               {Math.min(currentPage * pageSize, filteredRows.length)}
             </span>{" "}
-            of{" "}
+            {t("of")}{" "}
             <span className="font-semibold text-gray-700 dark:text-zinc-200">
               {filteredRows.length}
             </span>{" "}
-            records
+            {t("records")}
           </div>
 
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <span>Rows per page:</span>
+              <span>{t("rowsPerPage")}:</span>
               <select
                 value={pageSize}
                 onChange={(e) => {
@@ -372,7 +485,7 @@ export default function DataTable({
                 <ChevronLeft size={16} />
               </button>
               <span className="px-2 font-medium text-gray-700 dark:text-zinc-200">
-                Page {currentPage} of {totalPages}
+                {t("page")} {currentPage} {t("of")} {totalPages}
               </span>
               <button
                 disabled={currentPage === totalPages}

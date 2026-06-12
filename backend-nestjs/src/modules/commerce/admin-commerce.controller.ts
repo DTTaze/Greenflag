@@ -75,14 +75,59 @@ export class AdminCommerceController {
 
   @Get('transactions')
   public async getAllTransactions(): Promise<HttpResponse> {
-    return this.transactionService.findAll();
+    return this.transactionService.findAll(undefined, {
+      relations: {
+        receiverInformation: true,
+        item: true,
+        buyer: { profile: true },
+        seller: { profile: true },
+      },
+      select: {
+        buyer: {
+          id: true,
+          username: true,
+          email: true,
+          profile: { fullName: true },
+        },
+        seller: {
+          id: true,
+          username: true,
+          email: true,
+          profile: { fullName: true },
+        },
+      } as any,
+    });
   }
 
   @Get('transactions/status/:status')
   public async getAllTransactionsByStatus(
     @Param('status') status: TRANSACTION_STATUS,
   ): Promise<HttpResponse> {
-    return this.transactionService.findAll({ status });
+    return this.transactionService.findAll(
+      { status },
+      {
+        relations: {
+          receiverInformation: true,
+          item: true,
+          buyer: { profile: true },
+          seller: { profile: true },
+        },
+        select: {
+          buyer: {
+            id: true,
+            username: true,
+            email: true,
+            profile: { fullName: true },
+          },
+          seller: {
+            id: true,
+            username: true,
+            email: true,
+            profile: { fullName: true },
+          },
+        } as any,
+      },
+    );
   }
 
   @Patch('transactions/:id/decision')

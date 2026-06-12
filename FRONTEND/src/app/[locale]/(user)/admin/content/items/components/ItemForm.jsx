@@ -22,6 +22,7 @@ export default function ItemForm({
   mode,
 }) {
   const { user } = useAuthStore();
+  const [isLimited, setIsLimited] = useState(false);
   const [formData, setFormData] = useState({
     owner_id: "",
     name: "",
@@ -38,6 +39,9 @@ export default function ItemForm({
 
   useEffect(() => {
     if (mode === "edit" && initialData) {
+      const limit = initialData?.purchase_limit_per_day;
+      const parsedLimit = (limit === "Không giới hạn" || limit === null || limit === undefined || limit === "") ? "" : limit;
+      setIsLimited(parsedLimit !== "");
       setFormData({
         id: initialData?.id || null,
         owner_id: initialData?.owner_id || "",
@@ -50,10 +54,10 @@ export default function ItemForm({
         width: initialData?.width || "",
         height: initialData?.height || "",
         status: initialData?.status || "",
-        purchase_limit_per_day:
-          initialData?.purchase_limit_per_day || "Không giới hạn",
+        purchase_limit_per_day: parsedLimit,
       });
     } else {
+      setIsLimited(false);
       setFormData({
         id: "",
         owner_id: "",
@@ -79,6 +83,14 @@ export default function ItemForm({
     }));
   };
 
+  const handleLimitToggle = (checked) => {
+    setIsLimited(checked);
+    setFormData((prev) => ({
+      ...prev,
+      purchase_limit_per_day: checked ? "1" : "",
+    }));
+  };
+
   const onSubmit = (e) => {
     e.preventDefault();
     if (!user?.id) {
@@ -88,6 +100,9 @@ export default function ItemForm({
     const payload = {
       ...formData,
       owner_id: formData.owner_id || user.id,
+      purchase_limit_per_day: isLimited && formData.purchase_limit_per_day !== ""
+        ? parseInt(formData.purchase_limit_per_day, 10)
+        : null,
     };
     handleSubmit(payload, mode);
   };
@@ -224,17 +239,38 @@ export default function ItemForm({
             </div>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="purchase_limit_per_day">
-              Giới hạn lượt mua/ngày
-            </Label>
-            <Input
-              id="purchase_limit_per_day"
-              name="purchase_limit_per_day"
-              value={formData.purchase_limit_per_day}
-              onChange={handleChange}
-              placeholder="Không giới hạn"
-            />
+          <div className="flex flex-col gap-2 rounded-lg border border-emerald-100 p-3.5 dark:border-emerald-500/10">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="limit_toggle" className="cursor-pointer font-medium text-gray-700 dark:text-slate-300">
+                Giới hạn lượt mua/ngày
+              </Label>
+              <label className="relative inline-flex cursor-pointer items-center">
+                <input
+                  id="limit_toggle"
+                  type="checkbox"
+                  className="peer sr-only"
+                  checked={isLimited}
+                  onChange={(e) => handleLimitToggle(e.target.checked)}
+                />
+                <div className="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-emerald-500 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none dark:bg-zinc-700"></div>
+              </label>
+            </div>
+            {isLimited && (
+              <div className="mt-2 flex flex-col gap-1.5">
+                <Label htmlFor="purchase_limit_per_day">Số lượt mua tối đa trong ngày</Label>
+                <Input
+                  id="purchase_limit_per_day"
+                  name="purchase_limit_per_day"
+                  type="number"
+                  min="1"
+                  value={formData.purchase_limit_per_day}
+                  onChange={handleChange}
+                  required
+                  placeholder="Nhập số lượng..."
+                  className="w-full"
+                />
+              </div>
+            )}
           </div>
 
           <DialogFooter className="mt-6 border-t border-emerald-100 pt-4 dark:border-emerald-500/10">

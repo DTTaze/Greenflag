@@ -46,13 +46,13 @@ export default function ProductForm({
     if (mode === "edit" && initialData) {
       setFormData({
         id: initialData?.id || null,
-        seller_id: initialData?.seller_id || "",
+        seller_id: initialData?.seller_id || initialData?.sellerId || "",
         name: initialData?.name || "",
         description: initialData?.description || "",
         price: initialData?.price || "",
         category: initialData?.category || "",
-        product_status: initialData?.product_status || "",
-        post_status: initialData?.post_status || "",
+        product_status: initialData?.product_status || initialData?.productStatus || "",
+        post_status: initialData?.post_status || initialData?.postStatus || "",
       });
     } else {
       setFormData({

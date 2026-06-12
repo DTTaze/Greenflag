@@ -60,6 +60,7 @@ export default function TransactionsManagement() {
         onAdd={false}
         onEdit={false}
         onDelete={handleDeleteTransaction}
+        enableSelection={false}
         loading={loading}
       />
     </div>

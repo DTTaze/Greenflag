@@ -48,6 +48,27 @@ export default function TasksManagement() {
     }
   };
 
+  const handleBulkDeleteTasks = async (ids) => {
+    try {
+      const results = await Promise.allSettled(
+        ids.map((id) => deleteTaskMutation.mutateAsync(id))
+      );
+
+      const successful = results.filter((r) => r.status === "fulfilled");
+      const failed = results.filter((r) => r.status === "rejected");
+
+      if (failed.length === 0) {
+        alert(`Đã xóa thành công ${successful.length} nhiệm vụ.`);
+      } else {
+        const sampleError = failed[0].reason?.response?.data?.message || failed[0].reason?.message || "Dữ liệu đang được sử dụng hoặc bị ràng buộc khóa ngoại";
+        alert(`Xóa thành công ${successful.length}/${ids.length} nhiệm vụ. Thất bại ${failed.length} nhiệm vụ (${sampleError}).`);
+      }
+    } catch (e) {
+      console.log(e);
+      alert("Đã xảy ra lỗi hệ thống khi thực hiện xóa hàng loạt.");
+    }
+  };
+
   const handleSubmitTask = async (data, mode) => {
     if (mode === "add") {
       try {
@@ -76,6 +97,7 @@ export default function TasksManagement() {
         onAdd={handleAddTask}
         onEdit={handleEditTask}
         onDelete={handleDeleteTask}
+        onBulkDelete={handleBulkDeleteTasks}
         loading={loading}
         showDeleted={showDeleted}
         onToggleShowDeleted={setShowDeleted}

@@ -1,28 +1,57 @@
 import React from "react";
-import { formatDate } from "@/src/utils/formatDate";
+
 import {
-  TRANSACTION_STATUS_MAP,
   DELIVERY_STATUS_MAP,
-  STATUS_MAP,
+  EVENT_STATUS_MAP,
+  TRANSACTION_STATUS_MAP,
 } from "@/src/constants/enumMaps";
+import { formatDate } from "@/src/utils/formatDate";
 
 export const transactionsColumns = [
   { field: "name", headerName: "Tên giao dịch", width: 200 },
   {
     field: "buyer",
-    headerName: "Tên tài khoản người mua",
+    headerName: "Người mua",
     width: 200,
-    valueGetter: (params: any) =>
-      params?.username || params?.email || "Chưa cập nhật",
+    valueGetter: (value: any, row: any) =>
+      row.buyer?.profile?.fullName ||
+      row.buyer?.username ||
+      row.buyer?.email ||
+      "",
+    render: (value: any, row: any) => {
+      if (!row.buyer) return <span className="text-gray-400 italic">--</span>;
+      return (
+        <span className="font-medium text-gray-900 dark:text-zinc-100">
+          {value}
+        </span>
+      );
+    },
   },
   {
-    field: "item_snapshot",
-    headerName: "Tên tài khoản người bán",
+    field: "seller",
+    headerName: "Người bán",
     width: 200,
-    valueGetter: (params: any) =>
-      params?.creator?.username || params?.creator?.email || "Chưa cập nhật",
+    valueGetter: (value: any, row: any) =>
+      row.seller?.profile?.fullName ||
+      row.seller?.username ||
+      row.seller?.email ||
+      "",
+    render: (value: any, row: any) => {
+      if (!row.seller) return <span className="text-gray-400 italic">--</span>;
+      return (
+        <span className="font-medium text-gray-900 dark:text-zinc-100">
+          {value}
+        </span>
+      );
+    },
   },
-  { field: "total_price", headerName: "Tổng giá trị (xu)", width: 150 },
+  {
+    field: "totalPrice",
+    headerName: "Tổng giá trị (xu)",
+    width: 150,
+    valueGetter: (value: any, row: any) =>
+      row.totalPrice ?? row.total_price ?? 0,
+  },
   { field: "quantity", headerName: "Số lượng sản phẩm", width: 150 },
   {
     field: "status",
@@ -60,29 +89,48 @@ export const transactionsColumns = [
 ];
 
 export const ordersColumns = [
-  { field: "order_code", headerName: "Mã vận chuyển", width: 200 },
   {
-    field: "to_name",
+    field: "orderCode",
+    headerName: "Mã vận chuyển",
+    width: 200,
+    valueGetter: (value: any, row: any) => row.orderCode || row.order_code,
+  },
+  {
+    field: "toName",
     headerName: "Tên người nhận",
     width: 200,
+    valueGetter: (value: any, row: any) => row.toName || row.to_name,
   },
   {
-    field: "to_phone",
+    field: "toPhone",
     headerName: "SĐT người nhận",
     width: 200,
+    valueGetter: (value: any, row: any) => row.toPhone || row.to_phone,
   },
   {
-    field: "to_address",
+    field: "toAddress",
     headerName: "Địa chỉ người nhận",
     width: 200,
+    valueGetter: (value: any, row: any) => row.toAddress || row.to_address,
   },
   {
-    field: "cod_amount",
+    field: "codAmount",
     headerName: "Phí COD",
     width: 200,
+    valueGetter: (value: any, row: any) => row.codAmount ?? row.cod_amount,
   },
-  { field: "weight", headerName: "Tổng cân nặng (g)", width: 150 },
-  { field: "total_amount", headerName: "Tổng phí (VNĐ)", width: 150 },
+  {
+    field: "weight",
+    headerName: "Tổng cân nặng (g)",
+    width: 150,
+    valueGetter: (value: any, row: any) => row.weight,
+  },
+  {
+    field: "totalAmount",
+    headerName: "Tổng phí (VNĐ)",
+    width: 150,
+    valueGetter: (value: any, row: any) => row.totalAmount ?? row.total_amount,
+  },
   {
     field: "status",
     headerName: "Trạng thái",
@@ -103,18 +151,20 @@ export const ordersColumns = [
     },
   },
   {
-    field: "updated_at",
+    field: "updatedAt",
     headerName: "Ngày cập nhật",
     width: 200,
     valueGetter: (_value: any, row: any) =>
-      formatDate(row.updated_at || row.updatedAt),
+      formatDate(row.updatedAt || row.updated_at || row.updatedDate),
   },
   {
-    field: "created_at",
+    field: "createdDate",
     headerName: "Ngày khởi tạo",
     width: 200,
     valueGetter: (_value: any, row: any) =>
-      formatDate(row.created_at || row.createdAt),
+      formatDate(
+        row.createdDate || row.created_date || row.createdAt || row.created_at,
+      ),
   },
 ];
 
@@ -162,7 +212,7 @@ export const eventsColumns = [
     width: 150,
     render: (value: any, row: any) => {
       const statusVal = String(row.status || value || "").toUpperCase();
-      const statusUi = STATUS_MAP[statusVal] || {
+      const statusUi = EVENT_STATUS_MAP[statusVal] || {
         label: row.status || "Không xác định",
         color: "bg-gray-100 text-gray-500 dark:bg-zinc-800 dark:text-zinc-400",
       };

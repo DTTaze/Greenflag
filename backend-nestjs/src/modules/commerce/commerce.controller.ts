@@ -39,12 +39,12 @@ export class CommerceController {
     @Query('showDeleted') showDeleted?: string,
   ): Promise<HttpResponse> {
     const withDeleted = showDeleted === 'true';
-    return this.productService.findAll({}, { withDeleted });
+    return this.productService.findAllProducts({ withDeleted });
   }
 
   @Get('products/:id')
   public async getProductById(@Param('id') id: string): Promise<HttpResponse> {
-    return this.productService.findByID(id);
+    return this.productService.getProductDetail(id);
   }
 
   // --- Items ---

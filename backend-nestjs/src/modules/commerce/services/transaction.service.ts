@@ -38,7 +38,28 @@ export class TransactionService extends BaseCRUDService<Transaction> {
   ): Promise<OperationResult<Transaction[]>> {
     return this.findAll(
       { buyerId },
-      { relations: { receiverInformation: true, item: true } },
+      {
+        relations: {
+          receiverInformation: true,
+          item: true,
+          buyer: { profile: true },
+          seller: { profile: true },
+        },
+        select: {
+          buyer: {
+            id: true,
+            username: true,
+            email: true,
+            profile: { fullName: true },
+          },
+          seller: {
+            id: true,
+            username: true,
+            email: true,
+            profile: { fullName: true },
+          },
+        } as any,
+      },
     );
   }
 
@@ -73,7 +94,26 @@ export class TransactionService extends BaseCRUDService<Transaction> {
   ): Promise<OperationResult<Transaction[]>> {
     const whereCondition = isAdmin ? {} : { sellerId };
     return this.findAll(whereCondition, {
-      relations: { receiverInformation: true, item: true },
+      relations: {
+        receiverInformation: true,
+        item: true,
+        buyer: { profile: true },
+        seller: { profile: true },
+      },
+      select: {
+        buyer: {
+          id: true,
+          username: true,
+          email: true,
+          profile: { fullName: true },
+        },
+        seller: {
+          id: true,
+          username: true,
+          email: true,
+          profile: { fullName: true },
+        },
+      } as any,
     });
   }
 
@@ -82,7 +122,28 @@ export class TransactionService extends BaseCRUDService<Transaction> {
   ): Promise<OperationResult<Transaction>> {
     const txRes = await this.findOne(
       { id },
-      { relations: { receiverInformation: true, item: true } },
+      {
+        relations: {
+          receiverInformation: true,
+          item: true,
+          buyer: { profile: true },
+          seller: { profile: true },
+        },
+        select: {
+          buyer: {
+            id: true,
+            username: true,
+            email: true,
+            profile: { fullName: true },
+          },
+          seller: {
+            id: true,
+            username: true,
+            email: true,
+            profile: { fullName: true },
+          },
+        } as any,
+      },
     );
     if (!txRes.success || !txRes.data) {
       return generateNotFoundResult(

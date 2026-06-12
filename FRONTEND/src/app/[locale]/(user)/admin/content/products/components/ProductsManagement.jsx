@@ -69,6 +69,28 @@ export default function ProductsManagement() {
     }
   };
 
+  const handleBulkDeleteProducts = async (ids) => {
+    try {
+      const results = await Promise.allSettled(
+        ids.map((id) => deleteProduct(id))
+      );
+
+      const successful = results.filter((r) => r.status === "fulfilled" && r.value?.success);
+      const failed = results.filter((r) => r.status === "rejected" || (r.status === "fulfilled" && !r.value?.success));
+
+      if (failed.length === 0) {
+        alert(`Đã xóa thành công ${successful.length} sản phẩm.`);
+      } else {
+        const sampleError = failed[0].reason?.response?.data?.message || failed[0].value?.error || "Dữ liệu đang được sử dụng hoặc bị ràng buộc khóa ngoại";
+        alert(`Xóa thành công ${successful.length}/${ids.length} sản phẩm. Thất bại ${failed.length} sản phẩm (${sampleError}).`);
+      }
+      fetchProducts();
+    } catch (e) {
+      console.log(e);
+      alert("Đã xảy ra lỗi hệ thống khi thực hiện xóa hàng loạt.");
+    }
+  };
+
   const handleSubmitProduct = async (data, mode) => {
     if (mode === "add") {
       try {
@@ -107,6 +129,7 @@ export default function ProductsManagement() {
         onAdd={handleAddProduct}
         onEdit={handleEditProduct}
         onDelete={handleDeleteProduct}
+        onBulkDelete={handleBulkDeleteProducts}
         loading={loading}
         showDeleted={showDeleted}
         onToggleShowDeleted={setShowDeleted}

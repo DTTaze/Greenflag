@@ -20,8 +20,11 @@ interface RawProductData {
   category?: string;
   status?: string;
   post_status?: string;
+  postStatus?: string;
   product_status?: string;
+  productStatus?: string;
   created_at: string;
+  createdAt?: string;
   images: string[];
   stock?: number;
   creator?: { username?: string };
@@ -69,8 +72,8 @@ export function useMarketplaceData(userId?: number | string) {
           price: item.price,
           category: item.category || "other",
           postStatus: item.status === "available" ? "public" : item.status,
-          condition: item.product_status || "new",
-          createdAt: item.created_at,
+          condition: item.productStatus || item.product_status || "new",
+          createdAt: item.createdAt || item.created_at,
           image: item.images.length > 0 ? item.images[0] : null,
           stock: item.stock || 0,
           canPurchase: item.status === "available",
@@ -101,9 +104,9 @@ export function useMarketplaceData(userId?: number | string) {
           description: item.description,
           price: item.price,
           category: item.category || "other",
-          postStatus: item.post_status,
-          condition: item.product_status || "new",
-          createdAt: item.created_at,
+          postStatus: item.postStatus || item.post_status,
+          condition: item.productStatus || item.product_status || "new",
+          createdAt: item.createdAt || item.created_at,
           image: item.images.length > 0 ? item.images[0] : null,
           stock: item.stock || 0,
           canPurchase: item.post_status === "public",
@@ -133,9 +136,9 @@ export function useMarketplaceData(userId?: number | string) {
           description: item.description,
           price: item.price,
           category: item.category || "other",
-          postStatus: item.post_status,
-          condition: item.product_status || "new",
-          createdAt: item.created_at,
+          postStatus: item.postStatus || item.post_status,
+          condition: item.productStatus || item.product_status || "new",
+          createdAt: item.createdAt || item.created_at,
           image: item.images.length > 0 ? item.images[0] : null,
           stock: item.stock || 0,
           canPurchase: item.post_status === "public",

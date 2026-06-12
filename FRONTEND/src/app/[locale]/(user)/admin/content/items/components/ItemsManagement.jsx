@@ -69,6 +69,28 @@ export default function ItemsManagement() {
     }
   };
 
+  const handleBulkDeleteItems = async (ids) => {
+    try {
+      const results = await Promise.allSettled(
+        ids.map((id) => deleteItem(id))
+      );
+
+      const successful = results.filter((r) => r.status === "fulfilled" && r.value?.success);
+      const failed = results.filter((r) => r.status === "rejected" || (r.status === "fulfilled" && !r.value?.success));
+
+      if (failed.length === 0) {
+        alert(`Đã xóa thành công ${successful.length} vật phẩm.`);
+      } else {
+        const sampleError = failed[0].reason?.response?.data?.message || failed[0].value?.error || "Dữ liệu đang được sử dụng hoặc bị ràng buộc khóa ngoại";
+        alert(`Xóa thành công ${successful.length}/${ids.length} vật phẩm. Thất bại ${failed.length} vật phẩm (${sampleError}).`);
+      }
+      fetchItems();
+    } catch (e) {
+      console.log(e);
+      alert("Đã xảy ra lỗi hệ thống khi thực hiện xóa hàng loạt.");
+    }
+  };
+
   const handleSubmitItem = async (data, mode) => {
     if (mode === "add") {
       try {
@@ -107,6 +129,7 @@ export default function ItemsManagement() {
         onAdd={handleAddItem}
         onEdit={handleEditItem}
         onDelete={handleDeleteItem}
+        onBulkDelete={handleBulkDeleteItems}
         loading={loading}
         showDeleted={showDeleted}
         onToggleShowDeleted={setShowDeleted}

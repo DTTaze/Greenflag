@@ -70,6 +70,28 @@ export default function EventsManagement() {
     }
   };
 
+  const handleBulkDeleteEvents = async (ids) => {
+    try {
+      const results = await Promise.allSettled(
+        ids.map((id) => deleteEvent(id))
+      );
+
+      const successful = results.filter((r) => r.status === "fulfilled" && r.value?.success);
+      const failed = results.filter((r) => r.status === "rejected" || (r.status === "fulfilled" && !r.value?.success));
+
+      if (failed.length === 0) {
+        alert(`Đã xóa thành công ${successful.length} sự kiện.`);
+      } else {
+        const sampleError = failed[0].reason?.response?.data?.message || failed[0].value?.error || "Dữ liệu đang được sử dụng hoặc bị ràng buộc khóa ngoại";
+        alert(`Xóa thành công ${successful.length}/${ids.length} sự kiện. Thất bại ${failed.length} sự kiện (${sampleError}).`);
+      }
+      fetchEvents();
+    } catch (e) {
+      console.log(e);
+      alert("Đã xảy ra lỗi hệ thống khi thực hiện xóa hàng loạt.");
+    }
+  };
+
   const handleSubmitEvent = async (data, mode) => {
     try {
       if (mode === "add") {
@@ -105,6 +127,7 @@ export default function EventsManagement() {
         onAdd={handleAddEvent}
         onEdit={handleEditEvent}
         onDelete={handleDeleteEvent}
+        onBulkDelete={handleBulkDeleteEvents}
         loading={loading}
         showDeleted={showDeleted}
         onToggleShowDeleted={setShowDeleted}

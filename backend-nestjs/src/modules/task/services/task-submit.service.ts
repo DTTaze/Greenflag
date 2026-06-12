@@ -27,12 +27,16 @@ export class TaskSubmitService extends BaseCRUDService<TaskSubmit> {
           userId,
         },
       },
-      relations: ['taskUser', 'taskUser.task'],
+      relations: ['taskUser', 'taskUser.task', 'taskUser.user', 'taskUser.user.profile'],
       order: { submittedAt: 'DESC' },
     });
 
     const mapped = submits.map((submit) => ({
       id: submit.id,
+      description: submit.description || '',
+      status: submit.status,
+      submittedAt: submit.submittedAt,
+      createdAt: submit.createdAt,
       task_user: {
         progress_count: submit.taskUser.progressCount,
         assigned_at: submit.taskUser.assignedAt,
@@ -45,6 +49,12 @@ export class TaskSubmitService extends BaseCRUDService<TaskSubmit> {
         },
         user: {
           id: submit.taskUser.userId,
+          username: submit.taskUser.user?.username,
+          email: submit.taskUser.user?.email,
+          avatarUrl: submit.taskUser.user?.avatarUrl,
+          profile: {
+            fullName: submit.taskUser.user?.profile?.fullName,
+          },
         },
       },
       images: submit.images || [],
@@ -68,12 +78,16 @@ export class TaskSubmitService extends BaseCRUDService<TaskSubmit> {
         };
     const submits = await this.taskSubmitRepository.find({
       where: whereCondition,
-      relations: ['taskUser', 'taskUser.task'],
+      relations: ['taskUser', 'taskUser.task', 'taskUser.user', 'taskUser.user.profile'],
       order: { submittedAt: 'DESC' },
     });
 
     const mapped = submits.map((submit) => ({
       id: submit.id,
+      description: submit.description || '',
+      status: submit.status,
+      submittedAt: submit.submittedAt,
+      createdAt: submit.createdAt,
       task_user: {
         progress_count: submit.taskUser.progressCount,
         assigned_at: submit.taskUser.assignedAt,
@@ -86,6 +100,12 @@ export class TaskSubmitService extends BaseCRUDService<TaskSubmit> {
         },
         user: {
           id: submit.taskUser.userId,
+          username: submit.taskUser.user?.username,
+          email: submit.taskUser.user?.email,
+          avatarUrl: submit.taskUser.user?.avatarUrl,
+          profile: {
+            fullName: submit.taskUser.user?.profile?.fullName,
+          },
         },
       },
       images: submit.images || [],

@@ -1,10 +1,5 @@
 ---
 trigger: always_on
----
-
-Chào bạn, tôi là Gemini. Dưới đây là file Markdown mô tả chi tiết kiến trúc và cấu trúc source code Frontend dựa trên tài liệu kỹ thuật bạn đã cung cấp. Bạn có thể copy nội dung này để lưu thành file `.md` (ví dụ: `FRONTEND_ARCHITECTURE.md`).
-
----
 
 # Tài Liệu Kiến Trúc Frontend (Frontend Architecture)
 

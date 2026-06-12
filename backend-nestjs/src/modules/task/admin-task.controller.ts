@@ -53,8 +53,10 @@ export class AdminTaskController {
   @ApiOperation({ summary: "Get submissions for any customer's tasks" })
   async getTaskSubmissions(
     @Param('customerId') customerId: string,
+    @RequestUser() reqUser: any,
   ): Promise<HttpResponse> {
-    return this.taskSubmitService.getTaskSubmitByCustomerId(customerId);
+    const isAdmin = reqUser.role === ROLE.ADMIN;
+    return this.taskSubmitService.getTaskSubmitByCustomerId(customerId, isAdmin);
   }
 
   @Post()

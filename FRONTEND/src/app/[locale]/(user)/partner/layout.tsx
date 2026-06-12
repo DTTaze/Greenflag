@@ -30,7 +30,7 @@ export default function PartnerLayout({
 
   return (
     <ProtectedRoute requiredRole="Partner">
-      <div className="flex min-h-screen w-full bg-gray-50 text-gray-900 transition-colors duration-200 dark:bg-zinc-950 dark:text-zinc-100">
+      <div className="flex min-h-screen w-full bg-transparent text-gray-900 transition-colors duration-200 dark:text-zinc-100">
         {/* Sidebar */}
         <SidebarPartner
           isOpen={sidebarOpen}
@@ -41,7 +41,7 @@ export default function PartnerLayout({
         {/* Content Wrapper */}
         <div className="flex flex-1 flex-col overflow-hidden">
           {/* Mobile Header Bar */}
-          <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 shadow-sm md:hidden dark:border-zinc-800 dark:bg-zinc-950/80 dark:backdrop-blur-md">
+          <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-emerald-200/50 bg-white/85 px-4 shadow-sm md:hidden dark:border-emerald-500/20 dark:bg-slate-900/80 dark:backdrop-blur-xl">
             <button
               onClick={() => setSidebarOpen(true)}
               className="rounded-lg p-2 text-gray-600 hover:bg-gray-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
@@ -62,7 +62,7 @@ export default function PartnerLayout({
           </header>
 
           {/* Main Content Area */}
-          <main className="flex-1 overflow-y-auto bg-gray-50 p-4 md:p-8 dark:bg-zinc-950">
+          <main className="flex-1 overflow-y-auto bg-transparent p-4 md:p-8">
             <div className="mx-auto max-w-7xl">{children}</div>
           </main>
         </div>

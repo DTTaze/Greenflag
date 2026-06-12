@@ -1,6 +1,16 @@
+import { Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 import { Button } from "@/src/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
+import { Input } from "@/src/components/ui/input";
 
 type InventoryFormValues = {
   name: string;
@@ -15,17 +25,6 @@ type InventoryFormProps = {
   error: string;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   onReset: () => void;
-  labels: {
-    heading: string;
-    description: string;
-    nameLabel: string;
-    namePlaceholder: string;
-    stockLabel: string;
-    pointsLabel: string;
-    cancelBtn: string;
-    submitBtn: string;
-    submitting: string;
-  };
 };
 
 export function InventoryForm({
@@ -35,86 +34,82 @@ export function InventoryForm({
   error,
   onSubmit,
   onReset,
-  labels,
 }: InventoryFormProps) {
+  const t = useTranslations("partner");
+
   return (
-    <section className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
-      <div className="mb-5 flex items-center justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            {labels.heading}
-          </h2>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            {labels.description}
-          </p>
-        </div>
-        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold tracking-[0.18em] text-slate-700 uppercase dark:bg-slate-800 dark:text-slate-300">
-          {labels.heading}
-        </span>
-      </div>
-
-      <form className="grid gap-4" onSubmit={onSubmit}>
-        <label className="space-y-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-          {labels.nameLabel}
-          <input
-            value={form.name}
-            onChange={(event) =>
-              setForm((prev) => ({ ...prev, name: event.target.value }))
-            }
-            placeholder={labels.namePlaceholder}
-            className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 transition outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100"
-          />
-        </label>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <label className="space-y-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-            {labels.stockLabel}
-            <input
-              type="number"
-              min={0}
-              value={form.stock}
-              onChange={(event) =>
-                setForm((prev) => ({
-                  ...prev,
-                  stock: Number(event.target.value),
-                }))
-              }
-              className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 transition outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100"
+    <Card className="h-fit rounded-[1.75rem] border border-emerald-200/50 bg-white/85 p-6 shadow-xs backdrop-blur-xl transition-all duration-300 hover:shadow-md dark:border-emerald-500/20 dark:bg-slate-900/80">
+      <CardHeader className="p-0 mb-6">
+        <CardTitle className="text-xl font-extrabold text-gray-900 dark:text-white">
+          {t("inventory.panelTitle")}
+        </CardTitle>
+        <CardDescription className="mt-1.5 text-xs text-gray-500 dark:text-slate-400">
+          {t("inventory.panelDesc")}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="p-0">
+        <form className="grid gap-5" onSubmit={onSubmit}>
+          <label className="flex flex-col gap-2 text-sm font-semibold text-gray-700 dark:text-zinc-300">
+            {t("inventory.itemNameLabel")}
+            <Input
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              placeholder={t("inventory.namePlaceholder")}
+              className="w-full rounded-2xl border border-emerald-200/40 bg-emerald-50/10 px-4 py-3 text-sm text-gray-900 transition duration-200 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200/50 dark:border-emerald-850/30 dark:bg-gray-950 dark:text-gray-100 h-auto"
             />
           </label>
-          <label className="space-y-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-            {labels.pointsLabel}
-            <input
-              type="number"
-              min={0}
-              value={form.points}
-              onChange={(event) =>
-                setForm((prev) => ({
-                  ...prev,
-                  points: Number(event.target.value),
-                }))
-              }
-              className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 transition outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100"
-            />
-          </label>
-        </div>
 
-        {error && <p className="text-sm text-rose-600">{error}</p>}
+          <div className="grid gap-5 sm:grid-cols-2">
+            <label className="flex flex-col gap-2 text-sm font-semibold text-gray-700 dark:text-zinc-300">
+              {t("inventory.stockLabel")}
+              <Input
+                type="number"
+                min={0}
+                value={form.stock}
+                onChange={(e) =>
+                  setForm({ ...form, stock: Number(e.target.value) })
+                }
+                className="w-full rounded-2xl border border-emerald-200/40 bg-emerald-50/10 px-4 py-3 text-sm text-gray-900 transition duration-200 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200/50 dark:border-emerald-855/30 dark:bg-gray-950 dark:text-gray-100 h-auto"
+              />
+            </label>
+            <label className="flex flex-col gap-2 text-sm font-semibold text-gray-700 dark:text-zinc-300">
+              {t("inventory.pointsLabel")}
+              <Input
+                type="number"
+                min={0}
+                value={form.points}
+                onChange={(e) =>
+                  setForm({ ...form, points: Number(e.target.value) })
+                }
+                className="w-full rounded-2xl border border-emerald-200/40 bg-emerald-50/10 px-4 py-3 text-sm text-gray-900 transition duration-200 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200/50 dark:border-emerald-855/30 dark:bg-gray-950 dark:text-gray-100 h-auto"
+              />
+            </label>
+          </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onReset}
-            className="w-full sm:w-auto"
-          >
-            {labels.cancelBtn}
-          </Button>
-          <Button type="submit" className="w-full sm:w-auto" disabled={saving}>
-            {saving ? labels.submitting : labels.submitBtn}
-          </Button>
-        </div>
-      </form>
-    </section>
+          {error ? (
+            <p className="text-sm font-medium text-red-500">{error}</p>
+          ) : null}
+
+          <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onReset}
+              className="w-full sm:w-auto rounded-2xl border-emerald-250 hover:bg-emerald-50 hover:text-emerald-855 dark:border-emerald-500/30 dark:text-emerald-400 dark:hover:bg-emerald-950/20 px-5 py-2.5 h-auto transition-all duration-300 font-bold"
+            >
+              {t("inventory.clearBtn")}
+            </Button>
+            <Button
+              type="submit"
+              className="w-full sm:w-auto rounded-2xl bg-emerald-600 font-bold text-white hover:bg-emerald-700 shadow-md shadow-emerald-600/10 dark:bg-emerald-500 dark:text-zinc-950 dark:hover:bg-emerald-600 transition-all duration-300 px-5 py-2.5 h-auto"
+              disabled={saving}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              {saving ? t("inventory.adding") : t("inventory.addBtn")}
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   );
 }

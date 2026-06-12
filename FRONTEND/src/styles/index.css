@@ -34,6 +34,31 @@
       transform: translateX(100%);
     }
   }
+
+  /* Scanner QR target laser line animation */
+  @keyframes scan {
+    0%, 100% { top: 0%; opacity: 0.8; }
+    50% { top: 100%; opacity: 1; }
+  }
+  .animate-scan {
+    animation: scan 2.5s linear infinite;
+  }
+
+  /* Success/Error pulses for QR viewfinder */
+  @keyframes success-pulse {
+    0%, 100% { border-color: rgba(16, 185, 129, 0.4); box-shadow: 0 0 5px rgba(16, 185, 129, 0.2); }
+    50% { border-color: rgba(16, 185, 129, 1); box-shadow: 0 0 20px rgba(16, 185, 129, 0.7); }
+  }
+  .animate-success-pulse {
+    animation: success-pulse 0.6s ease-in-out infinite;
+  }
+  @keyframes error-pulse {
+    0%, 100% { border-color: rgba(239, 68, 68, 0.4); box-shadow: 0 0 5px rgba(239, 68, 68, 0.2); }
+    50% { border-color: rgba(239, 68, 68, 1); box-shadow: 0 0 20px rgba(239, 68, 68, 0.7); }
+  }
+  .animate-error-pulse {
+    animation: error-pulse 0.6s ease-in-out infinite;
+  }
 }
 
 @layer base {

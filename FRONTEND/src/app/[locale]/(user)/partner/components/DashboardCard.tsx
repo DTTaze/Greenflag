@@ -22,7 +22,7 @@ export function DashboardCard({
   return (
     <Link
       href={href}
-      className="group rounded-3xl border border-gray-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-emerald-200 hover:shadow-lg dark:border-gray-700 dark:bg-gray-900"
+      className="group rounded-3xl border border-emerald-200/50 bg-white/85 p-6 shadow-xs backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-md dark:border-emerald-500/20 dark:bg-slate-900/80"
     >
       <div
         className={`mb-4 flex h-14 w-14 items-center justify-center rounded-3xl ${accent}`}

@@ -8,11 +8,25 @@ import {
   ScanQrCode,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import React, { useEffect, useState } from "react";
-import { useZxing } from "react-zxing";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { useZxing } from "react-zxing";
 
 import { Button } from "@/src/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/src/components/ui/select";
 import { eventServices } from "@/src/services/event";
 
 export default function PartnerScannerPage() {
@@ -163,148 +177,131 @@ export default function PartnerScannerPage() {
   });
 
   return (
-    <div className="space-y-6">
-      <style>{`
-        @keyframes scan {
-          0%, 100% { top: 0%; opacity: 0.8; }
-          50% { top: 100%; opacity: 1; }
-        }
-        .animate-scan {
-          animation: scan 2.5s linear infinite;
-        }
-        @keyframes success-pulse {
-          0%, 100% { border-color: rgba(16, 185, 129, 0.4); box-shadow: 0 0 5px rgba(16, 185, 129, 0.2); }
-          50% { border-color: rgba(16, 185, 129, 1); box-shadow: 0 0 20px rgba(16, 185, 129, 0.7); }
-        }
-        .animate-success-pulse {
-          animation: success-pulse 0.6s ease-in-out infinite;
-        }
-        @keyframes error-pulse {
-          0%, 100% { border-color: rgba(239, 68, 68, 0.4); box-shadow: 0 0 5px rgba(239, 68, 68, 0.2); }
-          50% { border-color: rgba(239, 68, 68, 1); box-shadow: 0 0 20px rgba(239, 68, 68, 0.7); }
-        }
-        .animate-error-pulse {
-          animation: error-pulse 0.6s ease-in-out infinite;
-        }
-      `}</style>
+    <div className="space-y-8 p-6">
 
       {/* Header */}
-      <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/90">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-4">
-            <div className="rounded-3xl bg-emerald-600 p-4 text-white shadow-sm">
-              <ScanQrCode size={28} />
-            </div>
-            <div>
-              <h1 className="text-3xl font-semibold text-gray-900 dark:text-gray-100">
-                {locale === "vi"
-                  ? "Máy quét mã QR sự kiện"
-                  : "Event QR Scanner"}
-              </h1>
-              <p className="mt-1 max-w-2xl text-sm text-gray-600 dark:text-gray-300">
-                {locale === "vi"
-                  ? "Sử dụng camera của thiết bị để quét mã QR điểm danh khách dự sự kiện."
-                  : "Use your device's camera to scan QR codes for event check-in."}
-              </p>
-            </div>
+      <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between rounded-3xl border border-emerald-200/50 bg-white/85 p-6 backdrop-blur-xl shadow-xs dark:border-emerald-500/20 dark:bg-slate-900/80">
+        <div className="flex items-center gap-4">
+          <div className="rounded-2xl bg-emerald-600 p-3.5 text-white shadow-md shadow-emerald-600/10 dark:bg-emerald-500 dark:text-zinc-950 dark:shadow-none transition-all duration-300">
+            <ScanQrCode size={28} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white">
+              {locale === "vi"
+                ? "Máy quét mã QR sự kiện"
+                : "Event QR Scanner"}
+            </h1>
+            <p className="mt-1.5 max-w-2xl text-sm text-gray-600 dark:text-zinc-400">
+              {locale === "vi"
+                ? "Sử dụng camera của thiết bị để quét mã QR điểm danh khách dự sự kiện."
+                : "Use your device's camera to scan QR codes for event check-in."}
+            </p>
           </div>
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-8 md:grid-cols-2">
         {/* Control and selection panel */}
-        <section className="flex flex-col justify-between rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                {locale === "vi"
-                  ? "Cấu hình & Trạng thái"
-                  : "Configuration & Status"}
-              </h2>
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                {locale === "vi"
-                  ? "Chọn sự kiện trước khi bắt đầu quét."
-                  : "Select an event before starting the scan."}
-              </p>
+        <Card className="flex flex-col justify-between rounded-[1.75rem] border border-emerald-200/50 bg-white/85 p-6 shadow-xs backdrop-blur-xl transition-all duration-300 hover:shadow-md dark:border-emerald-500/20 dark:bg-slate-900/80">
+          <CardHeader className="p-0 mb-6">
+            <CardTitle className="text-xl font-extrabold text-gray-900 dark:text-white">
+              {locale === "vi"
+                ? "Cấu hình & Trạng thái"
+                : "Configuration & Status"}
+            </CardTitle>
+            <CardDescription className="mt-1.5 text-sm text-gray-600 dark:text-slate-400">
+              {locale === "vi"
+                ? "Chọn sự kiện trước khi bắt đầu quét."
+                : "Select an event before starting the scan."}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-0 space-y-6 flex-1 flex flex-col justify-between">
+            <div className="space-y-6 flex-1">
+              {loadingEvents ? (
+                <div className="flex items-center text-sm text-gray-500 dark:text-slate-400">
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent mr-2" />
+                  {locale === "vi"
+                    ? "Đang tải danh sách sự kiện..."
+                    : "Loading events..."}
+                </div>
+              ) : events.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-amber-300 bg-amber-50/50 p-4 text-amber-800 dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-amber-300">
+                  <p className="text-sm font-semibold">
+                    {locale === "vi"
+                      ? "Không tìm thấy sự kiện nào!"
+                      : "No events found!"}
+                  </p>
+                  <p className="mt-1 text-xs">
+                    {locale === "vi"
+                      ? "Bạn phải tạo ít nhất một sự kiện trong trang Sự kiện trước khi sử dụng máy quét."
+                      : "You must create at least one event in the Events page before using the scanner."}
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200">
+                    {locale === "vi" ? "Chọn sự kiện" : "Select Event"}
+                    <div className="mt-2">
+                      <Select
+                        value={selectedEventId}
+                        onValueChange={(val) => setSelectedEventId(val || "")}
+                      >
+                        <SelectTrigger className="w-full rounded-2xl border border-emerald-200/40 bg-emerald-50/10 px-4 py-3 text-sm text-gray-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200/50 dark:border-emerald-800/30 dark:bg-gray-950 dark:text-gray-100 h-auto flex justify-between items-center">
+                          <SelectValue placeholder={locale === "vi" ? "Chọn sự kiện" : "Select Event"} />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white dark:bg-zinc-900 border border-emerald-200/50 dark:border-emerald-500/20">
+                          {events.map((evt) => (
+                            <SelectItem key={evt.id} value={evt.id}>
+                              {evt.title || evt.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </label>
+                </div>
+              )}
+
+              {/* Scan Result Logs */}
+              {scannedResult && (
+                <div className="rounded-2xl border border-emerald-100 bg-emerald-50/20 p-4 dark:border-emerald-950/40 dark:bg-zinc-950/50">
+                  <p className="text-xs font-bold text-emerald-800 uppercase dark:text-emerald-450">
+                    {locale === "vi"
+                      ? "Kết quả quét gần nhất"
+                      : "Last Scanned Raw Result"}
+                  </p>
+                  <p className="mt-1.5 font-mono text-sm break-all text-gray-800 dark:text-zinc-200">
+                    {scannedResult}
+                  </p>
+                </div>
+              )}
             </div>
 
-            {loadingEvents ? (
-              <div className="animate-pulse text-sm text-gray-500">
-                {locale === "vi"
-                  ? "Đang tải danh sách sự kiện..."
-                  : "Loading events..."}
-              </div>
-            ) : events.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-amber-300 bg-amber-50/50 p-4 text-amber-800 dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-amber-300">
-                <p className="text-sm font-semibold">
-                  {locale === "vi"
-                    ? "Không tìm thấy sự kiện nào!"
-                    : "No events found!"}
-                </p>
-                <p className="mt-1 text-xs">
-                  {locale === "vi"
-                    ? "Bạn phải tạo ít nhất một sự kiện trong trang Sự kiện trước khi sử dụng máy quét."
-                    : "You must create at least one event in the Events page before using the scanner."}
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
-                  {locale === "vi" ? "Chọn sự kiện" : "Select Event"}
-                  <select
-                    value={selectedEventId}
-                    onChange={(e) => setSelectedEventId(e.target.value)}
-                    className="mt-2 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200 dark:border-zinc-700 dark:bg-zinc-950 dark:text-gray-100"
-                  >
-                    {events.map((evt) => (
-                      <option key={evt.id} value={evt.id}>
-                        {evt.title || evt.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-            )}
-
-            {/* Scan Result Logs */}
-            {scannedResult && (
-              <div className="border-gray-250 rounded-2xl border bg-gray-50 p-4 dark:border-zinc-800 dark:bg-zinc-950">
-                <p className="text-xs font-semibold text-gray-500 uppercase dark:text-zinc-400">
-                  {locale === "vi"
-                    ? "Kết quả quét gần nhất"
-                    : "Last Scanned Raw Result"}
-                </p>
-                <p className="mt-1 font-mono text-sm break-all text-gray-800 dark:text-zinc-200">
-                  {scannedResult}
-                </p>
-              </div>
-            )}
-          </div>
-
-          <div className="mt-6 flex gap-4">
-            <Button
-              variant="outline"
-              type="button"
-              className="flex-1"
-              onClick={() => {
-                setScannedResult("");
-                setScanStatus("idle");
-                setIsProcessing(false);
-              }}
-            >
-              <RotateCcw className="mr-2" size={16} />
-              Reset
-            </Button>
-          </div>
-        </section>
+            <div className="mt-6 flex gap-4">
+              <Button
+                variant="outline"
+                type="button"
+                className="flex-1 rounded-2xl border-emerald-200 hover:bg-emerald-50 hover:text-emerald-800 dark:border-emerald-500/30 dark:text-emerald-400 dark:hover:bg-emerald-950/20 px-5 py-2.5 h-auto transition-all duration-300 font-bold"
+                onClick={() => {
+                  setScannedResult("");
+                  setScanStatus("idle");
+                  setIsProcessing(false);
+                }}
+              >
+                <RotateCcw className="mr-2" size={16} />
+                Reset
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Video Scanner Feed Viewport */}
-        <section className="flex flex-col items-center justify-center rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+        <Card className="flex flex-col items-center justify-center rounded-[1.75rem] border border-emerald-200/50 bg-white/85 p-6 shadow-xs backdrop-blur-xl transition-all duration-300 hover:shadow-md dark:border-emerald-500/20 dark:bg-slate-900/80">
           {!selectedEventId ? (
             <div className="flex flex-col items-center justify-center p-8 text-center text-gray-500 dark:text-zinc-400">
               <Camera
                 size={48}
-                className="mb-4 text-gray-300 dark:text-zinc-700"
+                className="mb-4 text-emerald-600/30 dark:text-emerald-400/20"
               />
               <p className="text-sm font-semibold">
                 {locale === "vi" ? "Chưa sẵn sàng" : "Not Ready"}
@@ -316,7 +313,7 @@ export default function PartnerScannerPage() {
               </p>
             </div>
           ) : (
-            <div className="relative aspect-[3/4] w-full max-w-sm overflow-hidden rounded-2xl border border-zinc-800 bg-black shadow-md">
+            <div className="relative aspect-[3/4] w-full max-w-sm overflow-hidden rounded-2xl border border-emerald-200/50 bg-black shadow-md dark:border-emerald-500/30">
               {/* Video elements for zxing */}
               <video
                 ref={ref}
@@ -328,13 +325,12 @@ export default function PartnerScannerPage() {
               {/* Viewfinder Target laser frame */}
               <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                 <div
-                  className={`relative h-64 w-64 rounded-2xl border-2 transition-all duration-300 ${
-                    scanStatus === "success"
-                      ? "animate-success-pulse border-emerald-500 bg-emerald-500/5"
-                      : scanStatus === "error"
-                        ? "animate-error-pulse border-red-500 bg-red-500/5"
-                        : "border-emerald-500/60"
-                  }`}
+                  className={`relative h-64 w-64 rounded-2xl border-2 transition-all duration-300 ${scanStatus === "success"
+                    ? "animate-success-pulse border-emerald-500 bg-emerald-500/5"
+                    : scanStatus === "error"
+                      ? "animate-error-pulse border-red-500 bg-red-500/5"
+                      : "border-emerald-500/60"
+                    }`}
                 >
                   {/* Four Corner Marks */}
                   <div className="absolute -top-1 -left-1 h-4 w-4 rounded-tl-lg border-t-4 border-l-4 border-emerald-500" />
@@ -349,7 +345,7 @@ export default function PartnerScannerPage() {
                 </div>
               </div>
 
-              {/* API Processing State Overlay overlay */}
+              {/* API Processing State Overlay */}
               {isProcessing && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/60 backdrop-blur-xs">
                   {scanStatus === "success" ? (
@@ -388,7 +384,7 @@ export default function PartnerScannerPage() {
               )}
             </div>
           )}
-        </section>
+        </Card>
       </div>
     </div>
   );

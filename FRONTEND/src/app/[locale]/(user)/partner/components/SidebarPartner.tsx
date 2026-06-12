@@ -15,6 +15,7 @@ import React from "react";
 
 import LocaleSwitcher from "@/src/components/layout/LocaleSwitcher";
 import ThemeSwitcher from "@/src/components/layout/ThemeSwitcher";
+import { Button } from "@/src/components/ui/button";
 import { Link, usePathname } from "@/src/i18n/navigation";
 import { useAuthStore } from "@/src/store/auth/authStore";
 import { logoutUser } from "@/src/utils/api";
@@ -96,57 +97,20 @@ export default function SidebarPartner({
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-gray-200 bg-white transition-transform duration-300 md:sticky md:top-0 md:translate-x-0 dark:border-zinc-800 dark:bg-zinc-950 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-emerald-200/50 bg-white/85 backdrop-blur-xl transition-transform duration-300 md:sticky md:top-0 md:translate-x-0 dark:border-emerald-500/20 dark:bg-slate-900/80 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        {/* Header/Logo */}
-        <div className="flex h-16 items-center justify-between border-b border-gray-200 px-6 dark:border-zinc-800">
-          <Link
-            href="/"
+        {/* Header/Logo - only close button on mobile, hidden on desktop */}
+        <div className="flex h-16 items-center justify-end border-b border-emerald-200/50 px-6 md:hidden dark:border-emerald-500/20">
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onClose}
-            className="flex items-center space-x-2.5"
-          >
-            <img
-              src="/images/Logo-Greenflag.png"
-              className="h-8 w-8 object-contain"
-              alt="Green Flag Logo"
-            />
-            <span className="text-lg font-extrabold text-[#0B6E4F] dark:text-emerald-500">
-              Partner Hub
-            </span>
-          </Link>
-          <button
-            onClick={onClose}
-            className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 md:hidden dark:text-zinc-400 dark:hover:bg-zinc-800"
+            className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 dark:text-zinc-400 dark:hover:bg-zinc-800 h-auto w-auto"
           >
             <X size={20} />
-          </button>
-        </div>
-
-        {/* User profile info info */}
-        <div className="flex items-center gap-3 border-b border-gray-200 px-6 py-4 dark:border-zinc-800">
-          {userInfo.avatar_url ? (
-            <img
-              className="h-10 w-10 rounded-full border border-emerald-500 object-cover"
-              src={userInfo.avatar_url}
-              alt="Avatar"
-            />
-          ) : (
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-600 text-base font-bold text-white dark:bg-emerald-500">
-              {userInfo.username
-                ? userInfo.username.charAt(0).toUpperCase()
-                : "P"}
-            </div>
-          )}
-          <div className="overflow-hidden">
-            <div className="truncate text-sm font-semibold text-gray-800 dark:text-zinc-200">
-              {userInfo.full_name || userInfo.username}
-            </div>
-            <div className="truncate text-xs font-medium text-gray-500 dark:text-zinc-400">
-              {userInfo.email}
-            </div>
-          </div>
+          </Button>
         </div>
 
         {/* Navigation items */}
@@ -207,14 +171,15 @@ export default function SidebarPartner({
         </nav>
 
         {/* Footer actions */}
-        <div className="border-t border-gray-200 p-4 dark:border-zinc-800">
-          <button
+        <div className="border-t border-emerald-200/30 p-4 dark:border-emerald-500/10">
+          <Button
+            variant="ghost"
             onClick={handleLogout}
-            className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-red-600 transition-colors duration-150 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/10"
+            className="flex w-full items-center justify-start gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-red-650 hover:text-red-700 hover:bg-rose-50/50 dark:text-red-400 dark:hover:bg-red-950/10 h-auto"
           >
             <LogOut size={20} />
             <span>{t("logout") || "Đăng xuất"}</span>
-          </button>
+          </Button>
         </div>
       </aside>
     </>

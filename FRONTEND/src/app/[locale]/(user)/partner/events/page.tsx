@@ -6,6 +6,14 @@ import QRCode from "qrcode";
 import React from "react";
 
 import { Button } from "@/src/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
+import { Link } from "@/src/i18n/navigation";
 
 export default function PartnerEventsPage() {
   const [eventName, setEventName] = React.useState("");
@@ -43,118 +51,139 @@ export default function PartnerEventsPage() {
   }
 
   return (
-    <div className="p-6">
-      <div className="mb-8 rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-950/90">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-4">
-            <div className="rounded-3xl bg-emerald-600 p-4 text-white shadow-sm">
-              <Calendar size={28} />
+    <div className="space-y-8 p-6">
+      {/* Page Header */}
+      <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between rounded-3xl border border-emerald-200/50 bg-white/85 p-6 backdrop-blur-xl shadow-xs dark:border-emerald-500/20 dark:bg-slate-900/80">
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+          <div className="rounded-2xl bg-emerald-600 p-3.5 text-white shadow-md shadow-emerald-600/10 dark:bg-emerald-500 dark:text-zinc-950 dark:shadow-none transition-all duration-300">
+            <Calendar size={28} />
+          </div>
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-bold tracking-[0.1em] text-emerald-800 uppercase dark:bg-emerald-950/30 dark:text-emerald-400">
+              {t("events.version")}
             </div>
-            <div>
-              <div>
-                <div className="inline-flex items-center gap-3 rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold tracking-[0.18em] text-slate-700 uppercase dark:bg-slate-900 dark:text-slate-200">
-                  {t("events.version")}
-                </div>
-                <h1 className="mt-4 text-3xl font-semibold text-gray-900 dark:text-gray-100">
-                  {t("events.headline")}
-                </h1>
-                <p className="mt-1 max-w-2xl text-sm text-gray-600 dark:text-gray-300">
-                  {t("events.subtitle")}
-                </p>
-              </div>
-            </div>
-            <div className="rounded-3xl bg-blue-50 p-4 text-blue-700 dark:bg-blue-900/20 dark:text-blue-200">
-              <p className="text-sm font-semibold tracking-[0.18em] uppercase">
-                {t("events.badge")}
-              </p>
-              <p className="mt-1 text-sm text-slate-700 dark:text-slate-200">
-                {t("events.panelDescription")}
-              </p>
-            </div>
+            <h1 className="mt-2 text-2xl font-extrabold text-gray-900 dark:text-white">
+              {t("events.headline")}
+            </h1>
+            <p className="mt-1 max-w-2xl text-sm text-gray-600 dark:text-zinc-400">
+              {t("events.subtitle")}
+            </p>
           </div>
         </div>
+        <div className="rounded-2xl border border-blue-100 bg-blue-50/30 p-4 dark:border-blue-900/20 dark:bg-blue-950/10 max-w-sm">
+          <p className="text-xs font-bold tracking-wider text-blue-800 uppercase dark:text-blue-400">
+            {t("events.badge")}
+          </p>
+          <p className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+            {t("events.panelDescription")}
+          </p>
+        </div>
+      </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
-          <section className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+      {/* Main Grid */}
+      <div className="grid gap-8 md:grid-cols-2">
+        {/* Create Event Card */}
+        <Card className="rounded-[1.75rem] border border-emerald-200/50 bg-white/85 p-6 shadow-xs backdrop-blur-xl transition-all duration-300 hover:shadow-md dark:border-emerald-500/20 dark:bg-slate-900/80">
+          <CardHeader className="p-0 mb-6">
+            <CardTitle className="text-xl font-extrabold text-gray-900 dark:text-white">
               {t("events.createTitle")}
-            </h2>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            </CardTitle>
+            <CardDescription className="mt-1.5 text-xs text-gray-500 dark:text-slate-400">
               {t("events.createDescription")}
-            </p>
-
-            <div className="mt-6 space-y-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-0 space-y-6">
+            <div className="space-y-4">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200">
                 {t("events.inputLabel")}
                 <input
                   value={eventName}
                   onChange={(e) => setEventName(e.target.value)}
                   placeholder={t("events.inputPlaceholder")}
-                  className="mt-2 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 transition outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100"
+                  className="mt-2 w-full rounded-2xl border border-emerald-200/40 bg-emerald-50/10 px-4 py-3 text-sm text-gray-900 transition outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200/50 dark:border-emerald-800/30 dark:bg-gray-950 dark:text-gray-100"
                 />
               </label>
-              {error ? <p className="text-sm text-rose-600">{error}</p> : null}
-              <div className="flex flex-wrap gap-3">
-                <Button type="button" onClick={generate} disabled={generating}>
-                  {generating
-                    ? t("events.generating")
-                    : t("events.generateBtn")}
+              {error ? <p className="text-sm font-semibold text-rose-600">{error}</p> : null}
+              <div className="flex flex-wrap gap-3 pt-2">
+                <Button
+                  type="button"
+                  onClick={generate}
+                  disabled={generating}
+                  className="rounded-2xl bg-emerald-600 font-bold text-white hover:bg-emerald-700 shadow-md shadow-emerald-600/10 dark:bg-emerald-500 dark:text-zinc-950 dark:hover:bg-emerald-600 transition-all duration-300 px-5 py-2.5 h-auto"
+                >
+                  {generating ? (
+                    <>
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent mr-2" />
+                      {t("events.generating")}
+                    </>
+                  ) : (
+                    t("events.generateBtn")
+                  )}
                 </Button>
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setEventName("")}
+                  className="rounded-2xl border-emerald-200 hover:bg-emerald-50 hover:text-emerald-800 dark:border-emerald-500/30 dark:text-emerald-400 dark:hover:bg-emerald-950/20 px-5 py-2.5 h-auto transition-all duration-300"
                 >
                   {t("events.clearBtn")}
                 </Button>
               </div>
             </div>
-          </section>
+          </CardContent>
+        </Card>
 
-          <section className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
-            <div className="mb-4 flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                  {t("events.qrSectionTitle")}
-                </h2>
-                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                  {t("events.qrSectionDescription")}
-                </p>
-              </div>
-              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold tracking-[0.18em] text-slate-700 uppercase dark:bg-slate-800 dark:text-slate-300">
-                {t("events.qrBadge")}
-              </span>
+        {/* QR Code Section Card */}
+        <Card className="rounded-[1.75rem] border border-emerald-200/50 bg-white/85 p-6 shadow-xs backdrop-blur-xl transition-all duration-300 hover:shadow-md dark:border-emerald-500/20 dark:bg-slate-900/80">
+          <CardHeader className="p-0 mb-6 flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="text-xl font-extrabold text-gray-900 dark:text-white">
+                {t("events.qrSectionTitle")}
+              </CardTitle>
+              <CardDescription className="mt-1.5 text-xs text-gray-500 dark:text-slate-400">
+                {t("events.qrSectionDescription")}
+              </CardDescription>
             </div>
-
-            <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-6 text-center dark:border-slate-700 dark:bg-slate-950/40">
+            <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-bold tracking-[0.1em] text-emerald-850 uppercase dark:bg-emerald-950/30 dark:text-emerald-400">
+              {t("events.qrBadge")}
+            </span>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="rounded-3xl border-2 border-dashed border-emerald-200/50 bg-emerald-50/10 p-8 text-center dark:border-emerald-800/20 dark:bg-emerald-950/5">
               {qrSrc ? (
-                <>
-                  <img
-                    src={qrSrc}
-                    alt="event-qr"
-                    className="mx-auto h-48 w-48 rounded-3xl border border-gray-200 object-cover dark:border-gray-700"
-                  />
-                  <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-                    <Button type="button" onClick={downloadQR}>
+                <div className="space-y-6">
+                  <div className="relative mx-auto h-52 w-52 overflow-hidden rounded-3xl border border-emerald-100 bg-white p-3 shadow-md transition-transform duration-300 hover:scale-102 dark:border-emerald-950 dark:bg-zinc-950">
+                    <img
+                      src={qrSrc}
+                      alt="event-qr"
+                      className="h-full w-full rounded-2xl object-cover"
+                    />
+                  </div>
+                  <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+                    <Button
+                      type="button"
+                      onClick={downloadQR}
+                      className="w-full sm:w-auto rounded-2xl bg-emerald-600 font-bold text-white hover:bg-emerald-700 shadow-md shadow-emerald-600/10 dark:bg-emerald-500 dark:text-zinc-950 dark:hover:bg-emerald-650 transition-all duration-300 px-5 py-2.5 h-auto"
+                    >
                       {t("events.downloadQr")}
                     </Button>
-                    <a
+                    <Link
                       href="/partner/scanner"
-                      className="inline-flex items-center justify-center rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-gray-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-900"
+                      className="w-full sm:w-auto inline-flex items-center justify-center rounded-2xl border border-emerald-200 bg-white/70 px-5 py-2.5 text-sm font-bold text-emerald-800 transition hover:bg-emerald-50 dark:border-emerald-500/30 dark:bg-slate-900/50 dark:text-emerald-400 dark:hover:bg-emerald-950/40"
                     >
-                      <ScanQrCode className="mr-2" size={18} />
+                      <ScanQrCode className="mr-2 h-4 w-4" size={18} />
                       {t("events.openScanner")}
-                    </a>
+                    </Link>
                   </div>
-                </>
+                </div>
               ) : (
-                <div className="text-sm text-slate-500 dark:text-slate-400">
+                <div className="py-12 text-sm font-medium text-slate-500 dark:text-slate-400">
                   {t("events.qrNotCreated")}
                 </div>
               )}
             </div>
-          </section>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

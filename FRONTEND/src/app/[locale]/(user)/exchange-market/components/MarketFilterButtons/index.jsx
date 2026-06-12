@@ -35,25 +35,38 @@ function MarketFilterButtons({
             ? t("statuses." + filterKey)
             : t("categories." + filterKey);
         const Icon = marketView === "my_items" && filterItem.icon;
-        const statusColor =
+
+        // Custom style colors for My Items active statuses
+        const activeStatusColors = {
+          all: "bg-[#0B6E4F] border-[#0B6E4F] text-white shadow-lg shadow-emerald-600/20",
+          public: "bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-600/20",
+          pending: "bg-amber-600 border-amber-600 text-white shadow-lg shadow-amber-600/20",
+          rejected: "bg-rose-600 border-rose-600 text-white shadow-lg shadow-rose-600/20",
+          hidden: "bg-slate-600 border-slate-600 text-white shadow-lg shadow-slate-600/20",
+          private: "bg-slate-600 border-slate-600 text-white shadow-lg shadow-slate-600/20",
+          draft: "bg-sky-600 border-sky-600 text-white shadow-lg shadow-sky-600/20",
+        };
+
+        const inactiveStatusColor = "border-slate-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/65 text-slate-600 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-zinc-700";
+
+        const activeCategoryColor = "bg-[#0B6E4F] border-[#0B6E4F] text-white shadow-lg shadow-emerald-500/20";
+        const inactiveCategoryColor = "border-emerald-100 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/65 text-slate-700 dark:text-zinc-300 hover:bg-emerald-50/60 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-white hover:border-emerald-200 dark:hover:border-zinc-700";
+
+        const btnClasses =
           marketView === "my_items"
-            ? statusColors[filterKey] || statusColors.all
+            ? isActive
+              ? activeStatusColors[filterKey] || activeStatusColors.all
+              : inactiveStatusColor
             : isActive
-              ? "bg-[#0B6E4F] border-[#0B6E4F] text-white shadow-lg shadow-emerald-500/20"
-              : "border-emerald-100 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/65 text-slate-700 dark:text-zinc-300 hover:bg-emerald-50/60 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-white hover:border-emerald-200 dark:hover:border-zinc-700";
+              ? activeCategoryColor
+              : inactiveCategoryColor;
 
         return (
           <motion.button
             key={filterKey}
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.96 }}
-            className={`relative inline-flex cursor-pointer items-center gap-2 rounded-2xl border px-4 py-2.5 text-xs font-bold transition-all duration-200 ${
-              isActive
-                ? marketView === "my_items"
-                  ? `${statusColor} text-white shadow-md`
-                  : "border-[#0B6E4F] bg-[#0B6E4F] text-white shadow-lg shadow-emerald-500/20"
-                : statusColor
-            }`}
+            className={`relative inline-flex cursor-pointer items-center gap-2 rounded-2xl border px-4 py-2.5 text-xs font-bold transition-all duration-200 ${btnClasses}`}
             onClick={() =>
               marketView === "my_items"
                 ? setMarketStatusFilter(filterKey)

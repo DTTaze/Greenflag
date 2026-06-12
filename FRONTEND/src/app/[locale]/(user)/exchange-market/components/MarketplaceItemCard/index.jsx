@@ -60,7 +60,7 @@ const MarketplaceItemCard = ({
   }, [item.stock, item.postStatus]);
 
   const handleEditClick = () => {
-    setShowDetailsModal(true);
+    onEdit(item);
   };
 
   const handleDeleteClick = () => {
@@ -107,6 +107,24 @@ const MarketplaceItemCard = ({
             alt={item.name}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
+          {/* Status Badge for My Items */}
+          {viewMode === "my_items" && currentStatus && (
+            <div className="absolute top-3 left-3 z-20">
+              <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-black tracking-wider uppercase shadow-md backdrop-blur-xs transition-all duration-300 group-hover:opacity-0 ${
+                currentStatus === 'public' ? 'border-emerald-500/30 bg-emerald-600/95 text-white' :
+                currentStatus === 'private' ? 'border-slate-500/30 bg-slate-600/95 text-white' :
+                currentStatus === 'pending' ? 'border-amber-500/30 bg-amber-600/95 text-white' :
+                currentStatus === 'rejected' ? 'border-rose-500/30 bg-rose-600/95 text-white' :
+                'border-sky-500/30 bg-sky-600/95 text-white'
+              }`}>
+                {(() => {
+                  const Icon = statusConfig[currentStatus]?.Icon || Clock;
+                  return <Icon size={11} className="shrink-0" />;
+                })()}
+                {t("statuses." + currentStatus)}
+              </span>
+            </div>
+          )}
           {/* Frosted glass overlay when Out of stock */}
           {currentStock <= 0 && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-zinc-900/50 backdrop-blur-[2px]">
@@ -118,7 +136,7 @@ const MarketplaceItemCard = ({
         </div>
 
         {/* Item Details */}
-        <div className={`p-5 pb-0 ${showDetailsModal ? "blur-sm" : ""}`}>
+        <div className={`p-5 pb-0 transition-all duration-300 group-hover:blur-xs ${showDetailsModal ? "blur-sm" : ""}`}>
           <h3 className="truncate text-sm leading-snug font-bold text-slate-800 dark:text-zinc-200 transition-colors group-hover:text-emerald-700 dark:group-hover:text-emerald-400">
             {item.name}
           </h3>
@@ -141,10 +159,7 @@ const MarketplaceItemCard = ({
       <div className={`p-5 ${(viewMode === "all_items" || viewMode === "redeem") ? "pb-14" : ""}`}>
         {/* Price and stock row */}
         <motion.div
-          className={`flex items-center justify-between border-t border-emerald-100 dark:border-emerald-500/10 pt-4 transition-all duration-300 ${viewMode === "all_items" || viewMode === "redeem"
-            ? "group-hover:blur-xs"
-            : ""
-            } ${showDetailsModal ? "blur-sm" : ""}`}
+          className={`flex items-center justify-between border-t border-emerald-100 dark:border-emerald-500/10 pt-4 transition-all duration-300 group-hover:blur-xs ${showDetailsModal ? "blur-sm" : ""}`}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
@@ -159,22 +174,41 @@ const MarketplaceItemCard = ({
         </motion.div>
       </div>
 
-      {/* Hover action slide-up button (Được mang ra làm con trực tiếp của motion.div cha ngoài cùng) */}
-      {(viewMode === "all_items" || viewMode === "redeem") && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100 backdrop-blur-[1px]">
-          <button
-            onClick={handleDetailsClick}
-            className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-emerald-250 bg-white px-5 py-3 text-xs font-bold text-[#0B6E4F] shadow-md transition-all hover:bg-emerald-50 active:scale-95 dark:border-emerald-500/15 dark:bg-slate-900 dark:text-emerald-400 dark:hover:bg-slate-800"
-          >
-            <Eye size={15} />
-            {viewMode === "redeem"
-              ? t("list.redeemBtn")
-              : t("list.detailsBtn")}
-          </button>
-        </div>
-      )}
+      {/* Hover action overlay with dynamic actions */}
+      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-black/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100 backdrop-blur-[1.5px]">
+        <button
+          onClick={handleDetailsClick}
+          className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-emerald-250 bg-white px-5 py-3 text-xs font-bold text-[#0B6E4F] shadow-md transition-all hover:bg-emerald-50 active:scale-95 dark:border-emerald-500/15 dark:bg-slate-900 dark:text-emerald-400 dark:hover:bg-slate-800"
+        >
+          <Eye size={15} />
+          {viewMode === "my_items"
+            ? t("list.detailsBtn")
+            : viewMode === "redeem"
+            ? t("list.redeemBtn")
+            : t("list.detailsBtn")}
+        </button>
 
-      {/* Edit/Delete Buttons for my_items */}
+        {viewMode === "my_items" && (
+          <div className="flex gap-2">
+            <button
+              onClick={handleEditClick}
+              className="flex items-center gap-1.5 rounded-lg border border-blue-200 bg-white px-3.5 py-1.5 text-xs font-bold text-blue-600 shadow-sm transition-all hover:bg-blue-50 active:scale-90 dark:border-zinc-800 dark:bg-zinc-950 dark:text-blue-400 dark:hover:bg-zinc-900"
+            >
+              <Pencil size={12} />
+              {t("common.edit")}
+            </button>
+            <button
+              onClick={handleDeleteClick}
+              className="flex items-center gap-1.5 rounded-lg border border-red-200 bg-white px-3.5 py-1.5 text-xs font-bold text-red-650 shadow-sm transition-all hover:bg-red-50 active:scale-90 dark:border-zinc-800 dark:bg-zinc-950 dark:text-red-400 dark:hover:bg-zinc-900"
+            >
+              <Trash2 size={12} />
+              {t("common.delete")}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Edit/Delete Buttons for my_items (Visible on non-hover / mobile) */}
       {viewMode === "my_items" && (
         <div className="mx-5 mb-5 flex items-center justify-end gap-2.5 border-t border-emerald-100 pt-3 dark:border-emerald-500/10">
           <button

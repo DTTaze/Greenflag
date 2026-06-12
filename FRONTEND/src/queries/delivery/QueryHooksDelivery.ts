@@ -67,6 +67,20 @@ export const useProvincesQuery = (
   return useQuery({
     queryKey: [QueryKeysDelivery.PROVINCES, carrier, token, shopId],
     queryFn: () => getProvincesQueryFn(carrier, token, shopId),
+    select: (res: any) => {
+      if (!res?.success) return [];
+      const innerData = res.data;
+      if (innerData && innerData.code === 200 && Array.isArray(innerData.data)) {
+        return innerData.data;
+      }
+      if (innerData && Array.isArray(innerData.data)) {
+        return innerData.data;
+      }
+      if (Array.isArray(innerData)) {
+        return innerData;
+      }
+      return [];
+    },
   });
 };
 
@@ -80,6 +94,20 @@ export const useDistrictsQuery = (
     queryKey: [QueryKeysDelivery.DISTRICTS, provinceId, carrier, token, shopId],
     queryFn: () => getDistrictsQueryFn(provinceId, carrier, token, shopId),
     enabled: !!provinceId,
+    select: (res: any) => {
+      if (!res?.success) return [];
+      const innerData = res.data;
+      if (innerData && innerData.code === 200 && Array.isArray(innerData.data)) {
+        return innerData.data;
+      }
+      if (innerData && Array.isArray(innerData.data)) {
+        return innerData.data;
+      }
+      if (Array.isArray(innerData)) {
+        return innerData;
+      }
+      return [];
+    },
   });
 };
 
@@ -93,6 +121,20 @@ export const useWardsQuery = (
     queryKey: [QueryKeysDelivery.WARDS, districtId, carrier, token, shopId],
     queryFn: () => getWardsQueryFn(districtId, carrier, token, shopId),
     enabled: !!districtId,
+    select: (res: any) => {
+      if (!res?.success) return [];
+      const innerData = res.data;
+      if (innerData && innerData.code === 200 && Array.isArray(innerData.data)) {
+        return innerData.data;
+      }
+      if (innerData && Array.isArray(innerData.data)) {
+        return innerData.data;
+      }
+      if (Array.isArray(innerData)) {
+        return innerData;
+      }
+      return [];
+    },
   });
 };
 

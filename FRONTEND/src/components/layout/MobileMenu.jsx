@@ -54,7 +54,7 @@ export default function MobileMenu({
                       className="h-8 w-8 object-contain"
                       alt="Logo"
                     />
-                    <span className="text-lg font-bold text-[#0B6E4F] dark:text-emerald-500">
+                    <span className="text-lg font-bold text-brand-emerald dark:text-emerald-500">
                       Green Flag
                     </span>
                   </div>
@@ -101,12 +101,12 @@ export default function MobileMenu({
                           onClick={() => setIsOpen(false)}
                           className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-semibold transition-colors ${
                             isActive
-                              ? "bg-[#0B6E4F]/10 text-[#0B6E4F] dark:bg-emerald-950/20 dark:text-emerald-400"
-                              : "text-gray-600 hover:bg-gray-50 hover:text-[#0B6E4F] dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-emerald-400"
+                              ? "bg-brand-emerald/10 text-brand-emerald dark:bg-emerald-950/20 dark:text-emerald-400"
+                              : "text-gray-600 hover:bg-gray-50 hover:text-brand-emerald dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-emerald-400"
                           }`}
                         >
                           <Icon
-                            className={`h-5 w-5 ${isActive ? "text-[#0B6E4F] dark:text-emerald-400" : "text-gray-400 dark:text-zinc-500"}`}
+                            className={`h-5 w-5 ${isActive ? "text-brand-emerald dark:text-emerald-400" : "text-gray-400 dark:text-zinc-500"}`}
                           />
                           <span>{label}</span>
                         </Link>
@@ -125,7 +125,7 @@ export default function MobileMenu({
                       <Link
                         href="/register"
                         onClick={() => setIsOpen(false)}
-                        className="flex items-center justify-center rounded-lg bg-[#0B6E4F] py-2.5 text-sm font-bold text-white shadow-xs transition-colors hover:bg-[#0B6E4F]/90 dark:bg-emerald-600 dark:hover:bg-emerald-500"
+                        className="flex items-center justify-center rounded-lg bg-brand-emerald py-2.5 text-sm font-bold text-white shadow-xs transition-colors hover:bg-brand-emerald/90 dark:bg-emerald-600 dark:hover:bg-emerald-500"
                       >
                         {t("register")}
                       </Link>
@@ -138,9 +138,9 @@ export default function MobileMenu({
               {isAuthenticated && (
                 <div className="flex flex-col gap-1.5 border-t border-gray-100 pt-4 dark:border-zinc-800">
                   <Link
-                    href="/user"
+                    href="/profile"
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-50 hover:text-[#0B6E4F] dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-emerald-400"
+                    className="flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-50 hover:text-brand-emerald dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-emerald-400"
                   >
                     <User className="h-5 w-5 text-gray-400 dark:text-zinc-500" />
                     <span>{t("profile")}</span>

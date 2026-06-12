@@ -12,7 +12,7 @@ export default function ProfileDropdown({ user, avatarUrl, onLogout }) {
   return (
     <div className="relative">
       <button
-        className="flex cursor-pointer items-center gap-1 rounded-full border border-gray-200 p-0.5 transition-colors duration-200 hover:border-[#0B6E4F] active:scale-95 dark:border-zinc-800 dark:hover:border-emerald-500"
+        className="flex cursor-pointer items-center gap-1 rounded-full border border-gray-200 p-0.5 transition-colors duration-200 hover:border-brand-emerald active:scale-95 dark:border-zinc-800 dark:hover:border-emerald-500"
         onClick={() => setIsOpen(!isOpen)}
       >
         <img
@@ -47,9 +47,9 @@ export default function ProfileDropdown({ user, avatarUrl, onLogout }) {
               </div>
 
               <Link
-                href="/user"
+                href="/profile"
                 onClick={() => setIsOpen(false)}
-                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-semibold text-gray-700 transition-colors hover:bg-[#0B6E4F]/5 hover:text-[#0B6E4F] dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-emerald-400"
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-semibold text-gray-700 transition-colors hover:bg-brand-emerald/5 hover:text-brand-emerald dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-emerald-400"
               >
                 <User className="h-4 w-4 text-gray-400" />
                 <span>{t("profile")}</span>

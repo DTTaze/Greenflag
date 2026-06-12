@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import Button from "@/src/components/ui/button";
 import { useAuthStore } from "@/src/store/auth/authStore";
@@ -11,6 +12,7 @@ import {
 import AddressFormDialog from "./AddressFormDialog";
 
 function Address() {
+  const t = useTranslations("user");
   const { user } = useAuthStore();
   const [addresses, setAddresses] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -33,17 +35,17 @@ function Address() {
             setDefaultAddressId(defaultAddress.id);
           }
         } else {
-          setErrorMessage("No addresses found.");
+          setAddresses([]);
         }
       } catch (error) {
         console.error("Error fetching addresses:", error);
-        setErrorMessage("Error fetching addresses. Please try again.");
+        setErrorMessage(t("updateFailed")); // Keep it generic or simple error message
       } finally {
         setIsLoading(false);
       }
     };
     fetchAddresses();
-  }, [user?.id]);
+  }, [user?.id, t]);
 
   const handleUpdateAddress = (addr) => {
     setEditingAddress(addr);
@@ -60,7 +62,7 @@ function Address() {
       }
     } catch (error) {
       console.error("Error deleting address:", error);
-      setErrorMessage("Error deleting address. Please try again.");
+      setErrorMessage(t("updateFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -81,7 +83,7 @@ function Address() {
       }
     } catch (error) {
       console.error("Error setting default address:", error);
-      setErrorMessage("Error setting default address. Please try again.");
+      setErrorMessage(t("updateFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -116,9 +118,9 @@ function Address() {
   return (
     <div className="transform overflow-hidden rounded-3xl border border-emerald-200/60 bg-white p-6 shadow-xl transition-all duration-300 dark:border-emerald-500/15 dark:bg-zinc-950">
       <div className="flex items-center justify-between">
-        <h4 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Địa chỉ của tôi</h4>
+        <h4 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">{t("myAddresses")}</h4>
         <Button
-          text="Thêm địa chỉ mới"
+          text={t("addAddress")}
           onClick={() => {
             setEditingAddress(null);
             setIsModalOpen(true);
@@ -129,10 +131,10 @@ function Address() {
       <hr className="my-4 border-emerald-100 dark:border-emerald-500/10" />
 
       <div className="space-y-4">
-        {isLoading && <p className="text-zinc-500 dark:text-zinc-400">Đang tải...</p>}
+        {isLoading && <p className="text-zinc-500 dark:text-zinc-400">{t("loadingText")}</p>}
         {errorMessage && <p className="text-rose-500 dark:text-rose-400">{errorMessage}</p>}
         {!isLoading && addresses.length === 0 && (
-          <p className="text-zinc-500 dark:text-zinc-400">Chưa có địa chỉ nào.</p>
+          <p className="text-zinc-500 dark:text-zinc-400">{t("noAddresses")}</p>
         )}
         {addresses.map((addr) => (
           <div
@@ -149,11 +151,11 @@ function Address() {
               <p className="text-sm text-zinc-600 dark:text-zinc-400">{`${addr.to_ward_name}, ${addr.to_district_name}, ${addr.to_province_name}`}</p>
               <div className="flex flex-wrap gap-2 pt-1">
                 <span className="rounded-full bg-zinc-200/60 dark:bg-zinc-800 px-2.5 py-0.5 text-xs font-semibold text-zinc-700 dark:text-zinc-350">
-                  {addr.account_type === "home" ? "Nhà riêng" : "Văn phòng"}
+                  {addr.account_type?.toLowerCase() === "home" ? t("homeType") : t("officeType")}
                 </span>
                 {defaultAddressId === addr.id && (
                   <span className="rounded-full bg-emerald-100 dark:bg-emerald-950/40 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-350">
-                    Mặc định
+                    {t("defaultText")}
                   </span>
                 )}
               </div>
@@ -164,14 +166,14 @@ function Address() {
                   onClick={() => handleUpdateAddress(addr)}
                   className="cursor-pointer rounded-lg px-3 py-1.5 text-sm font-semibold text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:text-emerald-300 dark:hover:bg-emerald-950/20 transition-all"
                 >
-                  Cập nhật
+                  {t("update")}
                 </button>
                 {defaultAddressId !== addr.id && (
                   <button
                     onClick={() => handleDeleteAddress(addr.id)}
                     className="cursor-pointer rounded-lg px-3 py-1.5 text-sm font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:text-rose-450 dark:hover:text-rose-350 dark:hover:bg-rose-950/20 transition-all"
                   >
-                    Xóa
+                    {t("delete")}
                   </button>
                 )}
               </div>
@@ -180,7 +182,7 @@ function Address() {
                   onClick={() => handleSetDefault(addr.id)}
                   className="cursor-pointer w-full sm:w-auto rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-800 dark:bg-zinc-850 dark:hover:bg-zinc-800 dark:text-zinc-250 transition-all px-4 py-2 text-xs font-semibold"
                 >
-                  Thiết lập mặc định
+                  {t("setDefault")}
                 </button>
               )}
             </div>

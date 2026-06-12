@@ -157,7 +157,7 @@ export default function NotificationDropdown() {
                 {unreadCount > 0 && (
                   <button
                     onClick={handleMarkAllAsRead}
-                    className="flex cursor-pointer items-center gap-1 text-xs font-semibold text-[#0B6E4F] transition-colors hover:text-[#0B6E4F]/80 dark:text-emerald-400 dark:hover:text-emerald-300"
+                    className="flex cursor-pointer items-center gap-1 text-xs font-semibold text-brand-emerald transition-colors hover:text-brand-emerald/80 dark:text-emerald-400 dark:hover:text-emerald-300"
                   >
                     <CheckCheck className="h-3.5 w-3.5" />
                     <span>{t("markAllAsRead")}</span>

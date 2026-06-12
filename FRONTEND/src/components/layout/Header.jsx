@@ -134,7 +134,7 @@ function UserHeader() {
               className="h-9 w-9 object-contain md:h-11 md:w-11"
               alt="Green Flag Logo"
             />
-            <span className="text-xl font-extrabold tracking-tight text-[#0B6E4F] md:text-2xl dark:text-emerald-500">
+            <span className="text-xl font-extrabold tracking-tight text-brand-emerald md:text-2xl dark:text-emerald-500">
               Green Flag
             </span>
           </Link>
@@ -153,18 +153,18 @@ function UserHeader() {
                     href={`/${key}`}
                     className={`relative flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-semibold transition-colors duration-200 ${
                       isActive
-                        ? "text-[#0B6E4F] dark:text-emerald-400"
-                        : "text-gray-600 hover:bg-gray-50 hover:text-[#0B6E4F] dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-emerald-400"
+                        ? "text-brand-emerald dark:text-emerald-400"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-brand-emerald dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-emerald-400"
                     }`}
                   >
                     <Icon
-                      className={`h-4.5 w-4.5 ${isActive ? "text-[#0B6E4F] dark:text-emerald-400" : "text-gray-400 dark:text-zinc-500"}`}
+                      className={`h-4.5 w-4.5 ${isActive ? "text-brand-emerald dark:text-emerald-400" : "text-gray-400 dark:text-zinc-500"}`}
                     />
                     <span>{label}</span>
                     {isActive && (
                       <motion.span
                         layoutId="activeNavigationUnderline"
-                        className="absolute right-0 bottom-[-14px] left-0 h-0.75 rounded-full bg-[#0B6E4F] dark:bg-emerald-500"
+                        className="absolute right-0 bottom-[-14px] left-0 h-0.75 rounded-full bg-brand-emerald dark:bg-emerald-500"
                         transition={{
                           type: "spring",
                           stiffness: 350,
@@ -197,13 +197,13 @@ function UserHeader() {
               <div className="hidden items-center gap-2 sm:gap-3 md:flex">
                 <Link
                   href="/login"
-                  className="px-4 py-2 text-sm font-bold text-gray-700 transition-colors hover:text-[#0B6E4F] dark:text-zinc-300 dark:hover:text-emerald-400"
+                  className="px-4 py-2 text-sm font-bold text-gray-700 transition-colors hover:text-brand-emerald dark:text-zinc-300 dark:hover:text-emerald-400"
                 >
                   {t("login")}
                 </Link>
                 <Link
                   href="/register"
-                  className="rounded-lg bg-[#0B6E4F] px-4 py-2 text-sm font-bold text-white shadow-xs transition-colors duration-200 hover:bg-[#0B6E4F]/90 active:scale-95 dark:bg-emerald-600 dark:hover:bg-emerald-500"
+                  className="rounded-lg bg-brand-emerald px-4 py-2 text-sm font-bold text-white shadow-xs transition-colors duration-200 hover:bg-brand-emerald/90 active:scale-95 dark:bg-emerald-600 dark:hover:bg-emerald-500"
                 >
                   {t("register")}
                 </Link>

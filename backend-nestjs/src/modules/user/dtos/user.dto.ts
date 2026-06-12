@@ -91,6 +91,16 @@ export class UpdateUserProfileDto {
   @TrimAndLowercase()
   @SanitizeInput()
   email?: string;
+
+  @ApiPropertyOptional({ example: '1995-01-01' })
+  @IsOptional()
+  @IsString()
+  birthDate?: string;
+
+  @ApiPropertyOptional({ example: 'male' })
+  @IsOptional()
+  @IsString()
+  gender?: string;
 }
 
 export class AdminUpdateUserDto extends UpdateUserProfileDto {

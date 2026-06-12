@@ -30,6 +30,8 @@ export interface UserAuthProfile {
   coins?: {
     amount: number;
   };
+  birthDate?: string;
+  gender?: string;
 }
 
 export interface UserAuthSocialProfile {

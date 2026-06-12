@@ -3,7 +3,7 @@ import { Check, Star, Truck, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { forwardRef, useEffect, useState } from "react";
 
-import AddressFormDialog from "@/src/app/[locale]/(user)/(private)/user/address/components/AddressFormDialog";
+import AddressFormDialog from "@/src/app/[locale]/(user)/(private)/profile/addresses/components/AddressFormDialog";
 import { useAuthStore } from "@/src/store/auth/authStore";
 import { formatCleanAddress, getReceiverInfoByUserId } from "@/src/utils/api";
 

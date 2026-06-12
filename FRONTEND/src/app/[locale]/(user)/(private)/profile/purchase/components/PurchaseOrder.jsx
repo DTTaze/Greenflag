@@ -192,14 +192,14 @@ const PurchaseOrder = () => {
 
   return (
     <div className="mx-auto max-w-4xl p-4">
-      <div className="mb-4 flex flex-wrap gap-2 rounded-md bg-white">
+      <div className="mb-4 flex flex-wrap gap-1 rounded-2xl border border-gray-200/80 bg-white p-2 shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900/50">
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            className={`px-4 py-4 text-sm font-medium ${
+            className={`px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-200 ${
               activeTab === tab.id
-                ? "border-b-2 border-blue-500 text-blue-500"
-                : "text-gray-600 hover:text-blue-500"
+                ? "bg-brand-emerald/10 text-brand-emerald dark:bg-brand-emerald/20 dark:text-emerald-300"
+                : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-200"
             }`}
             onClick={() => setActiveTab(tab.id)}
           >
@@ -214,11 +214,11 @@ const PurchaseOrder = () => {
           placeholder="Tìm kiếm theo tên sản phẩm hoặc mã giao dịch..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full rounded-md border p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          className="w-full rounded-2xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-3 text-sm focus:ring-2 focus:ring-brand-emerald focus:outline-none dark:text-zinc-100"
         />
       </div>
 
-      {isLoading && <div className="py-8 text-center">Đang tải...</div>}
+      {isLoading && <div className="py-8 text-center text-zinc-500 dark:text-zinc-400">Đang tải...</div>}
       {error && <div className="py-8 text-center text-red-500">{error}</div>}
       {!isLoading && !error && filteredTransactions.length > 0 ? (
         <div>
@@ -234,7 +234,7 @@ const PurchaseOrder = () => {
       ) : (
         !isLoading &&
         !error && (
-          <div className="py-8 text-center text-gray-500">
+          <div className="py-8 text-center text-gray-500 dark:text-zinc-400">
             Chưa có giao dịch{" "}
             {activeTab !== "all"
               ? `ở trạng thái ${tabs
@@ -248,40 +248,34 @@ const PurchaseOrder = () => {
 
       {showModal && transaction && (
         <div
-          className="bg-opacity-50 fixed inset-0 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 backdrop-blur-xs p-4"
           role="dialog"
           aria-labelledby="modal-title"
           onKeyDown={(e) => e.key === "Escape" && setShowModal(false)}
         >
-          <div className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+          <div className="relative w-full max-w-md transform rounded-3xl border border-emerald-200/60 bg-white p-6 shadow-2xl transition-all dark:border-emerald-500/15 dark:bg-zinc-950">
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-3 right-2 cursor-pointer text-3xl text-gray-600 hover:text-gray-800"
+              className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 cursor-pointer"
               aria-label="Đóng modal"
             >
-              ✖
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
             <h3
               id="modal-title"
-              className="mb-4 text-center text-lg font-semibold"
+              className="mb-6 text-center text-lg font-bold text-zinc-900 dark:text-zinc-100"
             >
               Chi tiết giao dịch
             </h3>
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-gray-300 text-sm md:text-base">
-                <tbody>
-                  {Object.entries(transaction).map(([key, value]) => (
-                    <tr key={key}>
-                      <td className="w-1/2 border border-gray-300 p-2 font-semibold">
-                        {key}
-                      </td>
-                      <td className="w-1/2 border border-gray-300 p-2">
-                        {value}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="space-y-3">
+              {Object.entries(transaction).map(([key, value]) => (
+                <div key={key} className="flex justify-between items-start py-2.5 border-b border-zinc-100 dark:border-zinc-800/80 last:border-0 text-sm">
+                  <span className="text-zinc-500 dark:text-zinc-400 font-semibold mr-4 shrink-0">{key}</span>
+                  <span className="text-zinc-800 dark:text-zinc-200 font-medium text-right break-words max-w-[70%]">{value}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>

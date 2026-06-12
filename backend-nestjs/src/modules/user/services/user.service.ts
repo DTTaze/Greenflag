@@ -287,6 +287,12 @@ export class UserService extends BaseCRUDService<User> {
       }
     }
 
+    if (dto.birthDate !== undefined || dto.gender !== undefined) {
+      user.metadata = user.metadata || {};
+      if (dto.birthDate !== undefined) user.metadata.birthDate = dto.birthDate;
+      if (dto.gender !== undefined) user.metadata.gender = dto.gender;
+    }
+
     await this.userRepository.save(user);
 
     // Update profile fields

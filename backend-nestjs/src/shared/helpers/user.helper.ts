@@ -14,5 +14,7 @@ export function extractUserPublicInfo(user: User): UserAuthProfile {
     lastCompletedTask: user.profile?.lastCompletedTask,
     avatarUrl: user.avatarUrl,
     coins: user.coin ? { amount: user.coin.amount } : undefined,
+    birthDate: user.metadata?.birthDate,
+    gender: user.metadata?.gender,
   };
 }

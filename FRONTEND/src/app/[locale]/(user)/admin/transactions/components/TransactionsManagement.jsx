@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
+import { toast } from "react-toastify";
 
 import { deleteTransaction, getAllTransactions } from "@/src/utils/api";
 
@@ -10,6 +12,9 @@ import { transactionsColumns } from "../../components/HeaderColumn";
 export default function TransactionsManagement() {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const tCommon = useTranslations("admin.common");
+  const tSidebar = useTranslations("admin.sidebar");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,19 +36,20 @@ export default function TransactionsManagement() {
   }, []);
 
   const handleDeleteTransaction = async (transaction) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa không?")) {
+    if (window.confirm(tCommon("confirmBulkDelete").replace("{count}", "1"))) {
       try {
         const res = await deleteTransaction(transaction.id);
         if (res.success) {
-          alert("Xóa giao dịch thành công!");
+          toast.success(tCommon("deleteSuccess"));
           setTransactions((prev) =>
             prev.filter((u) => u.id !== transaction.id),
           );
         } else {
-          alert("Xóa giao dịch thất bại!");
+          toast.error(tCommon("deleteFailed"));
         }
       } catch (e) {
         console.log(e);
+        toast.error(tCommon("deleteFailed"));
       }
     }
   };
@@ -51,10 +57,10 @@ export default function TransactionsManagement() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-gray-950 dark:text-zinc-50">
-        Transactions Management
+        {tSidebar("transactionManage")}
       </h1>
       <DataTable
-        title="Transactions"
+        title={tSidebar("transactions")}
         columns={transactionsColumns}
         rows={transactions}
         onAdd={false}

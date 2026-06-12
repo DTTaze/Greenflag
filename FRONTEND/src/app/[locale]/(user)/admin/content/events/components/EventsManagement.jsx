@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
+import { toast } from "react-toastify";
 
 import {
   createEvent,
@@ -20,6 +22,10 @@ export default function EventsManagement() {
   const [editData, setEditData] = useState(null);
   const [formMode, setFormMode] = useState("add");
   const [showDeleted, setShowDeleted] = useState(false);
+
+  const tCommon = useTranslations("admin.common");
+  const tSidebar = useTranslations("admin.sidebar");
+  const tEvents = useTranslations("partner.events");
 
   const fetchEvents = async () => {
     setLoading(true);
@@ -54,18 +60,18 @@ export default function EventsManagement() {
   };
 
   const handleDeleteEvent = async (event) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa sự kiện này không?")) {
+    if (window.confirm(tCommon("confirmBulkDelete").replace("{count}", "1"))) {
       try {
         const res = await deleteEvent(event.id);
         if (res.success) {
-          alert("Xóa sự kiện thành công!");
+          toast.success(tEvents("errors.deleteSuccess"));
           fetchEvents();
         } else {
-          alert("Xóa sự kiện thất bại!");
+          toast.error(tEvents("errors.deleteFailed"));
         }
       } catch (error) {
         console.error("Error deleting event:", error);
-        alert("Có lỗi xảy ra khi xóa sự kiện!");
+        toast.error(tEvents("errors.deleteFailed"));
       }
     }
   };
@@ -80,15 +86,15 @@ export default function EventsManagement() {
       const failed = results.filter((r) => r.status === "rejected" || (r.status === "fulfilled" && !r.value?.success));
 
       if (failed.length === 0) {
-        alert(`Đã xóa thành công ${successful.length} sự kiện.`);
+        toast.success(tCommon("deleteSelected") + `: ${successful.length}`);
       } else {
-        const sampleError = failed[0].reason?.response?.data?.message || failed[0].value?.error || "Dữ liệu đang được sử dụng hoặc bị ràng buộc khóa ngoại";
-        alert(`Xóa thành công ${successful.length}/${ids.length} sự kiện. Thất bại ${failed.length} sự kiện (${sampleError}).`);
+        const sampleError = failed[0].reason?.response?.data?.message || failed[0].value?.error || "Error";
+        toast.warning(`${tCommon("deleteSelected")} ${successful.length}/${ids.length}. ${tEvents("errors.deleteFailed")} (${sampleError}).`);
       }
       fetchEvents();
     } catch (e) {
       console.log(e);
-      alert("Đã xảy ra lỗi hệ thống khi thực hiện xóa hàng loạt.");
+      toast.error(tEvents("errors.deleteFailed"));
     }
   };
 
@@ -97,36 +103,36 @@ export default function EventsManagement() {
       if (mode === "add") {
         const result = await createEvent(data, data.images);
         if (result.success) {
-          alert("Thêm sự kiện thành công!");
+          toast.success(tEvents("errors.createSuccess"));
           fetchEvents();
         } else {
-          alert("Thêm sự kiện thất bại!");
+          toast.error(tEvents("errors.createFailed"));
         }
       } else if (mode === "edit") {
         const result = await updateEvent(data.id, data, data.images);
         if (result.success) {
-          alert("Cập nhật sự kiện thành công!");
+          toast.success(tEvents("errors.updateSuccess"));
           fetchEvents();
         } else {
-          alert("Cập nhật sự kiện thất bại!");
+          toast.error(tEvents("errors.updateFailed"));
         }
       }
       setFormOpen(false);
     } catch (error) {
       console.error("Error submitting event:", error);
-      alert("Có lỗi xảy ra khi xử lý sự kiện!");
+      toast.error(tEvents("errors.createFailed"));
     }
   };
 
   return (
     <div>
       <DataTable
-        title="Events"
+        title={tSidebar("events")}
         columns={eventsColumns}
         rows={events}
         onAdd={handleAddEvent}
         onEdit={handleEditEvent}
-        onDelete={handleDeleteEvent}
+        onDelete={handleDeleteItem}
         onBulkDelete={handleBulkDeleteEvents}
         loading={loading}
         showDeleted={showDeleted}

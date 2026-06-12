@@ -6,6 +6,7 @@ import {
   adminCreateTaskFn,
   adminDeleteTaskFn,
   adminGetAllTasksFn,
+  adminGetPendingSubmissionsCountFn,
   adminGetTaskSubmissionsFn,
   adminHandleDecisionTaskSubmitFn,
   adminUpdateTaskFn,
@@ -116,11 +117,20 @@ export const useAdminTasksQuery = (showDeleted?: boolean) => {
   });
 };
 
-export const useAdminTaskSubmissionsQuery = (customerId: string) => {
+export const useAdminTaskSubmissionsQuery = (customerId: string, options?: any) => {
   return useQuery({
     queryKey: TASK_KEYS.ADMIN_SUBMISSIONS(customerId),
     queryFn: () => adminGetTaskSubmissionsFn(customerId),
     enabled: !!customerId,
+    ...options,
+  });
+};
+
+export const useAdminPendingTaskSubmissionsCountQuery = (options?: any) => {
+  return useQuery({
+    queryKey: ["adminPendingSubmissionsCount"],
+    queryFn: adminGetPendingSubmissionsCountFn,
+    ...options,
   });
 };
 
@@ -181,6 +191,7 @@ export const useAdminHandleDecisionMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminSubmissions"] });
       queryClient.invalidateQueries({ queryKey: ["userTasks"] });
+      queryClient.invalidateQueries({ queryKey: ["adminPendingSubmissionsCount"] });
     },
   });
 };

@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
+import { toast } from "react-toastify";
 
 import {
   createItem,
@@ -20,6 +22,10 @@ export default function ItemsManagement() {
   const [editData, setEditData] = useState(null);
   const [formMode, setFormMode] = useState("add");
   const [showDeleted, setShowDeleted] = useState(false);
+
+  const tCommon = useTranslations("admin.common");
+  const tSidebar = useTranslations("admin.sidebar");
+  const tInventory = useTranslations("admin.inventory");
 
   const fetchItems = async () => {
     setLoading(true);
@@ -54,17 +60,18 @@ export default function ItemsManagement() {
   };
 
   const handleDeleteItem = async (item) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa không?")) {
+    if (window.confirm(tCommon("confirmBulkDelete").replace("{count}", "1"))) {
       try {
         const res = await deleteItem(item.id);
         if (res.success) {
-          alert("Xóa vật phẩm thành công!");
+          toast.success(tInventory("deleteSuccess"));
           fetchItems();
         } else {
-          alert("Xóa vật phẩm thất bại!");
+          toast.error(tInventory("actionFailed"));
         }
       } catch (e) {
         console.log(e);
+        toast.error(tInventory("actionFailed"));
       }
     }
   };
@@ -79,15 +86,15 @@ export default function ItemsManagement() {
       const failed = results.filter((r) => r.status === "rejected" || (r.status === "fulfilled" && !r.value?.success));
 
       if (failed.length === 0) {
-        alert(`Đã xóa thành công ${successful.length} vật phẩm.`);
+        toast.success(tCommon("deleteSelected") + `: ${successful.length}`);
       } else {
-        const sampleError = failed[0].reason?.response?.data?.message || failed[0].value?.error || "Dữ liệu đang được sử dụng hoặc bị ràng buộc khóa ngoại";
-        alert(`Xóa thành công ${successful.length}/${ids.length} vật phẩm. Thất bại ${failed.length} vật phẩm (${sampleError}).`);
+        const sampleError = failed[0].reason?.response?.data?.message || failed[0].value?.error || "Error";
+        toast.warning(`${tCommon("deleteSelected")} ${successful.length}/${ids.length}. ${tInventory("actionFailed")} (${sampleError}).`);
       }
       fetchItems();
     } catch (e) {
       console.log(e);
-      alert("Đã xảy ra lỗi hệ thống khi thực hiện xóa hàng loạt.");
+      toast.error(tInventory("actionFailed"));
     }
   };
 
@@ -96,25 +103,25 @@ export default function ItemsManagement() {
       try {
         const result = await createItem(data);
         if (result.success) {
-          alert("Thêm vật phẩm thành công!");
+          toast.success(tInventory("addSuccess"));
           fetchItems();
         } else {
-          alert("Thêm vật phẩm thất bại!");
+          toast.error(tInventory("actionFailed"));
         }
       } catch (e) {
-        alert(e);
+        toast.error(String(e));
       }
     } else if (mode === "edit") {
       try {
         const result = await updateItem(data.id, data);
         if (result.success) {
-          alert("Cập nhật vật phẩm thành công!");
+          toast.success(tInventory("updateSuccess"));
           fetchItems();
         } else {
-          alert("Cập nhật vật phẩm thất bại!");
+          toast.error(tInventory("actionFailed"));
         }
       } catch (e) {
-        alert(e);
+        toast.error(String(e));
       }
     }
     setFormOpen(false);
@@ -123,7 +130,7 @@ export default function ItemsManagement() {
   return (
     <div>
       <DataTable
-        title="Items"
+        title={tSidebar("partnerProducts")}
         columns={itemColumns}
         rows={items}
         onAdd={handleAddItem}

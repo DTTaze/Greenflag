@@ -625,7 +625,9 @@
       "selectedCount": "Đã chọn {count} hàng",
       "clearSelection": "Hủy chọn",
       "deleteSelected": "Xóa mục đã chọn",
-      "confirmBulkDelete": "Bạn chắc chắn muốn xóa {count} mục đã chọn?"
+      "confirmBulkDelete": "Bạn chắc chắn muốn xóa {count} mục đã chọn?",
+      "deleteSuccess": "Xóa thành công",
+      "deleteFailed": "Xóa thất bại. Vui lòng thử lại."
     },
     "columns": {
       "title": "Tiêu đề",
@@ -742,7 +744,39 @@
       "approveSuccess": "Đã phê duyệt nhiệm vụ thành công",
       "rejectSuccess": "Đã từ chối nhiệm vụ thành công",
       "actionFailed": "Thao tác thất bại. Vui lòng thử lại.",
-      "noSubmissions": "Không có bài nộp để duyệt"
+      "noSubmissions": "Không có bài nộp để duyệt",
+      "refresh": "Làm mới",
+      "statusPending": "Chờ duyệt",
+      "statusApproved": "Đã duyệt",
+      "statusRejected": "Từ chối",
+      "filterAll": "Tất cả",
+      "searchPlaceholder": "Tìm theo user, nhiệm vụ, mô tả...",
+      "colUser": "Người dùng",
+      "colTask": "Nhiệm vụ",
+      "colStatus": "Trạng thái",
+      "colSubmittedAt": "Thời gian gửi",
+      "detailTitle": "Chi tiết bài nộp",
+      "labelUser": "Người dùng",
+      "labelTask": "Nhiệm vụ",
+      "labelProgress": "Tiến độ",
+      "labelSubmittedAt": "Gửi lúc",
+      "labelEvidenceDesc": "Mô tả minh chứng",
+      "labelEvidenceImages": "Ảnh minh chứng",
+      "noDescription": "Không có mô tả.",
+      "noImages": "Không có ảnh minh chứng.",
+      "btnApprove": "Duyệt",
+      "btnReject": "Từ chối",
+      "msgProcessed": "Bài nộp này đã được xử lý.",
+      "msgLoadingSubmissions": "Đang tải bài nộp...",
+      "msgNoSubmissions": "Không có bài nộp phù hợp.",
+      "msgConfirmReject": "Bạn có chắc chắn muốn từ chối bài nộp này không?",
+      "msgApproveSuccess": "Đã duyệt bài nộp thành công.",
+      "msgRejectSuccess": "Đã từ chối bài nộp.",
+      "msgProcessFailed": "Xử lý bài nộp thất bại.",
+      "statsPending": "Chờ duyệt",
+      "statsApproved": "Đã duyệt",
+      "statsRejected": "Từ chối",
+      "statsTotal": "Tổng bài nộp"
     },
     "orders": {
       "title": "Vòng đời đơn hàng",
@@ -763,7 +797,8 @@
       "confirmStatusChange": "Xác nhận thay đổi trạng thái?",
       "updateSuccess": "Cập nhật trạng thái đơn hàng thành công",
       "updateFailed": "Không thể cập nhật trạng thái đơn hàng",
-      "noOrders": "Không tìm thấy đơn hàng"
+      "noOrders": "Không tìm thấy đơn hàng",
+      "contactCreator": "Vui lòng liên hệ người tạo đơn hàng: {email}"
     },
     "inventory": {
       "title": "Kho quà tặng",

@@ -3,6 +3,7 @@ import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
+import { TASK_SUBMIT_STATUS } from '@shared/enums';
 import {
   OperationResult,
   generateSuccessResult,
@@ -18,6 +19,15 @@ export class TaskSubmitService extends BaseCRUDService<TaskSubmit> {
     private readonly taskSubmitRepository: Repository<TaskSubmit>,
   ) {
     super(taskSubmitRepository);
+  }
+
+  async getPendingCount(): Promise<OperationResult<number>> {
+    const count = await this.taskSubmitRepository.count({
+      where: {
+        status: TASK_SUBMIT_STATUS.PENDING,
+      },
+    });
+    return generateSuccessResult(count);
   }
 
   async getTaskSubmitByUserId(userId: string): Promise<OperationResult<any[]>> {

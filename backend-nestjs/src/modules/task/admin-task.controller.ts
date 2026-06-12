@@ -49,6 +49,12 @@ export class AdminTaskController {
     return this.taskService.getAllTasks(withDeleted);
   }
 
+  @Get('submissions/count/pending')
+  @ApiOperation({ summary: 'Get pending task submissions count' })
+  async getPendingTaskSubmissionsCount(): Promise<HttpResponse> {
+    return this.taskSubmitService.getPendingCount();
+  }
+
   @Get('submissions/:customerId')
   @ApiOperation({ summary: "Get submissions for any customer's tasks" })
   async getTaskSubmissions(

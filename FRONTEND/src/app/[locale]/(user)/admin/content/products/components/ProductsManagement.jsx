@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
+import { toast } from "react-toastify";
 
 import {
   createProduct,
@@ -12,7 +14,6 @@ import {
 import DataTable from "../../../components/DataTable";
 import { productColumns } from "../../../components/HeaderColumn";
 import ProductForm from "./ProductForm";
-import { toast } from "react-toastify";
 
 export default function ProductsManagement() {
   const [products, setProducts] = useState([]);
@@ -21,6 +22,9 @@ export default function ProductsManagement() {
   const [editData, setEditData] = useState(null);
   const [formMode, setFormMode] = useState("add");
   const [showDeleted, setShowDeleted] = useState(false);
+
+  const tCommon = useTranslations("admin.common");
+  const tSidebar = useTranslations("admin.sidebar");
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -55,7 +59,7 @@ export default function ProductsManagement() {
   };
 
   const handleDeleteProduct = async (item) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa không?")) {
+    if (window.confirm(tCommon("confirmBulkDelete").replace("{count}", "1"))) {
       try {
         const res = await deleteProduct(item.id);
         if (res.success) {
@@ -233,7 +237,7 @@ export default function ProductsManagement() {
   return (
     <div>
       <DataTable
-        title="Products"
+        title={tSidebar("p2pProducts")}
         columns={productColumns}
         rows={products}
         onAdd={handleAddProduct}

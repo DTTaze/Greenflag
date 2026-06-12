@@ -83,6 +83,10 @@ export const adminGetAllTasks = async (
   return axiosClient.get("/admin/tasks", { params: { showDeleted } });
 };
 
+export const adminGetPendingSubmissionsCount = async (): Promise<ApiResponse<number>> => {
+  return axiosClient.get("/admin/tasks/submissions/count/pending");
+};
+
 export const adminGetTaskSubmissions = async (
   customerId: string,
 ): Promise<ApiResponse<any[]>> => {

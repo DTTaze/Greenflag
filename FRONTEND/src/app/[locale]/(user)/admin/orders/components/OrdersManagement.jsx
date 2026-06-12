@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
+import { toast } from "react-toastify";
 
 import { getAllShippingOrders, updateShippingOrder } from "@/src/utils/api";
 
@@ -14,6 +16,10 @@ export default function OrdersManagement() {
   const [formOpen, setFormOpen] = useState(false);
   const editData = null;
   const formMode = "edit";
+
+  const tCommon = useTranslations("admin.common");
+  const tSidebar = useTranslations("admin.sidebar");
+  const tOrders = useTranslations("admin.orders");
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -36,11 +42,13 @@ export default function OrdersManagement() {
   }, []);
 
   const handleEditOrder = (order) => {
-    alert(`Vui lòng liên hệ người tạo đơn hàng: ${order?.User?.email || order?.buyer?.email || order?.seller?.email || "Không xác định"}`);
+    const email = order?.User?.email || order?.buyer?.email || order?.seller?.email || "Unknown";
+    toast.info(tOrders("contactCreator", { email }));
   };
 
   const handleCancelOrder = async (order) => {
-    alert(`Vui lòng liên hệ người tạo đơn hàng: ${order?.User?.email || order?.buyer?.email || order?.seller?.email || "Không xác định"}`);
+    const email = order?.User?.email || order?.buyer?.email || order?.seller?.email || "Unknown";
+    toast.info(tOrders("contactCreator", { email }));
   };
 
   const handleSubmitOrder = async (data, mode) => {
@@ -48,24 +56,26 @@ export default function OrdersManagement() {
       if (mode === "edit") {
         const result = await updateShippingOrder(data);
         if (result.success) {
-          alert("Cập nhật đơn hàng thành công!");
+          toast.success(tOrders("updateSuccess"));
           fetchOrders();
         } else {
-          alert("Cập nhật đơn hàng thất bại!");
+          toast.error(tOrders("updateFailed"));
         }
       }
       setFormOpen(false);
     } catch (error) {
       console.error("Error updating order:", error);
-      alert("Có lỗi xảy ra khi cập nhật đơn hàng!");
+      toast.error(tOrders("updateFailed"));
     }
   };
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-950 dark:text-zinc-50">Orders Management</h1>
+      <h1 className="text-2xl font-bold text-gray-950 dark:text-zinc-50">
+        {tOrders("title")}
+      </h1>
       <DataTable
-        title="Orders"
+        title={tSidebar("shipping")}
         columns={ordersColumns}
         rows={orders}
         onAdd={false}

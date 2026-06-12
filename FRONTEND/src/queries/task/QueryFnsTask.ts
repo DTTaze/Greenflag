@@ -4,6 +4,7 @@ import {
   adminCreateTask,
   adminDeleteTask,
   adminGetAllTasks,
+  adminGetPendingSubmissionsCount,
   adminGetTaskSubmissions,
   adminHandleDecisionTaskSubmit,
   adminUpdateTask,
@@ -118,6 +119,14 @@ export const adminGetAllTasksFn = async (showDeleted?: boolean) => {
   const res = await adminGetAllTasks(showDeleted);
   if (!res.success) {
     throw new Error(res.message || "Failed to fetch admin tasks");
+  }
+  return res.data;
+};
+
+export const adminGetPendingSubmissionsCountFn = async () => {
+  const res = await adminGetPendingSubmissionsCount();
+  if (!res.success) {
+    throw new Error(res.message || "Failed to fetch pending submissions count");
   }
   return res.data;
 };

@@ -625,7 +625,9 @@
       "selectedCount": "Selected {count} rows",
       "clearSelection": "Clear selection",
       "deleteSelected": "Delete selected items",
-      "confirmBulkDelete": "Are you sure you want to delete the {count} selected items?"
+      "confirmBulkDelete": "Are you sure you want to delete the {count} selected items?",
+      "deleteSuccess": "Deleted successfully",
+      "deleteFailed": "Deletion failed. Please try again."
     },
     "columns": {
       "title": "Title",
@@ -742,7 +744,39 @@
       "approveSuccess": "Task approved successfully",
       "rejectSuccess": "Task rejected successfully",
       "actionFailed": "Action failed. Please try again.",
-      "noSubmissions": "No submissions to review"
+      "noSubmissions": "No submissions to review",
+      "refresh": "Refresh",
+      "statusPending": "Pending",
+      "statusApproved": "Approved",
+      "statusRejected": "Rejected",
+      "filterAll": "All",
+      "searchPlaceholder": "Search by user, task, description...",
+      "colUser": "User",
+      "colTask": "Task",
+      "colStatus": "Status",
+      "colSubmittedAt": "Submitted At",
+      "detailTitle": "Submission Details",
+      "labelUser": "User",
+      "labelTask": "Task",
+      "labelProgress": "Progress",
+      "labelSubmittedAt": "Submitted At",
+      "labelEvidenceDesc": "Evidence Description",
+      "labelEvidenceImages": "Evidence Images",
+      "noDescription": "No description provided.",
+      "noImages": "No evidence images.",
+      "btnApprove": "Approve",
+      "btnReject": "Reject",
+      "msgProcessed": "This submission has been processed.",
+      "msgLoadingSubmissions": "Loading submissions...",
+      "msgNoSubmissions": "No submissions match filters.",
+      "msgConfirmReject": "Are you sure you want to reject this submission?",
+      "msgApproveSuccess": "Submission approved successfully.",
+      "msgRejectSuccess": "Submission rejected.",
+      "msgProcessFailed": "Failed to process submission.",
+      "statsPending": "Pending",
+      "statsApproved": "Approved",
+      "statsRejected": "Rejected",
+      "statsTotal": "Total Submissions"
     },
     "orders": {
       "title": "Order Lifecycle",
@@ -763,7 +797,8 @@
       "confirmStatusChange": "Confirm status change?",
       "updateSuccess": "Order status updated successfully",
       "updateFailed": "Failed to update order status",
-      "noOrders": "No orders found"
+      "noOrders": "No orders found",
+      "contactCreator": "Please contact the order creator: {email}"
     },
     "inventory": {
       "title": "Gift Inventory",

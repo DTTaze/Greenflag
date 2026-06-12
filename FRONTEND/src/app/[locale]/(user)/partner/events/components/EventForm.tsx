@@ -213,21 +213,21 @@ export function EventForm({
             </Label>
             <div className="relative mt-1 flex justify-center rounded-2xl border border-dashed border-emerald-250/50 bg-emerald-50/5 px-6 py-6 transition duration-200 hover:border-emerald-400 hover:bg-emerald-50/10 dark:border-emerald-800/30 dark:bg-zinc-950/20 dark:hover:border-emerald-600">
               {previewUrls && previewUrls.length > 0 ? (
-                <div className="relative group w-full max-w-[150px] aspect-square rounded-2xl overflow-hidden border border-emerald-100 dark:border-zinc-800 shadow-xs">
+                <div className="relative group w-full max-w-[150px] aspect-square rounded-2xl overflow-hidden border border-emerald-100 dark:border-zinc-800 shadow-xs bg-slate-50 dark:bg-zinc-950/20">
                   <img
                     src={previewUrls[0]}
                     alt="Preview"
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                  {/* Sleek Delete button at the top-right corner */}
+                  <div className="absolute top-2 right-2 z-10">
                     <Button
                       type="button"
-                      variant="destructive"
-                      size="icon-sm"
                       onClick={onRemoveImage}
-                      className="rounded-full h-8 w-8 p-0"
+                      className="rounded-full h-7 w-7 p-0 shadow-lg bg-black/60 hover:bg-red-600 text-white backdrop-blur-md border border-white/10 hover:border-red-500/20 transition-all duration-200 hover:scale-110 flex items-center justify-center"
+                      title="Xóa hình ảnh"
                     >
-                      <X size={16} />
+                      <X size={12} className="shrink-0" />
                     </Button>
                   </div>
                 </div>

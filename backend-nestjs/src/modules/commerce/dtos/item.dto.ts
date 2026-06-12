@@ -20,7 +20,7 @@ export class CreateItemDto {
   price: number;
 
   @IsInt()
-  @Min(1)
+  @Min(0)
   stock: number;
 
   @IsString()
@@ -69,7 +69,7 @@ export class UpdateItemDto {
   price?: number;
 
   @IsInt()
-  @Min(1)
+  @Min(0)
   @IsOptional()
   stock?: number;
 

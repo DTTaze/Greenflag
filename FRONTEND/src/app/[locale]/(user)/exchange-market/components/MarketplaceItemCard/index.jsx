@@ -249,7 +249,7 @@ const MarketplaceItemCard = ({
           onEdit={onEdit}
           onPurchase={() => {
             setShowDetailsModal(false);
-            setShowPurchaseModal(true);
+            handlePurchase(item);
           }}
           fetchItems={fetchItems}
         />

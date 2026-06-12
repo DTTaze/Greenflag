@@ -81,6 +81,23 @@ export const taskColumns = [
 ];
 
 export const itemColumns = [
+  {
+    field: "image",
+    headerName: "Hình ảnh",
+    width: 100,
+    render: (value: any, row: any) => {
+      const imgUrl = value || row.image || (row.images && row.images[0]) || "/placeholder.svg";
+      return (
+        <div className="h-10 w-10 overflow-hidden rounded-lg border border-slate-150 bg-slate-50 dark:border-zinc-800 dark:bg-zinc-950 flex items-center justify-center">
+          <img
+            src={imgUrl}
+            alt={row.name || "Item image"}
+            className="h-full w-full object-cover"
+          />
+        </div>
+      );
+    },
+  },
   { field: "name", headerName: "Tên vật phẩm", width: 200 },
   { field: "description", headerName: "Mô tả", width: 300 },
   { field: "price", headerName: "Giá (xu)", width: 120 },
@@ -146,6 +163,23 @@ export const itemColumns = [
 ];
 
 export const productColumns = [
+  {
+    field: "images",
+    headerName: "Hình ảnh",
+    width: 100,
+    render: (value: any, row: any) => {
+      const imgUrl = (value && value[0]) || row.image || (row.images && row.images[0]) || "/placeholder.svg";
+      return (
+        <div className="h-10 w-10 overflow-hidden rounded-lg border border-slate-150 bg-slate-50 dark:border-zinc-800 dark:bg-zinc-950 flex items-center justify-center">
+          <img
+            src={imgUrl}
+            alt={row.name || "Product image"}
+            className="h-full w-full object-cover"
+          />
+        </div>
+      );
+    },
+  },
   { field: "name", headerName: "Tên sản phẩm", width: 200 },
   { field: "description", headerName: "Mô tả", width: 300 },
   {

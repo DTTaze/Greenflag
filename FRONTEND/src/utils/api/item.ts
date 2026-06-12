@@ -22,8 +22,10 @@ const mapToItemDto = (raw: any) => {
   const data = getJsonFromFormData(raw);
   return {
     name: data.name,
-    price: data.price ? parseInt(data.price, 10) : undefined,
-    stock: data.stock ? parseInt(data.stock, 10) : undefined,
+    price: (data.price !== undefined && data.price !== null && data.price !== "") ? parseInt(data.price, 10) : undefined,
+    stock: (data.status === "sold_out" || data.status === "SOLD_OUT")
+      ? 0
+      : ((data.stock !== undefined && data.stock !== null && data.stock !== "") ? parseInt(data.stock, 10) : undefined),
     description: data.description,
     status: data.status,
     purchase_limit_per_day: (data.purchase_limit_per_day !== null && data.purchase_limit_per_day !== undefined && data.purchase_limit_per_day !== "")
@@ -33,6 +35,7 @@ const mapToItemDto = (raw: any) => {
     length: data.length ? parseInt(data.length, 10) : undefined,
     width: data.width ? parseInt(data.width, 10) : undefined,
     height: data.height ? parseInt(data.height, 10) : undefined,
+    images: data.images || (data.image ? [data.image] : []),
   };
 };
 
@@ -41,11 +44,12 @@ const mapToProductDto = (raw: any) => {
   return {
     name: data.name,
     description: data.description,
-    price: data.price ? parseInt(data.price, 10) : undefined,
+    price: (data.price !== undefined && data.price !== null && data.price !== "") ? parseInt(data.price, 10) : undefined,
+    stock: (data.stock !== undefined && data.stock !== null && data.stock !== "") ? parseInt(data.stock, 10) : undefined,
     category: data.category,
     product_status: data.product_status || data.productStatus || "new",
     post_status: data.post_status || data.postStatus || "pending",
-    images: data.images,
+    images: data.images || (data.image ? [data.image] : []),
   };
 };
 

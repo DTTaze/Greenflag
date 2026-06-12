@@ -13,6 +13,8 @@ import {
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 import { useAuthStore } from "@/src/store/auth/authStore";
+import { Loader2, UploadCloud, X, Trash2 } from "lucide-react";
+import mediaServices from "@/src/services/media";
 
 export default function ItemForm({
   open,
@@ -23,6 +25,7 @@ export default function ItemForm({
 }) {
   const { user } = useAuthStore();
   const [isLimited, setIsLimited] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     owner_id: "",
     name: "",
@@ -35,6 +38,7 @@ export default function ItemForm({
     height: "",
     status: "",
     purchase_limit_per_day: "",
+    image: "",
   });
 
   useEffect(() => {
@@ -55,6 +59,7 @@ export default function ItemForm({
         height: initialData?.height || "",
         status: initialData?.status || "",
         purchase_limit_per_day: parsedLimit,
+        image: initialData?.image || (initialData?.images && initialData.images[0]) || "",
       });
     } else {
       setIsLimited(false);
@@ -71,16 +76,20 @@ export default function ItemForm({
         height: "",
         status: "",
         purchase_limit_per_day: "",
+        image: "",
       });
     }
   }, [initialData, mode]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => {
+      const updated = { ...prev, [name]: value };
+      if (name === "status" && value === "sold_out") {
+        updated.stock = "0";
+      }
+      return updated;
+    });
   };
 
   const handleLimitToggle = (checked) => {
@@ -89,6 +98,25 @@ export default function ItemForm({
       ...prev,
       purchase_limit_per_day: checked ? "1" : "",
     }));
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const res = await mediaServices.uploadFile(file);
+      const url = res.data?.secureUrl || res.data?.secure_url || "";
+      if (url) {
+        setFormData((prev) => ({ ...prev, image: url }));
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Tải ảnh thất bại!");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const onSubmit = (e) => {
@@ -142,6 +170,61 @@ export default function ItemForm({
             />
           </div>
 
+          {/* Image Upload Section */}
+          <div className="flex flex-col gap-2">
+            <Label className="text-sm font-semibold text-gray-700 dark:text-zinc-350">Hình ảnh vật phẩm</Label>
+            {formData.image ? (
+              <div className="relative group w-full rounded-2xl overflow-hidden border border-emerald-100 dark:border-zinc-800 shadow-sm bg-slate-50 dark:bg-zinc-950/20 flex items-center justify-center min-h-[220px] max-h-[320px] p-2">
+                <img
+                  src={formData.image}
+                  alt="Preview"
+                  className="w-full h-full max-h-[300px] object-contain rounded-xl"
+                />
+                {/* Delete button absolute in the top-right corner */}
+                <div className="absolute top-3 right-3">
+                  <Button
+                    type="button"
+                    onClick={() => setFormData((prev) => ({ ...prev, image: "" }))}
+                    className="rounded-full h-8 w-8 p-0 shadow-lg bg-black/60 hover:bg-red-600 text-white backdrop-blur-md border border-white/10 hover:border-red-500/20 transition-all duration-200 hover:scale-110 flex items-center justify-center"
+                    title="Xóa hình ảnh"
+                  >
+                    <X size={14} className="shrink-0" />
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="relative mt-1 flex justify-center rounded-2xl border border-dashed border-emerald-600/20 bg-emerald-50/5 px-6 py-6 transition duration-200 hover:border-emerald-500 hover:bg-emerald-50/10 dark:border-zinc-800 dark:bg-zinc-950/20 dark:hover:border-zinc-700">
+                <label className="flex flex-col items-center justify-center cursor-pointer space-y-2 text-center w-full">
+                  {uploading ? (
+                    <>
+                      <Loader2 className="h-8 w-8 animate-spin text-emerald-600 dark:text-emerald-500" />
+                      <span className="text-xs text-gray-500 dark:text-slate-400 font-medium">
+                        Đang tải ảnh lên...
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <UploadCloud className="h-8 w-8 text-emerald-500/70" />
+                      <span className="text-xs font-semibold text-gray-600 dark:text-slate-350">
+                        Nhấp để tải ảnh vật phẩm
+                      </span>
+                      <span className="text-[10px] text-gray-400 dark:text-slate-500 font-medium">
+                        Hỗ trợ PNG, JPG, WEBP lên đến 5MB
+                      </span>
+                    </>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="hidden"
+                    disabled={uploading}
+                  />
+                </label>
+              </div>
+            )}
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
               <Label htmlFor="price">Giá trị (xu)</Label>
@@ -163,7 +246,7 @@ export default function ItemForm({
                 type="number"
                 value={formData.stock}
                 onChange={handleChange}
-                required
+                required={formData.status !== "sold_out"}
                 placeholder="10"
               />
             </div>

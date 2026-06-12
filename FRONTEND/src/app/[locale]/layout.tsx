@@ -1,4 +1,5 @@
 import "../../styles/index.css";
+import "react-toastify/dist/ReactToastify.css";
 
 import type { Metadata } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
@@ -7,6 +8,7 @@ import Script from "next/script";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Toaster } from "sonner";
+import { ToastContainer } from "react-toastify";
 
 import { NotificationProvider } from "@/src/components/ui/NotificationProvider";
 import { TooltipProvider } from "@/src/components/ui/tooltip";
@@ -72,6 +74,19 @@ export default async function RootLayout({
               <NotificationProvider>
                 <TooltipProvider>{children}</TooltipProvider>
                 <Toaster richColors closeButton position="top-right" />
+                <ToastContainer
+                  position="top-right"
+                  autoClose={3000}
+                  hideProgressBar={false}
+                  newestOnTop={false}
+                  closeOnClick
+                  rtl={false}
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover
+                  theme="colored"
+                  style={{ zIndex: 99999 }}
+                />
               </NotificationProvider>
             </ThemeProvider>
           </QueryProvider>

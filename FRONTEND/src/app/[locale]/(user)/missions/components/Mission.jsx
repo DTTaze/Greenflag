@@ -1,8 +1,5 @@
-import "react-toastify/dist/ReactToastify.css";
-
 import { useTranslations } from "next-intl";
 import React from "react";
-import { ToastContainer } from "react-toastify";
 
 import Calendar from "./Calendar/index.jsx";
 import EventBanner from "./EventBanner/index.jsx";
@@ -95,18 +92,6 @@ function Mission() {
 
   return (
     <div className="min-h-screen pb-16 transition-colors duration-300">
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <MissionHeader
           userInfo={userInfo}

@@ -12,6 +12,7 @@ import {
 import DataTable from "../../../components/DataTable";
 import { productColumns } from "../../../components/HeaderColumn";
 import ProductForm from "./ProductForm";
+import { toast } from "react-toastify";
 
 export default function ProductsManagement() {
   const [products, setProducts] = useState([]);
@@ -58,13 +59,41 @@ export default function ProductsManagement() {
       try {
         const res = await deleteProduct(item.id);
         if (res.success) {
-          alert("Xóa sản phẩm thành công!");
+          toast.success("Xóa sản phẩm thành công!", {
+            position: "top-right",
+            autoClose: 3000,
+            theme: "colored",
+            style: {
+              background: "#10B981",
+              borderRadius: "12px",
+              fontWeight: "600",
+            },
+          });
           fetchProducts();
         } else {
-          alert("Xóa sản phẩm thất bại!");
+          toast.error("Xóa sản phẩm thất bại!", {
+            position: "top-right",
+            autoClose: 3000,
+            theme: "colored",
+            style: {
+              background: "#EF4444",
+              borderRadius: "12px",
+              fontWeight: "600",
+            },
+          });
         }
       } catch (e) {
         console.log(e);
+        toast.error("Có lỗi xảy ra khi xóa sản phẩm!", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+          style: {
+            background: "#EF4444",
+            borderRadius: "12px",
+            fontWeight: "600",
+          },
+        });
       }
     }
   };
@@ -79,15 +108,42 @@ export default function ProductsManagement() {
       const failed = results.filter((r) => r.status === "rejected" || (r.status === "fulfilled" && !r.value?.success));
 
       if (failed.length === 0) {
-        alert(`Đã xóa thành công ${successful.length} sản phẩm.`);
+        toast.success(`Đã xóa thành công ${successful.length} sản phẩm.`, {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+          style: {
+            background: "#10B981",
+            borderRadius: "12px",
+            fontWeight: "600",
+          },
+        });
       } else {
         const sampleError = failed[0].reason?.response?.data?.message || failed[0].value?.error || "Dữ liệu đang được sử dụng hoặc bị ràng buộc khóa ngoại";
-        alert(`Xóa thành công ${successful.length}/${ids.length} sản phẩm. Thất bại ${failed.length} sản phẩm (${sampleError}).`);
+        toast.warning(`Xóa thành công ${successful.length}/${ids.length} sản phẩm. Thất bại ${failed.length} sản phẩm (${sampleError}).`, {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+          style: {
+            background: "#F59E0B",
+            borderRadius: "12px",
+            fontWeight: "600",
+          },
+        });
       }
       fetchProducts();
     } catch (e) {
       console.log(e);
-      alert("Đã xảy ra lỗi hệ thống khi thực hiện xóa hàng loạt.");
+      toast.error("Đã xảy ra lỗi hệ thống khi thực hiện xóa hàng loạt.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+        style: {
+          background: "#EF4444",
+          borderRadius: "12px",
+          fontWeight: "600",
+        },
+      });
     }
   };
 
@@ -96,25 +152,79 @@ export default function ProductsManagement() {
       try {
         const result = await createProduct(data);
         if (result.success) {
-          alert("Thêm sản phẩm thành công!");
+          toast.success("Thêm sản phẩm thành công!", {
+            position: "top-right",
+            autoClose: 3000,
+            theme: "colored",
+            style: {
+              background: "#10B981",
+              borderRadius: "12px",
+              fontWeight: "600",
+            },
+          });
           fetchProducts();
         } else {
-          alert("Thêm sản phẩm thất bại!");
+          toast.error("Thêm sản phẩm thất bại!", {
+            position: "top-right",
+            autoClose: 3000,
+            theme: "colored",
+            style: {
+              background: "#EF4444",
+              borderRadius: "12px",
+              fontWeight: "600",
+            },
+          });
         }
       } catch (e) {
-        alert(e);
+        toast.error(e?.message || String(e), {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+          style: {
+            background: "#EF4444",
+            borderRadius: "12px",
+            fontWeight: "600",
+          },
+        });
       }
     } else if (mode === "edit") {
       try {
         const result = await updateProduct(data.id, data);
         if (result.success) {
-          alert("Cập nhật sản phẩm thành công!");
+          toast.success("Cập nhật sản phẩm thành công!", {
+            position: "top-right",
+            autoClose: 3000,
+            theme: "colored",
+            style: {
+              background: "#10B981",
+              borderRadius: "12px",
+              fontWeight: "600",
+            },
+          });
           fetchProducts();
         } else {
-          alert("Cập nhật sản phẩm thất bại!");
+          toast.error("Cập nhật sản phẩm thất bại!", {
+            position: "top-right",
+            autoClose: 3000,
+            theme: "colored",
+            style: {
+              background: "#EF4444",
+              borderRadius: "12px",
+              fontWeight: "600",
+            },
+          });
         }
       } catch (e) {
-        alert(e);
+        toast.error(e?.message || String(e), {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+          style: {
+            background: "#EF4444",
+            borderRadius: "12px",
+            fontWeight: "600",
+          },
+        });
       }
     }
     setFormOpen(false);

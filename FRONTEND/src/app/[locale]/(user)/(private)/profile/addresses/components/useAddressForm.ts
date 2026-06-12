@@ -333,8 +333,8 @@ export default function useAddressForm({
     setNewAddress((prev: any) => ({ ...prev, type: e.target.value }));
   };
 
-  const handleDefaultChange = () => {
-    setNewAddress((prev: any) => ({ ...prev, isDefault: !prev.isDefault }));
+  const handleDefaultChange = (e: any) => {
+    setNewAddress((prev: any) => ({ ...prev, isDefault: e.target.checked }));
   };
 
   const handleAddOrUpdateAddress = async () => {
@@ -381,9 +381,10 @@ export default function useAddressForm({
     try {
       let savedAddress: any = null;
       if (editingAddress) {
+        const { user_id, ...updatePayload } = addressData;
         const response: any = await updateReceiverInfoById(
           editingAddress.id,
-          addressData,
+          updatePayload,
         );
         if (response.data) {
           savedAddress = { ...response.data, id: editingAddress.id };

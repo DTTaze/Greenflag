@@ -79,22 +79,57 @@ export const createProduct = (formData: any) => {
   );
 };
 
-export const getAllAvailableProducts = () => {
-  return axiosClient.get("/commerce/products");
+export const normalizeProduct = (product: any) => {
+  if (!product) return product;
+  const sellerObj = product.seller || product.creator || {};
+  return {
+    ...product,
+    sellerId: product.sellerId || product.seller_id,
+    postStatus: product.postStatus || product.post_status,
+    productStatus: product.productStatus || product.product_status,
+    createdAt: product.createdAt || product.created_at,
+    updatedAt: product.updatedAt || product.updated_at,
+    deletedAt: product.deletedAt || product.deleted_at,
+    creator: {
+      username: sellerObj.username || sellerObj.email || "",
+      profile: sellerObj.profile || {},
+    },
+    seller: sellerObj,
+  };
 };
 
-export const getAllProducts = (showDeleted?: boolean) => {
-  return axiosClient.get("/commerce/products", { params: { showDeleted } });
-};
-
-export const getProductByUserId = async (userId: string | number) => {
-  const res: any = await getAllProducts();
+export const getAllAvailableProducts = async () => {
+  const res: any = await axiosClient.get("/commerce/products", {
+    params: { postStatus: "public" },
+  });
   if (res.success && Array.isArray(res.data)) {
     return {
       ...res,
-      data: res.data.filter(
-        (product: any) => product.sellerId?.toString() === userId.toString(),
-      ),
+      data: res.data.map(normalizeProduct),
+    };
+  }
+  return res;
+};
+
+export const getAllProducts = async (showDeleted?: boolean) => {
+  const res: any = await axiosClient.get("/commerce/products", { params: { showDeleted } });
+  if (res.success && Array.isArray(res.data)) {
+    return {
+      ...res,
+      data: res.data.map(normalizeProduct),
+    };
+  }
+  return res;
+};
+
+export const getProductByUserId = async (userId: string | number) => {
+  const res: any = await axiosClient.get("/commerce/products", {
+    params: { sellerId: userId },
+  });
+  if (res.success && Array.isArray(res.data)) {
+    return {
+      ...res,
+      data: res.data.map(normalizeProduct),
     };
   }
   return res;

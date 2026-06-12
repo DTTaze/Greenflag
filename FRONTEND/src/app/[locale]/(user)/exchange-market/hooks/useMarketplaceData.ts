@@ -34,6 +34,9 @@ interface RawProductData {
   length?: number;
   width?: number;
   height?: number;
+  sellerId?: string | number;
+  seller_id?: string | number;
+  entityType?: 'PRODUCT' | 'ITEM';
 }
 
 export function useMarketplaceData(userId?: number | string) {
@@ -84,6 +87,7 @@ export function useMarketplaceData(userId?: number | string) {
           length: item.length,
           width: item.width,
           height: item.height,
+          entityType: "ITEM" as const,
         }));
         setItems(mappedItems as unknown as MarketplaceItem[]);
       }
@@ -110,13 +114,15 @@ export function useMarketplaceData(userId?: number | string) {
           createdAt: item.createdAt || item.created_at,
           image: item.images?.[0] || null,
           stock: item.stock || 0,
-          canPurchase: item.post_status === "public",
+          canPurchase: item.postStatus === "public",
           seller: item.creator?.username || t("categories.unknown"),
           purchaseLimitPerDay: item.purchaseLimitPerDay || item.purchase_limit_per_day,
           weight: item.weight,
           length: item.length,
           width: item.width,
           height: item.height,
+          sellerId: item.sellerId || item.seller_id,
+          entityType: "PRODUCT" as const,
         }));
         setMyItems(mappedMyItems as unknown as MarketplaceItem[]);
       }
@@ -142,13 +148,15 @@ export function useMarketplaceData(userId?: number | string) {
           createdAt: item.createdAt || item.created_at,
           image: item.images?.[0] || null,
           stock: item.stock || 0,
-          canPurchase: item.post_status === "public",
+          canPurchase: item.postStatus === "public",
           seller: item.creator?.username || t("categories.unknown"),
           purchaseLimitPerDay: item.purchaseLimitPerDay || item.purchase_limit_per_day,
           weight: item.weight,
           length: item.length,
           width: item.width,
           height: item.height,
+          sellerId: item.sellerId || item.seller_id,
+          entityType: "PRODUCT" as const,
         }));
         setAllItems(mappedAllItems as unknown as MarketplaceItem[]);
       }

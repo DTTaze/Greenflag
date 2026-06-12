@@ -90,6 +90,9 @@ function HistoryDashboard() {
   }, [user?.id]);
 
   const formatDate = (date) => {
+    if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+      return "--";
+    }
     return date.toLocaleDateString("vi-VN", {
       day: "2-digit",
       month: "2-digit",

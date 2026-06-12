@@ -51,13 +51,44 @@ const MarketplaceItemCard = ({
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [currentStock, setCurrentStock] = useState(item.stock);
   const [currentStatus, setCurrentStatus] = useState(item.postStatus);
+  const [isHovered, setIsHovered] = useState(false);
+  const [currentImgIndex, setCurrentImgIndex] = useState(0);
   const { user } = useAuthStore();
   const { confirmPurchase, handlePurchase } = useContext(MarketplaceContext);
+
+  const isOwnItem = user && (
+    String(item.sellerId) === String(user.id) ||
+    String(item.seller_id) === String(user.id) ||
+    String(item.creatorId) === String(user.id) ||
+    String(item.creator_id) === String(user.id) ||
+    String(item.owner_id) === String(user.id) ||
+    String(item.ownerId) === String(user.id)
+  );
+
+  const images = item.images && item.images.length > 0
+    ? item.images
+    : item.image
+    ? [item.image]
+    : ["/placeholder.svg"];
 
   useEffect(() => {
     setCurrentStock(item.stock);
     setCurrentStatus(item.postStatus);
   }, [item.stock, item.postStatus]);
+
+  useEffect(() => {
+    let intervalId;
+    if (isHovered && images.length > 1) {
+      intervalId = setInterval(() => {
+        setCurrentImgIndex((prev) => (prev + 1) % images.length);
+      }, 1500);
+    } else {
+      setCurrentImgIndex(0);
+    }
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [isHovered, images]);
 
   const handleEditClick = () => {
     onEdit(item);
@@ -95,6 +126,8 @@ const MarketplaceItemCard = ({
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -6 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       className={`relative flex flex-col justify-between overflow-hidden rounded-3xl border shadow-sm transition-all ${getStatusClass(
         currentStatus,
       )} group`}
@@ -102,11 +135,29 @@ const MarketplaceItemCard = ({
       <div>
         {/* Item Image */}
         <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100 dark:bg-zinc-800">
-          <img
-            src={item.image || "/placeholder.svg"}
+          <motion.img
+            key={currentImgIndex}
+            src={images[currentImgIndex]}
             alt={item.name}
+            initial={{ opacity: 0.85 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.25 }}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
+          {images.length > 1 && isHovered && (
+            <div className="absolute bottom-2.5 left-0 right-0 z-20 flex justify-center gap-1.5 px-3">
+              {images.map((_, idx) => (
+                <div
+                  key={idx}
+                  className={`h-1 flex-1 rounded-full transition-all duration-300 ${
+                    idx === currentImgIndex
+                      ? "bg-white w-4"
+                      : "bg-white/40"
+                  }`}
+                />
+              ))}
+            </div>
+          )}
           {/* Status Badge for My Items */}
           {viewMode === "my_items" && currentStatus && (
             <div className="absolute top-3 left-3 z-20">
@@ -176,17 +227,32 @@ const MarketplaceItemCard = ({
 
       {/* Hover action overlay with dynamic actions */}
       <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-black/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100 backdrop-blur-[1.5px]">
-        <button
-          onClick={handleDetailsClick}
-          className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-emerald-250 bg-white px-5 py-3 text-xs font-bold text-[#0B6E4F] shadow-md transition-all hover:bg-emerald-50 active:scale-95 dark:border-emerald-500/15 dark:bg-slate-900 dark:text-emerald-400 dark:hover:bg-slate-800"
-        >
-          <Eye size={15} />
-          {viewMode === "my_items"
-            ? t("list.detailsBtn")
-            : viewMode === "redeem"
-            ? t("list.redeemBtn")
-            : t("list.detailsBtn")}
-        </button>
+        {isOwnItem && viewMode !== "my_items" ? (
+          <div className="flex flex-col items-center gap-2 px-4 text-center animate-fade-in">
+            <span className="inline-flex items-center rounded-full border border-amber-500/30 bg-amber-600/95 px-3 py-1.5 text-[10px] font-black tracking-wider uppercase text-white shadow-md backdrop-blur-xs">
+              Sản phẩm của bạn
+            </span>
+            <button
+              onClick={() => setShowDetailsModal(true)}
+              className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-emerald-250 bg-white px-5 py-3 text-xs font-bold text-[#0B6E4F] shadow-md transition-all hover:bg-emerald-50 active:scale-95 dark:border-emerald-500/15 dark:bg-slate-900 dark:text-emerald-400 dark:hover:bg-slate-800"
+            >
+              <Eye size={15} />
+              {t("list.detailsBtn")}
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={handleDetailsClick}
+            className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-emerald-250 bg-white px-5 py-3 text-xs font-bold text-[#0B6E4F] shadow-md transition-all hover:bg-emerald-50 active:scale-95 dark:border-emerald-500/15 dark:bg-slate-900 dark:text-emerald-400 dark:hover:bg-slate-800"
+          >
+            <Eye size={15} />
+            {viewMode === "my_items"
+              ? t("list.detailsBtn")
+              : viewMode === "redeem"
+              ? t("list.redeemBtn")
+              : t("list.detailsBtn")}
+          </button>
+        )}
 
         {viewMode === "my_items" && (
           <div className="flex gap-2">

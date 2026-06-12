@@ -211,19 +211,16 @@ export const productColumns = [
       const val = String(
         row.productStatus || row.product_status || value || "",
       ).toUpperCase();
-      let label = row.productStatus || row.product_status || value || "Mới";
-      let color =
-        "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
-      if (val === "USED" || val === "CŨ") {
-        label = "Cũ";
-        color =
-          "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400";
-      }
+      const statusUi = STATUS_MAP[val] || {
+        label: row.productStatus || row.product_status || value || "Mới",
+        color:
+          "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+      };
       return (
         <span
-          className={`rounded-full px-2.5 py-1 text-xs font-medium ${color}`}
+          className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusUi.color}`}
         >
-          {label}
+          {statusUi.label}
         </span>
       );
     },

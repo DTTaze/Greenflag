@@ -10,6 +10,7 @@ import {
   createProduct,
   deleteProduct,
   purchaseItem,
+  purchaseProduct,
   updateProduct,
 } from "@/src/utils/api";
 
@@ -26,16 +27,20 @@ export interface MarketplaceItem {
   height?: number;
   category?: string;
   image?: string;
+  images?: string[];
   product_status?: string;
   postStatus?: string;
   createdAt?: string;
   canPurchase?: boolean;
+  sellerId?: string | number;
+  entityType?: 'PRODUCT' | 'ITEM';
 }
 
 export function useMarketplaceCrud({
   auth,
   setError,
   fetchRedeemItems,
+  fetchAllItems,
   setMyItems,
 }: {
   auth: {
@@ -48,6 +53,7 @@ export function useMarketplaceCrud({
   };
   setError: React.Dispatch<React.SetStateAction<string | null>>;
   fetchRedeemItems: () => Promise<void>;
+  fetchAllItems?: () => Promise<void>;
   setMyItems: React.Dispatch<React.SetStateAction<MarketplaceItem[]>>;
 }) {
   const t = useTranslations("exchangeMarket");
@@ -119,13 +125,20 @@ export function useMarketplaceCrud({
           to_address: shippingInfo.to_address || shippingInfo.toAddress || "",
         };
 
-        const response = (await purchaseItem(
+        const isProduct = selectedItem.entityType === "PRODUCT";
+        const purchaseFn = isProduct ? purchaseProduct : purchaseItem;
+
+        const response = (await purchaseFn(
           auth.user.id,
           selectedItem.id,
           purchaseData,
         )) as any;
 
-        if (response.success && (response.data?.jobId || response.data?.job_id)) {
+        const hasTransactionOrJob =
+          (isProduct && (response.data?.transactionId || response.data?.transaction_id)) ||
+          (!isProduct && (response.data?.jobId || response.data?.job_id));
+
+        if (response.success && hasTransactionOrJob) {
           // Update coins balance in local state store immediately
           const currentAmount = auth.user?.coins?.amount || 0;
           const newAmount = Math.max(0, currentAmount - totalCost);
@@ -143,7 +156,12 @@ export function useMarketplaceCrud({
           setSelectedItem(null);
           setTransactionStatus(null);
           alert(t("alerts.txSuccess", { quantity, name: selectedItem.name }));
-          await fetchRedeemItems();
+
+          if (isProduct) {
+            if (fetchAllItems) await fetchAllItems();
+          } else {
+            await fetchRedeemItems();
+          }
         } else {
           throw new Error(t("errors.txNoCode"));
         }
@@ -292,6 +310,7 @@ export function useMarketplaceCrud({
               response.data.post_status ||
               itemToEdit.postStatus,
             image: response.data.images?.[0] || itemToEdit.image,
+            images: response.data.images || itemToEdit.images || [],
             createdAt:
               response.data.createdAt ||
               response.data.created_at ||
@@ -325,6 +344,7 @@ export function useMarketplaceCrud({
             postStatus:
               response.data.postStatus || response.data.post_status || "draft",
             image: response.data.images?.[0] || null,
+            images: response.data.images || [],
             createdAt:
               response.data.createdAt ||
               response.data.created_at ||

@@ -13,6 +13,8 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { User } from '@modules/user/entities/user.entity';
 
+import { PRODUCT_POST_STATUS } from '@shared/enums';
+
 import { RequestUser } from '@shared/decorators/request-user.decorator';
 import { AuthGuard } from '@shared/guards/auth.guard';
 
@@ -36,15 +38,32 @@ export class CommerceController {
 
   @Get('products')
   public async getAllProducts(
+    @RequestUser() user: User,
     @Query('showDeleted') showDeleted?: string,
+    @Query('sellerId') sellerId?: string,
+    @Query('postStatus') postStatus?: PRODUCT_POST_STATUS,
   ): Promise<HttpResponse> {
     const withDeleted = showDeleted === 'true';
-    return this.productService.findAllProducts({ withDeleted });
+    return this.productService.findAllProducts({
+      withDeleted,
+      sellerId,
+      postStatus,
+      currentUser: user,
+    });
   }
 
   @Get('products/:id')
   public async getProductById(@Param('id') id: string): Promise<HttpResponse> {
     return this.productService.getProductDetail(id);
+  }
+
+  @Post('products/:productId/purchase')
+  public async purchaseProduct(
+    @RequestUser() user: User,
+    @Param('productId') productId: string,
+    @Body() dto: PurchaseItemDto,
+  ): Promise<HttpResponse> {
+    return this.productService.purchaseProduct(user.id, productId, dto);
   }
 
   // --- Items ---

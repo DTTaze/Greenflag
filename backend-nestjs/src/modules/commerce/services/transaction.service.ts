@@ -42,6 +42,7 @@ export class TransactionService extends BaseCRUDService<Transaction> {
         relations: {
           receiverInformation: true,
           item: true,
+          product: true,
           buyer: { profile: true },
           seller: { profile: true },
         },
@@ -97,6 +98,7 @@ export class TransactionService extends BaseCRUDService<Transaction> {
       relations: {
         receiverInformation: true,
         item: true,
+        product: true,
         buyer: { profile: true },
         seller: { profile: true },
       },
@@ -126,6 +128,7 @@ export class TransactionService extends BaseCRUDService<Transaction> {
         relations: {
           receiverInformation: true,
           item: true,
+          product: true,
           buyer: { profile: true },
           seller: { profile: true },
         },

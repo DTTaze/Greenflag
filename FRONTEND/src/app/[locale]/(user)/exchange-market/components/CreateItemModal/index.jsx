@@ -10,7 +10,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
   const t = useTranslations("exchangeMarket");
 
   const [formData, setFormData] = useState({
-    image: "",
+    images: [],
     name: "",
     price: "",
     stock: "",
@@ -21,33 +21,34 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
 
   const [errors, setErrors] = useState({});
   const [isEditing, setIsEditing] = useState(false);
-  const [imageFile, setImageFile] = useState(null);
+  const [imageFiles, setImageFiles] = useState([]);
 
   useEffect(() => {
     if (item) {
+      const initialImages = item.images || (item.image ? [item.image] : []);
       setFormData({
         name: item.name || "",
         description: item.description || "",
         price: item.price || "",
         stock: item.stock || "",
-        image: item.image || "",
+        images: initialImages,
         category: item.category || "other",
         product_status: item.product_status || "new",
       });
       setIsEditing(true);
-      setImageFile(null);
+      setImageFiles(initialImages);
     } else {
       setFormData({
         name: "",
         description: "",
         price: "",
         stock: "",
-        image: "",
+        images: [],
         category: "other",
         product_status: "new",
       });
       setIsEditing(false);
-      setImageFile(null);
+      setImageFiles([]);
     }
   }, [item]);
 
@@ -99,7 +100,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
         ...formData,
         price: Number(formData.price),
         stock: Number(formData.stock),
-        images: imageFile ? [imageFile] : [],
+        images: imageFiles,
       };
       onSubmit(formattedData, isEditing);
     }
@@ -140,14 +141,20 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
           className="flex-1 space-y-4 overflow-y-auto pr-1"
         >
           <ImageUpload
-            image={formData.image}
-            onImageChange={(imageUrl, file) => {
-              setFormData((prev) => ({ ...prev, image: imageUrl }));
-              setImageFile(file);
+            images={formData.images}
+            onImagesChange={(newPreviews, newFiles) => {
+              setFormData((prev) => ({
+                ...prev,
+                images: [...(prev.images || []), ...newPreviews],
+              }));
+              setImageFiles((prev) => [...(prev || []), ...newFiles]);
             }}
-            onRemoveImage={() => {
-              setFormData((prev) => ({ ...prev, image: "" }));
-              setImageFile(null);
+            onRemoveImage={(index) => {
+              setFormData((prev) => ({
+                ...prev,
+                images: (prev.images || []).filter((_, idx) => idx !== index),
+              }));
+              setImageFiles((prev) => (prev || []).filter((_, idx) => idx !== index));
             }}
           />
 
@@ -297,11 +304,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
                 className="text-slate-750 mt-1.5 w-full rounded-lg border border-slate-200 bg-slate-50/50 px-3 py-2 text-sm transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300"
               >
                 <option value="new">{t("conditions.new")}</option>
-                <option value="like-new">{t("conditions.like-new")}</option>
                 <option value="used">{t("conditions.used")}</option>
-                <option value="refurbished">
-                  {t("conditions.refurbished")}
-                </option>
               </select>
             </div>
           </div>

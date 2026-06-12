@@ -4,7 +4,6 @@ import React from "react";
 import imgScr from "@/src/assets/images/seedling-solid.svg";
 import { Button } from "@/src/components/ui/button";
 import { Card } from "@/src/components/ui/card";
-
 import ProgressBar from "../ProgressBar";
 import TaskDetailModal from "../TaskDetailModal";
 import { getLevelColor } from "../utils/taskUtils";
@@ -68,7 +67,7 @@ const TaskCard = React.memo(
                   }`}
                 >
                   <img
-                    src={imgScr}
+                    src={imgScr.src}
                     alt="task icon"
                     className="h-full w-full opacity-80"
                   />

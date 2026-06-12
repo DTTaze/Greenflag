@@ -1,4 +1,4 @@
-import { Archive, Package, Trash2 } from "lucide-react";
+import { Archive, Package, Pencil, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React from "react";
 
@@ -24,6 +24,7 @@ type InventoryItem = {
   name: string;
   stock: number;
   price: number;
+  images?: string[];
 };
 
 type InventoryListProps = {
@@ -32,6 +33,8 @@ type InventoryListProps = {
   error: string;
   totalStock: number;
   onDelete: (id: string) => void;
+  onEdit: (item: InventoryItem) => void;
+  editingItemId?: string | null;
 };
 
 export function InventoryList({
@@ -40,6 +43,8 @@ export function InventoryList({
   error,
   totalStock,
   onDelete,
+  onEdit,
+  editingItemId = null,
 }: InventoryListProps) {
   const t = useTranslations("partner");
 
@@ -116,8 +121,16 @@ export function InventoryList({
                     key={item.id}
                     className="border-b border-emerald-50/30 dark:border-emerald-950/20 hover:bg-emerald-50/20 dark:hover:bg-emerald-950/10 transition-colors"
                   >
-                    <TableCell className="text-center py-4 pl-4">
-                      <Package className="mx-auto h-5 w-5 text-emerald-600/40 dark:text-emerald-400/30" />
+                    <TableCell className="text-center py-3 pl-4">
+                      {item.images && item.images.length > 0 ? (
+                        <img
+                          src={item.images[0]}
+                          alt={item.name}
+                          className="mx-auto h-9 w-9 object-cover rounded-xl border border-emerald-100 dark:border-slate-800 shadow-xs"
+                        />
+                      ) : (
+                        <Package className="mx-auto h-5 w-5 text-emerald-600/40 dark:text-emerald-400/30" />
+                      )}
                     </TableCell>
                     <TableCell className="max-w-[200px] truncate py-4 font-bold text-gray-900 dark:text-white">
                       {item.name}
@@ -139,13 +152,26 @@ export function InventoryList({
                       {item.price} pts
                     </TableCell>
                     <TableCell className="py-4 text-right pr-6">
-                      <button
-                        type="button"
-                        onClick={() => onDelete(item.id)}
-                        className="text-gray-400 hover:text-red-600 rounded-lg p-2 transition hover:bg-red-50 dark:text-zinc-500 dark:hover:bg-red-950/20 dark:hover:text-red-400"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          type="button"
+                          onClick={() => onEdit(item)}
+                          className={`rounded-lg p-2 transition dark:hover:bg-emerald-950/25 dark:hover:text-emerald-400 ${
+                            editingItemId === item.id
+                              ? "text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/20"
+                              : "text-gray-400 hover:text-emerald-600 hover:bg-emerald-50/55 dark:text-zinc-500"
+                          }`}
+                        >
+                          <Pencil size={16} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onDelete(item.id)}
+                          className="text-gray-400 hover:text-red-600 rounded-lg p-2 transition hover:bg-red-50 dark:text-zinc-500 dark:hover:bg-red-950/20 dark:hover:text-red-400"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

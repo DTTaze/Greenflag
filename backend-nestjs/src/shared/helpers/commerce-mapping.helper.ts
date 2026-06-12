@@ -39,5 +39,8 @@ export function mapToItemEntity(
   if (dto.purchase_limit_per_day !== undefined) {
     entity.purchaseLimitPerDay = dto.purchase_limit_per_day;
   }
+  if ('images' in dto && dto.images !== undefined) {
+    entity.images = dto.images;
+  }
   return entity;
 }

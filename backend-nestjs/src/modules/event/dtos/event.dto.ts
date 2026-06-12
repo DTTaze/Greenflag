@@ -1,5 +1,6 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
+  IsArray,
   IsDateString,
   IsInt,
   IsNotEmpty,
@@ -44,6 +45,21 @@ export class CreateEventDto {
   @IsDateString()
   @IsNotEmpty()
   end_time: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      try {
+        const parsed = JSON.parse(value);
+        if (Array.isArray(parsed)) return parsed;
+      } catch {}
+      return [value];
+    }
+    return value;
+  })
+  images?: string[];
 }
 
 export class UpdateEventDto {
@@ -86,6 +102,21 @@ export class UpdateEventDto {
   @IsString()
   @IsOptional()
   status?: EVENT_STATUS;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      try {
+        const parsed = JSON.parse(value);
+        if (Array.isArray(parsed)) return parsed;
+      } catch {}
+      return [value];
+    }
+    return value;
+  })
+  images?: string[];
 }
 
 export class CheckInOutDto {

@@ -14,54 +14,50 @@ import {
   CardHeader,
   CardTitle,
 } from "@/src/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/src/components/ui/dialog";
 import { Link } from "@/src/i18n/navigation";
 import { eventServices } from "@/src/services/event";
-import { CreateEventPayload } from "@/src/types/event/event.payload";
 import { EventType } from "@/src/types/event/event.type";
+import { useEventForm } from "@/src/hooks/forms/useEventForm";
 
 import { EventForm } from "./components/EventForm";
 import { EventList } from "./components/EventList";
 
-const INITIAL_FORM: CreateEventPayload = {
-  title: "",
-  description: "",
-  location: "",
-  capacity: 50,
-  coins: 10,
-  end_sign: "",
-  start_time: "",
-  end_time: "",
-};
-
-function formatIsoToDateTimeLocal(isoString?: string): string {
-  if (!isoString) return "";
-  const date = new Date(isoString);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  return `${year}-${month}-${day}T${hours}:${minutes}`;
-}
-
 export default function PartnerEventsPage() {
   const t = useTranslations("partner");
 
-  const [form, setForm] = useState<CreateEventPayload>(INITIAL_FORM);
   const [events, setEvents] = useState<EventType[]>([]);
   const [qrSrc, setQrSrc] = useState<string | null>(null);
   const [qrEventTitle, setQrEventTitle] = useState("");
-  const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [editingEventId, setEditingEventId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [eventToDeleteId, setEventToDeleteId] = useState<string | null>(null);
 
-  function handleFieldChange(
-    field: keyof CreateEventPayload,
-    value: string | number,
-  ) {
-    setForm((prev) => ({ ...prev, [field]: value }));
-  }
+  const {
+    register,
+    handleSubmit,
+    errors,
+    saving,
+    editingEventId,
+    selectedImages,
+    previewUrls,
+    handleImagesChange,
+    handleRemoveImage,
+    handleReset,
+    handleSelectEvent,
+  } = useEventForm(async (createdEvent?: any) => {
+    await loadEvents();
+    if (createdEvent?.id) {
+      await generateQrForEvent(createdEvent.id, createdEvent.title);
+    }
+  });
 
   async function loadEvents() {
     setLoading(true);
@@ -80,16 +76,6 @@ export default function PartnerEventsPage() {
     loadEvents();
   }, []);
 
-  function validateForm(): string | null {
-    if (!form.title.trim()) return t("events.errors.requiredTitle");
-    if (!form.description.trim()) return t("events.errors.requiredDescription");
-    if (!form.location.trim()) return t("events.errors.requiredLocation");
-    if (!form.end_sign) return t("events.errors.requiredEndSign");
-    if (!form.start_time) return t("events.errors.requiredStartTime");
-    if (!form.end_time) return t("events.errors.requiredEndTime");
-    return null;
-  }
-
   async function generateQrForEvent(eventId: string, eventTitle: string) {
     try {
       const qrData = JSON.stringify({ eventId, title: eventTitle });
@@ -98,122 +84,35 @@ export default function PartnerEventsPage() {
       setQrEventTitle(eventTitle);
     } catch (err) {
       console.error(err);
-      setError(t("events.errors.generateFailed"));
     }
   }
 
-  async function handleCreate(e: React.FormEvent) {
-    e.preventDefault();
-    const validationError = validateForm();
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
-
-    setSaving(true);
-    setError("");
+  async function handleConfirmDelete() {
+    if (!eventToDeleteId) return;
+    setDeleting(true);
     try {
-      const payload: CreateEventPayload = {
-        ...form,
-        end_sign: new Date(form.end_sign).toISOString(),
-        start_time: new Date(form.start_time).toISOString(),
-        end_time: new Date(form.end_time).toISOString(),
-      };
-      const res = await eventServices.partnerCreateEvent(payload);
-      const createdEvent = res?.data || res;
-
-      toast.success(t("events.errors.createSuccess"));
-      setForm(INITIAL_FORM);
-      await loadEvents();
-
-      if (createdEvent?.id) {
-        await generateQrForEvent(createdEvent.id, createdEvent.title || form.title);
-      }
-    } catch (err) {
-      console.error(err);
-      setError(t("events.errors.createFailed"));
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  function handleSelectEvent(event: EventType) {
-    setEditingEventId(event.id);
-    setForm({
-      title: event.title || "",
-      description: event.description || "",
-      location: event.location || "",
-      capacity: event.capacity ?? 50,
-      coins: event.coins ?? 10,
-      end_sign: formatIsoToDateTimeLocal(event.endSign),
-      start_time: formatIsoToDateTimeLocal(event.startTime),
-      end_time: formatIsoToDateTimeLocal(event.endTime),
-    });
-    setError("");
-  }
-
-  async function handleUpdate(e: React.FormEvent) {
-    e.preventDefault();
-    if (!editingEventId) return;
-
-    const validationError = validateForm();
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
-
-    setSaving(true);
-    setError("");
-    try {
-      const payload: CreateEventPayload = {
-        ...form,
-        end_sign: new Date(form.end_sign).toISOString(),
-        start_time: new Date(form.start_time).toISOString(),
-        end_time: new Date(form.end_time).toISOString(),
-      };
-      await eventServices.partnerUpdateEvent(editingEventId, payload);
-      toast.success(t("events.errors.updateSuccess"));
-
-      setForm(INITIAL_FORM);
-      setEditingEventId(null);
-      await loadEvents();
-
-      if (qrSrc && qrEventTitle) {
-        const matchingEvent = events.find((ev) => ev.id === editingEventId);
-        if (matchingEvent && qrEventTitle === matchingEvent.title) {
-          await generateQrForEvent(editingEventId, form.title);
-        }
-      }
-    } catch (err) {
-      console.error(err);
-      setError(t("events.errors.updateFailed"));
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function handleDelete(eventId: string) {
-    try {
-      await eventServices.partnerDeleteEvent(eventId);
+      await eventServices.partnerDeleteEvent(eventToDeleteId);
       toast.success(t("events.errors.deleteSuccess"));
 
-      if (editingEventId === eventId) {
-        setEditingEventId(null);
-        setForm(INITIAL_FORM);
+      if (editingEventId === eventToDeleteId) {
+        handleReset();
       }
 
       if (qrSrc) {
-        const deletedEvent = events.find((ev) => ev.id === eventId);
+        const deletedEvent = events.find((ev) => ev.id === eventToDeleteId);
         if (deletedEvent && qrEventTitle === deletedEvent.title) {
           setQrSrc(null);
           setQrEventTitle("");
         }
       }
 
+      setEventToDeleteId(null);
       await loadEvents();
     } catch (err) {
       console.error(err);
       toast.error(t("events.errors.deleteFailed"));
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -259,17 +158,16 @@ export default function PartnerEventsPage() {
       <div className="grid gap-8 md:grid-cols-2">
         {/* Create Event Form */}
         <EventForm
-          form={form}
-          onFieldChange={handleFieldChange}
+          register={register}
+          errors={errors}
           saving={saving}
-          error={error}
-          onSubmit={editingEventId ? handleUpdate : handleCreate}
+          onSubmit={handleSubmit}
           isEditing={!!editingEventId}
-          onReset={() => {
-            setForm(INITIAL_FORM);
-            setEditingEventId(null);
-            setError("");
-          }}
+          onReset={handleReset}
+          selectedImages={selectedImages}
+          previewUrls={previewUrls}
+          onImagesChange={handleImagesChange}
+          onRemoveImage={handleRemoveImage}
           labels={{
             createTitle: t("events.createTitle"),
             createDescription: t("events.createDescription"),
@@ -292,6 +190,9 @@ export default function PartnerEventsPage() {
             editTitle: t("events.editTitle"),
             editDescription: t("events.editDescription"),
             cancelBtn: t("events.cancelBtn"),
+            uploadImageLabel: t("events.uploadImageLabel"),
+            clickToUpload: t("events.clickToUpload"),
+            supportText: t("events.supportText"),
           }}
         />
 
@@ -359,7 +260,7 @@ export default function PartnerEventsPage() {
         loading={loading}
         onViewQr={generateQrForEvent}
         onSelectEvent={handleSelectEvent}
-        onDeleteEvent={handleDelete}
+        onDeleteEvent={setEventToDeleteId}
         selectedEventId={editingEventId}
         labels={{
           eventListTitle: t("events.eventListTitle"),
@@ -372,6 +273,44 @@ export default function PartnerEventsPage() {
           deleteBtn: t("events.deleteBtn"),
         }}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={!!eventToDeleteId} onOpenChange={(open) => { if (!open) setEventToDeleteId(null); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-gray-900 dark:text-white">
+              {t("events.deleteBtn")}
+            </DialogTitle>
+            <DialogDescription className="text-sm text-gray-500 dark:text-slate-400 mt-2">
+              {t("events.deleteConfirm")}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setEventToDeleteId(null)}
+              disabled={deleting}
+              className="w-full sm:w-auto rounded-xl"
+            >
+              {t("events.cancelBtn")}
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={handleConfirmDelete}
+              disabled={deleting}
+              className="w-full sm:w-auto bg-red-600 hover:bg-red-750 text-white rounded-xl"
+            >
+              {deleting ? (
+                <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              ) : (
+                t("events.deleteBtn")
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

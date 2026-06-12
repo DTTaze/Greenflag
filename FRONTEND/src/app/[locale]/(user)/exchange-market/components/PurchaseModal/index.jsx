@@ -235,6 +235,7 @@ export default function PurchaseModal({
               isOpen={isShippingModalOpen}
               onClose={() => setIsShippingModalOpen(false)}
               onSelect={handleSelectShipping}
+              selectedId={shippingInfo?.id}
               ref={shippingModalRef}
             />
           )}

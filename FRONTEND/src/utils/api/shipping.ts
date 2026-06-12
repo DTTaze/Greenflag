@@ -146,7 +146,67 @@ export const getAllWardsByDistrict = (
   });
 };
 
+export const formatCleanAddress = (
+  rawAddress: string,
+  ward: string,
+  district: string,
+  province: string
+) => {
+  if (!rawAddress) return "";
+
+  const parts = rawAddress.split(",");
+
+  const cleanStr = (s: string) => {
+    if (!s) return "";
+    let cleaned = s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    
+    // Normalize abbreviations and remove standalone prefix words
+    cleaned = cleaned.replace(/\btp\b/g, "thanh pho")
+                     .replace(/\bhcm\b/g, "ho chi minh")
+                     .replace(/\bhn\b/g, "ha noi")
+                     .replace(/\bphuong\b/g, "")
+                     .replace(/\bquan\b/g, "")
+                     .replace(/\btinh\b/g, "")
+                     .replace(/\bxa\b/g, "")
+                     .replace(/\bhuyen\b/g, "");
+
+    // Keep only alphanumeric characters
+    return cleaned.replace(/[^a-z0-9]/g, "").trim();
+  };
+
+  const cleanWard = cleanStr(ward);
+  const cleanDistrict = cleanStr(district);
+  const cleanProvince = cleanStr(province);
+
+  const isMatch = (cleanedPart: string, cleanedMaster: string, prefix: string) => {
+    if (!cleanedPart || !cleanedMaster) return false;
+    if (cleanedPart === cleanedMaster) return true;
+    if (cleanedPart === prefix + cleanedMaster || cleanedMaster === prefix + cleanedPart) return true;
+    return false;
+  };
+
+  const filteredParts = parts.filter(part => {
+    const cleanedPart = cleanStr(part);
+    if (!cleanedPart) return false;
+
+    if (cleanWard && isMatch(cleanedPart, cleanWard, "phuong")) return false;
+    if (cleanDistrict && isMatch(cleanedPart, cleanDistrict, "quan")) return false;
+    if (cleanProvince && (isMatch(cleanedPart, cleanProvince, "tinh") || isMatch(cleanedPart, cleanProvince, "thanhpho"))) return false;
+
+    return true;
+  });
+
+  let streetAddress = filteredParts.map(p => p.trim()).join(", ");
+  
+  if (!streetAddress.trim()) {
+    streetAddress = rawAddress;
+  }
+
+  return streetAddress;
+};
+
 const normalizeReceiverInfo = (addr: any) => {
+
   if (!addr) return null;
   return {
     ...addr,

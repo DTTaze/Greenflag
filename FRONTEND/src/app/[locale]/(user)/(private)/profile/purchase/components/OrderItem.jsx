@@ -19,32 +19,42 @@ const OrderItem = ({ transaction, onClick, onCancel }) => {
         <div className="mb-2 text-right">
           <span
             className={`rounded-xl px-3 py-1 text-xs font-bold ${
-              statusStyles[transaction.status] || "bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300"
+              statusStyles[transaction.status] ||
+              "bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300"
             }`}
           >
             {transaction.status_label.toUpperCase()}
           </span>
         </div>
       </div>
-      <hr className="border-zinc-100 dark:border-zinc-800/80 my-3" />
-      <div className="my-4 flex items-center">
-        <div className="flex-1">
-          <h3 className="font-bold text-zinc-900 dark:text-zinc-100">{item.name}</h3>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+      <hr className="my-3 border-zinc-100 dark:border-zinc-800/80" />
+      <div className="my-4 flex items-start gap-4">
+        {item.image_url && (
+          <img
+            src={item.image_url}
+            alt={item.name}
+            className="h-20 w-20 shrink-0 rounded-2xl border border-zinc-100 object-cover shadow-xs dark:border-zinc-800"
+          />
+        )}
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate font-bold text-zinc-900 dark:text-zinc-100">
+            {item.name}
+          </h3>
+          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
             Số lượng: {transaction.quantity || 1}
           </p>
-          <p className="flex items-center text-sm text-zinc-600 dark:text-zinc-300 mt-1">
+          <p className="text-zinc-650 mt-1 flex items-center text-sm dark:text-zinc-300">
             Đơn giá: {(item.price || transaction.total_price).toLocaleString()}{" "}
-            <Coins className="ml-1 h-4 w-4 text-brand-emerald" />
+            <Coins className="text-brand-emerald ml-1 h-4 w-4" />
           </p>
         </div>
       </div>
-      <hr className="border-zinc-100 dark:border-zinc-800/80 my-3" />
+      <hr className="my-3 border-zinc-100 dark:border-zinc-800/80" />
       <div className="flex items-center justify-between">
         <div className="space-x-2">
           {transaction.status === "delivered" && (
             <button
-              className="rounded-2xl bg-brand-emerald px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-600 transition-colors"
+              className="bg-brand-emerald rounded-2xl px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-emerald-600"
               onClick={(e) => {
                 e.stopPropagation();
                 /* Handle confirm receipt */
@@ -55,7 +65,7 @@ const OrderItem = ({ transaction, onClick, onCancel }) => {
           )}
           {transaction.status === "pending" && (
             <button
-              className="rounded-2xl bg-rose-500 px-4 py-2 text-xs font-semibold text-white hover:bg-rose-600 transition-colors"
+              className="rounded-2xl bg-rose-500 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-rose-600"
               onClick={(e) => {
                 e.stopPropagation();
                 onCancel(transaction.id);
@@ -66,9 +76,9 @@ const OrderItem = ({ transaction, onClick, onCancel }) => {
           )}
         </div>
         <div className="text-right">
-          <p className="flex items-center justify-end font-bold text-zinc-900 dark:text-zinc-150">
+          <p className=" flex items-center justify-end font-bold dark:text-white text-zinc-900">
             Thành tiền: {transaction.total_price.toLocaleString()}{" "}
-            <Coins className="ml-1 h-4 w-4 text-brand-emerald" />
+            <Coins className="text-brand-emerald ml-1 h-4 w-4" />
           </p>
         </div>
       </div>
@@ -89,7 +99,7 @@ const OrderItem = ({ transaction, onClick, onCancel }) => {
               e.stopPropagation();
               setShowShippingInfo(!showShippingInfo);
             }}
-            className="flex items-center text-xs font-bold text-brand-emerald hover:text-emerald-700"
+            className="text-brand-emerald flex items-center text-xs font-bold hover:text-emerald-700"
           >
             {showShippingInfo
               ? "Ẩn thông tin vận chuyển"
@@ -112,15 +122,21 @@ const OrderItem = ({ transaction, onClick, onCancel }) => {
           </button>
 
           {showShippingInfo && (
-            <div className="mt-3 border-t border-zinc-100 dark:border-zinc-800/80 pt-3 space-y-1.5">
-              <h4 className="text-xs font-bold text-zinc-800 dark:text-zinc-200">Thông tin vận chuyển</h4>
+            <div className="mt-3 space-y-1.5 border-t border-zinc-100 pt-3 dark:border-zinc-800/80">
+              <h4 className="text-xs font-bold text-zinc-800 dark:text-zinc-200">
+                Thông tin vận chuyển
+              </h4>
               <p className="text-xs text-zinc-500 dark:text-zinc-400">
                 Đơn vị vận chuyển:{" "}
-                <span className="font-semibold text-zinc-700 dark:text-zinc-300">{transaction.shipping_info?.carrier || "Không xác định"}</span>
+                <span className="font-semibold text-zinc-700 dark:text-zinc-300">
+                  {transaction.shipping_info?.carrier || "Không xác định"}
+                </span>
               </p>
               <p className="text-xs text-zinc-500 dark:text-zinc-400">
                 Mã vận đơn:{" "}
-                <span className="font-semibold text-zinc-700 dark:text-zinc-300">{transaction.shipping_info?.tracking_number || "Không có"}</span>
+                <span className="font-semibold text-zinc-700 dark:text-zinc-300">
+                  {transaction.shipping_info?.tracking_number || "Không có"}
+                </span>
               </p>
               <p className="text-xs text-zinc-500 dark:text-zinc-400">
                 Dự kiến giao:{" "}
@@ -133,24 +149,37 @@ const OrderItem = ({ transaction, onClick, onCancel }) => {
                 </span>
               </p>
               {transaction.shipping_info?.to_name && (
-                <div className="mt-2 pt-2 border-t border-dashed border-zinc-150 dark:border-zinc-800/50 space-y-1">
+                <div className="border-zinc-150 mt-2 space-y-1 border-t border-dashed pt-2 dark:border-zinc-800/50">
                   <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                    Người nhận: <span className="font-semibold text-zinc-700 dark:text-zinc-300">{transaction.shipping_info.to_name}</span>
+                    Người nhận:{" "}
+                    <span className="font-semibold text-zinc-700 dark:text-zinc-300">
+                      {transaction.shipping_info.to_name}
+                    </span>
                   </p>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                    Số điện thoại: <span className="font-semibold text-zinc-700 dark:text-zinc-300">{transaction.shipping_info.to_phone}</span>
+                    Số điện thoại:{" "}
+                    <span className="font-semibold text-zinc-700 dark:text-zinc-300">
+                      {transaction.shipping_info.to_phone}
+                    </span>
                   </p>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                    Địa chỉ: <span className="font-semibold text-zinc-700 dark:text-zinc-300">{transaction.shipping_info.to_address}</span>
+                    Địa chỉ:{" "}
+                    <span className="font-semibold text-zinc-700 dark:text-zinc-300">
+                      {transaction.shipping_info.to_address}
+                    </span>
                   </p>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400">
                     Phí COD:{" "}
                     <span className="font-semibold text-zinc-700 dark:text-zinc-300">
-                      {transaction.shipping_info.cod_amount?.toLocaleString()} VNĐ
+                      {transaction.shipping_info.cod_amount?.toLocaleString()}{" "}
+                      VNĐ
                     </span>
                   </p>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                    Cân nặng: <span className="font-semibold text-zinc-700 dark:text-zinc-300">{transaction.shipping_info.weight} gram</span>
+                    Cân nặng:{" "}
+                    <span className="font-semibold text-zinc-700 dark:text-zinc-300">
+                      {transaction.shipping_info.weight} gram
+                    </span>
                   </p>
                 </div>
               )}

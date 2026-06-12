@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import { commerceServices } from "@/src/services/commerce";
@@ -14,19 +14,19 @@ import { InventoryList } from "./components/InventoryList";
 export default function PartnerInventoryPage() {
   const t = useTranslations("partner");
 
-  const [items, setItems] = React.useState<any[]>([]);
-  const [form, setForm] = React.useState({ name: "", stock: 0, points: 0 });
-  const [loading, setLoading] = React.useState(false);
-  const [saving, setSaving] = React.useState(false);
-  const [userId, setUserId] = React.useState<string | null>(null);
-  const [error, setError] = React.useState("");
+  const [items, setItems] = useState<any[]>([]);
+  const [form, setForm] = useState({ name: "", stock: 0, points: 0 });
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [error, setError] = useState("");
 
   async function loadItems() {
     setLoading(true);
     setError("");
     try {
       const res = await commerceServices.getAllItems();
-      const data = res || [];
+      const data = res.data || [];
       const myItems = userId
         ? data.filter((it: any) => it.creator?.id === userId)
         : data;
@@ -39,25 +39,23 @@ export default function PartnerInventoryPage() {
     }
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     let mounted = true;
     (async () => {
       try {
         const profile = await UserService.getProfile();
         if (!mounted) return;
-        setUserId(profile?.id || null);
+        const profileId = profile?.id ?? profile?.data?.id ?? null;
+        setUserId(profileId);
       } catch (err) {
         console.error(err);
       }
+      if (mounted) await loadItems();
     })();
     return () => {
       mounted = false;
     };
   }, []);
-
-  React.useEffect(() => {
-    if (userId !== null) loadItems();
-  }, [userId]);
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();

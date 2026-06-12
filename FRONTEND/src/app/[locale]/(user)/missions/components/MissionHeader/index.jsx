@@ -50,7 +50,7 @@ const MissionHeader = ({ userInfo, loading, searchQuery, setSearchQuery }) => {
           <span className="mb-1.5 block text-center text-[10px] font-bold tracking-wider text-emerald-200/80 uppercase">
             {t("balance")}
           </span>
-          <CoinBalance coins={userInfo?.coins || 0} />
+          <CoinBalance coins={userInfo?.coins?.amount || 0} />
         </div>
       </div>
     </motion.div>

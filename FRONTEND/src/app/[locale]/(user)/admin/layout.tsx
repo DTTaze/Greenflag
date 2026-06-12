@@ -9,6 +9,7 @@ import ProtectedRoute from "@/src/components/common/ProtectedRoute";
 import { useAuthStore } from "@/src/store/auth/authStore";
 
 import SidebarAdmin from "./components/SidebarAdmin";
+import Button from "@/src/components/ui/button";
 
 export default function AdminLayout({
   children,
@@ -56,12 +57,12 @@ export default function AdminLayout({
         <div className="relative z-10 flex flex-1 flex-col overflow-hidden">
           {/* Mobile Header Bar */}
           <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 shadow-sm md:hidden dark:border-zinc-800 dark:bg-zinc-950/80 dark:backdrop-blur-md">
-            <button
+            <Button
               onClick={() => setSidebarOpen(true)}
               className="rounded-lg p-2 text-gray-600 hover:bg-gray-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
             >
               <Menu size={22} />
-            </button>
+            </Button>
             <div className="flex items-center space-x-2">
               <img
                 src="/images/Logo-Greenflag.png"

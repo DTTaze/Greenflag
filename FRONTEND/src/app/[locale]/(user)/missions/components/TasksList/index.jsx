@@ -95,7 +95,7 @@ const TasksList = ({
           ) : (
             <Card className="shadow-3xs mx-auto flex max-w-lg flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white/50 px-4 py-16 text-center dark:border-emerald-500/15 dark:bg-slate-900/80">
               <img
-                src={imgSrc}
+                src={imgSrc.src}
                 alt="All done!"
                 className="mx-auto mb-4 h-14 w-14 opacity-30"
               />
@@ -168,7 +168,7 @@ const TasksList = ({
           ) : (
             <Card className="shadow-3xs mx-auto flex max-w-lg flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white/50 px-4 py-16 text-center dark:border-zinc-800 dark:bg-slate-900/80">
               <img
-                src={imgSrc}
+                src={imgSrc.src}
                 alt="No tasks"
                 className="mx-auto mb-4 h-14 w-14 opacity-30"
               />
@@ -232,7 +232,7 @@ const TasksList = ({
                   >
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-emerald-100 bg-emerald-50 dark:border-emerald-400/30 dark:bg-emerald-400/10">
                       <img
-                        src={imgSrc}
+                        src={imgSrc.src}
                         alt="task icon"
                         className="h-5.5 w-5.5 opacity-80"
                       />
@@ -265,7 +265,7 @@ const TasksList = ({
           ) : (
             <Card className="shadow-3xs mx-auto flex max-w-lg flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white/50 px-4 py-16 text-center dark:border-zinc-800 dark:bg-slate-900/80">
               <img
-                src={imgSrc}
+                src={imgSrc.src}
                 alt="No tasks"
                 className="mx-auto mb-4 h-14 w-14 opacity-30"
               />

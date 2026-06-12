@@ -13,6 +13,7 @@ import {
   partnerCreateEventHandler,
   partnerDeleteParticipantHandler,
   partnerUpdateEventHandler,
+  partnerDeleteEventHandler,
 } from "@/src/services/event/eventHandlers";
 import {
   CreateEventPayload,
@@ -174,6 +175,16 @@ export const usePartnerDeleteParticipantMutation = () => {
       queryClient.invalidateQueries({
         queryKey: [QueryKeysEvent.PARTICIPANTS],
       });
+    },
+  });
+};
+
+export const usePartnerDeleteEventMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (eventId: string) => partnerDeleteEventHandler(eventId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [QueryKeysEvent.EVENTS] });
     },
   });
 };

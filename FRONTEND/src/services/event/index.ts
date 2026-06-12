@@ -76,6 +76,9 @@ export const eventServices = {
   partnerDeleteParticipant: (eventUserId: string): Promise<any> =>
     axiosClient.delete(`/partner/events/participants/${eventUserId}`),
 
+  partnerDeleteEvent: (eventId: string): Promise<any> =>
+    axiosClient.delete(`/partner/events/${eventId}`),
+
   // --- Admin ---
   adminCreateEvent: (
     payload: CreateEventPayload,

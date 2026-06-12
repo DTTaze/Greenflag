@@ -79,6 +79,10 @@ export class UpdateEventDto {
   @IsOptional()
   end_time?: string;
 
+  @IsDateString()
+  @IsOptional()
+  end_sign?: string;
+
   @IsString()
   @IsOptional()
   status?: EVENT_STATUS;

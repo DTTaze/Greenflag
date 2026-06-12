@@ -166,6 +166,8 @@ export class EventService extends BaseCRUDService<Event> {
       updateFields.startTime = new Date(dto.start_time);
     if (dto.end_time !== undefined)
       updateFields.endTime = new Date(dto.end_time);
+    if (dto.end_sign !== undefined)
+      updateFields.endSign = new Date(dto.end_sign);
     if (dto.status !== undefined) updateFields.status = dto.status;
 
     if (images?.length) {

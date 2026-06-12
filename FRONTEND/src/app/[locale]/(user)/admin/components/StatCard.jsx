@@ -1,5 +1,4 @@
-import React from "react";
-import { TrendingUp, MoreVertical } from "lucide-react";
+import { MoreVertical, TrendingUp } from "lucide-react";
 
 export default function StatCard({
   title,
@@ -13,7 +12,7 @@ export default function StatCard({
 }) {
   return (
     <div
-      className={`relative flex h-40 flex-col justify-between rounded-xl border border-emerald-250 bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-md dark:border-emerald-500/20 dark:bg-slate-950 ${bgClassName}`}
+      className={`border-emerald-250 relative flex h-40 flex-col justify-between rounded-xl border bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-md dark:border-emerald-500/20 dark:bg-slate-950 ${bgClassName}`}
     >
       {/* Top action button */}
       <div className="absolute top-3 right-3">
@@ -28,20 +27,26 @@ export default function StatCard({
           {title}
         </span>
         {IconComponent && (
-          <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${iconBgClass}`}>
+          <div
+            className={`flex h-11 w-11 items-center justify-center rounded-2xl ${iconBgClass}`}
+          >
             <IconComponent size={20} />
           </div>
         )}
       </div>
       <div className="mt-4">
-        <h3 className={`text-2xl font-bold tracking-tight text-gray-900 dark:text-white ${textColorClass}`}>
+        <h3
+          className={`text-2xl font-bold tracking-tight text-gray-900 dark:text-white ${textColorClass}`}
+        >
           {value}
         </h3>
         {(trendText || trendSubtext) && (
           <p className="mt-1 flex items-center text-xs font-semibold text-emerald-600 dark:text-emerald-400">
             {trendText && <TrendingUp className="mr-1 h-3.5 w-3.5" />}
             {trendText && <span className="mr-1">{trendText}</span>}
-            <span className="text-gray-400 dark:text-zinc-500 font-normal">{trendSubtext}</span>
+            <span className="font-normal text-gray-400 dark:text-zinc-500">
+              {trendSubtext}
+            </span>
           </p>
         )}
       </div>

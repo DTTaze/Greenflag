@@ -1,5 +1,5 @@
 import React from "react";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, MoreVertical } from "lucide-react";
 
 export default function StatCard({
   title,
@@ -9,6 +9,7 @@ export default function StatCard({
   icon: IconComponent,
   iconBgClass = "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400",
   textColorClass = "",
+  bgClassName = "",
 }) {
   return (
     <div

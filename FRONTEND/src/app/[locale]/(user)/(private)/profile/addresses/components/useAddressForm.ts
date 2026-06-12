@@ -35,6 +35,7 @@ export default function useAddressForm({
     type: "home",
     isDefault: false,
   });
+  const [initialAddress, setInitialAddress] = useState<any>(null);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [provinces, setProvinces] = useState<any[]>([]);
@@ -43,6 +44,8 @@ export default function useAddressForm({
   const [token] = useState<string>("c3f24415-29b9-11f0-9b81-222185cb68c8");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [isDistrictsLoading, setIsDistrictsLoading] = useState<boolean>(false);
+  const [isWardsLoading, setIsWardsLoading] = useState<boolean>(false);
 
   // Load initial provinces and resolve editing address hierarchy
   useEffect(() => {
@@ -151,7 +154,7 @@ export default function useAddressForm({
             }
           }
 
-          setNewAddress({
+          const resolvedAddress = {
             fullName: editingAddress.to_name,
             phoneNumber: editingAddress.to_phone,
             province: matchedProvince?.ProvinceID || "",
@@ -160,9 +163,11 @@ export default function useAddressForm({
             specificAddress: editingAddress.to_address,
             type: editingAddress.account_type,
             isDefault: editingAddress.is_default,
-          });
+          };
+          setNewAddress(resolvedAddress);
+          setInitialAddress(resolvedAddress);
         } else {
-          setNewAddress({
+          const resolvedAddress = {
             fullName: "",
             phoneNumber: "",
             province: "",
@@ -171,7 +176,9 @@ export default function useAddressForm({
             specificAddress: "",
             type: "home",
             isDefault: false,
-          });
+          };
+          setNewAddress(resolvedAddress);
+          setInitialAddress(resolvedAddress);
         }
       } catch (error) {
         console.error("Error initializing address form:", error);
@@ -194,6 +201,7 @@ export default function useAddressForm({
         newAddress.province &&
         Number.isInteger(newAddress.province)
       ) {
+        setIsDistrictsLoading(true);
         try {
           const response: any = await getAllDistrictsByProvince(
             newAddress.province,
@@ -223,6 +231,8 @@ export default function useAddressForm({
           setNewAddress((prev: any) => ({ ...prev, district: "", ward: "" }));
         } catch (error) {
           console.error("Error fetching districts:", error);
+        } finally {
+          setIsDistrictsLoading(false);
         }
       }
     };
@@ -237,6 +247,7 @@ export default function useAddressForm({
         newAddress.district &&
         Number.isInteger(newAddress.district)
       ) {
+        setIsWardsLoading(true);
         try {
           const response: any = await getAllWardsByDistrict(
             newAddress.district,
@@ -265,6 +276,8 @@ export default function useAddressForm({
           setNewAddress((prev: any) => ({ ...prev, ward: "" }));
         } catch (error) {
           console.error("Error fetching wards:", error);
+        } finally {
+          setIsWardsLoading(false);
         }
       }
     };
@@ -320,8 +333,8 @@ export default function useAddressForm({
     setNewAddress((prev: any) => ({ ...prev, type: e.target.value }));
   };
 
-  const handleDefaultChange = (e: any) => {
-    setNewAddress((prev: any) => ({ ...prev, isDefault: e.target.checked }));
+  const handleDefaultChange = () => {
+    setNewAddress((prev: any) => ({ ...prev, isDefault: !prev.isDefault }));
   };
 
   const handleAddOrUpdateAddress = async () => {
@@ -403,6 +416,24 @@ export default function useAddressForm({
     }
   };
 
+  const isDirty = initialAddress
+    ? Object.keys(initialAddress).some(
+        (key) => newAddress[key] !== initialAddress[key]
+      )
+    : false;
+
+  const handleCancel = () => {
+    if (isDirty) {
+      const confirmCancel = window.confirm(
+        "Bạn có chắc chắn muốn hủy? Thông tin đã nhập chưa được lưu lại."
+      );
+      if (!confirmCancel) {
+        return;
+      }
+    }
+    onClose();
+  };
+
   return {
     newAddress,
     errors,
@@ -410,10 +441,13 @@ export default function useAddressForm({
     districts,
     wards,
     isLoading,
+    isDistrictsLoading,
+    isWardsLoading,
     errorMessage,
     handleInputChange,
     handleTypeChange,
     handleDefaultChange,
     handleAddOrUpdateAddress,
+    handleCancel,
   };
 }

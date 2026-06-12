@@ -1,6 +1,7 @@
 "use client";
 
 import { Calendar, ClipboardList, ShoppingBag } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 function HistoryStats({
@@ -8,6 +9,8 @@ function HistoryStats({
   eventsCount,
   transactionsCount,
 }) {
+  const t = useTranslations("user.history");
+
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       <div className="flex items-center gap-3 rounded-xl border border-blue-100 bg-blue-50/30 p-4 dark:border-blue-900/30 dark:bg-blue-950/25">
@@ -16,10 +19,10 @@ function HistoryStats({
         </div>
         <div>
           <span className="block text-xs font-medium text-blue-700 dark:text-blue-400">
-            Nhiệm vụ xanh
+            {t("statsMissions")}
           </span>
           <span className="text-xl font-bold text-blue-900 dark:text-blue-200">
-            {completedMissionsCount} đã hoàn thành
+            {t("statsMissionsDesc", { count: completedMissionsCount })}
           </span>
         </div>
       </div>
@@ -30,10 +33,10 @@ function HistoryStats({
         </div>
         <div>
           <span className="block text-xs font-medium text-green-700 dark:text-emerald-400">
-            Sự kiện môi trường
+            {t("statsEvents")}
           </span>
           <span className="text-xl font-bold text-green-900 dark:text-emerald-200">
-            {eventsCount} đã tham gia
+            {t("statsEventsDesc", { count: eventsCount })}
           </span>
         </div>
       </div>
@@ -44,10 +47,10 @@ function HistoryStats({
         </div>
         <div>
           <span className="block text-xs font-medium text-amber-700 dark:text-amber-400">
-            Vật phẩm đổi thưởng
+            {t("statsGifts")}
           </span>
           <span className="text-xl font-bold text-amber-900 dark:text-amber-200">
-            {transactionsCount} quà tặng
+            {t("statsGiftsDesc", { count: transactionsCount })}
           </span>
         </div>
       </div>

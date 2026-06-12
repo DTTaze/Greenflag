@@ -1,6 +1,7 @@
 "use client";
 
 import { Coins, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -17,10 +18,11 @@ import HistoryTabs from "./HistoryTabs.jsx";
 
 function HistoryDashboard() {
   const { user } = useAuthStore();
+  const t = useTranslations("user.history");
   const [activeTab, setActiveTab] = useState("all-activity");
 
   // React Query hook for task history
-  const { data: rawTasksData, isLoading: _isTasksLoading } = useUserTasksQuery(
+  const { data: rawTasksData, isLoading: isTasksLoading } = useUserTasksQuery(
     user?.id || "",
   );
 
@@ -45,8 +47,8 @@ function HistoryDashboard() {
 
   // Aggregated lists computed reactively via useMemo
   const coinLogs = useMemo(
-    () => aggregateCoinLogs(tasksData, transactions),
-    [tasksData, transactions],
+    () => aggregateCoinLogs(tasksData, transactions, events),
+    [tasksData, transactions, events],
   );
   const activityLogs = useMemo(
     () => aggregateActivityLogs(tasksData, events),
@@ -97,7 +99,7 @@ function HistoryDashboard() {
     });
   };
 
-  if (loading) {
+  if (loading || isTasksLoading) {
     return (
       <div className="flex h-64 items-center justify-center rounded-xl border border-emerald-200/60 bg-white shadow-sm dark:border-emerald-500/15 dark:bg-zinc-900/40">
         <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
@@ -105,10 +107,12 @@ function HistoryDashboard() {
     );
   }
 
-  // Calculate statistics
-  const completedMissionsCount =
-    tasksData.filter((t) => t.completedAt || t.completed_at).length || 1; // Fallback to 1 mock if empty
-  const eventsCount = events.length || 1; // Fallback to 1 mock if empty
+  // Calculate statistics from real user data
+  const completedMissionsCount = tasksData.filter(
+    (t) => t.completedAt || t.completed_at,
+  ).length;
+  const eventsCount = events.length;
+  const transactionsCount = transactions.length;
 
   return (
     <div className="space-y-6 rounded-3xl border border-emerald-200/60 bg-white p-6 shadow-xl dark:border-emerald-500/15 dark:bg-zinc-950 transition-all duration-300">
@@ -116,20 +120,20 @@ function HistoryDashboard() {
       <div className="flex flex-col items-start justify-between gap-4 border-b border-emerald-100 pb-5 sm:flex-row sm:items-center dark:border-emerald-500/10">
         <div>
           <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
-            Nhật ký hoạt động xanh
+            {t("title")}
           </h2>
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            Xem lại hành trình bảo vệ môi trường và lịch sử tích lũy xu của bạn
+            {t("subtitle")}
           </p>
         </div>
         <div className="flex items-center gap-2.5 rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-2 shadow-2xs dark:border-emerald-500/20 dark:bg-emerald-950/20">
           <Coins className="h-5 w-5 fill-amber-400 text-amber-500" />
           <div>
             <span className="block text-xs leading-none font-semibold text-emerald-700 dark:text-emerald-400">
-              Ví xu tích lũy
+              {t("coinWallet")}
             </span>
             <span className="text-lg font-black text-[#0B6E4F] dark:text-emerald-400">
-              {user?.coins?.amount || 0} xu
+              {user?.coins?.amount || 0} {t("coinSuffix")}
             </span>
           </div>
         </div>
@@ -139,15 +143,15 @@ function HistoryDashboard() {
       <HistoryStats
         completedMissionsCount={completedMissionsCount}
         eventsCount={eventsCount}
-        transactionsCount={transactions.length || 1}
+        transactionsCount={transactionsCount}
       />
 
       {/* Tabs list */}
       <div className="flex gap-4 border-b border-emerald-100 dark:border-emerald-500/10">
         {[
-          { id: "all-activity", label: "Tất cả hoạt động" },
-          { id: "coins", label: "Lịch sử tích lũy xu" },
-          { id: "redeem", label: "Giao dịch đổi quà" },
+          { id: "all-activity", label: t("tabAllActivity") },
+          { id: "coins", label: t("tabCoins") },
+          { id: "redeem", label: t("tabRedeem") },
         ].map((tab) => (
           <button
             key={tab.id}

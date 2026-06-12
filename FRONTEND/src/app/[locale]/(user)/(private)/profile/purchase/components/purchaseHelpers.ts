@@ -90,60 +90,46 @@ export const statusToTab: Record<string, string> = {
   cancelled: "cancelled",
 };
 
-export const normalizeTransaction = (tx: any, source: string) => {
-  if (source === "transaction") {
-    return {
-      id: `transaction-${tx.id}`,
-      public_id: tx.public_id || tx.publicId,
-      status:
-        tx.status === "accepted"
-          ? "pending"
-          : tx.status === "rejected"
-            ? "cancel"
-            : tx.status,
-      status_label:
-        statusLabels[
-          tx.status === "accepted"
-            ? "pending"
-            : tx.status === "rejected"
-              ? "cancel"
-              : tx.status
-        ] || tx.status,
-      item_snapshot: tx.item_snapshot || tx.itemSnapshot,
-      quantity: tx.quantity,
-      total_price: tx.total_price || tx.totalPrice,
-      created_at: tx.created_at || tx.createdAt,
-      shipping_info: tx.shipping_info || tx.shippingInfo || null,
-    };
-  } else {
-    const orderCode = tx.orderCode || tx.order_code;
-    const toAddress = tx.toAddress || tx.to_address;
-    const toName = tx.toName || tx.to_name;
-    const toPhone = tx.toPhone || tx.to_phone;
-    const codAmount = tx.codAmount ?? tx.cod_amount;
-    const weight = tx.weight;
-    const totalAmount = tx.totalAmount ?? tx.total_amount;
+export const normalizeTransaction = (tx: any, linkedShipping?: any) => {
+  const seller = tx.seller;
+  const rawItemSnapshot = tx.item_snapshot || tx.itemSnapshot || {};
+  
+  const item_snapshot = {
+    id: rawItemSnapshot.id || tx.itemId,
+    public_id: rawItemSnapshot.public_id || rawItemSnapshot.publicId || (rawItemSnapshot.id ? rawItemSnapshot.id.substring(0, 8).toUpperCase() : ""),
+    name: rawItemSnapshot.name || tx.name || "Sản phẩm",
+    price: rawItemSnapshot.price || tx.totalPrice || tx.total_price || 0,
+    description: rawItemSnapshot.description || "",
+    creator: {
+      id: rawItemSnapshot.creator?.id || seller?.id,
+      username: rawItemSnapshot.creator?.username || seller?.username,
+      full_name: seller?.profile?.fullName || seller?.username || rawItemSnapshot.creator?.username || "Không xác định"
+    },
+    image_url: tx.item?.images?.[0] || rawItemSnapshot.image_url || rawItemSnapshot.imageUrl || "/placeholder-image.jpg"
+  };
+
+  if (linkedShipping) {
+    const orderCode = linkedShipping.orderCode || linkedShipping.order_code;
+    const toAddress = linkedShipping.toAddress || linkedShipping.to_address;
+    const toName = linkedShipping.toName || linkedShipping.to_name;
+    const toPhone = linkedShipping.toPhone || linkedShipping.to_phone;
+    const codAmount = linkedShipping.codAmount ?? linkedShipping.cod_amount;
+    const weight = linkedShipping.weight;
+    const totalAmount = linkedShipping.totalAmount ?? linkedShipping.total_amount;
     const createdDate =
-      tx.createdDate || tx.created_date || tx.created_at || tx.createdAt;
+      linkedShipping.createdDate || linkedShipping.created_date || linkedShipping.created_at || linkedShipping.createdAt;
 
     return {
-      id: `shipping-${tx.id}`,
-      public_id: orderCode,
-      status: tx.status,
-      status_label: statusLabels[tx.status] || tx.status,
-      item_snapshot: {
-        name: "Đơn hàng vận chuyển",
-        price: totalAmount,
-        creator: { full_name: "Không xác định" },
-        public_id: orderCode,
-        description: `Địa chỉ giao hàng: ${toAddress}`,
-        image_url: "/placeholder-image.jpg",
-      },
-      quantity: 1,
-      total_price: totalAmount,
-      created_at: createdDate,
+      id: tx.id,
+      public_id: tx.public_id || tx.publicId || (tx.id ? tx.id.substring(0, 8).toUpperCase() : ""),
+      status: linkedShipping.status,
+      status_label: statusLabels[linkedShipping.status] || linkedShipping.status,
+      item_snapshot,
+      quantity: tx.quantity || 1,
+      total_price: tx.total_price || tx.totalPrice || 0,
+      created_at: tx.created_at || tx.createdAt,
       shipping_info: {
-        carrier: "Không xác định",
+        carrier: "GHN",
         tracking_number: orderCode,
         estimated_delivery: createdDate,
         to_name: toName,
@@ -154,4 +140,25 @@ export const normalizeTransaction = (tx: any, source: string) => {
       },
     };
   }
+
+  // Pure transaction (no shipping order yet or non-shippable)
+  const mappedStatus =
+    tx.status === "accepted"
+      ? "pending"
+      : tx.status === "rejected"
+        ? "cancel"
+        : tx.status;
+
+  return {
+    id: tx.id,
+    public_id: tx.public_id || tx.publicId || (tx.id ? tx.id.substring(0, 8).toUpperCase() : ""),
+    status: mappedStatus,
+    status_label: statusLabels[mappedStatus] || mappedStatus,
+    item_snapshot,
+    quantity: tx.quantity || 1,
+    total_price: tx.total_price || tx.totalPrice || 0,
+    created_at: tx.created_at || tx.createdAt,
+    shipping_info: null,
+  };
 };
+

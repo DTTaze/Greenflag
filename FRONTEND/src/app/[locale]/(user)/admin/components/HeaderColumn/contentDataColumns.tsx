@@ -168,6 +168,7 @@ export const productColumns = [
     },
   },
   { field: "price", headerName: "Giá (VNĐ)", width: 120 },
+  { field: "stock", headerName: "Tồn kho", width: 120 },
   {
     field: "productStatus",
     headerName: "Tình trạng sản phẩm",

@@ -22,18 +22,22 @@ function AddressFormDialog({
     handleTypeChange,
     handleDefaultChange,
     handleAddOrUpdateAddress,
+    handleCancel,
   } = useAddressForm({ isOpen, onClose, editingAddress, userId, onSuccess });
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 backdrop-blur-xs p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 backdrop-blur-xs p-4"
+      onMouseDown={(e) => e.stopPropagation()}
+    >
       <div className="w-full max-w-lg transform rounded-3xl border border-emerald-200/60 bg-white p-6 shadow-2xl transition-all dark:border-emerald-500/15 dark:bg-zinc-950">
         <h4 className="mb-5 text-xl font-bold text-zinc-900 dark:text-zinc-100">
           {editingAddress ? "Cập nhật địa chỉ" : "Thêm địa chỉ mới"}
         </h4>
-        {isLoading && <p className="text-zinc-500 dark:text-zinc-400 text-sm mb-3">Đang tải...</p>}
         {errorMessage && <p className="mb-4 text-sm text-rose-500 dark:text-rose-450">{errorMessage}</p>}
+        
         <div className="mb-4 grid grid-cols-2 gap-4">
           <InputField
             id="fullName"
@@ -52,6 +56,7 @@ function AddressFormDialog({
             error={errors.phoneNumber}
           />
         </div>
+        
         <div className="mb-4">
           <label
             htmlFor="province"
@@ -81,6 +86,7 @@ function AddressFormDialog({
             <p className="text-xs text-rose-500 mt-1">{errors.province}</p>
           )}
         </div>
+        
         <div className="mb-4">
           <label
             htmlFor="district"
@@ -107,6 +113,7 @@ function AddressFormDialog({
             <p className="text-xs text-rose-500 mt-1">{errors.district}</p>
           )}
         </div>
+        
         <div className="mb-4">
           <label htmlFor="ward" className="mb-2 block text-xs font-bold tracking-wider text-zinc-500 dark:text-zinc-400 uppercase">
             Phường/Xã
@@ -128,6 +135,7 @@ function AddressFormDialog({
           </select>
           {errors.ward && <p className="text-xs text-rose-500 mt-1">{errors.ward}</p>}
         </div>
+        
         <InputField
           id="specificAddress"
           label="Địa chỉ cụ thể"
@@ -136,6 +144,7 @@ function AddressFormDialog({
           onChange={handleInputChange}
           error={errors.specificAddress}
         />
+        
         <div className="mb-4">
           <label className="mb-2 block text-xs font-bold tracking-wider text-zinc-500 dark:text-zinc-400 uppercase">
             Loại địa chỉ
@@ -167,26 +176,36 @@ function AddressFormDialog({
             </button>
           </div>
         </div>
+        
         <div className="mb-5 flex items-center">
           <input
             type="checkbox"
             id="isDefault"
-            checked={newAddress.isDefault}
+            checked={!!newAddress.isDefault}
             onChange={handleDefaultChange}
-            className="mr-2.5 h-5 w-5 rounded border-emerald-200 text-emerald-600 focus:ring-emerald-500/30 focus:ring-offset-0 dark:border-emerald-500/20 dark:bg-zinc-900"
+            className="mr-2.5 h-5 w-5 rounded border-emerald-200 text-emerald-600 focus:ring-emerald-500/30 focus:ring-offset-0 dark:border-emerald-500/20 dark:bg-zinc-900 cursor-pointer"
           />
-          <label htmlFor="isDefault" className="text-sm font-medium text-zinc-700 dark:text-zinc-300 cursor-pointer">
+          <label htmlFor="isDefault" className="text-sm font-medium text-zinc-700 dark:text-zinc-300 cursor-pointer select-none">
             Đặt làm địa chỉ mặc định
           </label>
         </div>
+        
         <div className="flex justify-end space-x-2">
-          <Button text="Trở lại" onClick={onClose} padding="15px" />
+          <Button text="Trở lại" onClick={handleCancel} padding="15px" />
           <Button
-            text={editingAddress ? "Cập nhật" : "Hoàn thành"}
             onClick={handleAddOrUpdateAddress}
             padding="15px"
             disabled={isLoading}
-          />
+          >
+            {isLoading ? (
+              <span className="flex items-center gap-2">
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                {editingAddress ? "Đang lưu..." : "Đang xử lý..."}
+              </span>
+            ) : (
+              editingAddress ? "Cập nhật" : "Hoàn thành"
+            )}
+          </Button>
         </div>
       </div>
     </div>

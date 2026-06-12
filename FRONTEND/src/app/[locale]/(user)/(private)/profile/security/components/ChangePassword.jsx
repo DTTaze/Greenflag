@@ -20,16 +20,24 @@ function ChangePassword() {
     switch (name) {
       case "currentPassword":
         if (!value) error = tAuth("passwordRequired");
-        else if (value.length < 6) error = tAuth("passwordRequired");
         break;
       case "newPassword":
-        if (!value) error = tAuth("passwordRequired");
-        else if (value.length < 6) error = tAuth("passwordRequired");
-        else if (!/[A-Z]/.test(value)) error = t("passwordUppercaseRequired");
-        else if (!/[0-9]/.test(value)) error = t("passwordNumberRequired");
+        if (!value) {
+          error = tAuth("passwordRequired");
+        } else if (value.length < 8) {
+          error = tAuth("passwordCriteriaText");
+        } else if (!/[A-Z]/.test(value)) {
+          error = tAuth("passwordRequireUppercase");
+        } else if (!/[a-z]/.test(value)) {
+          error = tAuth("passwordRequireLowercase");
+        } else if (!/[0-9]/.test(value)) {
+          error = tAuth("passwordRequireDigit");
+        } else if (!/[^A-Za-z0-9]/.test(value)) {
+          error = tAuth("passwordRequireSpecial");
+        }
         break;
       case "confirmPassword":
-        if (!value) error = tAuth("passwordRequired");
+        if (!value) error = tAuth("confirmPasswordRequired");
         else if (value !== formData.newPassword)
           error = tAuth("passwordsDoNotMatch");
         break;
@@ -78,7 +86,9 @@ function ChangePassword() {
 
   return (
     <div className="transform overflow-hidden rounded-3xl border border-emerald-200/60 bg-white p-6 shadow-xl transition-all duration-300 dark:border-emerald-500/15 dark:bg-zinc-950">
-      <h4 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">{t("changePasswordTitle")}</h4>
+      <h4 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+        {t("changePasswordTitle")}
+      </h4>
       <hr className="my-4 border-emerald-100 dark:border-emerald-500/10" />
 
       <form className="space-y-4" onSubmit={handleSubmit}>

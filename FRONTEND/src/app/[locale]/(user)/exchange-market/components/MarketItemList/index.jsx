@@ -54,6 +54,9 @@ function MarketItemList({
                 <TableHead className="h-auto px-6 py-4.5 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400">
                   {t("list.thPrice")}
                 </TableHead>
+                <TableHead className="h-auto px-6 py-4.5 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+                  {t("list.thStock")}
+                </TableHead>
                 {marketView === "my_items" && (
                   <TableHead className="h-auto px-6 py-4.5 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400">
                     {t("list.thStatus")}
@@ -106,6 +109,11 @@ function MarketItemList({
                     <div className="flex items-center text-sm font-bold text-amber-500">
                       {item.price}
                       <Coins className="ml-1 h-4 w-4" />
+                    </div>
+                  </TableCell>
+                  <TableCell className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-slate-650 dark:text-slate-355 text-xs font-medium">
+                      {item.stock}
                     </div>
                   </TableCell>
                   {marketView === "my_items" && (

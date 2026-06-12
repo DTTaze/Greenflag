@@ -35,6 +35,10 @@ export class Product extends AuditWithTimezone {
   @Column({ type: 'integer' })
   price: number;
 
+  @Column({ type: 'integer', default: 1 })
+  stock: number;
+
+
   @Column({
     type: 'varchar',
   })

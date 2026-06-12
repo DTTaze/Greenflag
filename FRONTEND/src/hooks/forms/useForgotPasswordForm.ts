@@ -28,7 +28,34 @@ const getResetPasswordSchema = (t: any) =>
         .string()
         .min(6, t("otpInvalid") || "OTP must be exactly 6 characters.")
         .max(6, t("otpInvalid") || "OTP must be exactly 6 characters."),
-      newPassword: z.string().min(8, t("passwordRequired")),
+      newPassword: z
+        .string()
+        .min(1, t("passwordRequired"))
+        .min(
+          8,
+          t("passwordCriteriaText") ||
+            "Mật khẩu phải chứa ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, chữ số và ký tự đặc biệt.",
+        )
+        .regex(
+          /[A-Z]/,
+          t("passwordRequireUppercase") ||
+            "Mật khẩu phải chứa ít nhất 1 chữ cái in hoa (A-Z).",
+        )
+        .regex(
+          /[a-z]/,
+          t("passwordRequireLowercase") ||
+            "Mật khẩu phải chứa ít nhất 1 chữ cái viết thường (a-z).",
+        )
+        .regex(
+          /[0-9]/,
+          t("passwordRequireDigit") ||
+            "Mật khẩu phải chứa ít nhất 1 chữ số (0-9).",
+        )
+        .regex(
+          /[^A-Za-z0-9]/,
+          t("passwordRequireSpecial") ||
+            "Mật khẩu phải chứa ít nhất 1 ký tự đặc biệt.",
+        ),
       confirmNewPassword: z.string().min(1, t("confirmPasswordRequired")),
     })
     .refine((data) => data.newPassword === data.confirmNewPassword, {

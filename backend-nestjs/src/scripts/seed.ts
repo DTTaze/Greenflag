@@ -701,6 +701,7 @@ async function bootstrap() {
         description:
           'Mình dư 3 chậu đất nung cỡ trung không xài đến. Có trầy xước nhẹ nhưng không nứt vỡ.',
         price: 500,
+        stock: 3,
         category: PRODUCT_CATEGORY.PLANTS,
         productStatus: PRODUCT_CONDITION.USED,
         postStatus: PRODUCT_POST_STATUS.PUBLIC,
@@ -714,6 +715,7 @@ async function bootstrap() {
         description:
           'Tự vẽ họa tiết lá xanh bảo vệ môi trường, vải dày dặn giặt thoải mái không phai màu.',
         price: 1500,
+        stock: 10,
         category: PRODUCT_CATEGORY.HANDICRAFT,
         productStatus: PRODUCT_CONDITION.NEW,
         postStatus: PRODUCT_POST_STATUS.PUBLIC,

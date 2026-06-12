@@ -112,8 +112,13 @@ export default function MyPostsPage() {
 
   const handleSaveDraftOnly = async () => {
     if (!editingPost) return;
-    if (!editContent.trim()) {
-      toast.error(t("emptyContentError"));
+    const trimmed = editContent.trim();
+    if (trimmed.length < 10) {
+      toast.error(t("contentMinLength"));
+      return;
+    }
+    if (trimmed.length > 5000) {
+      toast.error(t("contentMaxLength"));
       return;
     }
 
@@ -136,8 +141,13 @@ export default function MyPostsPage() {
 
   const handlePublishDraft = async () => {
     if (!editingPost) return;
-    if (!editContent.trim()) {
-      toast.error(t("emptyContentError"));
+    const trimmed = editContent.trim();
+    if (trimmed.length < 10) {
+      toast.error(t("contentMinLength"));
+      return;
+    }
+    if (trimmed.length > 5000) {
+      toast.error(t("contentMaxLength"));
       return;
     }
 
@@ -176,7 +186,15 @@ export default function MyPostsPage() {
   const handleAddTag = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && tagInput.trim()) {
       e.preventDefault();
+      if (editTags.length >= 5) {
+        toast.warning(t("tagMaxCount"));
+        return;
+      }
       const newTag = tagInput.trim().replace(/#/g, "");
+      if (newTag.length > 50) {
+        toast.warning(t("tagMaxLength"));
+        return;
+      }
       if (newTag && !editTags.includes(newTag)) {
         setEditTags([...editTags, newTag]);
       }
@@ -193,7 +211,7 @@ export default function MyPostsPage() {
       <ForumHeader
         title={t("myPosts")}
         subtitle={t("myHistoryDesc")}
-        userCoins={userInfo?.coins || 0}
+        userCoins={userInfo?.coins.amount || 0}
         loading={isUserLoading}
       />
 
@@ -506,7 +524,7 @@ export default function MyPostsPage() {
               </button>
               <button
                 type="button"
-                disabled={isSaving}
+                disabled={isSaving || editContent.trim().length < 10 || editContent.trim().length > 5000}
                 onClick={handleSaveDraftOnly}
                 className="cursor-pointer rounded-lg border border-[#2F9E44] px-4 py-2 text-sm font-semibold text-[#2F9E44] transition-colors hover:bg-emerald-50 disabled:opacity-50 dark:hover:bg-emerald-950/25"
               >
@@ -514,7 +532,7 @@ export default function MyPostsPage() {
               </button>
               <button
                 type="button"
-                disabled={isSaving}
+                disabled={isSaving || editContent.trim().length < 10 || editContent.trim().length > 5000}
                 onClick={handlePublishDraft}
                 className="flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#2F9E44] px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-[#1F6F2E] disabled:opacity-50"
               >

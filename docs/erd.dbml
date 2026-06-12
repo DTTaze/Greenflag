@@ -129,6 +129,7 @@ Table products {
   name varchar(255) [not null]
   description text
   price int [not null]
+  stock int [not null, default: 1]
   category varchar(255) [not null]
   product_status varchar(255) [not null, default: 'new']
   post_status varchar(255) [not null, default: 'pending']

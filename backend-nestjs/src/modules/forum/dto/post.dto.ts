@@ -42,13 +42,28 @@ export class CreatePostDTO {
   @IsOptional()
   @Transform(({ value, obj }) => {
     const rawTags = value ?? obj['tags[]'] ?? obj['tags'];
+    let tagsArr: any[] = [];
     if (typeof rawTags === 'string') {
-      return [rawTags];
+      tagsArr = [rawTags];
+    } else if (Array.isArray(rawTags)) {
+      tagsArr = rawTags;
+    } else {
+      return undefined;
     }
-    if (Array.isArray(rawTags)) {
-      return rawTags;
-    }
-    return undefined;
+
+    return tagsArr
+      .filter((t) => typeof t === 'string')
+      .map((t) => {
+        const clean = t.replace(/#/g, '').trim().replace(/\s+/g, ' ');
+        if (clean.length > 0) {
+          const formatted =
+            clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+          return formatted.slice(0, 50);
+        }
+        return '';
+      })
+      .filter((t) => t.length > 0)
+      .slice(0, 5);
   })
   @IsArray()
   @IsString({ each: true })
@@ -119,6 +134,31 @@ export class UpdatePostDTO {
 
   @ApiPropertyOptional({ example: ['Đạo ôn', 'Kỹ thuật'] })
   @IsOptional()
+  @Transform(({ value, obj }) => {
+    const rawTags = value ?? obj['tags[]'] ?? obj['tags'];
+    let tagsArr: any[] = [];
+    if (typeof rawTags === 'string') {
+      tagsArr = [rawTags];
+    } else if (Array.isArray(rawTags)) {
+      tagsArr = rawTags;
+    } else {
+      return undefined;
+    }
+
+    return tagsArr
+      .filter((t) => typeof t === 'string')
+      .map((t) => {
+        const clean = t.replace(/#/g, '').trim().replace(/\s+/g, ' ');
+        if (clean.length > 0) {
+          const formatted =
+            clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+          return formatted.slice(0, 50);
+        }
+        return '';
+      })
+      .filter((t) => t.length > 0)
+      .slice(0, 5);
+  })
   @IsArray()
   @IsString({ each: true })
   @ArrayMaxSize(5)

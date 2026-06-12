@@ -61,7 +61,7 @@ export class PostService implements OnModuleInit {
 
   onModuleInit() {
     const groqApiKey = this.configService.get<string>(ENV_KEY.GROQ_API_KEY);
-    const groqModel = this.configService.get<string>(ENV_KEY.GROQ_MODEL_NAME);
+   const groqModel = this.configService.get<string>(ENV_KEY.GROQ_MODEL_NAME);
 
     if (groqApiKey && groqApiKey.trim() !== '') {
       this.chatModel = new ChatGroq({
@@ -77,6 +77,7 @@ export class PostService implements OnModuleInit {
   }
 
   async aiEnhanceContent(content: string) {
+    
     if (!this.chatModel) {
       return {
         enhancedContent: content,
@@ -95,7 +96,7 @@ Your tasks:
    - CONTEXT IS ENVIRONMENTAL PROTECTION & SUSTAINABILITY (Bảo vệ môi trường & Phát triển bền vững). Do not discuss unrelated topics.
    - DO NOT answer questions or provide official recommendations.
    - KEEP IT SHORT (maximum 2-3 sentences).
-4. Suggest 3-5 relevant tags. 
+4. Suggest 3-5 relevant tags. Each tag MUST be strictly shorter than 50 characters.
    - TAG FORMAT RULE: Output tags as natural Vietnamese phrases with spaces, capitalized first letter, NO '#' symbol. Example: ["Sống xanh", "Tái chế", "Trồng cây", "Giảm rác nhựa"].
 5. Categorize strictly into ONE of these: ['Hỏi đáp', 'Kinh nghiệm', 'Thảo luận chung'].
 
@@ -111,6 +112,7 @@ Output STRICTLY as a JSON object:
         { role: 'system', content: systemPrompt },
         { role: 'user', content: content },
       ]);
+      console.log('🚀 ~ PostService ~ aiEnhanceContent ~ response:', response);
 
       const rawOutput = response.content as string;
       const cleanJson = rawOutput.replace(/```json|```/g, '').trim();
@@ -120,7 +122,8 @@ Output STRICTLY as a JSON object:
       // BỘ LỌC CODE: Chuẩn hóa mảng hashtags thành tiếng Việt tự nhiên
       if (parsedData.hashtags && Array.isArray(parsedData.hashtags)) {
         parsedData.hashtags = parsedData.hashtags
-          .map((tag: string) => {
+          .map((tag: any) => {
+            if (typeof tag !== 'string') return '';
             // Xóa mọi ký tự # thừa thãi và khoảng trắng đầu/cuối, chuẩn hóa khoảng trắng giữa các từ
             const cleanString = tag
               .replace(/#/g, '')
@@ -128,14 +131,15 @@ Output STRICTLY as a JSON object:
               .replace(/\s+/g, ' ');
             if (cleanString.length > 0) {
               // Viết hoa chữ cái đầu tiên cho đẹp tự nhiên (VD: "tái chế" -> "Tái chế")
-              return (
+              const formatted =
                 cleanString.charAt(0).toUpperCase() +
-                cleanString.slice(1).toLowerCase()
-              );
+                cleanString.slice(1).toLowerCase();
+              return formatted.slice(0, 50); // Hard truncate to 50 characters to comply with DTO
             }
             return '';
           })
-          .filter((t: string) => t.length > 0);
+          .filter((t: string) => t.length > 0)
+          .slice(0, 5); // Limit to maximum 5 tags to comply with DTO
       }
 
       return parsedData;

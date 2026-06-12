@@ -1,8 +1,9 @@
 import { nanoid } from 'nanoid';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { EVENT_STATUS } from '@shared/enums';
 
 import { CloudinaryService } from '@modules/cloudinary/services/cloudinary.service';
 
@@ -52,8 +53,17 @@ export class EventService extends BaseCRUDService<Event> {
     return generateSuccessResult(mapped);
   }
 
-  async getAllEvents(withDeleted = false): Promise<OperationResult<any[]>> {
+  async getAllEvents(
+    withDeleted = false,
+    status?: string,
+  ): Promise<OperationResult<any[]>> {
+    const whereCondition: any = {};
+    if (status === 'active') {
+      whereCondition.status = In([EVENT_STATUS.UPCOMING, EVENT_STATUS.ONGOING]);
+    }
+
     const events = await this.eventRepository.find({
+      where: whereCondition,
       relations: ['creator'],
       order: { createdAt: 'DESC' },
       withDeleted,

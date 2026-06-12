@@ -36,9 +36,10 @@ export class EventController {
   @Get('informations')
   async getAllEvents(
     @Query('showDeleted') showDeleted?: string,
+    @Query('status') status?: string,
   ): Promise<HttpResponse> {
     const withDeleted = showDeleted === 'true';
-    return this.eventService.getAllEvents(withDeleted);
+    return this.eventService.getAllEvents(withDeleted, status);
   }
 
   @Get('signed')

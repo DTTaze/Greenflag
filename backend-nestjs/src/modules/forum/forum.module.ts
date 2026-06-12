@@ -8,6 +8,7 @@ import { AdminForumController } from './controllers/admin-forum.controller';
 import { ForumController } from './controllers/forum.controller';
 import { ModerationCron } from './cron/moderation.cron';
 import { PostExpirationCron } from './cron/post-expiration.cron';
+import { Event } from '@modules/event/entities/event.entity';
 import { CommentVote } from './entities/comment-vote.entity';
 import { Comment } from './entities/comment.entity';
 import { PostVote } from './entities/post-vote.entity';
@@ -20,7 +21,7 @@ import { PostService } from './services/post.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Post, Comment, PostVote, CommentVote]),
+    TypeOrmModule.forFeature([Post, Comment, PostVote, CommentVote, Event]),
     UserModule,
     SystemConfigModule,
   ],

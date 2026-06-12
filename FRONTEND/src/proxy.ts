@@ -12,6 +12,7 @@ export const PROTECTED_ROUTES = [
   "/partner",
   "/missions",
   "/exchange-market",
+  "/setup-password",
 ];
 
 function stripLocalePrefix(
@@ -108,6 +109,37 @@ export async function proxy(req: NextRequest) {
   if (isProtectedRoute(pathname, locales) && !hasValidToken) {
     const loginUrl = new URL(`/${currentLocale}/login`, req.url);
     return NextResponse.redirect(loginUrl);
+  }
+
+  // Force users requiring password setup to /setup-password
+  if (hasValidToken && payload?.requirePasswordSetup) {
+    if (cleanPath !== "/setup-password") {
+      const setupPasswordUrl = new URL(
+        `/${currentLocale}/setup-password`,
+        req.url,
+      );
+      return NextResponse.redirect(setupPasswordUrl);
+    }
+    return createMiddleware(routing)(req);
+  }
+
+  // Block users who do NOT need password setup from accessing /setup-password
+  if (
+    hasValidToken &&
+    !payload?.requirePasswordSetup &&
+    cleanPath === "/setup-password"
+  ) {
+    let dashboardUrlPath = "/user/account";
+    if (userRole === "admin") {
+      dashboardUrlPath = "/admin";
+    } else if (userRole === "partner") {
+      dashboardUrlPath = "/partner";
+    }
+    const dashboardUrl = new URL(
+      `/${currentLocale}${dashboardUrlPath}`,
+      req.url,
+    );
+    return NextResponse.redirect(dashboardUrl);
   }
 
   if (isPublicRoute(pathname, locales) && hasValidToken) {

@@ -52,6 +52,7 @@ import {
   RegisterDTO,
   ResendEmailDTO,
   ResetPasswordDTO,
+  SetupPasswordDTO,
   VerifyOtpDTO,
 } from './auth.dto';
 
@@ -335,6 +336,7 @@ export class AuthService {
         streak: user.profile?.streak || 0,
         lastCompletedTask: user.profile?.lastCompletedTask || null,
         avatarUrl: user.avatarUrl,
+        requirePasswordSetup: !user.password,
       });
 
       return {
@@ -622,6 +624,7 @@ export class AuthService {
       streak: newUser.profile?.streak || 0,
       lastCompletedTask: newUser.profile?.lastCompletedTask || null,
       avatarUrl: newUser.avatarUrl,
+      requirePasswordSetup: !newUser.password,
     });
 
     return {
@@ -629,6 +632,7 @@ export class AuthService {
       data: {
         accessToken,
         user: extractUserPublicInfo(newUser),
+        requirePasswordSetup: !newUser.password,
       },
     };
   }
@@ -666,6 +670,7 @@ export class AuthService {
       streak: foundUser.profile?.streak || 0,
       lastCompletedTask: foundUser.profile?.lastCompletedTask || null,
       avatarUrl: foundUser.avatarUrl,
+      requirePasswordSetup: !foundUser.password,
     });
 
     return {
@@ -673,6 +678,7 @@ export class AuthService {
       data: {
         accessToken,
         user: extractUserPublicInfo(foundUser),
+        requirePasswordSetup: !foundUser.password,
       },
     };
   }
@@ -713,6 +719,7 @@ export class AuthService {
         streak: foundUser.profile?.streak || 0,
         lastCompletedTask: foundUser.profile?.lastCompletedTask || null,
         avatarUrl: foundUser.avatarUrl,
+        requirePasswordSetup: !foundUser.password,
       });
 
       return {
@@ -720,6 +727,7 @@ export class AuthService {
         data: {
           accessToken,
           user: extractUserPublicInfo(foundUser),
+          requirePasswordSetup: !foundUser.password,
         },
       };
     }
@@ -851,5 +859,78 @@ export class AuthService {
     return {
       success: true,
     };
+  }
+
+  public async setupPassword(
+    logId: string,
+    userId: string,
+    dto: SetupPasswordDTO,
+  ): Promise<OperationResult<{ accessToken: string; user: UserAuthProfile }>> {
+    try {
+      const foundUserRes = await this.userService.findByID(userId, {
+        relations: { profile: true },
+      });
+
+      if (!foundUserRes.success || !foundUserRes.data) {
+        return generateNotFoundResult(
+          'user not found',
+          ERR_CODE.USER_NOT_FOUND,
+        );
+      }
+      const foundUser = foundUserRes.data;
+
+      if (foundUser.password) {
+        return generateBadRequestResult(
+          'Mật khẩu đã được thiết lập.',
+          ERR_CODE.ALREADY_EXISTS,
+        );
+      }
+
+      const hashedPassword = await bcryptHelper.hash(dto.password, 10);
+
+      const updateRes = await this.userService.updateByID(userId, {
+        password: hashedPassword,
+      });
+
+      if (!updateRes.success) {
+        return OperationResult.fail(
+          updateRes.code || 'update_failed',
+          updateRes.message,
+        );
+      }
+
+      const accessToken = await this.jwtService.signAsync({
+        id: foundUser.id,
+        username: foundUser.username,
+        role: foundUser.role,
+        email: foundUser.email,
+        phoneNumber: foundUser.profile?.phoneNumber || '',
+        streak: foundUser.profile?.streak || 0,
+        lastCompletedTask: foundUser.profile?.lastCompletedTask || null,
+        avatarUrl: foundUser.avatarUrl,
+        requirePasswordSetup: false,
+      });
+
+      return {
+        success: true,
+        data: {
+          accessToken,
+          user: extractUserPublicInfo(foundUser),
+        },
+      };
+    } catch (error) {
+      this.logger.error(error.message, error.stack);
+
+      this.auditService.emitLog(
+        new ErrorLog({
+          logId: logId,
+          message: error.message,
+          userId,
+          action: APP_ACTION.CHANGE_PASSWORD,
+        }),
+      );
+
+      return generateInternalServerResult();
+    }
   }
 }

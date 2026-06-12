@@ -7,6 +7,7 @@ import {
   RegisterPayload,
   ResendEmailPayload,
   ResetPasswordPayload,
+  SetupPasswordPayload,
   VerifyOtpPayload,
 } from "@/src/types/auth/auth.payload";
 import { AuthResponse } from "@/src/types/auth/auth.response";
@@ -58,3 +59,28 @@ export const changePassword = async (
 export const whoAmI = async (): Promise<ApiResponse<UserType>> => {
   return axiosClient.get("/auth/whoami");
 };
+
+export const getSocialLoginUrl = async (
+  provider: string,
+): Promise<ApiResponse<{ url: string }>> => {
+  return axiosClient.get(`/auth/login/social`, {
+    params: { provider },
+  });
+};
+
+export const socialLoginCallback = async (
+  provider: string,
+  code: string,
+): Promise<ApiResponse<AuthResponse>> => {
+  return axiosClient.get(`/auth/login/social/callback`, {
+    params: { provider, code },
+  });
+};
+
+export const setupPassword = async (
+  payload: SetupPasswordPayload,
+): Promise<ApiResponse<AuthResponse>> => {
+  return axiosClient.post("/auth/setup-password", payload);
+};
+
+

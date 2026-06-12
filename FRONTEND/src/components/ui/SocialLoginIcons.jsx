@@ -1,10 +1,22 @@
 import { useTranslations } from "next-intl";
 
+import { getSocialLoginUrl } from "@/src/services/auth";
+
 const SocialLoginIcons = () => {
   const t = useTranslations("auth");
 
-  const handleGoogleLogin = () => {
-    window.location.href = `/api/auth/login/google`;
+  const handleGoogleLogin = async () => {
+    try {
+      const res = await getSocialLoginUrl("GOOGLE");
+      if (res && res.success && res.data?.url) {
+        window.location.href = res.data.url;
+      } else {
+        alert("Không thể khởi tạo đăng nhập Google. Vui lòng thử lại sau.");
+      }
+    } catch (error) {
+      console.error("Lỗi đăng nhập Google:", error);
+      alert("Đã xảy ra lỗi khi kết nối với máy chủ.");
+    }
   };
 
   return (

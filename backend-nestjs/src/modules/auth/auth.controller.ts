@@ -28,6 +28,7 @@ import {
   RegisterDTO,
   ResendEmailDTO,
   ResetPasswordDTO,
+  SetupPasswordDTO,
   SocialAccountDTO,
   VerifyOtpDTO,
 } from './auth.dto';
@@ -183,5 +184,22 @@ export class AuthController {
       success: true,
       data: response.data,
     };
+  }
+
+  @ApiOperation({ summary: 'Setup password for social login user' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @UseCallQueue()
+  @ApplyRateLimiting(3)
+  @Post('setup-password')
+  public async setupPassword(
+    @LogId() logId: string,
+    @RequestUser() user: any,
+    @Body() dto: SetupPasswordDTO,
+  ): Promise<HttpResponse> {
+    const validationResult = dto.validate();
+    if (!validationResult.success) return validationResult;
+
+    return this.authService.setupPassword(logId, user.id, dto);
   }
 }

@@ -151,7 +151,18 @@
     "otpResentSuccess": "OTP code resent successfully!",
     "otpResentFailed": "Failed to resend OTP code. Please try again.",
     "otpRequired": "Please enter the OTP code.",
-    "confirmPasswordRequired": "Please confirm your password."
+    "confirmPasswordRequired": "Please confirm your password.",
+    "setupPasswordTitle": "Set up password",
+    "setupPasswordDesc": "Your account does not have a security password. Please set up a password to protect your account and complete your login.",
+    "setupPasswordBtn": "Set up password",
+    "setupPasswordSuccess": "Password set up successfully!",
+    "setupPasswordFailed": "Failed to set up password, please try again.",
+    "passwordSetupRequired": "Please enter a password.",
+    "passwordCriteriaText": "Password must be at least 8 characters, and include uppercase, lowercase, numeric, and special characters.",
+    "passwordRequireUppercase": "Password must contain at least 1 uppercase letter (A-Z).",
+    "passwordRequireLowercase": "Password must contain at least 1 lowercase letter (a-z).",
+    "passwordRequireDigit": "Password must contain at least 1 digit (0-9).",
+    "passwordRequireSpecial": "Password must contain at least 1 special character."
   },
   "user": {
     "profileTitle": "Personal Information",

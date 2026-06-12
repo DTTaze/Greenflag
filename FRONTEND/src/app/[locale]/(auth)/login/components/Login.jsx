@@ -12,7 +12,18 @@ import { Link } from "@/src/i18n/navigation";
 const LoginPage = () => {
   const t = useTranslations("auth");
   const [showPassword, setShowPassword] = useState(false);
-  const { register, handleSubmit, errors, isLoginDisabled } = useLoginForm();
+  const { register, handleSubmit, errors, isLoginDisabled, isSocialLoggingIn } = useLoginForm();
+
+  if (isSocialLoggingIn) {
+    return (
+      <div className="relative flex flex-col items-center justify-center rounded-2xl border border-slate-200/80 bg-white p-12 text-center shadow-xl backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-900/70">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent"></div>
+        <p className="mt-4 text-sm font-semibold text-slate-650 dark:text-zinc-400">
+          Đang xác thực tài khoản Google...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <motion.div

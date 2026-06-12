@@ -230,3 +230,37 @@ export class SocialAccountDTO {
   @IsString()
   session_state?: string;
 }
+
+export class SetupPasswordDTO {
+  @ApiProperty({
+    description: 'The new password of the user',
+  })
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(8)
+  @MaxLength(60)
+  @IsStrongPassword()
+  password: string;
+
+  @ApiProperty({
+    description: 'Confirm the new password of the user',
+  })
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(8)
+  @MaxLength(60)
+  confirmPassword: string;
+
+  public validate(): OperationResult {
+    if (this.password !== this.confirmPassword) {
+      return generateBadRequestResult(
+        'Mật khẩu xác nhận không khớp.',
+        ERR_CODE.PASSWORD_CONFIRMATION_MISMATCH,
+      );
+    }
+    return {
+      success: true,
+    };
+  }
+}
+

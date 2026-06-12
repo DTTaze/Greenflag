@@ -151,7 +151,18 @@
     "otpResentSuccess": "Đã gửi lại mã OTP thành công!",
     "otpResentFailed": "Gửi lại mã OTP thất bại. Vui lòng thử lại.",
     "otpRequired": "Vui lòng nhập mã OTP.",
-    "confirmPasswordRequired": "Vui lòng xác nhận mật khẩu."
+    "confirmPasswordRequired": "Vui lòng xác nhận mật khẩu.",
+    "setupPasswordTitle": "Thiết lập mật khẩu",
+    "setupPasswordDesc": "Tài khoản của bạn chưa có mật khẩu bảo mật. Vui lòng thiết lập mật khẩu để bảo vệ tài khoản và hoàn tất đăng nhập.",
+    "setupPasswordBtn": "Thiết lập mật khẩu",
+    "setupPasswordSuccess": "Thiết lập mật khẩu thành công!",
+    "setupPasswordFailed": "Thiết lập mật khẩu thất bại, vui lòng thử lại.",
+    "passwordSetupRequired": "Vui lòng nhập mật khẩu.",
+    "passwordCriteriaText": "Mật khẩu phải chứa ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, chữ số và ký tự đặc biệt.",
+    "passwordRequireUppercase": "Mật khẩu phải chứa ít nhất 1 chữ cái in hoa (A-Z).",
+    "passwordRequireLowercase": "Mật khẩu phải chứa ít nhất 1 chữ cái viết thường (a-z).",
+    "passwordRequireDigit": "Mật khẩu phải chứa ít nhất 1 chữ số (0-9).",
+    "passwordRequireSpecial": "Mật khẩu phải chứa ít nhất 1 ký tự đặc biệt."
   },
   "user": {
     "profileTitle": "Thông tin cá nhân",

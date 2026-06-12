@@ -1108,6 +1108,7 @@
       "thProduct": "Sản phẩm",
       "thCategory": "Danh mục",
       "thPrice": "Giá",
+      "thStock": "Tồn kho",
       "thStatus": "Trạng thái",
       "thSeller": "Người bán",
       "thDate": "Ngày đăng",
@@ -1125,6 +1126,7 @@
     "detailsModal": {
       "title": "Chi tiết sản phẩm",
       "priceLabel": "Giá đổi:",
+      "stockLabel": "Số lượng còn lại:",
       "statusLabel": "Trạng thái:",
       "sellerLabel": "Người bán:",
       "dateLabel": "Ngày đăng:",

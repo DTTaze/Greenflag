@@ -98,6 +98,14 @@ export class DeliveryOrderService extends BaseCRUDService<DeliveryOrder> {
     const provider = this.shippingFactoryService.getProvider(account.carrier);
 
     const payload: StandardShippingPayload = {
+      senderAddress: shipmentData.from_name ? {
+        name: shipmentData.from_name,
+        phone: shipmentData.from_phone,
+        address: shipmentData.from_address,
+        wardName: shipmentData.from_ward_name || '',
+        districtName: shipmentData.from_district_name || '',
+        provinceName: shipmentData.from_province_name || '',
+      } : undefined,
       receiverAddress: {
         name: shipmentData.to_name,
         phone: shipmentData.to_phone,

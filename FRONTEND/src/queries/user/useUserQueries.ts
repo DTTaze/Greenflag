@@ -8,6 +8,9 @@ import {
   adminRearrangeRanksHandler,
   adminUpdateCoinHandler,
   adminUpdateUserHandler,
+  adminCreateUserHandler,
+  adminRestoreUserHandler,
+  adminHardDeleteUserHandler,
   updateAvatarHandler,
   updateProfileHandler,
 } from "@/src/services/user/userHandlers";
@@ -191,6 +194,39 @@ export const useAdminDecreaseCoinMutation = () => {
       adminDecreaseCoinHandler(id, payload),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: [QueryKeysUser.COIN, id] });
+    },
+  });
+};
+
+export const useAdminCreateUserMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: any) => adminCreateUserHandler(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [QueryKeysUser.ADMIN_USERS] });
+    },
+  });
+};
+
+export const useAdminRestoreUserMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => adminRestoreUserHandler(id),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: [QueryKeysUser.ADMIN_USERS] });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeysUser.ADMIN_USERS, id],
+      });
+    },
+  });
+};
+
+export const useAdminHardDeleteUserMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => adminHardDeleteUserHandler(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [QueryKeysUser.ADMIN_USERS] });
     },
   });
 };

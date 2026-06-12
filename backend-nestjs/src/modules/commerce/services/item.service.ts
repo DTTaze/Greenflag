@@ -55,11 +55,10 @@ export class ItemService extends BaseCRUDService<Item> {
     await queryRunner.startTransaction();
 
     try {
-      // 1. Lock and retrieve Item
+      // 1. Lock and retrieve Item (without relations to avoid outer join FOR UPDATE locking error)
       const item = await queryRunner.manager.findOne(Item, {
         where: { id: itemId },
         lock: { mode: 'pessimistic_write' },
-        relations: { creator: true },
       });
 
       if (!item) {
@@ -69,6 +68,12 @@ export class ItemService extends BaseCRUDService<Item> {
           ERR_CODE.ITEM_NOT_FOUND,
         );
       }
+
+      // Load creator relation separately without lock
+      item.creator = (await queryRunner.manager.findOne(Item, {
+        where: { id: itemId },
+        relations: { creator: true },
+      }))?.creator;
 
       if (item.status !== ITEM_STATUS.AVAILABLE) {
         await queryRunner.rollbackTransaction();
@@ -84,6 +89,35 @@ export class ItemService extends BaseCRUDService<Item> {
           'Insufficient stock',
           ERR_CODE.BAD_REQUEST,
         );
+      }
+
+      // Check daily purchase limit if purchaseLimitPerDay is set and valid
+      if (item.purchaseLimitPerDay && item.purchaseLimitPerDay > 0) {
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+
+        const todayPurchased = await queryRunner.manager
+          .createQueryBuilder(Transaction, 'tx')
+          .select('SUM(tx.quantity)', 'sum')
+          .where('tx.buyerId = :userId', { userId })
+          .andWhere('tx.itemId = :itemId', { itemId })
+          .andWhere('tx.status NOT IN (:...excludeStatuses)', {
+            excludeStatuses: [
+              TRANSACTION_STATUS.CANCELLED,
+              TRANSACTION_STATUS.REJECTED,
+            ],
+          })
+          .andWhere('tx.createdAt >= :startOfToday', { startOfToday })
+          .getRawOne();
+
+        const currentPurchasedCount = parseInt(todayPurchased?.sum || '0', 10);
+        if (currentPurchasedCount + quantity > item.purchaseLimitPerDay) {
+          await queryRunner.rollbackTransaction();
+          return generateBadRequestResult(
+            `You have exceeded the daily purchase limit of ${item.purchaseLimitPerDay} items for this product. You have already purchased ${currentPurchasedCount} items today.`,
+            ERR_CODE.EXCEEDED_DAILY_LIMIT,
+          );
+        }
       }
 
       // 2. Lock and retrieve buyer's Coin

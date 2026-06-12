@@ -1,15 +1,17 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Star, Truck, X } from "lucide-react";
+import { Check, Star, Truck, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { forwardRef, useEffect, useState } from "react";
 
+import AddressFormDialog from "@/src/app/[locale]/(user)/(private)/user/address/components/AddressFormDialog";
 import { useAuthStore } from "@/src/store/auth/authStore";
-import { getReceiverInfoByUserId } from "@/src/utils/api";
+import { formatCleanAddress, getReceiverInfoByUserId } from "@/src/utils/api";
 
-const ShippingInfoModal = forwardRef(({ isOpen, onClose, onSelect }, ref) => {
+const ShippingInfoModal = forwardRef(({ isOpen, onClose, onSelect, selectedId }, ref) => {
   const t = useTranslations("exchangeMarket");
   const [shippingOptions, setShippingOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isAddressFormOpen, setIsAddressFormOpen] = useState(false);
   const { user } = useAuthStore();
 
   useEffect(() => {
@@ -75,46 +77,90 @@ const ShippingInfoModal = forwardRef(({ isOpen, onClose, onSelect }, ref) => {
                   <div className="h-24 rounded-lg border border-emerald-200/50 bg-slate-50/50 dark:border-emerald-500/10 dark:bg-slate-900/30"></div>
                 </div>
               ) : shippingOptions.length === 0 ? (
-                <p className="py-6 text-center text-sm text-slate-400">
-                  {t("shipping.emptySaved")}
-                </p>
+                <div className="py-6 text-center">
+                  <p className="text-sm text-slate-400 mb-4">
+                    {t("shipping.emptySaved") || "Chưa có địa chỉ nào được lưu."}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setIsAddressFormOpen(true)}
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 px-4 py-2 text-sm font-bold text-white transition duration-200 active:scale-[0.98] shadow-md shadow-emerald-950/20 cursor-pointer"
+                  >
+                    + Thêm địa chỉ mới
+                  </button>
+                </div>
               ) : (
                 <div className="space-y-3">
-                  {shippingOptions.map((option) => (
-                    <button
-                      key={option.id}
-                      onClick={() => handleSelect(option)}
-                      className="w-full rounded-xl border border-emerald-200/50 bg-white p-4 text-left transition duration-200 hover:border-emerald-450 hover:bg-emerald-50/10 dark:border-emerald-500/15 dark:bg-slate-950/40 dark:hover:border-emerald-500/25 dark:hover:bg-slate-900/60"
-                    >
-                      <div className="flex items-center justify-between">
-                        <p className="font-semibold text-slate-850 dark:text-white">
-                          {option.to_name}
+                  {shippingOptions.map((option) => {
+                    const isSelected = option.id === selectedId;
+                    const cleanStreetAddress = formatCleanAddress(
+                      option.to_address,
+                      option.to_ward_name,
+                      option.to_district_name,
+                      option.to_province_name
+                    );
+                    const accountType = option.account_type?.toLowerCase() || option.accountType?.toLowerCase();
+
+                    return (
+                      <button
+                        key={option.id}
+                        onClick={() => handleSelect(option)}
+                        className={`w-full relative rounded-xl border p-4 text-left transition duration-200 cursor-pointer ${
+                          isSelected
+                            ? "border-emerald-600 bg-emerald-50/50 dark:border-emerald-500 dark:bg-emerald-900/10"
+                            : "bg-white border-gray-200 hover:border-emerald-500/40 hover:bg-emerald-50/10 dark:bg-zinc-900 dark:border-zinc-800 dark:hover:bg-emerald-950/10"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <p className="font-semibold text-slate-800 dark:text-white">
+                            {option.to_name}
+                          </p>
+                          <div className="flex items-center gap-1.5">
+                            {isSelected && (
+                              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-white text-xs font-bold shadow-sm shadow-emerald-950/20">
+                                <Check className="h-3 w-3" />
+                              </span>
+                            )}
+                            {option.is_default && (
+                              <span className="flex items-center gap-0.5 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+                                <Star className="h-2.5 w-2.5 fill-current text-amber-700 dark:text-amber-400" />
+                                {t("shipping.defaultBadge")}
+                              </span>
+                            )}
+                            {accountType && (
+                              <span
+                                className={`rounded-full px-2 py-0.5 text-[10px] font-bold capitalize ${
+                                  accountType === "home"
+                                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                                    : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                                }`}
+                              >
+                                {accountType === "home" ? "Nhà riêng" : "Văn phòng"}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <p className="mt-2 text-xs leading-relaxed text-slate-650 dark:text-slate-300 font-medium">
+                          {cleanStreetAddress}
                         </p>
-                        {option.is_default && (
-                          <span className="flex items-center gap-1 rounded-full border border-amber-400/20 bg-amber-400/10 px-2 py-0.5 text-[11px] font-medium text-amber-400">
-                            <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                            {t("shipping.defaultBadge")}
-                          </span>
-                        )}
-                      </div>
-                      <p className="mt-2 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
-                        {option.to_address}
-                      </p>
-                      <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-                        {option.to_ward_name}, {option.to_district_name},{" "}
-                        {option.to_province_name}
-                      </p>
-                      <p className="mt-2 text-xs font-medium text-emerald-400">
-                        {t("shipping.phonePrefix", { phone: option.to_phone })}
-                      </p>
-                      <p className="mt-1.5 flex items-center gap-1 text-[10px] text-slate-500 capitalize">
-                        <span className="h-1.5 w-1.5 rounded-full bg-slate-600"></span>
-                        {t("shipping.typePrefix", {
-                          type: option.account_type,
-                        })}
-                      </p>
-                    </button>
-                  ))}
+                        <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                          {option.to_ward_name}, {option.to_district_name},{" "}
+                          {option.to_province_name}
+                        </p>
+                        <p className="mt-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                          {t("shipping.phonePrefix", { phone: option.to_phone })}
+                        </p>
+                      </button>
+                    );
+                  })}
+
+                  <button
+                    type="button"
+                    onClick={() => setIsAddressFormOpen(true)}
+                    className="w-full rounded-xl border border-dashed border-emerald-500/35 bg-emerald-50/5 p-4 text-center text-sm font-semibold text-emerald-500 hover:border-emerald-450 hover:bg-emerald-50/10 dark:border-emerald-500/20 dark:bg-slate-950/20 dark:hover:border-emerald-500/30 dark:hover:bg-slate-900/40 transition duration-200 cursor-pointer"
+                  >
+                    + Thêm địa chỉ mới
+                  </button>
                 </div>
               )}
             </div>
@@ -128,6 +174,20 @@ const ShippingInfoModal = forwardRef(({ isOpen, onClose, onSelect }, ref) => {
                 {t("common.cancel")}
               </button>
             </div>
+
+            {/* Address Form Dialog Overlay */}
+            {isAddressFormOpen && (
+              <AddressFormDialog
+                isOpen={isAddressFormOpen}
+                onClose={() => setIsAddressFormOpen(false)}
+                editingAddress={null}
+                userId={user?.id}
+                onSuccess={(savedAddress) => {
+                  setIsAddressFormOpen(false);
+                  handleSelect(savedAddress);
+                }}
+              />
+            )}
           </motion.div>
         </div>
       )}

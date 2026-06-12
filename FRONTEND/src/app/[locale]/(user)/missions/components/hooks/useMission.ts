@@ -192,7 +192,7 @@ export default function useMission() {
         }
       } catch (error) {
         console.error("Task completion error:", error);
-        toast.error("❌ Đã xảy ra lỗi khi hoàn thành nhiệm vụ");
+        throw error;
       } finally {
         setCompletingTask(null);
       }

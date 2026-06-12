@@ -1,6 +1,6 @@
 import { HttpResponse, stringUtils } from 'mvc-common-toolkit';
 
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { User } from '@modules/user/entities/user.entity';
@@ -74,10 +74,14 @@ export class AuthController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Get('whoami')
-  public whoami(@RequestUser() user: User): HttpResponse {
+  public async whoami(@RequestUser() user: User): Promise<HttpResponse> {
+    const fullUser = await this.authService.getWhoAmI(user.id);
+    if (!fullUser) {
+      throw new UnauthorizedException('User not found');
+    }
     return {
       success: true,
-      data: extractUserPublicInfo(user),
+      data: extractUserPublicInfo(fullUser),
     };
   }
 

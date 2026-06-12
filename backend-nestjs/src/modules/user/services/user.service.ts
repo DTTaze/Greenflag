@@ -5,13 +5,16 @@ import { ILike, In, Repository } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
+import { EventEmitter2 } from '@nestjs/event-emitter';
+
 import { CloudinaryService } from '@modules/cloudinary/services/cloudinary.service';
 
 import { CACHE_KEYS } from '@shared/cache-key';
-import { ERR_CODE, INJECTION_TOKEN, getStorageFolder } from '@shared/constants';
-import { ROLE } from '@shared/enums';
+import { ERR_CODE, EVENT_KEYS, INJECTION_TOKEN, getStorageFolder } from '@shared/constants';
+import { ENTITY_STATUS, ROLE } from '@shared/enums';
 import {
   OperationResult,
+  generateBadRequestResult,
   generateConflictResult,
   generateNotFoundResult,
   generateSuccessResult,
@@ -41,6 +44,7 @@ export class UserService extends BaseCRUDService<User> {
     private readonly cloudinaryService: CloudinaryService,
     @Inject(INJECTION_TOKEN.REDIS_SERVICE)
     private readonly cacheService: CacheService,
+    private readonly eventEmitter: EventEmitter2,
   ) {
     super(userRepository);
   }
@@ -98,7 +102,7 @@ export class UserService extends BaseCRUDService<User> {
   }
 
   async createUser(dto: CreateUserDto): Promise<OperationResult<User>> {
-    const { email, password, username, fullName, role } = dto;
+    const { email, password, username, fullName, role, phoneNumber } = dto;
 
     // Check unique email and username
     const existingEmail = await this.userRepository.findOne({
@@ -112,6 +116,16 @@ export class UserService extends BaseCRUDService<User> {
     });
     if (existingUsername) {
       return generateConflictResult('Username already exists');
+    }
+
+    // Check unique phone number if provided
+    if (phoneNumber) {
+      const existingPhone = await this.model.manager.findOne(UserProfile, {
+        where: { phoneNumber },
+      });
+      if (existingPhone) {
+        return generateConflictResult('Phone number already exists');
+      }
     }
 
     // Hash password
@@ -143,6 +157,7 @@ export class UserService extends BaseCRUDService<User> {
         const profile = transactionalEntityManager.create(UserProfile, {
           userId: createdUser.id,
           fullName,
+          phoneNumber,
           streak: 0,
         });
         await transactionalEntityManager.save(UserProfile, profile);
@@ -236,6 +251,42 @@ export class UserService extends BaseCRUDService<User> {
       user.role = dto.role;
     }
 
+    if ('status' in dto && dto.status) {
+      user.status = dto.status;
+    }
+
+    if ('coinAdjustment' in dto && dto.coinAdjustment !== undefined) {
+      const adjustment = Number(dto.coinAdjustment);
+      if (adjustment !== 0) {
+        if (!user.coin) {
+          user.coin = this.userRepository.manager.create(Coin, {
+            amount: 0,
+            userId: user.id,
+          });
+        }
+
+        const newAmount = user.coin.amount + adjustment;
+        if (newAmount < 0) {
+          return generateBadRequestResult('Số EcoCoins giảm vượt quá số lượng xu hiện có của người dùng');
+        }
+
+        user.coin.amount = newAmount;
+        await this.userRepository.manager.save(Coin, user.coin);
+
+        // Emit coin received / adjusted event
+        try {
+          const reason = (dto as any).coinAdjustmentReason || 'Điều chỉnh từ quản trị viên';
+          this.eventEmitter.emit(EVENT_KEYS.NOTIFICATION_COIN_RECEIVED, {
+            userId: user.id,
+            amount: adjustment,
+            reason: reason,
+          });
+        } catch (err) {
+          // Fallback if needed
+        }
+      }
+    }
+
     await this.userRepository.save(user);
 
     // Update profile fields
@@ -270,6 +321,55 @@ export class UserService extends BaseCRUDService<User> {
         userId: user.id,
       });
       await transactionalEntityManager.softDelete(User, user.id);
+    });
+
+    return generateSuccessResult(undefined);
+  }
+
+  async restoreUser(id: string): Promise<OperationResult<User>> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      withDeleted: true,
+    });
+    if (!user) {
+      return generateNotFoundResult('User not found', ERR_CODE.USER_NOT_FOUND);
+    }
+
+    await this.model.manager.transaction(async (transactionalEntityManager) => {
+      await transactionalEntityManager.restore(Rank, { userId: user.id });
+      await transactionalEntityManager.restore(Coin, { userId: user.id });
+      await transactionalEntityManager.restore(UserProfile, {
+        userId: user.id,
+      });
+      await transactionalEntityManager.restore(UserSocialAccount, {
+        userId: user.id,
+      });
+      await transactionalEntityManager.restore(User, user.id);
+    });
+
+    const restoredUser = await this.getUserByID(id);
+    return restoredUser;
+  }
+
+  async hardDeleteUser(id: string): Promise<OperationResult<void>> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      withDeleted: true,
+    });
+    if (!user) {
+      return generateNotFoundResult('User not found', ERR_CODE.USER_NOT_FOUND);
+    }
+
+    await this.model.manager.transaction(async (transactionalEntityManager) => {
+      await transactionalEntityManager.delete(Rank, { userId: user.id });
+      await transactionalEntityManager.delete(Coin, { userId: user.id });
+      await transactionalEntityManager.delete(UserProfile, {
+        userId: user.id,
+      });
+      await transactionalEntityManager.delete(UserSocialAccount, {
+        userId: user.id,
+      });
+      await transactionalEntityManager.delete(User, user.id);
     });
 
     return generateSuccessResult(undefined);

@@ -367,11 +367,10 @@ export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
     try {
       const result = await this.taskRepository.manager.transaction(
         async (manager) => {
-          // 1. Lock and find TaskUser
+          // 1. Lock and find TaskUser (without relations to avoid outer join FOR UPDATE locking error)
           const taskUser = await manager.findOne(TaskUser, {
             where: { id: taskUserId },
             lock: { mode: 'pessimistic_write' },
-            relations: { task: true },
           });
 
           if (!taskUser) {
@@ -380,6 +379,11 @@ export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
               ERR_CODE.TASK_USER_NOT_FOUND,
             );
           }
+
+          // Fetch task relation separately
+          taskUser.task = await manager.findOne(Task, {
+            where: { id: taskUser.taskId },
+          });
 
           if (!taskUser.task) {
             return generateNotFoundResult(

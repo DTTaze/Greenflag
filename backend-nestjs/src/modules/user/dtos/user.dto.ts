@@ -14,7 +14,7 @@ import {
   SanitizeInput,
   TrimAndLowercase,
 } from '@shared/decorators/sanitize-input.decorator';
-import { ROLE } from '@shared/enums';
+import { ENTITY_STATUS, ROLE } from '@shared/enums';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'user@example.com' })
@@ -49,6 +49,15 @@ export class CreateUserDto {
   @IsOptional()
   @IsEnum(ROLE, { message: 'Role không hợp lệ' })
   role?: ROLE;
+
+  @ApiPropertyOptional({ example: '0987654321' })
+  @IsOptional()
+  @IsString()
+  @Matches(/(84|0[3|5|7|8|9])+([0-9]{8})\b/, {
+    message: 'Số điện thoại không hợp lệ',
+  })
+  @SanitizeInput()
+  phoneNumber?: string;
 }
 
 export class UpdateUserProfileDto {
@@ -89,4 +98,18 @@ export class AdminUpdateUserDto extends UpdateUserProfileDto {
   @IsOptional()
   @IsEnum(ROLE, { message: 'Role không hợp lệ' })
   role?: ROLE;
+
+  @ApiPropertyOptional({ enum: ENTITY_STATUS, example: ENTITY_STATUS.ACTIVE })
+  @IsOptional()
+  @IsEnum(ENTITY_STATUS, { message: 'Trạng thái không hợp lệ' })
+  status?: ENTITY_STATUS;
+
+  @ApiPropertyOptional({ example: 10 })
+  @IsOptional()
+  coinAdjustment?: number;
+
+  @ApiPropertyOptional({ example: 'Thưởng sự kiện' })
+  @IsOptional()
+  @IsString({ message: 'Lý do phải là chuỗi' })
+  coinAdjustmentReason?: string;
 }

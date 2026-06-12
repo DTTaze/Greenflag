@@ -778,7 +778,10 @@ async function bootstrap() {
       name: 'Kho Giao Hàng Hỏa Tốc Partner',
       userId: partnerUser.id,
       carrier: CARRIER_TYPE.GHN,
-      apiConfig: { token: 'sample-ghn-token-123', shop_id: '196506' },
+      apiConfig: {
+        token: process.env.GHN_TOKEN || 'c3f24415-29b9-11f0-9b81-222185cb68c8',
+        shop_id: process.env.GHN_SHOP_ID || '196506',
+      },
       isDefault: true,
     });
     const savedCarrier = await queryRunner.manager.save(

@@ -88,6 +88,7 @@ export const ERR_CODE = {
   CARRIER_CONFIG_INVALID: 'carrier_config_invalid',
   ITEM_ALREADY_SOLD: 'item_already_sold',
   NOTIFICATION_NOT_FOUND: 'notification_not_found',
+  EXCEEDED_DAILY_LIMIT: 'exceeded_daily_limit',
 };
 
 export const APP_ACTION = {

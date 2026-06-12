@@ -7,6 +7,9 @@ import {
   useAdminDeleteUserMutation,
   useAdminUpdateUserMutation,
   useAdminUsersQuery,
+  useAdminCreateUserMutation,
+  useAdminRestoreUserMutation,
+  useAdminHardDeleteUserMutation,
 } from "@/src/queries/user/useUserQueries";
 import { AdminUpdateUserPayload, AdminUserDTO } from "@/src/types/admin";
 
@@ -14,6 +17,7 @@ import DataTable, { DataTableColumn } from "../components/DataTable";
 import UserActionModal from "./components/UserActionModal";
 import UserDetailDrawer from "./components/UserDetailDrawer";
 import UserEditModal from "./components/UserEditModal";
+import UserCreateModal from "./components/UserCreateModal";
 
 export default function UserManagementPage() {
   const t = useTranslations("admin.users");
@@ -21,11 +25,13 @@ export default function UserManagementPage() {
 
   const [selectedUser, setSelectedUser] = useState<AdminUserDTO | null>(null);
   const [actionType, setActionType] = useState<
-    "lock" | "unlock" | "delete" | null
+    "lock" | "unlock" | "delete" | "restore" | "hard-delete" | null
   >(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isUpdatingUser, setIsUpdatingUser] = useState(false);
+  const [isSavingUser, setIsSavingUser] = useState(false);
   const [flashMessage, setFlashMessage] = useState<string | null>(null);
   const [requestError, setRequestError] = useState<string | null>(null);
   const [showDeleted, setShowDeleted] = useState(false);
@@ -33,6 +39,9 @@ export default function UserManagementPage() {
   const { data, isLoading } = useAdminUsersQuery(showDeleted);
   const { mutate: deleteUser } = useAdminDeleteUserMutation();
   const { mutate: updateUser } = useAdminUpdateUserMutation();
+  const { mutate: createUser } = useAdminCreateUserMutation();
+  const { mutate: restoreUser } = useAdminRestoreUserMutation();
+  const { mutate: hardDeleteUser } = useAdminHardDeleteUserMutation();
 
   const users = (data || []) as AdminUserDTO[];
 
@@ -95,14 +104,50 @@ export default function UserManagementPage() {
     setActionType("delete");
   };
 
+  const handleRestoreUser = (user: AdminUserDTO) => {
+    setSelectedUser(user);
+    setActionType("restore");
+  };
+
+  const handleHardDeleteUser = (user: AdminUserDTO) => {
+    setSelectedUser(user);
+    setActionType("hard-delete");
+  };
+
   const handleActionConfirm = async (
-    type: "lock" | "unlock" | "delete",
+    type: "lock" | "unlock" | "delete" | "restore" | "hard-delete",
     _reason?: string,
   ) => {
     if (!selectedUser) return;
 
     if (type === "delete") {
       deleteUser(selectedUser.id, {
+        onSuccess: () => {
+          setFlashMessage(t("deleteSuccess"));
+          setRequestError(null);
+          setSelectedUser(null);
+          setActionType(null);
+        },
+        onError: () => {
+          setFlashMessage(null);
+          setRequestError(t("actionFailed"));
+        },
+      });
+    } else if (type === "restore") {
+      restoreUser(selectedUser.id, {
+        onSuccess: () => {
+          setFlashMessage(t("restoreSuccess") || "Khôi phục tài khoản thành công");
+          setRequestError(null);
+          setSelectedUser(null);
+          setActionType(null);
+        },
+        onError: () => {
+          setFlashMessage(null);
+          setRequestError(t("actionFailed"));
+        },
+      });
+    } else if (type === "hard-delete") {
+      hardDeleteUser(selectedUser.id, {
         onSuccess: () => {
           setFlashMessage(t("deleteSuccess"));
           setRequestError(null);
@@ -136,15 +181,35 @@ export default function UserManagementPage() {
           setSelectedUser(null);
           setIsEditOpen(false);
         },
-        onError: () => {
+        onError: (err: any) => {
           setFlashMessage(null);
-          setRequestError(t("updateFailed"));
+          const errMsg = err?.response?.data?.message || err?.message || t("updateFailed");
+          setRequestError(Array.isArray(errMsg) ? errMsg.join(", ") : errMsg);
         },
         onSettled: () => {
           setIsUpdatingUser(false);
         },
       },
     );
+  };
+
+  const handleCreateUser = (payload: any) => {
+    setIsSavingUser(true);
+    createUser(payload, {
+      onSuccess: () => {
+        setFlashMessage(t("createSuccess") || "Tạo người dùng thành công");
+        setRequestError(null);
+        setIsCreateOpen(false);
+      },
+      onError: (err: any) => {
+        setFlashMessage(null);
+        const errMsg = err?.response?.data?.message || err?.message || t("createFailed") || "Tạo người dùng thất bại";
+        setRequestError(Array.isArray(errMsg) ? errMsg.join(", ") : errMsg);
+      },
+      onSettled: () => {
+        setIsSavingUser(false);
+      },
+    });
   };
 
   const handleActionCancel = () => {
@@ -179,9 +244,12 @@ export default function UserManagementPage() {
         title={t("title")}
         columns={columns}
         rows={users}
+        onAdd={() => setIsCreateOpen(true)}
         onView={handleViewUser}
         onEdit={handleEditUser}
         onDelete={handleDeleteUser}
+        onRestore={handleRestoreUser}
+        onHardDelete={handleHardDeleteUser}
         loading={isLoading}
         enableSelection={false}
         showDeleted={showDeleted}
@@ -197,6 +265,16 @@ export default function UserManagementPage() {
             setIsDrawerOpen(false);
             setSelectedUser(null);
           }}
+        />
+      )}
+
+      {/* User Create Modal */}
+      {isCreateOpen && (
+        <UserCreateModal
+          isOpen={isCreateOpen}
+          onClose={() => setIsCreateOpen(false)}
+          onSave={handleCreateUser}
+          isSaving={isSavingUser}
         />
       )}
 

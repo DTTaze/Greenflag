@@ -27,9 +27,12 @@ export default function usePurchaseModal({
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [shippingInfo, setShippingInfo] = useState<any>(null);
   const [shippingFee, setShippingFee] = useState<number>(0);
+  const [previewError, setPreviewError] = useState<string | null>(null);
   const [isShippingModalOpen, setIsShippingModalOpen] =
     useState<boolean>(false);
   const [isLoadingShipping, setIsLoadingShipping] = useState<boolean>(false);
+  const [isAddressFormOpen, setIsAddressFormOpen] = useState<boolean>(false);
+  const [editingAddressForModal, setEditingAddressForModal] = useState<any>(null);
   const modalRef = useRef<HTMLDivElement | null>(null);
   const shippingModalRef = useRef<HTMLDivElement | null>(null);
   const { user } = useAuthStore();
@@ -37,7 +40,27 @@ export default function usePurchaseModal({
   const shop_id = 196506;
   const [currentStock, setCurrentStock] = useState<number>(item.stock);
 
-  const fetchShippingFee = async (selectedShipping: any) => {
+  const lastFetchedParams = useRef<{ quantity: number; addressId: string | number } | null>(null);
+  const lastQuantityRef = useRef<number>(quantity);
+  const lastShippingInfoRef = useRef<any>(shippingInfo);
+
+  const fetchShippingFee = async (selectedShipping: any, qty: number = quantity) => {
+    if (!selectedShipping) return;
+
+    const addressId = selectedShipping.id || selectedShipping.to_address;
+    const currentParams = { quantity: qty, addressId };
+
+    // Circuit breaker: check if we already fetched these params
+    if (
+      lastFetchedParams.current &&
+      lastFetchedParams.current.quantity === currentParams.quantity &&
+      lastFetchedParams.current.addressId === currentParams.addressId
+    ) {
+      return;
+    }
+
+    lastFetchedParams.current = currentParams;
+    setIsLoadingShipping(true);
     try {
       const orderData = {
         payment_type_id: 2,
@@ -60,7 +83,7 @@ export default function usePurchaseModal({
         to_ward_name: selectedShipping.to_ward_name,
         to_district_name: selectedShipping.to_district_name,
         to_province_name: selectedShipping.to_province_name,
-        cod_amount: item.price * quantity,
+        cod_amount: item.price * qty,
         content: "Theo New York Times",
         weight: item.weight || 200,
         length: item.length || 15,
@@ -68,7 +91,7 @@ export default function usePurchaseModal({
         height: item.height || 15,
         pick_station_id: 1444,
         deliver_station_id: null,
-        insurance_value: item.price * quantity,
+        insurance_value: item.price * qty,
         service_id: 0,
         service_type_id: 2,
         coupon: null,
@@ -77,7 +100,7 @@ export default function usePurchaseModal({
           {
             name: item.name,
             code: item.id.toString(),
-            quantity: quantity,
+            quantity: qty,
             price: item.price,
             length: item.length || 12,
             width: item.width || 12,
@@ -96,9 +119,15 @@ export default function usePurchaseModal({
         shop_id,
       );
       setShippingFee(feeResponse?.data?.data?.total_fee || 0);
+      setPreviewError(null);
     } catch (error) {
       console.error("Error fetching shipping fee:", error);
       setShippingFee(0);
+      setPreviewError(
+        "Đơn vị vận chuyển tạm thời chưa hỗ trợ tuyến đường này hoặc địa chỉ không hợp lệ."
+      );
+    } finally {
+      setIsLoadingShipping(false);
     }
   };
 
@@ -113,7 +142,7 @@ export default function usePurchaseModal({
               response.data.find((info: any) => info.is_default) ||
               response.data[0];
             setShippingInfo(defaultShipping);
-            await fetchShippingFee(defaultShipping);
+            await fetchShippingFee(defaultShipping, quantity);
           }
         } catch (error) {
           console.error("Error fetching shipping info:", error);
@@ -159,22 +188,49 @@ export default function usePurchaseModal({
       setIsProcessing(false);
       setShippingInfo(null);
       setShippingFee(0);
+      setPreviewError(null);
       setIsShippingModalOpen(false);
+      lastFetchedParams.current = null;
     }
   }, [isOpen]);
 
   useEffect(() => {
     if (shippingInfo && isOpen) {
-      fetchShippingFee(shippingInfo);
+      const isShippingChanged = lastShippingInfoRef.current?.id !== shippingInfo.id;
+      lastShippingInfoRef.current = shippingInfo;
+      lastQuantityRef.current = quantity;
+
+      if (isShippingChanged) {
+        fetchShippingFee(shippingInfo, quantity);
+      } else {
+        const handler = setTimeout(() => {
+          fetchShippingFee(shippingInfo, quantity);
+        }, 400);
+
+        return () => {
+          clearTimeout(handler);
+        };
+      }
     }
-  }, [quantity, shippingInfo]);
+  }, [quantity, shippingInfo, isOpen]);
 
   const totalCost = item.price * quantity;
-  const canPurchase = userCoins >= totalCost && quantity <= currentStock;
-  const maxQuantity = Math.min(
-    Math.floor(userCoins / item.price),
-    currentStock,
-  );
+  const canPurchase =
+    userCoins >= totalCost + shippingFee &&
+    quantity <= currentStock &&
+    !previewError;
+  const maxQuantity = currentStock > 0
+    ? Math.max(
+        1,
+        Math.min(
+          Math.floor(userCoins / item.price),
+          currentStock,
+          item.purchaseLimitPerDay && item.purchaseLimitPerDay > 0
+            ? item.purchaseLimitPerDay
+            : currentStock,
+        )
+      )
+    : 0;
 
   const handleQuantityChange = (e: any) => {
     const value = Math.max(
@@ -214,10 +270,33 @@ export default function usePurchaseModal({
     try {
       setIsLoadingShipping(true);
       setShippingInfo(selectedInfo);
-      await fetchShippingFee(selectedInfo);
       setIsShippingModalOpen(false);
+      await fetchShippingFee(selectedInfo, quantity);
     } catch (error) {
       console.error("Error fetching shipping fee:", error);
+    } finally {
+      setIsLoadingShipping(false);
+    }
+  };
+
+  const handleAddAddress = () => {
+    setEditingAddressForModal(null);
+    setIsAddressFormOpen(true);
+  };
+
+  const handleEditAddress = () => {
+    setEditingAddressForModal(shippingInfo);
+    setIsAddressFormOpen(true);
+  };
+
+  const handleAddressSuccess = async (savedAddress: any) => {
+    try {
+      setIsLoadingShipping(true);
+      setShippingInfo(savedAddress);
+      setIsAddressFormOpen(false);
+      await fetchShippingFee(savedAddress, quantity);
+    } catch (error) {
+      console.error("Error saving address from modal:", error);
     } finally {
       setIsLoadingShipping(false);
     }
@@ -229,6 +308,7 @@ export default function usePurchaseModal({
     isProcessing,
     shippingInfo,
     shippingFee,
+    previewError,
     isShippingModalOpen,
     isLoadingShipping,
     currentStock,
@@ -242,5 +322,12 @@ export default function usePurchaseModal({
     handleChangeShipping,
     handleSelectShipping,
     setIsShippingModalOpen,
+    isAddressFormOpen,
+    setIsAddressFormOpen,
+    editingAddressForModal,
+    handleAddAddress,
+    handleEditAddress,
+    handleAddressSuccess,
+    user,
   };
 }

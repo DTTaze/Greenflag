@@ -114,14 +114,17 @@ export class PurchaseItemDto {
   receiver_information_id?: string;
 
   @IsString()
-  to_name: string;
+  @IsOptional()
+  to_name?: string;
 
   @IsString()
   @Matches(/(84|0[3|5|7|8|9])+([0-9]{8})\b/, {
     message: 'Phone number is invalid',
   })
-  to_phone: string;
+  @IsOptional()
+  to_phone?: string;
 
   @IsString()
-  to_address: string;
+  @IsOptional()
+  to_address?: string;
 }

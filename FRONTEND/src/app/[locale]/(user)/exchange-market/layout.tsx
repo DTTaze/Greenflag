@@ -79,29 +79,29 @@ function ExchangeMarketContent({ children }: { children: React.ReactNode }) {
           )}
 
           {children}
-
-          {selectedItem &&
-            isModalOpen &&
-            React.createElement(
-              PurchaseModal as React.ComponentType<{
-                isOpen: boolean;
-                onClose: () => void;
-                item: unknown;
-                userCoins: number;
-                onConfirm: (quantity: number, shippingInfo: unknown) => void;
-                transactionStatus?: string | null;
-              }>,
-              {
-                isOpen: isModalOpen,
-                onClose: handleCloseModal,
-                item: selectedItem,
-                userCoins: user?.coins?.amount || 0,
-                onConfirm: confirmPurchase,
-                transactionStatus: transactionStatus,
-              },
-            )}
         </section>
       </main>
+
+      {selectedItem &&
+        isModalOpen &&
+        React.createElement(
+          PurchaseModal as React.ComponentType<{
+            isOpen: boolean;
+            onClose: () => void;
+            item: unknown;
+            userCoins: number;
+            onConfirm: (quantity: number, shippingInfo: unknown) => void;
+            transactionStatus?: string | null;
+          }>,
+          {
+            isOpen: isModalOpen,
+            onClose: handleCloseModal,
+            item: selectedItem,
+            userCoins: user?.coins?.amount || 0,
+            onConfirm: confirmPurchase,
+            transactionStatus: transactionStatus,
+          },
+        )}
     </div>
   );
 }

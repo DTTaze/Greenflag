@@ -28,7 +28,7 @@ function Address() {
       setErrorMessage("");
       try {
         const response = await getReceiverInfoByUserId(user.id);
-        if (response.status === 200 && response.data) {
+        if (response && response.data) {
           setAddresses(response.data);
           const defaultAddress = response.data.find((addr) => addr.is_default);
           if (defaultAddress) {

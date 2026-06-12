@@ -160,6 +160,9 @@ export default function usePurchaseModal({
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
+      if (isAddressFormOpen) {
+        return;
+      }
       if (
         modalRef.current &&
         !modalRef.current.contains(event.target as Node) &&
@@ -180,7 +183,7 @@ export default function usePurchaseModal({
       document.removeEventListener("mousedown", handleClickOutside);
       document.body.style.overflow = "auto";
     };
-  }, [isOpen, onClose, isShippingModalOpen]);
+  }, [isOpen, onClose, isShippingModalOpen, isAddressFormOpen]);
 
   useEffect(() => {
     if (!isOpen) {

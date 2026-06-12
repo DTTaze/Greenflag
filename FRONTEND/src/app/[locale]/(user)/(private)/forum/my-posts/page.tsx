@@ -193,7 +193,7 @@ export default function MyPostsPage() {
       <ForumHeader
         title={t("myPosts")}
         subtitle={t("myHistoryDesc")}
-        userCoins={userInfo?.coins || 0}
+        userCoins={userInfo?.coins.amount || 0}
         loading={isUserLoading}
       />
 

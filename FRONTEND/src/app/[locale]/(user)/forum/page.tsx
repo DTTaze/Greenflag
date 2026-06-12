@@ -73,7 +73,7 @@ export default function ForumPage() {
 
   return (
     <div className="mx-auto flex max-w-[800px] flex-col gap-6 pb-20">
-      <ForumHeader userCoins={userInfo?.coins || 0} loading={isUserLoading} />
+      <ForumHeader userCoins={userInfo?.coins?.amount || 0} loading={isUserLoading} />
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         {/* Segmented Control Navigation */}

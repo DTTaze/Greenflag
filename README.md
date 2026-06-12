@@ -388,6 +388,10 @@ Vấn đề được ghi nhận:
 - Hoàn thiện nhiều bề mặt frontend: missions, forum, exchange market, profile, admin dashboard, customer/partner workspace, QR scanner, và chuông thông báo trực quan trên Header.
 - Có Docker Compose cho app và infra; có observability stack phục vụ demo/staging.
 - Có kiểm thử Jest/Supertest cho các nghiệp vụ trọng yếu như transaction refund, vote logic, commerce API và forum API.
+- **Tích hợp cơ chế Xóa mềm (Soft Delete) toàn diện:** Đồng bộ hóa trường `deletedAt` kế thừa mặc định từ thực thể base `AuditWithTimezone` phía backend, chuyển đổi phương thức xóa sang soft-delete đối với User, Event, Task, Item, Product, Post và Comment, đồng thời bổ sung cột Ngày xóa (`deletedAt`) vào file tài liệu [erd.dbml](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/docs/erd.dbml).
+- **Hỗ trợ Toggle trạng thái dữ liệu xóa phía Admin:** Triển khai Switch Toggle "Hiển thị dữ liệu đã xóa" (Admin-only) tùy biến cao cấp trên [DataTable.tsx](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/FRONTEND/src/app/[locale]/(user)/admin/components/DataTable.tsx) và [DataTable.jsx](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/FRONTEND/src/app/[locale]/(user)/admin/components/DataTable.jsx) liên kết tham số query `showDeleted` và render badge trạng thái "Đã xóa" trực quan.
+- **Nâng cấp bảo mật các Biểu mẫu (Form Security):** Loại bỏ hoàn toàn các ô nhập ID thủ công đối với trường `seller_id` và `owner_id` trong [ProductForm.jsx](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/FRONTEND/src/app/[locale]/(user)/admin/content/products/components/ProductForm.jsx) và [ItemForm.jsx](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/FRONTEND/src/app/[locale]/(user)/admin/content/items/components/ItemForm.jsx), tự động inject giá trị từ `useAuthStore` của người dùng hiện hành kèm rào cản kiểm tra session hoạt động.
+- **Tinh chỉnh giao diện & Ánh xạ Enum Maps:** Xây dựng bộ định dạng ngày tháng tiếng Việt dùng chung [formatDate.ts](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/FRONTEND/src/utils/formatDate.ts), ẩn menu danh mục không hợp lệ khỏi sidebar và ánh xạ màu sắc trạng thái giao dịch/nhiệm vụ/sản phẩm tập trung tại [enumMaps.ts](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/FRONTEND/src/constants/enumMaps.ts) đảm bảo chống crash trang.
 
 ### 7.2. Hạn chế
 
@@ -410,3 +414,28 @@ Vấn đề được ghi nhận:
 - Bổ sung chỉ số tác động môi trường như lượng nhựa giảm, CO2 ước tính, số sự kiện xanh đã tham gia.
 - Phát triển mobile/PWA để người dùng check-in, nộp minh chứng và theo dõi nhiệm vụ thuận tiện hơn.
 - Mở rộng hệ sinh thái partner: trường học, doanh nghiệp, tổ chức môi trường, đơn vị tái chế và nhà tài trợ vật phẩm xanh.
+
+## 8. Kiến thức lý thuyết áp dụng (Lessons Learned)
+
+Dự án GreenFlag được phát triển bám sát các nguyên lý và quy trình kỹ nghệ phần mềm chuẩn mực. Chi tiết các chương lý thuyết áp dụng và bài học thu nhận được liên kết trực tiếp tại:
+
+1. **Tổng quan Kỹ nghệ Phần mềm:** [Chương 1 - Tổng quan CNPM](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/docs/lessons/Chuong1_TongQuanCNPM.md)
+   - Tiếp cận phương pháp luận xây dựng phần mềm có cấu trúc, cân đối giữa yêu cầu chất lượng kỹ thuật và kế hoạch quản trị dự án.
+2. **Quy trình Phát triển:** [Chương 2 - Quy trình Phần mềm](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/docs/lessons/Chuong2_QuyTrinhPhanMem.md)
+   - Lựa chọn mô hình quy trình phù hợp nhằm kiểm soát và đảm bảo tiến độ cũng như chất lượng của sản phẩm theo chu kỳ phát triển.
+3. **Vòng đời Phát triển (SDLC):** [Chương 3 - SDLC](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/docs/lessons/Chuong3_SDLC.md)
+   - Thực thi chi tiết các giai đoạn từ khảo sát hiện trạng, thu thập yêu cầu, thiết kế kiến trúc, viết mã nguồn, kiểm thử cho đến vận hành.
+4. **Quản trị Dự án:** [Chương 4 - Quản trị Phần mềm](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/docs/lessons/Chuong4_QuanTriPhanMem.md)
+   - Lập kế hoạch phân bổ nguồn lực, ước lượng độ phức tạp phần mềm và theo dõi tiến độ để tối ưu năng suất làm việc.
+5. **Kỹ nghệ Yêu cầu (Requirements Engineering):** [Chương 5 - Kỹ nghệ Yêu cầu](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/docs/lessons/Chuong5_KyNgheYeuCau.md)
+   - Quy trình phân tích, thu thập, đặc tả và thẩm định các yêu cầu chức năng (FR) và phi chức năng (NFR) tránh nhập nhằng trước khi code.
+6. **Phân tích Hệ thống:** [Chương 6 - Phân tích Phần mềm](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/docs/lessons/Chuong6_PhanTichPhanMem.md)
+   - Xây dựng mô hình ca sử dụng (Use Case Diagram), sơ đồ tuần tự (Sequence) và sơ đồ lớp phân tích biểu diễn hành vi người dùng.
+7. **Thiết kế Hệ thống:** [Chương 7 - Thiết kế Phần mềm](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/docs/lessons/Chuong7_ThietKePhanMem.md)
+   - Thiết kế kiến trúc dạng hướng mô-đun (Modular Architecture) tách biệt rạch ròi giữa các layer giao diện, xử lý nghiệp vụ và truy xuất.
+8. **Thiết kế Cơ sở Dữ liệu:** [Chương 8 - Thiết kế Dữ liệu](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/docs/lessons/Chuong8_ThietKeDuLieu.md)
+   - Các kỹ thuật chuẩn hóa cơ sở dữ liệu quan hệ (1NF, 2NF, 3NF), xây dựng biểu đồ ERD quan hệ thực thể bảo vệ tính toàn vẹn dữ liệu.
+9. **Cài đặt & Kiểm thử:** [Chương 9 - Cài đặt và Kiểm thử Phần mềm](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/docs/lessons/Chuong9_CaiDatVaKiemThuPhanMem.md)
+   - Viết mã nguồn sạch (Clean Code), lập trình kiểm thử (TDD), viết unit test, integration test và kiểm thử biên dịch dự phòng.
+10. **Quy tắc Trình bày:** [Quy tắc Trình bày Báo cáo](file:///d:/CODE%20PLAYGROUND/Projects/Fullstack/TECHSOLVE_2025/docs/lessons/QuyTacTrinhBayBaoCao.md)
+    - Chuẩn hóa định dạng văn bản báo cáo tiến độ và tài liệu đặc tả thiết kế kỹ thuật.

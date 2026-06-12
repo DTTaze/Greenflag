@@ -153,8 +153,8 @@ export default function UserManagementPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
+    <div className="space-y-6">
+      <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100">
           {t("title")}
         </h1>
@@ -164,7 +164,7 @@ export default function UserManagementPage() {
       </div>
 
       {flashMessage && (
-        <div className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-700 dark:bg-emerald-900/10 dark:text-emerald-200">
+        <div className="mb-4 rounded-lg border border-emerald-600 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-zinc-800 dark:bg-emerald-900/10 dark:text-emerald-200">
           {flashMessage}
         </div>
       )}

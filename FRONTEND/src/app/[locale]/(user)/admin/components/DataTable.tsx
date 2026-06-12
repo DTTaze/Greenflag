@@ -181,7 +181,7 @@ export default function DataTable<T extends { id: string | number }>({
               placeholder={t("searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="dark:border-zinc-850 w-full rounded-lg border border-gray-200 bg-transparent py-2 pr-4 pl-9 text-sm transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none dark:bg-zinc-950 dark:text-zinc-200 dark:focus:border-emerald-500"
+              className="dark:border-zinc-850 w-full rounded-lg border border-gray-200 bg-transparent py-2 pr-4 pl-9 text-sm transition-all focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 focus:outline-none dark:bg-zinc-950 dark:text-zinc-200 dark:focus:border-emerald-500"
             />
           </div>
 
@@ -200,9 +200,9 @@ export default function DataTable<T extends { id: string | number }>({
 
       {/* Floating/Contextual Bulk Actions Toolbar */}
       {selectedIds.size > 0 && onBulkDelete && (
-        <div className="flex items-center justify-between border-b border-emerald-100 bg-emerald-50/80 px-6 py-3.5 dark:border-emerald-900/20 dark:bg-emerald-950/20">
+        <div className="flex items-center justify-between border-b border-emerald-600/20 bg-emerald-50/80 px-6 py-3.5 dark:border-zinc-800 dark:bg-emerald-950/20">
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span>
+            <span className="h-2 w-2 animate-ping rounded-full bg-emerald-500"></span>
             <span className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
               {t("selectedCount", { count: selectedIds.size })}
             </span>
@@ -216,7 +216,11 @@ export default function DataTable<T extends { id: string | number }>({
             </button>
             <button
               onClick={() => {
-                if (window.confirm(t("confirmBulkDelete", { count: selectedIds.size }))) {
+                if (
+                  window.confirm(
+                    t("confirmBulkDelete", { count: selectedIds.size }),
+                  )
+                ) {
                   onBulkDelete(Array.from(selectedIds));
                   setSelectedIds(new Set());
                 }
@@ -244,15 +248,20 @@ export default function DataTable<T extends { id: string | number }>({
                         type="checkbox"
                         checked={isAllSelected}
                         onChange={handleSelectAll}
-                        className="sr-only peer"
+                        className="peer sr-only"
                       />
-                      <div className={`h-4 w-4 rounded border flex items-center justify-center transition-all ${
-                        isAllSelected 
-                          ? "bg-emerald-600 border-emerald-600 text-white dark:bg-emerald-500 dark:border-emerald-500" 
-                          : "border-gray-300 bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800"
-                      }`}>
+                      <div
+                        className={`flex h-4 w-4 items-center justify-center rounded border transition-all ${
+                          isAllSelected
+                            ? "border-emerald-600 bg-emerald-600 text-white dark:border-emerald-500 dark:bg-emerald-500"
+                            : "border-gray-300 bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800"
+                        }`}
+                      >
                         {isAllSelected && (
-                          <svg className="h-2.5 w-2.5 fill-current text-white" viewBox="0 0 20 20">
+                          <svg
+                            className="h-2.5 w-2.5 fill-current text-white"
+                            viewBox="0 0 20 20"
+                          >
                             <path d="M0 11l2-2 5 5L18 3l2 2L7 18z" />
                           </svg>
                         )}
@@ -368,7 +377,7 @@ export default function DataTable<T extends { id: string | number }>({
                     {/* Selection checkbox */}
                     {enableSelection && (
                       <td
-                        className="w-4 p-4 selection-cell cursor-pointer"
+                        className="selection-cell w-4 cursor-pointer p-4"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleSelectRow(row.id);
@@ -380,15 +389,20 @@ export default function DataTable<T extends { id: string | number }>({
                               type="checkbox"
                               checked={isSelected}
                               readOnly
-                              className="sr-only peer"
+                              className="peer sr-only"
                             />
-                            <div className={`h-4 w-4 rounded border flex items-center justify-center transition-all ${
-                              isSelected 
-                                ? "bg-emerald-600 border-emerald-600 text-white dark:bg-emerald-500 dark:border-emerald-500" 
-                                : "border-gray-300 bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800"
-                            }`}>
+                            <div
+                              className={`flex h-4 w-4 items-center justify-center rounded border transition-all ${
+                                isSelected
+                                  ? "border-emerald-600 bg-emerald-600 text-white dark:border-emerald-500 dark:bg-emerald-500"
+                                  : "border-gray-300 bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800"
+                              }`}
+                            >
                               {isSelected && (
-                                <svg className="h-2.5 w-2.5 fill-current text-white" viewBox="0 0 20 20">
+                                <svg
+                                  className="h-2.5 w-2.5 fill-current text-white"
+                                  viewBox="0 0 20 20"
+                                >
                                   <path d="M0 11l2-2 5 5L18 3l2 2L7 18z" />
                                 </svg>
                               )}
@@ -498,8 +512,11 @@ export default function DataTable<T extends { id: string | number }>({
 
                     {/* Actions Cell */}
                     {(onView || onEdit || onDelete) && (
-                      <td className="px-6 py-4 text-right actions-cell">
-                        <div className="inline-flex gap-2" onClick={(e) => e.stopPropagation()}>
+                      <td className="actions-cell px-6 py-4 text-right">
+                        <div
+                          className="inline-flex gap-2"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           {onView && (
                             <button
                               onClick={() => onView(row)}

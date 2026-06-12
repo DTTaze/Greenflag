@@ -46,7 +46,7 @@ export default function UserDetailDrawer({
         <div className="relative w-screen max-w-md">
           <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl dark:bg-slate-900">
             {/* Header */}
-            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-emerald-100 bg-white px-4 py-3 dark:border-emerald-500/10 dark:bg-slate-900">
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-emerald-600/20 bg-white px-4 py-3 dark:border-zinc-800/80 dark:bg-slate-900">
               <h2 className="text-lg font-bold text-gray-900 dark:text-slate-100">
                 {t("details")}
               </h2>
@@ -61,13 +61,13 @@ export default function UserDetailDrawer({
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-6">
               {/* User Info Card */}
-              <div className="mb-6 rounded-xl border border-emerald-100 bg-gray-50 p-4 dark:border-emerald-500/10 dark:bg-slate-800/50">
+              <div className="mb-6 rounded-xl border border-emerald-600/20 bg-gray-50 p-4 dark:border-zinc-800/80 dark:bg-slate-800/50">
                 <div className="flex items-start gap-4">
                   <img
-                    src={user.avatarUrl}
-                    alt={user.username}
-                    className="h-16 w-16 rounded-full border-2 border-white shadow-sm dark:border-emerald-500/15"
-                  />
+                     src={user.avatarUrl}
+                     alt={user.username}
+                     className="h-16 w-16 rounded-full border-2 border-white shadow-sm dark:border-zinc-800"
+                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100">
@@ -193,7 +193,7 @@ export default function UserDetailDrawer({
                 <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-slate-100">
                   {t("recentActivity")}
                 </h3>
-                <div className="rounded-lg border border-emerald-100 p-4 dark:border-emerald-500/10">
+                <div className="rounded-lg border border-emerald-600/20 p-4 dark:border-zinc-800/80">
                   <p className="text-center text-gray-500 dark:text-slate-500">
                     {t("noActivityFound")}
                   </p>
@@ -205,11 +205,11 @@ export default function UserDetailDrawer({
             </div>
 
             {/* Footer */}
-            <div className="border-t border-emerald-100 bg-gray-50 px-4 py-3 dark:border-emerald-500/10 dark:bg-slate-800/50">
+            <div className="border-t border-emerald-600/20 bg-gray-50 px-4 py-3 dark:border-zinc-800/80 dark:bg-slate-800/50">
               <div className="flex justify-end gap-3">
                 <button
                   onClick={onClose}
-                  className="border-emerald-250 rounded-lg border px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-emerald-50/20 dark:border-emerald-500/15 dark:text-slate-300 dark:hover:bg-slate-700"
+                  className="rounded-lg border border-emerald-600/20 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-emerald-50/20 dark:border-zinc-800 dark:text-slate-300 dark:hover:bg-slate-700"
                 >
                   Close
                 </button>

@@ -113,7 +113,7 @@ export default function DataTable({
               placeholder={t("searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 bg-transparent py-2 pr-4 pl-9 text-sm transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none dark:border-zinc-850 dark:bg-zinc-950 dark:text-zinc-200 dark:focus:border-emerald-500"
+              className="w-full rounded-lg border border-gray-200 bg-transparent py-2 pr-4 pl-9 text-sm transition-all focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 focus:outline-none dark:border-zinc-850 dark:bg-zinc-950 dark:text-zinc-200 dark:focus:border-emerald-500"
             />
           </div>
 
@@ -132,7 +132,7 @@ export default function DataTable({
 
       {/* Floating/Contextual Bulk Actions Toolbar */}
       {selectedIds.size > 0 && onBulkDelete && (
-        <div className="flex items-center justify-between border-b border-emerald-100 bg-emerald-50/80 px-6 py-3.5 dark:border-emerald-900/20 dark:bg-emerald-950/20">
+        <div className="flex items-center justify-between border-b border-emerald-600/20 bg-emerald-50/80 px-6 py-3.5 dark:border-zinc-800 dark:bg-emerald-950/20">
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span>
             <span className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">

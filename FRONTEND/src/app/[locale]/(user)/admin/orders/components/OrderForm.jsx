@@ -84,9 +84,9 @@ export default function OrderForm({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
-      <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-emerald-200 bg-white p-6 shadow-lg sm:max-w-[700px] dark:border-emerald-500/15 dark:bg-slate-900">
-        <DialogHeader className="mb-4">
-          <DialogTitle className="text-lg font-bold text-gray-900">
+      <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-emerald-600/20 bg-white p-6 md:p-8 shadow-lg sm:max-w-[700px] dark:border-zinc-800 dark:bg-slate-900">
+        <DialogHeader className="mb-6">
+          <DialogTitle className="text-lg font-bold text-gray-900 dark:text-zinc-100">
             {mode === "add" ? "Thêm đơn hàng mới" : "Chỉnh sửa đơn hàng"}
           </DialogTitle>
         </DialogHeader>
@@ -94,29 +94,29 @@ export default function OrderForm({
         <form onSubmit={onSubmit} className="space-y-6">
           {/* Section 1: Order Info */}
           <div className="space-y-4">
-            <h4 className="border-b border-emerald-100 pb-1 text-sm font-semibold text-emerald-700 dark:border-emerald-500/10">
+            <h4 className="border-b border-emerald-600/20 pb-1 text-sm font-semibold text-emerald-700 dark:border-zinc-800/80">
               Thông tin đơn hàng
             </h4>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="order_code">Mã đơn hàng</Label>
                 <Input
                   id="order_code"
                   name="order_code"
                   value={formData.order_code}
                   disabled
-                  className="border-emerald-200/60 bg-gray-50/50 dark:border-emerald-500/15 dark:bg-slate-800/50"
+                  className="border-gray-200 bg-gray-50/50 text-gray-400 cursor-not-allowed dark:border-zinc-800 dark:bg-slate-800/50 dark:text-zinc-500"
                 />
               </div>
 
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="shipping_order_status">Trạng thái</Label>
                 <select
                   id="shipping_order_status"
                   name="shipping_order_status"
                   value={formData.shipping_order_status}
                   onChange={handleChange}
-                  className="h-8 w-full rounded-lg border border-emerald-200 bg-transparent px-2.5 py-1 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-emerald-500/15 dark:bg-slate-800"
+                  className="h-8 w-full rounded-lg border border-emerald-600/20 bg-transparent px-2.5 py-1 text-sm focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600/20 focus:outline-none dark:border-zinc-800 dark:bg-slate-800 dark:focus:border-emerald-500"
                 >
                   <option value="ready_to_pick">Sẵn sàng lấy hàng</option>
                   <option value="picking">Đang lấy hàng</option>
@@ -130,44 +130,44 @@ export default function OrderForm({
             </div>
 
             <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="shipping_fee">Phí vận chuyển</Label>
                 <Input
                   id="shipping_fee"
                   name="shipping_fee"
                   value={formData.shipping_fee}
                   disabled
-                  className="border-emerald-200/60 bg-gray-50/50 dark:border-emerald-500/15 dark:bg-slate-800/50"
+                  className="border-gray-200 bg-gray-50/50 text-gray-400 cursor-not-allowed dark:border-zinc-800 dark:bg-slate-800/50 dark:text-zinc-500"
                 />
               </div>
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="service_fee">Phí dịch vụ</Label>
                 <Input
                   id="service_fee"
                   name="service_fee"
                   value={formData.service_fee}
                   disabled
-                  className="border-emerald-200/60 bg-gray-50/50 dark:border-emerald-500/15 dark:bg-slate-800/50"
+                  className="border-gray-200 bg-gray-50/50 text-gray-400 cursor-not-allowed dark:border-zinc-800 dark:bg-slate-800/50 dark:text-zinc-500"
                 />
               </div>
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="insurance_fee">Phí bảo hiểm</Label>
                 <Input
                   id="insurance_fee"
                   name="insurance_fee"
                   value={formData.insurance_fee}
                   disabled
-                  className="border-emerald-200/60 bg-gray-50/50 dark:border-emerald-500/15 dark:bg-slate-800/50"
+                  className="border-gray-200 bg-gray-50/50 text-gray-400 cursor-not-allowed dark:border-zinc-800 dark:bg-slate-800/50 dark:text-zinc-500"
                 />
               </div>
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="total_fee">Tổng phí</Label>
                 <Input
                   id="total_fee"
                   name="total_fee"
                   value={formData.total_fee}
                   disabled
-                  className="border-emerald-200/60 bg-gray-50/50 dark:border-emerald-500/15 dark:bg-slate-800/50 font-semibold"
+                  className="border-gray-200 bg-gray-50/50 text-gray-400 cursor-not-allowed dark:border-zinc-800 dark:bg-slate-800/50 dark:text-zinc-500 font-semibold"
                 />
               </div>
             </div>
@@ -175,32 +175,32 @@ export default function OrderForm({
 
           {/* Section 2: Buyer Info */}
           <div className="space-y-4">
-            <h4 className="border-b border-emerald-100 pb-1 text-sm font-semibold text-emerald-700 dark:border-emerald-500/10">
+            <h4 className="border-b border-emerald-600/20 pb-1 text-sm font-semibold text-emerald-700 dark:border-zinc-800/80">
               Thông tin người mua
             </h4>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="buyer_name">Tên người mua</Label>
                 <Input
                   id="buyer_name"
                   name="buyer_name"
                   value={formData.buyer_name}
                   disabled
-                  className="border-emerald-200/60 bg-gray-50/50 dark:border-emerald-500/15 dark:bg-slate-800/50"
+                  className="border-gray-200 bg-gray-50/50 text-gray-400 cursor-not-allowed dark:border-zinc-800 dark:bg-slate-800/50 dark:text-zinc-500"
                 />
               </div>
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="buyer_phone">Số điện thoại</Label>
                 <Input
                   id="buyer_phone"
                   name="buyer_phone"
                   value={formData.buyer_phone}
                   disabled
-                  className="border-emerald-200/60 bg-gray-50/50 dark:border-emerald-500/15 dark:bg-slate-800/50"
+                  className="border-gray-200 bg-gray-50/50 text-gray-400 cursor-not-allowed dark:border-zinc-800 dark:bg-slate-800/50 dark:text-zinc-500"
                 />
               </div>
             </div>
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               <Label htmlFor="buyer_address">Địa chỉ người mua</Label>
               <textarea
                 id="buyer_address"
@@ -208,39 +208,39 @@ export default function OrderForm({
                 value={formData.buyer_address}
                 disabled
                 rows={2}
-                className="w-full cursor-not-allowed resize-none rounded-lg border border-emerald-200 bg-gray-50/50 p-2.5 text-sm focus:outline-none dark:border-emerald-500/15 dark:bg-slate-800/50"
+                className="w-full cursor-not-allowed resize-none rounded-lg border border-gray-200 bg-gray-50/50 p-2.5 text-sm text-gray-400 focus:outline-none dark:border-zinc-800 dark:bg-slate-800/50 dark:text-zinc-500"
               />
             </div>
           </div>
 
           {/* Section 3: Seller Info */}
           <div className="space-y-4">
-            <h4 className="border-b border-emerald-100 pb-1 text-sm font-semibold text-emerald-700 dark:border-emerald-500/10">
+            <h4 className="border-b border-emerald-600/20 pb-1 text-sm font-semibold text-emerald-700 dark:border-zinc-800/80">
               Thông tin người bán
             </h4>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="seller_name">Tên người bán</Label>
                 <Input
                   id="seller_name"
                   name="seller_name"
                   value={formData.seller_name}
                   disabled
-                  className="border-emerald-200/60 bg-gray-50/50 dark:border-emerald-500/15 dark:bg-slate-800/50"
+                  className="border-gray-200 bg-gray-50/50 text-gray-400 cursor-not-allowed dark:border-zinc-800 dark:bg-slate-800/50 dark:text-zinc-500"
                 />
               </div>
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="seller_phone">Số điện thoại</Label>
                 <Input
                   id="seller_phone"
                   name="seller_phone"
                   value={formData.seller_phone}
                   disabled
-                  className="border-emerald-200/60 bg-gray-50/50 dark:border-emerald-500/15 dark:bg-slate-800/50"
+                  className="border-gray-200 bg-gray-50/50 text-gray-400 cursor-not-allowed dark:border-zinc-800 dark:bg-slate-800/50 dark:text-zinc-500"
                 />
               </div>
             </div>
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               <Label htmlFor="seller_address">Địa chỉ người bán</Label>
               <textarea
                 id="seller_address"
@@ -248,17 +248,17 @@ export default function OrderForm({
                 value={formData.seller_address}
                 disabled
                 rows={2}
-                className="w-full cursor-not-allowed resize-none rounded-lg border border-emerald-200 bg-gray-50/50 p-2.5 text-sm focus:outline-none dark:border-emerald-500/15 dark:bg-slate-800/50"
+                className="w-full cursor-not-allowed resize-none rounded-lg border border-gray-200 bg-gray-50/50 p-2.5 text-sm text-gray-400 focus:outline-none dark:border-zinc-800 dark:bg-slate-800/50 dark:text-zinc-500"
               />
             </div>
           </div>
 
           {/* Section 4: Notes */}
           <div className="space-y-4">
-            <h4 className="border-b border-emerald-100 pb-1 text-sm font-semibold text-emerald-700 dark:border-emerald-500/10">
+            <h4 className="border-b border-emerald-600/20 pb-1 text-sm font-semibold text-emerald-700 dark:border-zinc-800/80">
               Ghi chú thêm
             </h4>
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               <Label htmlFor="note">Ghi chú</Label>
               <textarea
                 id="note"
@@ -267,12 +267,12 @@ export default function OrderForm({
                 onChange={handleChange}
                 rows={3}
                 placeholder="Ghi chú đơn hàng cho shipper hoặc hệ thống..."
-                className="w-full resize-none rounded-lg border border-emerald-200 bg-transparent p-2.5 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-emerald-500/15 dark:bg-slate-800"
+                className="w-full resize-none rounded-lg border border-emerald-600/20 bg-transparent p-2.5 text-sm focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600/20 focus:outline-none dark:border-zinc-800 dark:bg-slate-800 dark:focus:border-emerald-500"
               />
             </div>
           </div>
 
-          <DialogFooter className="mt-6 border-t border-emerald-100 pt-4 dark:border-emerald-500/10">
+          <DialogFooter className="mt-6 border-t border-emerald-600/20 pt-4 dark:border-zinc-800/80">
             <Button
               type="button"
               variant="outline"

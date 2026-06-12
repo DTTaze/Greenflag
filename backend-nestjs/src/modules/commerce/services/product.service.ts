@@ -109,7 +109,9 @@ export class ProductService extends BaseCRUDService<Product> {
     });
   }
 
-  async findAllProducts(options: { withDeleted?: boolean }): Promise<OperationResult<Product[]>> {
+  async findAllProducts(options: {
+    withDeleted?: boolean;
+  }): Promise<OperationResult<Product[]>> {
     return this.findAll(
       {},
       {

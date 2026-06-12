@@ -123,7 +123,8 @@ export const normalizeTransaction = (tx: any, source: string) => {
     const codAmount = tx.codAmount ?? tx.cod_amount;
     const weight = tx.weight;
     const totalAmount = tx.totalAmount ?? tx.total_amount;
-    const createdDate = tx.createdDate || tx.created_date || tx.created_at || tx.createdAt;
+    const createdDate =
+      tx.createdDate || tx.created_date || tx.created_at || tx.createdAt;
 
     return {
       id: `shipping-${tx.id}`,

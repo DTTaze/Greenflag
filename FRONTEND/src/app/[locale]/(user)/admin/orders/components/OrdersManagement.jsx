@@ -62,8 +62,8 @@ export default function OrdersManagement() {
   };
 
   return (
-    <div className="space-y-4 p-4">
-      <h1 className="text-2xl font-bold text-gray-950">Orders Management</h1>
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold text-gray-950 dark:text-zinc-50">Orders Management</h1>
       <DataTable
         title="Orders"
         columns={ordersColumns}

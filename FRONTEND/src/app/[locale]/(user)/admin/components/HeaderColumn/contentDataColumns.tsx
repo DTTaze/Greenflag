@@ -172,7 +172,9 @@ export const productColumns = [
     headerName: "Tình trạng sản phẩm",
     width: 150,
     render: (value: any, row: any) => {
-      const val = String(row.productStatus || row.product_status || value || "").toUpperCase();
+      const val = String(
+        row.productStatus || row.product_status || value || "",
+      ).toUpperCase();
       let label = row.productStatus || row.product_status || value || "Mới";
       let color =
         "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
@@ -195,7 +197,9 @@ export const productColumns = [
     headerName: "Trạng thái bài đăng",
     width: 150,
     render: (value: any, row: any) => {
-      const val = String(row.postStatus || row.post_status || value || "").toUpperCase();
+      const val = String(
+        row.postStatus || row.post_status || value || "",
+      ).toUpperCase();
       const statusUi = P2P_STATUS_MAP[val] || {
         label: row.postStatus || row.post_status || "Không xác định",
         color: "bg-gray-100 text-gray-500 dark:bg-zinc-800 dark:text-zinc-400",

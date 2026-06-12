@@ -1,6 +1,7 @@
 "use client";
 
 import { RefreshCw, Search, ShieldCheck, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -10,6 +11,7 @@ import ModerationDetail from "./ModerationDetail";
 import ModerationTable from "./ModerationTable";
 
 function ForumModeration() {
+  const t = useTranslations("admin.forum");
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -25,11 +27,11 @@ function ForumModeration() {
         setPosts(res.data.items || []);
       } else {
         setPosts([]);
-        toast.error(res.message || "Không thể tải danh sách bài viết");
+        toast.error(res.message || t("toastLoadError"));
       }
     } catch (error) {
       console.error("Failed to fetch admin forum posts:", error);
-      toast.error("Không thể tải danh sách bài viết từ máy chủ");
+      toast.error(t("toastLoadServerError"));
     } finally {
       setLoading(false);
     }
@@ -45,7 +47,7 @@ function ForumModeration() {
       if (decision === "approved") {
         res = await forumService.approvePost(postId);
       } else {
-        const flaggedReason = window.prompt("Nhập lý do ẩn bài viết (không bắt buộc):");
+        const flaggedReason = window.prompt(t("promptReason"));
         if (flaggedReason === null) return; // User cancelled prompt
         res = await forumService.rejectPost(postId, flaggedReason || undefined);
       }
@@ -53,19 +55,19 @@ function ForumModeration() {
       if (res.success) {
         toast.success(
           decision === "approved"
-            ? "Đã duyệt bài đăng thành công!"
-            : "Đã ẩn bài đăng thành công!",
+            ? t("toastApproveSuccess")
+            : t("toastHideSuccess"),
         );
         fetchPosts(); // Làm mới danh sách
         if (selectedPost?.id === postId) {
           setSelectedPost(null);
         }
       } else {
-        toast.error(res.message || "Thực hiện kiểm duyệt thất bại");
+        toast.error(res.message || t("toastModerateError"));
       }
     } catch (error) {
       console.error("Moderation error:", error);
-      toast.error("Lỗi khi kết nối đến máy chủ để kiểm duyệt");
+      toast.error(t("toastServerConnectionError"));
     }
   };
 
@@ -108,18 +110,17 @@ function ForumModeration() {
               size={26}
               className="text-emerald-600 dark:text-emerald-500"
             />
-            Kiểm duyệt bài viết diễn đàn
+            {t("title")}
           </h1>
           <p className="text-sm text-gray-500 dark:text-zinc-400">
-            Phê duyệt hoặc ẩn các bài viết chia sẻ hoạt động sống xanh, bảo vệ
-            môi trường của thành viên.
+            {t("subtitle")}
           </p>
         </div>
         <button
           onClick={fetchPosts}
           className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-emerald-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 transition-colors hover:bg-gray-50 dark:border-emerald-500/15 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800/80"
         >
-          <RefreshCw size={14} /> Làm mới
+          <RefreshCw size={14} /> {t("refresh")}
         </button>
       </div>
 
@@ -132,7 +133,7 @@ function ForumModeration() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Tìm kiếm tác giả, nội dung..."
+            placeholder={t("searchPlaceholder")}
             className="w-full rounded-lg border border-emerald-200 bg-gray-50/50 py-2 pr-4 pl-9 text-xs focus:ring-2 focus:ring-emerald-600 focus:outline-none dark:border-emerald-500/15 dark:bg-zinc-900 dark:text-white dark:focus:ring-emerald-500"
           />
         </div>
@@ -140,9 +141,9 @@ function ForumModeration() {
         {/* Status filters */}
         <div className="flex items-center gap-2 overflow-x-auto">
           {[
-            { id: "pending", label: "Chờ duyệt" },
-            { id: "approved", label: "Đã duyệt" },
-            { id: "rejected", label: "Đã ẩn" },
+            { id: "pending", label: t("tabPending") },
+            { id: "approved", label: t("tabApproved") },
+            { id: "rejected", label: t("tabRejected") },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -178,12 +179,12 @@ function ForumModeration() {
           <div className="w-full space-y-4 rounded-xl border border-emerald-200/60 bg-white p-5 shadow-sm transition-all duration-300 md:w-2/5 dark:border-emerald-500/15 dark:bg-zinc-950">
             <div className="flex items-center justify-between border-b border-emerald-100 pb-2 dark:border-emerald-500/10">
               <h3 className="text-sm font-bold text-gray-900 dark:text-white">
-                Chi tiết bài viết
+                {t("detailTitle")}
               </h3>
               <button
                 onClick={() => setSelectedPost(null)}
                 className="cursor-pointer rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
-                title="Đóng chi tiết"
+                title={t("closeDetail")}
               >
                 <X size={18} />
               </button>

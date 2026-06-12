@@ -73,9 +73,9 @@ export default function UserActionModal({
         />
 
         {/* Modal */}
-        <div className="relative z-50 w-full max-w-md rounded-xl border border-emerald-200 bg-white shadow-xl dark:border-emerald-500/15 dark:bg-slate-900">
+        <div className="relative z-50 w-full max-w-md rounded-xl border border-emerald-600/20 bg-white shadow-xl dark:border-zinc-800 dark:bg-slate-900">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-emerald-100 px-6 py-4 dark:border-emerald-500/10">
+          <div className="flex items-center justify-between border-b border-emerald-600/20 px-6 py-4 dark:border-zinc-800/80">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400">
                 <AlertTriangle size={20} />
@@ -98,54 +98,52 @@ export default function UserActionModal({
           </div>
 
           {/* Content */}
-          <form onSubmit={handleSubmit} className="p-6">
-            <div className="mb-6">
-              <p className="mb-4 text-gray-600 dark:text-slate-400">
-                {config.confirmText}
-              </p>
+          <form onSubmit={handleSubmit} className="space-y-4 p-6">
+            <p className="text-sm text-gray-600 dark:text-slate-400">
+              {config.confirmText}
+            </p>
 
-              {/* User Info */}
-              <div className="mb-4 rounded-lg border border-emerald-100 bg-gray-50 p-4 dark:border-emerald-500/10 dark:bg-slate-800/50">
-                <div className="flex items-center gap-3">
-                  <img
-                    src={user.avatarUrl}
-                    alt={user.username}
-                    className="h-10 w-10 rounded-full"
-                  />
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-slate-100">
-                      {user.profile?.fullName || user.username}
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-slate-400">
-                      {user.email}
-                    </p>
-                  </div>
+            {/* User Info */}
+            <div className="rounded-lg border border-emerald-600/20 bg-gray-50 p-4 dark:border-zinc-800/80 dark:bg-slate-800/50">
+              <div className="flex items-center gap-3">
+                <img
+                  src={user.avatarUrl}
+                  alt={user.username}
+                  className="h-10 w-10 rounded-full"
+                />
+                <div>
+                  <p className="font-medium text-gray-900 dark:text-slate-100">
+                    {user.profile?.fullName || user.username}
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-slate-400">
+                    {user.email}
+                  </p>
                 </div>
               </div>
-
-              {/* Reason Input (for lock/unlock) */}
-              {actionType === "lock" && (
-                <div className="mb-6">
-                  <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-slate-300">
-                    {t("lockReason")} (Optional)
-                  </label>
-                  <textarea
-                    value={reason}
-                    onChange={(e) => setReason(e.target.value)}
-                    placeholder="Enter reason for locking account..."
-                    className="w-full rounded-lg border border-emerald-200 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500 dark:border-emerald-500/15 dark:bg-slate-800 dark:text-slate-300"
-                    rows={3}
-                  />
-                </div>
-              )}
             </div>
 
+            {/* Reason Input (for lock/unlock) */}
+            {actionType === "lock" && (
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">
+                  {t("lockReason")} (Optional)
+                </label>
+                <textarea
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  placeholder="Enter reason for locking account..."
+                  className="w-full rounded-lg border border-emerald-600/20 px-3 py-2 text-sm focus:border-emerald-600 focus:ring-emerald-600/20 dark:border-zinc-800 dark:bg-slate-800 dark:text-slate-300 dark:focus:border-emerald-500"
+                  rows={3}
+                />
+              </div>
+            )}
+
             {/* Actions */}
-            <div className="flex justify-end gap-3">
+            <div className="flex justify-end gap-3 pt-2">
               <button
                 type="button"
                 onClick={onCancel}
-                className="rounded-lg border border-emerald-200 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:border-emerald-500/15 dark:text-slate-300 dark:hover:bg-slate-700"
+                className="rounded-lg border border-emerald-600/20 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:border-zinc-800 dark:text-slate-300 dark:hover:bg-slate-700"
               >
                 Cancel
               </button>

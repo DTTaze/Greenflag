@@ -56,16 +56,16 @@ export default function RoleForm({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
-      <DialogContent className="rounded-xl border border-emerald-200 bg-white p-6 shadow-lg sm:max-w-[450px] dark:border-emerald-500/15 dark:bg-slate-900">
-        <DialogHeader className="mb-4">
-          <DialogTitle className="text-lg font-bold text-gray-900">
+      <DialogContent className="rounded-xl border border-emerald-600/20 bg-white p-6 md:p-8 shadow-lg sm:max-w-[450px] dark:border-zinc-800 dark:bg-slate-900">
+        <DialogHeader className="mb-6">
+          <DialogTitle className="text-lg font-bold text-gray-900 dark:text-zinc-100">
             {mode === "add" ? "Add New Role" : "Edit Role"}
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div className="space-y-3">
-            <div className="flex flex-col gap-1.5">
+        <form onSubmit={onSubmit} className="space-y-6">
+          <div className="space-y-6">
+            <div className="flex flex-col gap-2">
               <Label htmlFor="name">Tên vai trò</Label>
               <Input
                 id="name"
@@ -77,7 +77,7 @@ export default function RoleForm({
               />
             </div>
 
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               <Label htmlFor="description">Mô tả</Label>
               <Input
                 id="description"

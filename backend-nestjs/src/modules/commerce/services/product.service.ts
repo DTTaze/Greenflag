@@ -74,4 +74,78 @@ export class ProductService extends BaseCRUDService<Product> {
     await this.deleteByID(id);
     return generateSuccessResult(undefined);
   }
+
+  async getProductDetail(id: string): Promise<OperationResult<Product>> {
+    return this.findByID(id, {
+      relations: {
+        seller: {
+          profile: true,
+        },
+      },
+      select: {
+        id: true,
+        sellerId: true,
+        name: true,
+        description: true,
+        price: true,
+        category: true,
+        productStatus: true,
+        postStatus: true,
+        images: true,
+        createdAt: true,
+        updatedAt: true,
+        deletedAt: true,
+        seller: {
+          id: true,
+          email: true,
+          username: true,
+          avatarUrl: true,
+          profile: {
+            id: true,
+            fullName: true,
+          } as any,
+        } as any,
+      } as any,
+    });
+  }
+
+  async findAllProducts(options: {
+    withDeleted?: boolean;
+  }): Promise<OperationResult<Product[]>> {
+    return this.findAll(
+      {},
+      {
+        withDeleted: options.withDeleted,
+        relations: {
+          seller: {
+            profile: true,
+          },
+        },
+        select: {
+          id: true,
+          sellerId: true,
+          name: true,
+          description: true,
+          price: true,
+          category: true,
+          productStatus: true,
+          postStatus: true,
+          images: true,
+          createdAt: true,
+          updatedAt: true,
+          deletedAt: true,
+          seller: {
+            id: true,
+            email: true,
+            username: true,
+            avatarUrl: true,
+            profile: {
+              id: true,
+              fullName: true,
+            } as any,
+          } as any,
+        } as any,
+      },
+    );
+  }
 }

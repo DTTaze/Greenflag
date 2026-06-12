@@ -36,11 +36,11 @@ export default function OrdersManagement() {
   }, []);
 
   const handleEditOrder = (order) => {
-    alert(`Vui lòng liên hệ người tạo đơn hàng: ${order.User.email}`);
+    alert(`Vui lòng liên hệ người tạo đơn hàng: ${order?.User?.email || order?.buyer?.email || order?.seller?.email || "Không xác định"}`);
   };
 
   const handleCancelOrder = async (order) => {
-    alert(`Vui lòng liên hệ người tạo đơn hàng: ${order.User.email}`);
+    alert(`Vui lòng liên hệ người tạo đơn hàng: ${order?.User?.email || order?.buyer?.email || order?.seller?.email || "Không xác định"}`);
   };
 
   const handleSubmitOrder = async (data, mode) => {
@@ -62,8 +62,8 @@ export default function OrdersManagement() {
   };
 
   return (
-    <div className="space-y-4 p-4">
-      <h1 className="text-2xl font-bold text-gray-950">Orders Management</h1>
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold text-gray-950 dark:text-zinc-50">Orders Management</h1>
       <DataTable
         title="Orders"
         columns={ordersColumns}
@@ -71,6 +71,7 @@ export default function OrdersManagement() {
         onAdd={false}
         onEdit={handleEditOrder}
         onDelete={handleCancelOrder}
+        enableSelection={false}
         loading={loading}
       />
       <OrderForm

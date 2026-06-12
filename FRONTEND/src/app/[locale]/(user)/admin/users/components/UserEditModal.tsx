@@ -62,8 +62,8 @@ export default function UserEditModal({
           onClick={onClose}
         />
 
-        <div className="relative z-50 w-full max-w-2xl overflow-hidden rounded-3xl border border-emerald-200 bg-white shadow-xl dark:border-emerald-500/15 dark:bg-slate-900">
-          <div className="border-b border-emerald-100 px-6 py-5 dark:border-emerald-500/10">
+        <div className="relative z-50 w-full max-w-2xl overflow-hidden rounded-3xl border border-emerald-600/20 bg-white shadow-xl dark:border-zinc-800 dark:bg-slate-900">
+          <div className="border-b border-emerald-600/20 px-6 py-5 md:px-8 dark:border-zinc-800/80">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100">
               {t("editProfile")}
             </h3>
@@ -72,14 +72,14 @@ export default function UserEditModal({
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6 px-6 py-6">
+          <form onSubmit={handleSubmit} className="space-y-6 px-6 py-6 md:p-8">
             <div className="grid gap-6 sm:grid-cols-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">
                 {tCommon("email")}
                 <input
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="mt-2 w-full rounded-xl border border-emerald-200 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm transition outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 dark:border-emerald-500/15 dark:bg-slate-800 dark:text-slate-100"
+                  className="mt-2 w-full rounded-xl border border-emerald-600/20 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm transition outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 dark:border-zinc-800 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-emerald-500"
                   placeholder="user@example.com"
                   type="email"
                   required
@@ -91,7 +91,7 @@ export default function UserEditModal({
                 <input
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="mt-2 w-full rounded-xl border border-emerald-200 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm transition outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 dark:border-emerald-500/15 dark:bg-slate-800 dark:text-slate-100"
+                  className="mt-2 w-full rounded-xl border border-emerald-600/20 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm transition outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 dark:border-zinc-800 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-emerald-500"
                   placeholder="username"
                   required
                 />
@@ -104,7 +104,7 @@ export default function UserEditModal({
                 <input
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="mt-2 w-full rounded-xl border border-emerald-200 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm transition outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 dark:border-emerald-500/15 dark:bg-slate-800 dark:text-slate-100"
+                  className="mt-2 w-full rounded-xl border border-emerald-600/20 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm transition outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 dark:border-zinc-800 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-emerald-500"
                   placeholder="Full name"
                   required
                 />
@@ -115,7 +115,7 @@ export default function UserEditModal({
                 <input
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
-                  className="mt-2 w-full rounded-xl border border-emerald-200 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm transition outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 dark:border-emerald-500/15 dark:bg-slate-800 dark:text-slate-100"
+                  className="mt-2 w-full rounded-xl border border-emerald-600/20 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm transition outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 dark:border-zinc-800 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-emerald-500"
                   placeholder="+84 912 345 678"
                   type="tel"
                 />
@@ -127,7 +127,7 @@ export default function UserEditModal({
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value as UserRole)}
-                className="mt-2 w-full rounded-xl border border-emerald-200 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm transition outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 dark:border-emerald-500/15 dark:bg-slate-800 dark:text-slate-100"
+                className="mt-2 w-full rounded-xl border border-emerald-600/20 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm transition outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 dark:border-zinc-800 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-emerald-500"
               >
                 {roleOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -141,7 +141,7 @@ export default function UserEditModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="border-emerald-250 rounded-xl border px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-emerald-50/20 dark:border-emerald-500/15 dark:text-slate-300 dark:hover:bg-slate-800"
+                className="rounded-xl border border-emerald-600/20 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-emerald-50/20 dark:border-zinc-800 dark:text-slate-300 dark:hover:bg-slate-800"
               >
                 {tCommon("cancel")}
               </button>

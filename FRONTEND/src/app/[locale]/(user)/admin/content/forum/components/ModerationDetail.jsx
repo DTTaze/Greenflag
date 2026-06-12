@@ -1,14 +1,17 @@
 "use client";
 
 import { Check, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 function ModerationDetail({ selectedPost, formatDate, handleModerate }) {
+  const t = useTranslations("admin.forum");
+
   if (!selectedPost) {
     return (
       <div className="rounded-lg border-2 border-dashed border-emerald-200/60 py-20 text-center dark:border-emerald-500/15">
         <p className="text-xs font-medium text-gray-400 dark:text-zinc-500">
-          Chọn một bài đăng bên danh sách để xem chi tiết kiểm duyệt
+          {t("selectToView")}
         </p>
       </div>
     );
@@ -24,21 +27,21 @@ function ModerationDetail({ selectedPost, formatDate, handleModerate }) {
         />
         <div>
           <h4 className="font-bold text-gray-900 dark:text-white">
-            {selectedPost.author?.name || "Thành viên GreenFlag"}
+            {selectedPost.author?.name || t("authorFallback")}
           </h4>
           <p className="text-[10px] text-gray-400 uppercase dark:text-zinc-500">
-            {selectedPost.author?.role || "Thành viên"}
+            {selectedPost.author?.role || t("roleFallback")}
           </p>
         </div>
       </div>
 
       <div className="space-y-1">
         <span className="block text-[10px] text-gray-400 dark:text-zinc-500">
-          Thể loại & Chủ đề:
+          {t("categoryLabel")}
         </span>
         <div className="flex flex-wrap gap-1">
           <span className="rounded bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
-            {selectedPost.category || "Thảo luận chung"}
+            {selectedPost.category || t("categoryFallback")}
           </span>
           {selectedPost.tags &&
             selectedPost.tags.map((tag) => (
@@ -54,7 +57,7 @@ function ModerationDetail({ selectedPost, formatDate, handleModerate }) {
 
       <div className="space-y-1">
         <span className="block text-[10px] text-gray-400 dark:text-zinc-500">
-          Ngày gửi:
+          {t("dateLabel")}
         </span>
         <p className="text-gray-900 dark:text-white">
           {formatDate(selectedPost.createdAt)}
@@ -63,7 +66,7 @@ function ModerationDetail({ selectedPost, formatDate, handleModerate }) {
 
       <div className="space-y-1">
         <span className="block text-[10px] text-gray-400 dark:text-zinc-500">
-          Nội dung bài viết:
+          {t("contentLabel")}
         </span>
         <p className="rounded-lg bg-gray-50 p-3 leading-relaxed whitespace-pre-wrap text-gray-700 dark:bg-zinc-900/50 dark:text-zinc-300">
           {selectedPost.content}
@@ -73,7 +76,7 @@ function ModerationDetail({ selectedPost, formatDate, handleModerate }) {
       {selectedPost.images && selectedPost.images.length > 0 && (
         <div className="space-y-1.5">
           <span className="block text-[10px] text-gray-400 dark:text-zinc-500">
-            Hình ảnh đính kèm ({selectedPost.images.length}):
+            {t("imagesLabel", { count: selectedPost.images.length })}
           </span>
           <div className="grid grid-cols-2 gap-2">
             {selectedPost.images.map((img, idx) => (
@@ -96,7 +99,7 @@ function ModerationDetail({ selectedPost, formatDate, handleModerate }) {
       {selectedPost.flaggedReason && (
         <div className="rounded-lg bg-red-50 p-3 text-red-800 dark:bg-red-950/30 dark:text-red-400">
           <span className="block text-[10px] font-bold tracking-wider uppercase">
-            Lý do vi phạm (AI cảnh báo):
+            {t("flaggedLabel")}
           </span>
           <p className="mt-1 leading-relaxed">{selectedPost.flaggedReason}</p>
         </div>
@@ -108,7 +111,7 @@ function ModerationDetail({ selectedPost, formatDate, handleModerate }) {
             onClick={() => handleModerate(selectedPost.id, "approved")}
             className="flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-lg bg-emerald-600 py-2 font-bold text-white shadow-2xs transition-colors hover:bg-emerald-700"
           >
-            <Check size={14} /> Phê duyệt
+            <Check size={14} /> {t("btnApprove")}
           </button>
         )}
         {selectedPost.status !== "rejected" && (
@@ -116,7 +119,7 @@ function ModerationDetail({ selectedPost, formatDate, handleModerate }) {
             onClick={() => handleModerate(selectedPost.id, "rejected")}
             className="flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-lg bg-rose-600 py-2 font-bold text-white shadow-2xs transition-colors hover:bg-rose-700"
           >
-            <X size={14} /> Ẩn bài viết
+            <X size={14} /> {t("btnHide")}
           </button>
         )}
       </div>

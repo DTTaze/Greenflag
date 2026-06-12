@@ -9,7 +9,27 @@ export const TRANSACTION_STATUS_MAP: Record<string, MapDetail> = {
     color:
       "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
   },
+  pending: {
+    label: "Chờ xử lý",
+    color:
+      "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  },
   APPROVED: {
+    label: "Thành công",
+    color:
+      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  },
+  approved: {
+    label: "Thành công",
+    color:
+      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  },
+  ACCEPTED: {
+    label: "Thành công",
+    color:
+      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  },
+  accepted: {
     label: "Thành công",
     color:
       "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
@@ -18,8 +38,84 @@ export const TRANSACTION_STATUS_MAP: Record<string, MapDetail> = {
     label: "Bị từ chối",
     color: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
   },
+  rejected: {
+    label: "Bị từ chối",
+    color: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+  },
   CANCELLED: {
     label: "Đã hủy",
+    color: "bg-gray-100 text-gray-700 dark:bg-zinc-800 dark:text-zinc-400",
+  },
+  cancelled: {
+    label: "Đã hủy",
+    color: "bg-gray-100 text-gray-700 dark:bg-zinc-800 dark:text-zinc-400",
+  },
+};
+
+export const P2P_STATUS_MAP: Record<string, MapDetail> = {
+  public: {
+    label: "Công khai",
+    color:
+      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  },
+  PUBLIC: {
+    label: "Công khai",
+    color:
+      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  },
+  private: {
+    label: "Riêng tư",
+    color: "bg-gray-100 text-gray-700 dark:bg-zinc-800 dark:text-zinc-400",
+  },
+  PRIVATE: {
+    label: "Riêng tư",
+    color: "bg-gray-100 text-gray-700 dark:bg-zinc-800 dark:text-zinc-400",
+  },
+  pending: {
+    label: "Chờ duyệt",
+    color:
+      "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  },
+  PENDING: {
+    label: "Chờ duyệt",
+    color:
+      "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  },
+  rejected: {
+    label: "Bị từ chối",
+    color: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+  },
+  REJECTED: {
+    label: "Bị từ chối",
+    color: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+  },
+};
+
+export const EVENT_STATUS_MAP: Record<string, MapDetail> = {
+  upcoming: {
+    label: "Sắp diễn ra",
+    color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  },
+  UPCOMING: {
+    label: "Sắp diễn ra",
+    color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  },
+  ongoing: {
+    label: "Đang diễn ra",
+    color:
+      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  },
+  ONGOING: {
+    label: "Đang diễn ra",
+    color:
+      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  },
+  finished: {
+    label: "Đã kết thúc",
+    color: "bg-gray-100 text-gray-700 dark:bg-zinc-800 dark:text-zinc-400",
+  },
+  FINISHED: {
+    label: "Đã kết thúc",
     color: "bg-gray-100 text-gray-700 dark:bg-zinc-800 dark:text-zinc-400",
   },
 };
@@ -68,12 +164,26 @@ export const STATUS_MAP: Record<string, MapDetail> = {
     color:
       "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
   },
+  pending: {
+    label: "Chờ duyệt",
+    color:
+      "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  },
   APPROVED: {
     label: "Đã duyệt",
     color:
       "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
   },
+  approved: {
+    label: "Đã duyệt",
+    color:
+      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  },
   REJECTED: {
+    label: "Từ chối",
+    color: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+  },
+  rejected: {
     label: "Từ chối",
     color: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
   },
@@ -85,6 +195,41 @@ export const STATUS_MAP: Record<string, MapDetail> = {
   },
   PRIVATE: {
     label: "Riêng tư",
+    color: "bg-gray-100 text-gray-700 dark:bg-zinc-800 dark:text-zinc-400",
+  },
+  // Item status mapping
+  AVAILABLE: {
+    label: "Còn hàng",
+    color:
+      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  },
+  available: {
+    label: "Còn hàng",
+    color:
+      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  },
+  SOLD_OUT: {
+    label: "Hết hàng",
+    color: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+  },
+  sold_out: {
+    label: "Hết hàng",
+    color: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+  },
+  SOLD: {
+    label: "Đã bán",
+    color: "bg-gray-100 text-gray-700 dark:bg-zinc-800 dark:text-zinc-400",
+  },
+  sold: {
+    label: "Đã bán",
+    color: "bg-gray-100 text-gray-700 dark:bg-zinc-800 dark:text-zinc-400",
+  },
+  HIDDEN: {
+    label: "Ẩn",
+    color: "bg-gray-100 text-gray-700 dark:bg-zinc-800 dark:text-zinc-400",
+  },
+  hidden: {
+    label: "Ẩn",
     color: "bg-gray-100 text-gray-700 dark:bg-zinc-800 dark:text-zinc-400",
   },
 };

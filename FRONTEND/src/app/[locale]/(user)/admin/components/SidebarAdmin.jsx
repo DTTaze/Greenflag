@@ -159,70 +159,7 @@ export default function SidebarAdmin({
         className={`fixed inset-y-0 left-0 z-50 flex flex-col border-r border-gray-200 bg-white transition-all duration-300 md:sticky md:top-0 md:translate-x-0 dark:border-zinc-800 dark:bg-zinc-950 ${isCollapsed ? "w-16" : "w-72"
           } ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
       >
-        {/* Header/Logo */}
-        <div
-          className={`flex h-16 items-center border-b border-gray-200 px-4 dark:border-zinc-800 ${isCollapsed ? "justify-center" : "justify-between"
-            }`}
-        >
-          <Link
-            href="/"
-            onClick={onClose}
-            className="flex items-center space-x-2.5 overflow-hidden"
-          >
-            <img
-              src="/images/Logo-Greenflag.png"
-              className="h-8 w-8 min-w-[32px] object-contain"
-              alt="Green Flag Logo"
-            />
-            {!isCollapsed && (
-              <span className="text-md font-extrabold whitespace-nowrap text-[#0B6E4F] dark:text-emerald-500">
-                {t("title") || "Admin Hub"}
-              </span>
-            )}
-          </Link>
-          {!isCollapsed && (
-            <button
-              onClick={onClose}
-              className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 md:hidden dark:text-zinc-400 dark:hover:bg-zinc-800"
-            >
-              <X size={20} />
-            </button>
-          )}
-        </div>
-
-        {/* User Info Section */}
-        {userInfo && userInfo.id !== 0 && (
-          <div
-            className={`flex items-center gap-3 border-b border-gray-200 px-4 py-4 dark:border-zinc-800 ${isCollapsed ? "justify-center" : ""
-              }`}
-          >
-            {userInfo.avatar_url ? (
-              <img
-                className="h-9 w-9 min-w-[36px] rounded-full border border-emerald-500 object-cover"
-                src={userInfo.avatar_url}
-                alt="Avatar"
-              />
-            ) : (
-              <div className="flex h-9 w-9 min-w-[36px] items-center justify-center rounded-full bg-emerald-600 text-sm font-bold text-white dark:bg-emerald-500">
-                {userInfo.username
-                  ? userInfo.username.charAt(0).toUpperCase()
-                  : "A"}
-              </div>
-            )}
-            {!isCollapsed && (
-              <div className="overflow-hidden">
-                <div className="truncate text-sm font-semibold text-gray-800 dark:text-zinc-200">
-                  {userInfo.full_name || userInfo.username}
-                </div>
-                <div className="truncate text-xs font-medium text-gray-500 dark:text-zinc-400">
-                  {userInfo.email}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Navigation items */}
+              {/* Navigation items */}
         <nav className="flex-1 space-y-4 overflow-y-auto py-4">
           {menuSections.map((section) => (
             <div key={section.labelKey} className="space-y-1">

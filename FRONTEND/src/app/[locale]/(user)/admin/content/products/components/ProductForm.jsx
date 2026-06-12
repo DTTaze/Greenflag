@@ -46,13 +46,13 @@ export default function ProductForm({
     if (mode === "edit" && initialData) {
       setFormData({
         id: initialData?.id || null,
-        seller_id: initialData?.seller_id || "",
+        seller_id: initialData?.seller_id || initialData?.sellerId || "",
         name: initialData?.name || "",
         description: initialData?.description || "",
         price: initialData?.price || "",
         category: initialData?.category || "",
-        product_status: initialData?.product_status || "",
-        post_status: initialData?.post_status || "",
+        product_status: initialData?.product_status || initialData?.productStatus || "",
+        post_status: initialData?.post_status || initialData?.postStatus || "",
       });
     } else {
       setFormData({
@@ -91,15 +91,15 @@ export default function ProductForm({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
-      <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-emerald-200 bg-white p-6 shadow-lg sm:max-w-[500px] dark:border-emerald-500/15 dark:bg-slate-900">
-        <DialogHeader className="mb-4">
-          <DialogTitle className="text-lg font-bold text-gray-900">
+      <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-emerald-600/20 bg-white p-6 md:p-8 shadow-lg sm:max-w-[500px] dark:border-zinc-800 dark:bg-slate-900">
+        <DialogHeader className="mb-6">
+          <DialogTitle className="text-lg font-bold text-gray-900 dark:text-zinc-100">
             {mode === "add" ? "Add New Product" : "Edit Product"}
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div className="flex flex-col gap-1.5">
+        <form onSubmit={onSubmit} className="space-y-6">
+          <div className="flex flex-col gap-2">
             <Label htmlFor="name">Tên sản phẩm</Label>
             <Input
               id="name"
@@ -111,7 +111,7 @@ export default function ProductForm({
             />
           </div>
 
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-2">
             <Label htmlFor="description">Mô tả</Label>
             <textarea
               id="description"
@@ -120,12 +120,12 @@ export default function ProductForm({
               onChange={handleChange}
               rows={3}
               placeholder="Mô tả sản phẩm..."
-              className="w-full resize-none rounded-lg border border-emerald-200 bg-transparent p-2.5 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-emerald-500/15 dark:bg-slate-800"
+              className="w-full resize-none rounded-lg border border-emerald-600/20 bg-transparent p-2.5 text-sm focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600/20 focus:outline-none dark:border-zinc-800 dark:bg-slate-800 dark:focus:border-emerald-500"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               <Label htmlFor="price">Giá trị (VNĐ)</Label>
               <Input
                 id="price"
@@ -137,7 +137,7 @@ export default function ProductForm({
                 placeholder="100000"
               />
             </div>
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               <Label htmlFor="category">Danh mục</Label>
               <select
                 id="category"
@@ -145,7 +145,7 @@ export default function ProductForm({
                 value={formData.category}
                 onChange={handleChange}
                 required
-                className="h-8 w-full rounded-lg border border-emerald-200 bg-transparent px-2.5 py-1 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-emerald-500/15 dark:bg-slate-800"
+                className="h-8 w-full rounded-lg border border-emerald-600/20 bg-transparent px-2.5 py-1 text-sm focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600/20 focus:outline-none dark:border-zinc-800 dark:bg-slate-800 dark:focus:border-emerald-500"
               >
                 <option value="">Chọn danh mục</option>
                 {categoryOptions.map((opt) => (
@@ -158,7 +158,7 @@ export default function ProductForm({
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               <Label htmlFor="product_status">Tình trạng sản phẩm</Label>
               <select
                 id="product_status"
@@ -166,14 +166,14 @@ export default function ProductForm({
                 value={formData.product_status}
                 onChange={handleChange}
                 required
-                className="h-8 w-full rounded-lg border border-emerald-200 bg-transparent px-2.5 py-1 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-emerald-500/15 dark:bg-slate-800"
+                className="h-8 w-full rounded-lg border border-emerald-600/20 bg-transparent px-2.5 py-1 text-sm focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600/20 focus:outline-none dark:border-zinc-800 dark:bg-slate-800 dark:focus:border-emerald-500"
               >
                 <option value="">Chọn tình trạng</option>
                 <option value="new">Mới</option>
                 <option value="used">Đã sử dụng</option>
               </select>
             </div>
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               <Label htmlFor="post_status">Trạng thái bài đăng</Label>
               <select
                 id="post_status"
@@ -181,7 +181,7 @@ export default function ProductForm({
                 value={formData.post_status}
                 onChange={handleChange}
                 required
-                className="h-8 w-full rounded-lg border border-emerald-200 bg-transparent px-2.5 py-1 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-emerald-500/15 dark:bg-slate-800"
+                className="h-8 w-full rounded-lg border border-emerald-600/20 bg-transparent px-2.5 py-1 text-sm focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600/20 focus:outline-none dark:border-zinc-800 dark:bg-slate-800 dark:focus:border-emerald-500"
               >
                 <option value="">Chọn trạng thái</option>
                 <option value="public">Công khai</option>
@@ -192,9 +192,7 @@ export default function ProductForm({
             </div>
           </div>
 
-
-
-          <DialogFooter className="mt-6 border-t border-emerald-100 pt-4 dark:border-emerald-500/10">
+          <DialogFooter className="mt-6 border-t border-emerald-600/20 pt-4 dark:border-zinc-800/80">
             <Button
               type="button"
               variant="outline"

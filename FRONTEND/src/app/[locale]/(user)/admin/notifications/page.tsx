@@ -30,7 +30,7 @@ const notifications = [
 export default function AdminNotificationsPage() {
   return (
     <div className="space-y-6">
-      <header className="rounded-3xl border border-emerald-200/60 bg-white p-6 shadow-sm dark:border-emerald-500/15 dark:bg-slate-900">
+      <header className="rounded-3xl border border-emerald-600/20 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-slate-900">
         <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400">
             <Bell size={24} />
@@ -51,7 +51,7 @@ export default function AdminNotificationsPage() {
         {notifications.map((notification) => (
           <article
             key={notification.id}
-            className="rounded-3xl border border-emerald-200/60 bg-white p-5 shadow-sm dark:border-emerald-500/15 dark:bg-slate-900"
+            className="rounded-3xl border border-emerald-600/20 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-slate-900"
           >
             <div className="flex items-start justify-between gap-4">
               <div>

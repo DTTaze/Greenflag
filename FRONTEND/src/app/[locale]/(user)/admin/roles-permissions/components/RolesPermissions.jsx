@@ -284,8 +284,8 @@ export default function RolesPermissions() {
   ];
 
   return (
-    <div className="w-full space-y-4 p-4">
-      <h1 className="px-2 text-2xl font-bold text-gray-950">
+    <div className="w-full space-y-6">
+      <h1 className="px-2 text-2xl font-bold text-gray-950 dark:text-zinc-50">
         Roles & Permissions Management
       </h1>
       <AdminTabs tabs={tabs} />

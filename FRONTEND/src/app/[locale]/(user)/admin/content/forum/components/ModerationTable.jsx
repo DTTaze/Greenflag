@@ -1,4 +1,5 @@
 import { Check, Eye, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 import Loader from "@/src/components/ui/Loader";
@@ -19,6 +20,8 @@ function ModerationTable({
   handleModerate,
   loading,
 }) {
+  const t = useTranslations("admin.forum");
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -31,7 +34,7 @@ function ModerationTable({
     return (
       <div className="py-20 text-center">
         <p className="text-sm font-medium text-gray-400 dark:text-zinc-500">
-          Không tìm thấy bài viết nào
+          {t("noPosts")}
         </p>
       </div>
     );
@@ -42,19 +45,19 @@ function ModerationTable({
       <TableHeader>
         <TableRow className="border-b border-emerald-100 bg-gray-50/50 font-semibold text-gray-400 hover:bg-transparent dark:border-emerald-500/10 dark:bg-zinc-900/50">
           <TableHead className="h-auto px-4 py-3.5 text-gray-400 dark:text-zinc-400">
-            Tác giả
+            {t("thAuthor")}
           </TableHead>
           <TableHead className="h-auto px-4 py-3.5 text-gray-400 dark:text-zinc-400">
-            Nội dung tóm tắt
+            {t("thSummary")}
           </TableHead>
           <TableHead className="h-auto px-4 py-3.5 text-gray-400 dark:text-zinc-400">
-            Ngày đăng
+            {t("thDate")}
           </TableHead>
           <TableHead className="h-auto px-4 py-3.5 text-gray-400 dark:text-zinc-400">
-            Trạng thái
+            {t("thStatus")}
           </TableHead>
           <TableHead className="h-auto px-4 py-3.5 text-right text-gray-400 dark:text-zinc-400">
-            Tác vụ
+            {t("thActions")}
           </TableHead>
         </TableRow>
       </TableHeader>
@@ -78,10 +81,10 @@ function ModerationTable({
                 />
                 <div className="max-w-[120px] overflow-hidden">
                   <span className="block truncate font-semibold text-gray-900 dark:text-white">
-                    {post.author?.name || "Ẩn danh"}
+                    {post.author?.name || t("authorFallback")}
                   </span>
                   <span className="block truncate text-[10px] text-gray-400 uppercase dark:text-zinc-500">
-                    {post.author?.role || "Thành viên"}
+                    {post.author?.role || t("roleFallback")}
                   </span>
                 </div>
               </div>
@@ -103,10 +106,10 @@ function ModerationTable({
                 }`}
               >
                 {post.status === "approved"
-                  ? "Đã duyệt"
+                  ? t("tabApproved")
                   : post.status === "rejected"
-                    ? "Đã ẩn"
-                    : "Chờ duyệt"}
+                    ? t("tabRejected")
+                    : t("tabPending")}
               </span>
             </TableCell>
             <TableCell
@@ -117,7 +120,7 @@ function ModerationTable({
                 <button
                   onClick={() => setSelectedPost(post)}
                   className="cursor-pointer rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
-                  title="Xem chi tiết"
+                  title={t("tooltipViewDetails")}
                 >
                   <Eye size={15} />
                 </button>
@@ -125,7 +128,7 @@ function ModerationTable({
                   <button
                     onClick={() => handleModerate(post.id, "approved")}
                     className="cursor-pointer rounded-md p-1 text-green-600 transition-colors hover:bg-green-50 hover:text-green-700 dark:text-green-400 dark:hover:bg-green-950/40"
-                    title="Duyệt bài đăng"
+                    title={t("tooltipApprove")}
                   >
                     <Check size={15} />
                   </button>
@@ -134,7 +137,7 @@ function ModerationTable({
                   <button
                     onClick={() => handleModerate(post.id, "rejected")}
                     className="cursor-pointer rounded-md p-1 text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950/40"
-                    title="Ẩn bài đăng"
+                    title={t("tooltipReject")}
                   >
                     <X size={15} />
                   </button>

@@ -23,6 +23,7 @@ import {
 
 export default function SystemSettingsPage() {
   const tCommon = useTranslations("admin.common");
+  const t = useTranslations("admin.settings");
   const { notify } = useNotification() as any;
 
   const [configs, setConfigs] = useState<SystemConfigDTO[]>([]);
@@ -53,11 +54,11 @@ export default function SystemSettingsPage() {
         setEditedValues(values);
         setEditedActives(actives);
       } else {
-        notify("error", res.message || "Không thể tải cấu hình hệ thống");
+        notify("error", res.message || t("toastLoadError"));
       }
     } catch (error) {
       console.error("Failed to load settings:", error);
-      notify("error", "Lỗi kết nối máy chủ");
+      notify("error", t("toastServerError"));
     } finally {
       setLoading(false);
     }
@@ -76,7 +77,7 @@ export default function SystemSettingsPage() {
       };
       const res = await systemConfigService.updateByKey(key, payload);
       if (res.success) {
-        notify("success", `Cập nhật cấu hình "${key}" thành công!`);
+        notify("success", t("toastUpdateSuccess", { key }));
         // Refresh local data
         setConfigs((prev) =>
           prev.map((item) =>
@@ -84,11 +85,11 @@ export default function SystemSettingsPage() {
           ),
         );
       } else {
-        notify("error", res.message || "Cập nhật thất bại");
+        notify("error", res.message || t("toastUpdateError"));
       }
     } catch (error) {
       console.error(`Failed to save config ${key}:`, error);
-      notify("error", "Lỗi kết nối máy chủ");
+      notify("error", t("toastServerError"));
     } finally {
       setSavingKey(null);
     }
@@ -182,7 +183,7 @@ export default function SystemSettingsPage() {
             <div className="peer h-6 w-11 rounded-full bg-zinc-200 peer-checked:bg-emerald-600 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-zinc-700 dark:bg-zinc-800"></div>
           </label>
           <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-            {valBool ? "Đang Bật (Enabled)" : "Đang Tắt (Disabled)"}
+            {valBool ? t("statusEnabled") : t("statusDisabled")}
           </span>
         </div>
       );
@@ -196,13 +197,13 @@ export default function SystemSettingsPage() {
           <div className="flex min-h-[46px] flex-wrap gap-1.5 rounded-xl border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/40">
             {tags.length === 0 ? (
               <span className="text-xs text-zinc-400 italic dark:text-zinc-500">
-                Trống (Chưa có phần tử nào)
+                {t("emptyTags")}
               </span>
             ) : (
               tags.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center gap-1 rounded-lg border border-emerald-100/50 bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-800 dark:border-emerald-900/30 dark:bg-emerald-950/20 dark:text-emerald-400"
+                  className="inline-flex items-center gap-1 rounded-lg border border-emerald-600 bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-800 dark:border-zinc-800 dark:bg-emerald-950/20 dark:text-emerald-400"
                 >
                   {tag}
                   <button
@@ -234,15 +235,15 @@ export default function SystemSettingsPage() {
                   handleAddTag(config.key);
                 }
               }}
-              placeholder="Nhập giá trị mới rồi bấm Enter hoặc nút thêm"
-              className="flex-1 rounded-xl border border-zinc-200 bg-white px-3 py-1.5 text-xs text-zinc-800 shadow-2xs outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+              placeholder={t("tagInputPlaceholder")}
+              className="flex-1 rounded-xl border border-zinc-200 bg-white px-3 py-1.5 text-xs text-zinc-800 shadow-2xs outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 focus:outline-none dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 dark:focus:border-emerald-500"
             />
             <button
               type="button"
               onClick={() => handleAddTag(config.key)}
               className="inline-flex items-center gap-1 rounded-xl bg-zinc-100 px-3 py-1.5 text-xs font-bold text-zinc-700 transition hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
             >
-              <Plus size={14} /> Thêm
+              <Plus size={14} /> {t("btnAdd")}
             </button>
           </div>
         </div>
@@ -260,7 +261,7 @@ export default function SystemSettingsPage() {
             [config.key]: e.target.value,
           }))
         }
-        className="mt-2 w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-800 shadow-2xs outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+        className="mt-2 w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-800 shadow-2xs outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 focus:outline-none dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 dark:focus:border-emerald-500"
       />
     );
   };
@@ -280,7 +281,7 @@ export default function SystemSettingsPage() {
             </span>
             <div className="flex items-center gap-2">
               <span className="text-[10px] text-zinc-400 dark:text-zinc-500">
-                Active:
+                {t("labelActive")}
               </span>
               <input
                 type="checkbox"
@@ -297,7 +298,7 @@ export default function SystemSettingsPage() {
           </div>
 
           <p className="text-xs leading-relaxed font-medium text-zinc-500 dark:text-zinc-400">
-            {config.description || "Chưa có mô tả cấu hình"}
+            {config.description || t("noDescription")}
           </p>
 
           <div className="pt-2">{renderConfigField(config)}</div>
@@ -313,12 +314,12 @@ export default function SystemSettingsPage() {
             {isSaving ? (
               <>
                 <div className="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                <span>Đang lưu...</span>
+                <span>{t("btnSaving")}</span>
               </>
             ) : (
               <>
                 <Save size={14} />
-                <span>Lưu thay đổi</span>
+                <span>{t("btnSave")}</span>
               </>
             )}
           </button>
@@ -328,7 +329,7 @@ export default function SystemSettingsPage() {
   };
 
   return (
-    <div className="container mx-auto max-w-7xl space-y-8 px-4 py-8">
+    <div className="w-full space-y-8">
       {/* Title Header */}
       <div className="flex items-center justify-between border-b border-zinc-100 pb-4 dark:border-zinc-900">
         <div>
@@ -337,18 +338,17 @@ export default function SystemSettingsPage() {
               className="text-emerald-600 dark:text-emerald-500"
               size={26}
             />
-            Cấu hình hệ thống
+            {t("title")}
           </h1>
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-            Quản lý và điều khiển các tham số hoạt động của lõi ứng dụng Green
-            Flag.
+            {t("subtitle")}
           </p>
         </div>
         <button
           onClick={fetchConfigs}
           className="flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3 py-1.5 text-xs font-bold text-zinc-700 transition hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800/80"
         >
-          <RefreshCw size={14} /> Tải lại
+          <RefreshCw size={14} /> {t("reload")}
         </button>
       </div>
 
@@ -357,7 +357,7 @@ export default function SystemSettingsPage() {
           <div className="flex flex-col items-center justify-center gap-3">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-600 border-t-transparent dark:border-emerald-500" />
             <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-              Đang tải danh sách cấu hình...
+              {t("loading")}
             </span>
           </div>
         </div>
@@ -365,7 +365,7 @@ export default function SystemSettingsPage() {
         <div className="rounded-2xl border-2 border-dashed border-zinc-200 py-20 text-center dark:border-zinc-800">
           <AlertTriangle className="mx-auto mb-2 text-zinc-400" size={36} />
           <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-            Không tìm thấy tham số cấu hình nào trong cơ sở dữ liệu.
+            {t("noConfigs")}
           </p>
         </div>
       ) : (
@@ -374,7 +374,7 @@ export default function SystemSettingsPage() {
           {ai.length > 0 && (
             <div className="space-y-4">
               <h2 className="flex items-center gap-1.5 text-sm font-bold tracking-wider text-zinc-400 uppercase dark:text-zinc-500">
-                <Cpu size={16} /> Kiểm duyệt nội dung tự động bằng AI
+                <Cpu size={16} /> {t("catAi")}
               </h2>
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {ai.map(renderConfigCard)}
@@ -386,7 +386,7 @@ export default function SystemSettingsPage() {
           {cron.length > 0 && (
             <div className="space-y-4">
               <h2 className="flex items-center gap-1.5 text-sm font-bold tracking-wider text-zinc-400 uppercase dark:text-zinc-500">
-                <Clock size={16} /> Cron Jobs Quét Nền
+                <Clock size={16} /> {t("catCron")}
               </h2>
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {cron.map(renderConfigCard)}
@@ -398,7 +398,7 @@ export default function SystemSettingsPage() {
           {general.length > 0 && (
             <div className="space-y-4">
               <h2 className="flex items-center gap-1.5 text-sm font-bold tracking-wider text-zinc-400 uppercase dark:text-zinc-500">
-                <FileText size={16} /> Giới hạn & Kiểm soát nội dung
+                <FileText size={16} /> {t("catGeneral")}
               </h2>
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {general.map(renderConfigCard)}

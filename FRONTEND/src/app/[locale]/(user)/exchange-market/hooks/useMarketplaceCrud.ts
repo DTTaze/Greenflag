@@ -237,11 +237,19 @@ export function useMarketplaceCrud({
             ...itemToEdit,
             ...productData,
             id: itemToEdit.id,
-            postStatus: response.data.post_status || itemToEdit.postStatus,
+            postStatus:
+              response.data.postStatus ||
+              response.data.post_status ||
+              itemToEdit.postStatus,
             image: response.data.images?.[0] || itemToEdit.image,
-            createdAt: response.data.created_at || itemToEdit.createdAt,
+            createdAt:
+              response.data.createdAt ||
+              response.data.created_at ||
+              itemToEdit.createdAt,
             stock: response.data.stock || itemToEdit.stock,
-            canPurchase: response.data.post_status === "public",
+            canPurchase:
+              (response.data.postStatus || response.data.post_status) ===
+              "public",
             purchaseLimitPerDay: response.data.purchase_limit_per_day,
             weight: response.data.weight,
             length: response.data.length,
@@ -264,11 +272,17 @@ export function useMarketplaceCrud({
           const newItem = {
             ...productData,
             id: response.data.id,
-            postStatus: response.data.post_status || "draft",
+            postStatus:
+              response.data.postStatus || response.data.post_status || "draft",
             image: response.data.images?.[0] || null,
-            createdAt: response.data.created_at || new Date().toISOString(),
+            createdAt:
+              response.data.createdAt ||
+              response.data.created_at ||
+              new Date().toISOString(),
             stock: response.data.stock || 0,
-            canPurchase: response.data.post_status === "public",
+            canPurchase:
+              (response.data.postStatus || response.data.post_status) ===
+              "public",
             seller: auth.user?.username || t("categories.unknown"),
             purchaseLimitPerDay: response.data.purchase_limit_per_day,
             weight: response.data.weight,

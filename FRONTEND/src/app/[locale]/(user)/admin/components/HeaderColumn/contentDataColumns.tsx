@@ -4,6 +4,7 @@ import {
   STATUS_MAP,
   DIFFICULTY_MAP,
   CATEGORY_MAP,
+  P2P_STATUS_MAP,
 } from "@/src/constants/enumMaps";
 
 export const taskColumns = [
@@ -50,18 +51,11 @@ export const taskColumns = [
   },
   { field: "total", headerName: "Tổng tiến trình", width: 120 },
   {
-    field: "User",
-    headerName: "Bên cung cấp",
+    field: "creator",
+    headerName: "Người tạo",
     width: 150,
-    valueGetter: (params: any) =>
-      params?.username || params?.email || "Chưa cập nhật",
-  },
-  {
-    field: "dueDate",
-    headerName: "Ngày hết hạn",
-    width: 200,
     valueGetter: (_value: any, row: any) =>
-      formatDate(row.dueDate || row.due_date),
+      row.creator?.profile?.fullName || row.creator?.username || "--",
   },
   {
     field: "updated_at",
@@ -174,12 +168,14 @@ export const productColumns = [
   },
   { field: "price", headerName: "Giá (VNĐ)", width: 120 },
   {
-    field: "product_status",
+    field: "productStatus",
     headerName: "Tình trạng sản phẩm",
     width: 150,
     render: (value: any, row: any) => {
-      const val = String(row.product_status || value || "").toUpperCase();
-      let label = row.product_status || value || "Mới";
+      const val = String(
+        row.productStatus || row.product_status || value || "",
+      ).toUpperCase();
+      let label = row.productStatus || row.product_status || value || "Mới";
       let color =
         "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
       if (val === "USED" || val === "CŨ") {
@@ -197,13 +193,15 @@ export const productColumns = [
     },
   },
   {
-    field: "post_status",
+    field: "postStatus",
     headerName: "Trạng thái bài đăng",
     width: 150,
     render: (value: any, row: any) => {
-      const val = String(row.post_status || value || "").toUpperCase();
-      const statusUi = STATUS_MAP[val] || {
-        label: row.post_status || "Không xác định",
+      const val = String(
+        row.postStatus || row.post_status || value || "",
+      ).toUpperCase();
+      const statusUi = P2P_STATUS_MAP[val] || {
+        label: row.postStatus || row.post_status || "Không xác định",
         color: "bg-gray-100 text-gray-500 dark:bg-zinc-800 dark:text-zinc-400",
       };
       return (
@@ -217,10 +215,10 @@ export const productColumns = [
   },
   {
     field: "seller",
-    headerName: "Tài khoản người bán",
+    headerName: "Người bán",
     width: 150,
-    valueGetter: (params: any) =>
-      params?.username || params?.email || "Chưa cập nhật",
+    valueGetter: (_value: any, row: any) =>
+      row.seller?.profile?.fullName || row.seller?.email || "--",
   },
   {
     field: "updated_at",

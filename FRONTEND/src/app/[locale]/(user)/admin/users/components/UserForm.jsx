@@ -74,16 +74,16 @@ export default function UserForm({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
-      <DialogContent className="rounded-xl border border-emerald-200 bg-white p-6 shadow-lg sm:max-w-[500px] dark:border-emerald-500/15 dark:bg-slate-900">
-        <DialogHeader className="mb-4">
-          <DialogTitle className="text-lg font-bold text-gray-900">
+      <DialogContent className="rounded-xl border border-emerald-600/20 bg-white p-6 md:p-8 shadow-lg sm:max-w-[500px] dark:border-zinc-800 dark:bg-slate-900">
+        <DialogHeader className="mb-6">
+          <DialogTitle className="text-lg font-bold text-gray-900 dark:text-zinc-100">
             {mode === "add" ? "Add New User" : "Edit User"}
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div className="space-y-3">
-            <div className="flex flex-col gap-1.5">
+        <form onSubmit={onSubmit} className="space-y-6">
+          <div className="space-y-6">
+            <div className="flex flex-col gap-2">
               <Label htmlFor="full_name">Họ tên</Label>
               <Input
                 id="full_name"
@@ -95,7 +95,7 @@ export default function UserForm({
               />
             </div>
 
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               <Label htmlFor="username">Tên người dùng</Label>
               <Input
                 id="username"
@@ -107,7 +107,7 @@ export default function UserForm({
               />
             </div>
 
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
@@ -121,7 +121,7 @@ export default function UserForm({
             </div>
 
             {mode === "add" && (
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="password">Mật khẩu</Label>
                 <Input
                   id="password"
@@ -135,7 +135,7 @@ export default function UserForm({
               </div>
             )}
 
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               <Label htmlFor="phone_number">Số điện thoại</Label>
               <Input
                 id="phone_number"
@@ -148,24 +148,24 @@ export default function UserForm({
 
             {mode === "edit" && (
               <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-1.5">
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="coins">Số xu</Label>
                   <Input
                     id="coins"
                     name="coins"
                     value={formData.coins}
                     disabled
-                    className="border-emerald-200/60 bg-gray-50/50 dark:border-emerald-500/15 dark:bg-slate-800/50"
+                    className="border-gray-200 bg-gray-50/50 text-gray-400 cursor-not-allowed dark:border-zinc-800 dark:bg-slate-800/50 dark:text-zinc-500"
                   />
                 </div>
-                <div className="flex flex-col gap-1.5">
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="role_name">Vai trò</Label>
                   <Input
                     id="role_name"
                     name="role_name"
                     value={formData.role_name}
                     disabled
-                    className="border-emerald-200/60 bg-gray-50/50 dark:border-emerald-500/15 dark:bg-slate-800/50"
+                    className="border-gray-200 bg-gray-50/50 text-gray-400 cursor-not-allowed dark:border-zinc-800 dark:bg-slate-800/50 dark:text-zinc-500"
                   />
                 </div>
               </div>

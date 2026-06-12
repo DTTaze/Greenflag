@@ -35,6 +35,8 @@ interface DataTableProps<T = any> {
   onEdit?: (row: T) => void;
   onDelete?: (row: T) => void;
   onView?: (row: T) => void;
+  onRowClick?: (row: T) => void;
+  onBulkDelete?: (ids: (string | number)[]) => void;
   loading?: boolean;
   enableSelection?: boolean;
   showDeleted?: boolean;
@@ -49,12 +51,15 @@ export default function DataTable<T extends { id: string | number }>({
   onEdit,
   onDelete,
   onView,
+  onRowClick,
+  onBulkDelete,
   loading = false,
   enableSelection = true,
   showDeleted = false,
   onToggleShowDeleted,
 }: DataTableProps<T>) {
   const t = useTranslations("admin.common");
+  const colT = useTranslations("admin.columns");
   const { user } = useAuthStore();
   const isAdmin =
     (user?.role || user?.roles?.name || "").toLowerCase() === "admin";
@@ -161,7 +166,7 @@ export default function DataTable<T extends { id: string | number }>({
               />
               <div className="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-emerald-500 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-zinc-700"></div>
               <span className="text-sm font-medium whitespace-nowrap text-gray-600 dark:text-zinc-400">
-                Hiển thị dữ liệu đã xóa
+                {t("showDeleted")}
               </span>
             </label>
           )}
@@ -176,7 +181,7 @@ export default function DataTable<T extends { id: string | number }>({
               placeholder={t("searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="dark:border-zinc-850 w-full rounded-lg border border-gray-200 bg-transparent py-2 pr-4 pl-9 text-sm transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none dark:bg-zinc-950 dark:text-zinc-200 dark:focus:border-emerald-500"
+              className="dark:border-zinc-850 w-full rounded-lg border border-gray-200 bg-transparent py-2 pr-4 pl-9 text-sm transition-all focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 focus:outline-none dark:bg-zinc-950 dark:text-zinc-200 dark:focus:border-emerald-500"
             />
           </div>
 
@@ -193,6 +198,42 @@ export default function DataTable<T extends { id: string | number }>({
         </div>
       </div>
 
+      {/* Floating/Contextual Bulk Actions Toolbar */}
+      {selectedIds.size > 0 && onBulkDelete && (
+        <div className="flex items-center justify-between border-b border-emerald-600/20 bg-emerald-50/80 px-6 py-3.5 dark:border-zinc-800 dark:bg-emerald-950/20">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 animate-ping rounded-full bg-emerald-500"></span>
+            <span className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
+              {t("selectedCount", { count: selectedIds.size })}
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSelectedIds(new Set())}
+              className="cursor-pointer text-xs font-semibold text-gray-500 hover:text-gray-800 dark:text-zinc-400 dark:hover:text-zinc-200"
+            >
+              {t("clearSelection")}
+            </button>
+            <button
+              onClick={() => {
+                if (
+                  window.confirm(
+                    t("confirmBulkDelete", { count: selectedIds.size }),
+                  )
+                ) {
+                  onBulkDelete(Array.from(selectedIds));
+                  setSelectedIds(new Set());
+                }
+              }}
+              className="flex cursor-pointer items-center gap-1.5 rounded-lg bg-rose-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-rose-700"
+            >
+              <Trash2 size={13} />
+              {t("deleteSelected")}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Table grid container */}
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-left text-sm text-gray-500 dark:text-zinc-400">
@@ -202,19 +243,47 @@ export default function DataTable<T extends { id: string | number }>({
               {enableSelection && (
                 <th scope="col" className="w-4 p-4">
                   <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={isAllSelected}
-                      onChange={handleSelectAll}
-                      className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-emerald-600 focus:ring-emerald-500 dark:border-zinc-700 dark:bg-zinc-800 dark:focus:ring-emerald-500"
-                    />
+                    <label className="relative flex cursor-pointer items-center">
+                      <input
+                        type="checkbox"
+                        checked={isAllSelected}
+                        onChange={handleSelectAll}
+                        className="peer sr-only"
+                      />
+                      <div
+                        className={`flex h-4 w-4 items-center justify-center rounded border transition-all ${
+                          isAllSelected
+                            ? "border-emerald-600 bg-emerald-600 text-white dark:border-emerald-500 dark:bg-emerald-500"
+                            : "border-gray-300 bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800"
+                        }`}
+                      >
+                        {isAllSelected && (
+                          <svg
+                            className="h-2.5 w-2.5 fill-current text-white"
+                            viewBox="0 0 20 20"
+                          >
+                            <path d="M0 11l2-2 5 5L18 3l2 2L7 18z" />
+                          </svg>
+                        )}
+                      </div>
+                    </label>
                   </div>
                 </th>
               )}
 
               {/* Data Columns */}
               {columns.map((col, index) => {
-                const headerText = col.header || col.headerName;
+                let headerText = col.header || col.headerName;
+                if (col.field) {
+                  try {
+                    const key = String(col.field);
+                    if (colT.has(key)) {
+                      headerText = colT(key);
+                    }
+                  } catch (e) {
+                    // fallback
+                  }
+                }
                 return (
                   <th
                     key={index}
@@ -280,22 +349,65 @@ export default function DataTable<T extends { id: string | number }>({
                 return (
                   <tr
                     key={row.id || index}
+                    onClick={(e) => {
+                      const target = e.target as HTMLElement;
+                      if (
+                        target.closest(".selection-cell") ||
+                        target.closest(".actions-cell") ||
+                        target.closest('input[type="checkbox"]')
+                      ) {
+                        return;
+                      }
+                      if (onRowClick) {
+                        onRowClick(row);
+                      } else if (onView) {
+                        onView(row);
+                      } else if (onEdit) {
+                        onEdit(row);
+                      }
+                    }}
                     className={`border-b border-gray-100 transition-colors duration-150 last:border-0 even:bg-gray-50/30 hover:bg-gray-100/50 dark:border-zinc-800/50 dark:even:bg-zinc-950/30 dark:hover:bg-zinc-800/50 ${
                       isSelected
                         ? "bg-emerald-50/10 even:bg-emerald-50/10 dark:bg-emerald-950/20 dark:even:bg-emerald-950/20"
                         : ""
-                    } ${hasDeletedAt ? "bg-red-50/5 opacity-60 dark:bg-red-950/5" : ""}`}
+                    } ${hasDeletedAt ? "bg-red-50/5 opacity-60 dark:bg-red-950/5" : ""} ${
+                      onRowClick || onView || onEdit ? "cursor-pointer" : ""
+                    }`}
                   >
                     {/* Selection checkbox */}
                     {enableSelection && (
-                      <td className="w-4 p-4">
+                      <td
+                        className="selection-cell w-4 cursor-pointer p-4"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSelectRow(row.id);
+                        }}
+                      >
                         <div className="flex items-center">
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={() => handleSelectRow(row.id)}
-                            className="dark:bg-zinc-850 h-4 w-4 rounded border-gray-300 bg-gray-100 text-emerald-600 focus:ring-emerald-500 dark:border-zinc-700"
-                          />
+                          <div className="relative flex items-center">
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              readOnly
+                              className="peer sr-only"
+                            />
+                            <div
+                              className={`flex h-4 w-4 items-center justify-center rounded border transition-all ${
+                                isSelected
+                                  ? "border-emerald-600 bg-emerald-600 text-white dark:border-emerald-500 dark:bg-emerald-500"
+                                  : "border-gray-300 bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800"
+                              }`}
+                            >
+                              {isSelected && (
+                                <svg
+                                  className="h-2.5 w-2.5 fill-current text-white"
+                                  viewBox="0 0 20 20"
+                                >
+                                  <path d="M0 11l2-2 5 5L18 3l2 2L7 18z" />
+                                </svg>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       </td>
                     )}
@@ -400,8 +512,11 @@ export default function DataTable<T extends { id: string | number }>({
 
                     {/* Actions Cell */}
                     {(onView || onEdit || onDelete) && (
-                      <td className="px-6 py-4 text-right">
-                        <div className="inline-flex gap-2">
+                      <td className="actions-cell px-6 py-4 text-right">
+                        <div
+                          className="inline-flex gap-2"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           {onView && (
                             <button
                               onClick={() => onView(row)}

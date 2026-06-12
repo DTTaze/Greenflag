@@ -94,7 +94,7 @@ export const normalizeTransaction = (tx: any, source: string) => {
   if (source === "transaction") {
     return {
       id: `transaction-${tx.id}`,
-      public_id: tx.public_id,
+      public_id: tx.public_id || tx.publicId,
       status:
         tx.status === "accepted"
           ? "pending"
@@ -109,38 +109,48 @@ export const normalizeTransaction = (tx: any, source: string) => {
               ? "cancel"
               : tx.status
         ] || tx.status,
-      item_snapshot: tx.item_snapshot,
+      item_snapshot: tx.item_snapshot || tx.itemSnapshot,
       quantity: tx.quantity,
-      total_price: tx.total_price,
-      created_at: tx.created_at,
-      shipping_info: tx.shipping_info || null,
+      total_price: tx.total_price || tx.totalPrice,
+      created_at: tx.created_at || tx.createdAt,
+      shipping_info: tx.shipping_info || tx.shippingInfo || null,
     };
   } else {
+    const orderCode = tx.orderCode || tx.order_code;
+    const toAddress = tx.toAddress || tx.to_address;
+    const toName = tx.toName || tx.to_name;
+    const toPhone = tx.toPhone || tx.to_phone;
+    const codAmount = tx.codAmount ?? tx.cod_amount;
+    const weight = tx.weight;
+    const totalAmount = tx.totalAmount ?? tx.total_amount;
+    const createdDate =
+      tx.createdDate || tx.created_date || tx.created_at || tx.createdAt;
+
     return {
       id: `shipping-${tx.id}`,
-      public_id: tx.order_code,
+      public_id: orderCode,
       status: tx.status,
       status_label: statusLabels[tx.status] || tx.status,
       item_snapshot: {
         name: "Đơn hàng vận chuyển",
-        price: tx.total_amount,
+        price: totalAmount,
         creator: { full_name: "Không xác định" },
-        public_id: tx.order_code,
-        description: `Địa chỉ giao hàng: ${tx.to_address}`,
+        public_id: orderCode,
+        description: `Địa chỉ giao hàng: ${toAddress}`,
         image_url: "/placeholder-image.jpg",
       },
       quantity: 1,
-      total_price: tx.total_amount,
-      created_at: tx.created_date,
+      total_price: totalAmount,
+      created_at: createdDate,
       shipping_info: {
         carrier: "Không xác định",
-        tracking_number: tx.order_code,
-        estimated_delivery: tx.created_date,
-        to_name: tx.to_name,
-        to_phone: tx.to_phone,
-        to_address: tx.to_address,
-        cod_amount: tx.cod_amount,
-        weight: tx.weight,
+        tracking_number: orderCode,
+        estimated_delivery: createdDate,
+        to_name: toName,
+        to_phone: toPhone,
+        to_address: toAddress,
+        cod_amount: codAmount,
+        weight: weight,
       },
     };
   }

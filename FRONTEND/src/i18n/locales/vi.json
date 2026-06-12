@@ -196,6 +196,35 @@
   "partner": {
     "logout": "Đăng xuất đối tác",
     "backToAdmin": "Trở về Admin",
+    "overview": {
+      "title": "Tổng quan hoạt động",
+      "subtitle": "Theo dõi tác động, hiệu quả và kết quả chiến dịch môi trường của bạn.",
+      "scanQr": "Quét QR Điểm danh",
+      "createEvent": "Tạo sự kiện",
+      "totalEvents": "Tổng sự kiện",
+      "activeEvents": "Sự kiện hoạt động",
+      "totalRedemptions": "Lượt đổi quà",
+      "pointsExchanged": "Tổng điểm đã đổi",
+      "thisMonth": "+2 tháng này",
+      "ongoing": "Đang diễn ra",
+      "thisWeek": "+12% tuần này",
+      "greenAccumulation": "Tích lũy xanh",
+      "recentEvents": "Sự kiện mới đây",
+      "recentEventsDesc": "Danh sách các chiến dịch đã tổ chức gần nhất.",
+      "viewAll": "Xem tất cả",
+      "loading": "Đang tải dữ liệu...",
+      "noEvents": "Bạn chưa tạo sự kiện nào.",
+      "eventTitle": "Tên sự kiện",
+      "eventDate": "Ngày diễn ra",
+      "eventStatus": "Trạng thái",
+      "statusEnded": "Kết thúc",
+      "statusActive": "Đang chạy",
+      "guideTips": "Hướng dẫn & Mẹo",
+      "tipHostTitle": "1. Tổ chức sự kiện",
+      "tipHostDesc": "Tạo sự kiện môi trường để thu hút cộng đồng tham gia và phát hành mã QR điểm danh.",
+      "tipInventoryTitle": "2. Quản lý tồn kho",
+      "tipInventoryDesc": "Cung cấp các phần quà hấp dẫn trong kho hàng của bạn để khuyến khích cộng đồng đổi điểm."
+    },
     "dashboard": {
       "version": "Phiên bản 1.0",
       "title": "Bảng điều khiển đối tác",
@@ -289,18 +318,38 @@
       }
     },
     "inventory": {
-      "title": "Kho quà",
-      "subtitle": "Quản lý tồn kho phần thưởng và đổi điểm cho đối tác.",
+      "title": "Gift Inventory",
+      "subtitle": "Quản lý kho hàng quà tặng, số lượng tồn kho và điểm thưởng của đối tác.",
       "panelTitle": "Thêm vật phẩm mới",
-      "panelDesc": "Thêm quà tặng mới và đặt điểm phù hợp.",
-      "currentInventory": "Kho hiện tại",
+      "panelDesc": "Bổ sung quà tặng mới và điều chỉnh điểm thưởng phù hợp.",
       "itemNameLabel": "Tên vật phẩm",
+      "namePlaceholder": "Ví dụ: Áo thun xanh tái chế",
       "stockLabel": "Tồn kho",
-      "pointsLabel": "Điểm thưởng",
+      "pointsLabel": "Điểm thưởng (xu đổi)",
       "addBtn": "Thêm vật phẩm",
-      "clearBtn": "Xóa",
+      "clearBtn": "Nhập lại",
       "errorLoading": "Không thể tải kho hàng. Vui lòng thử lại.",
-      "noItems": "Chưa có vật phẩm nào."
+      "noItems": "Chưa có vật phẩm nào trong kho.",
+      "loading": "Đang tải kho hàng...",
+      "adding": "Đang thêm...",
+      "listTitle": "Danh sách vật phẩm",
+      "listDesc": "Quản lý số lượng, điểm thưởng và cập nhật kho quà.",
+      "itemsCount": "{count} mặt hàng",
+      "stockCount": "Tồn kho: {count}",
+      "tableTitle": "Tên vật phẩm",
+      "tableStock": "Số lượng",
+      "tablePoints": "Điểm quy đổi",
+      "tableActions": "Thao tác",
+      "badgeText": "Kho quà tặng",
+      "badgeDesc": "Tối ưu tồn kho và giữ thông tin mặt hàng rõ ràng.",
+      "validation": {
+        "nameRequired": "Tên vật phẩm là bắt buộc.",
+        "deleteConfirm": "Bạn có chắc chắn muốn xóa vật phẩm này?",
+        "deleteSuccess": "Xóa vật phẩm thành công.",
+        "deleteFailed": "Không thể xóa vật phẩm.",
+        "addSuccess": "Đã thêm vật phẩm mới vào kho!",
+        "addFailed": "Không thể thêm vật phẩm. Vui lòng thử lại."
+      }
     },
     "reports": {
       "title": "Báo cáo hoạt động",
@@ -308,7 +357,13 @@
       "badge": "Báo cáo",
       "summaryTitle": "Bảng tóm tắt",
       "chartTitle": "Biểu đồ tổng quan",
-      "exportBtn": "Xuất CSV"
+      "exportBtn": "Xuất CSV",
+      "totalTasks": "Tổng số nhiệm vụ",
+      "eventsOrganized": "Sự kiện đã tổ chức",
+      "pointsRedeemed": "Điểm đã quy đổi",
+      "chartTasks": "Nhiệm vụ",
+      "chartEvents": "Sự kiện",
+      "chartRedemptions": "Lượt đổi quà"
     },
     "profile": {
       "title": "Hồ sơ đối tác",
@@ -326,7 +381,11 @@
       "description": "Mô tả",
       "uploadFiles": "Tải lên tài liệu",
       "saveSuccess": "Lưu hồ sơ thành công.",
-      "saveError": "Lưu hồ sơ thất bại. Vui lòng thử lại."
+      "saveError": "Lưu hồ sơ thất bại. Vui lòng thử lại.",
+      "documentCount": "{count} tài liệu",
+      "remove": "Xóa",
+      "saveBtn": "Lưu hồ sơ",
+      "saving": "Đang lưu..."
     }
   },
   "admin": {
@@ -817,7 +876,9 @@
       "difficulty": "Độ khó",
       "easy": "Dễ",
       "medium": "Trung bình",
-      "hard": "Khó"
+      "hard": "Khó",
+      "expert": "Chuyên gia",
+      "unknown": "Không xác định"
     },
     "list": {
       "noDaily": "Không có nhiệm vụ hàng ngày nào",
@@ -826,7 +887,27 @@
       "coinsReceived": "Xu đã nhận",
       "ranking": "Bảng Xếp Hạng",
       "stats": "Thống Kê Hoạt Động",
-      "streak": "Chuỗi ngày"
+      "streak": "Chuỗi ngày",
+      "todayTasks": "Nhiệm Vụ Hôm Nay",
+      "otherTasks": "Nhiệm Vụ Khác",
+      "completedTasksTitle": "Nhiệm Vụ Đã Hoàn Thành",
+      "allDoneTitle": "Tuyệt vời!",
+      "allDoneDesc": "Bạn đã hoàn thành tất cả nhiệm vụ hôm nay. Hãy quay lại vào ngày mai để tiếp tục chuỗi hoạt động nhé!",
+      "noTasksTitle": "Chưa có nhiệm vụ!",
+      "noTasksDesc": "Hiện tại chưa có nhiệm vụ khác nào khả dụng. Hãy thử hoàn thành các nhiệm vụ hàng ngày trước nhé!",
+      "doneStatus": "✓ Đã xong",
+      "completedAt": "Hoàn thành: {date}",
+      "noCompletedTitle": "Chưa hoàn thành nhiệm vụ nào!",
+      "noCompletedDesc": "Bạn chưa hoàn thành nhiệm vụ nào. Hãy bắt đầu với nhiệm vụ hàng ngày để nhận các phần quà giá trị!"
+    },
+    "card": {
+      "noDescription": "Mô tả nhiệm vụ đang được cập nhật...",
+      "processing": "Đang xử lý...",
+      "completed": "Đã hoàn thành",
+      "pending": "Chờ xác nhận",
+      "claimReward": "Nhận thưởng",
+      "doNow": "Thực hiện ngay",
+      "join": "Tham gia"
     },
     "eventList": {
       "title": "Sự Kiện Môi Trường",

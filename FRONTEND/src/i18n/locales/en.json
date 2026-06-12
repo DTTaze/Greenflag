@@ -196,6 +196,35 @@
   "partner": {
     "logout": "Partner Log Out",
     "backToAdmin": "Back to Admin",
+    "overview": {
+      "title": "Activity Dashboard",
+      "subtitle": "Track the impact, effectiveness, and results of your green campaigns.",
+      "scanQr": "Check-in Scanner",
+      "createEvent": "New Event",
+      "totalEvents": "Total Events",
+      "activeEvents": "Active Events",
+      "totalRedemptions": "Total Redemptions",
+      "pointsExchanged": "Points Exchanged",
+      "thisMonth": "+2 this month",
+      "ongoing": "Ongoing",
+      "thisWeek": "+12% this week",
+      "greenAccumulation": "Eco Accumulation",
+      "recentEvents": "Recent Events",
+      "recentEventsDesc": "List of your most recently organized campaigns.",
+      "viewAll": "View all",
+      "loading": "Loading data...",
+      "noEvents": "You have no events organized yet.",
+      "eventTitle": "Event Title",
+      "eventDate": "Date",
+      "eventStatus": "Status",
+      "statusEnded": "Ended",
+      "statusActive": "Active",
+      "guideTips": "Guide & Tips",
+      "tipHostTitle": "1. Host Events",
+      "tipHostDesc": "Create environmental events to engage the community and issue check-in QR codes.",
+      "tipInventoryTitle": "2. Manage Inventory",
+      "tipInventoryDesc": "Provide attractive items in your inventory to encourage community members to redeem points."
+    },
     "dashboard": {
       "version": "Version 1.0",
       "title": "Partner Dashboard",
@@ -290,17 +319,37 @@
     },
     "inventory": {
       "title": "Gift Inventory",
-      "subtitle": "Manage reward stock and point redemptions for partners.",
+      "subtitle": "Manage reward stock, quantities, and redemption points for partners.",
       "panelTitle": "Add new item",
       "panelDesc": "Add new reward items and set appropriate points.",
-      "currentInventory": "Current stock",
       "itemNameLabel": "Item name",
+      "namePlaceholder": "e.g. Recycled Green T-Shirt",
       "stockLabel": "Stock",
-      "pointsLabel": "Reward points",
+      "pointsLabel": "Reward points (coins)",
       "addBtn": "Add item",
-      "clearBtn": "Clear",
+      "clearBtn": "Reset",
       "errorLoading": "Unable to load inventory. Please try again.",
-      "noItems": "No items found."
+      "noItems": "No items found in inventory.",
+      "loading": "Loading inventory...",
+      "adding": "Adding...",
+      "listTitle": "Item List",
+      "listDesc": "Manage quantities, points, and update the reward inventory.",
+      "itemsCount": "{count} items",
+      "stockCount": "Total stock: {count}",
+      "tableTitle": "Item name",
+      "tableStock": "Stock",
+      "tablePoints": "Points Required",
+      "tableActions": "Actions",
+      "badgeText": "Gift Inventory",
+      "badgeDesc": "Optimize stock levels and keep item details clear.",
+      "validation": {
+        "nameRequired": "Item name is required.",
+        "deleteConfirm": "Are you sure you want to delete this item?",
+        "deleteSuccess": "Item deleted successfully.",
+        "deleteFailed": "Failed to delete item.",
+        "addSuccess": "New item added successfully!",
+        "addFailed": "Failed to add item. Please try again."
+      }
     },
     "reports": {
       "title": "Activity Reports",
@@ -308,7 +357,13 @@
       "badge": "Reports",
       "summaryTitle": "Summary",
       "chartTitle": "Overview chart",
-      "exportBtn": "Export CSV"
+      "exportBtn": "Export CSV",
+      "totalTasks": "Total Tasks",
+      "eventsOrganized": "Events Organized",
+      "pointsRedeemed": "Points Redeemed",
+      "chartTasks": "Tasks",
+      "chartEvents": "Events",
+      "chartRedemptions": "Redemptions"
     },
     "profile": {
       "title": "Partner Profile",
@@ -326,7 +381,11 @@
       "description": "Description",
       "uploadFiles": "Upload files",
       "saveSuccess": "Profile saved successfully.",
-      "saveError": "Failed to save profile. Please try again."
+      "saveError": "Failed to save profile. Please try again.",
+      "documentCount": "{count} documents",
+      "remove": "Remove",
+      "saveBtn": "Save profile",
+      "saving": "Saving..."
     }
   },
   "admin": {
@@ -817,7 +876,9 @@
         "difficulty": "Difficulty",
         "easy": "Easy",
         "medium": "Medium",
-        "hard": "Hard"
+        "hard": "Hard",
+        "expert": "Expert",
+        "unknown": "Unknown"
       },
       "list": {
         "noDaily": "No daily missions available.",
@@ -826,7 +887,27 @@
         "coinsReceived": "Coins Received",
         "ranking": "Leaderboard",
         "stats": "Activity Stats",
-        "streak": "Day Streak"
+        "streak": "Day Streak",
+        "todayTasks": "Today's Tasks",
+        "otherTasks": "Other Tasks",
+        "completedTasksTitle": "Completed Tasks",
+        "allDoneTitle": "Excellent!",
+        "allDoneDesc": "You have completed all of today's tasks. Come back tomorrow to continue your streak!",
+        "noTasksTitle": "No tasks yet!",
+        "noTasksDesc": "There are no other tasks available right now. Please complete your daily tasks first!",
+        "doneStatus": "✓ Done",
+        "completedAt": "Completed: {date}",
+        "noCompletedTitle": "No tasks completed yet!",
+        "noCompletedDesc": "You haven't completed any tasks yet. Start with daily tasks to get valuable rewards!"
+      },
+      "card": {
+        "noDescription": "Task description is being updated...",
+        "processing": "Processing...",
+        "completed": "Completed",
+        "pending": "Pending confirmation",
+        "claimReward": "Claim reward",
+        "doNow": "Do now",
+        "join": "Join"
       },
       "eventList": {
         "title": "Environmental Events",

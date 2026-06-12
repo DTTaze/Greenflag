@@ -1,6 +1,8 @@
+import { useLocale, useTranslations } from "next-intl";
 import React from "react";
 
 import imgSrc from "@/src/assets/images/seedling-solid.svg";
+import { Card } from "@/src/components/ui/card";
 
 import Pagination from "../Pagination";
 import TaskCard from "../TaskCard";
@@ -23,6 +25,9 @@ const TasksList = ({
   selectedTab,
   taskPerPage,
 }) => {
+  const t = useTranslations("missions.list");
+  const locale = useLocale();
+
   console.log("tasks in TaskList: ", tasks);
   if (loading) {
     return (
@@ -34,6 +39,8 @@ const TasksList = ({
       </div>
     );
   }
+
+  const dateLocaleString = locale === "en" ? "en-US" : "vi-VN";
 
   if (selectedTab === "daily") {
     return (
@@ -62,7 +69,7 @@ const TasksList = ({
                 />
               </svg>
             </span>
-            Nhiệm Vụ Hôm Nay
+            {t("todayTasks")}
           </h2>
 
           {tasks && tasks.length > 0 ? (
@@ -86,20 +93,19 @@ const TasksList = ({
                 )}
             </div>
           ) : (
-            <div className="shadow-3xs mx-auto max-w-lg rounded-2xl border border-blue-100/40 bg-blue-50/45 px-4 py-16 text-center dark:border-blue-400/20 dark:bg-blue-400/10">
+            <Card className="shadow-3xs mx-auto flex max-w-lg flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white/50 px-4 py-16 text-center dark:border-emerald-500/15 dark:bg-slate-900/80">
               <img
                 src={imgSrc}
                 alt="All done!"
                 className="mx-auto mb-4 h-14 w-14 opacity-30"
               />
               <h3 className="mb-1 text-base font-extrabold tracking-wide text-gray-700 uppercase dark:text-slate-100">
-                Tuyệt vời!
+                {t("allDoneTitle")}
               </h3>
               <p className="mx-auto max-w-sm text-xs leading-relaxed font-medium text-gray-500 dark:text-slate-300">
-                Bạn đã hoàn thành tất cả nhiệm vụ hôm nay. Hãy quay lại vào ngày
-                mai để tiếp tục chuỗi hoạt động nhé!
+                {t("allDoneDesc")}
               </p>
-            </div>
+            </Card>
           )}
         </div>
         <div className="mt-6 shrink-0">
@@ -136,7 +142,7 @@ const TasksList = ({
                 />
               </svg>
             </span>
-            Nhiệm Vụ Khác
+            {t("otherTasks")}
           </h2>
 
           {tasks && tasks.length > 0 ? (
@@ -160,20 +166,19 @@ const TasksList = ({
                 )}
             </div>
           ) : (
-            <div className="shadow-3xs mx-auto max-w-lg rounded-2xl border border-indigo-100/40 bg-indigo-50/45 px-4 py-16 text-center dark:border-indigo-400/20 dark:bg-indigo-400/10">
+            <Card className="shadow-3xs mx-auto flex max-w-lg flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white/50 px-4 py-16 text-center dark:border-zinc-800 dark:bg-slate-900/80">
               <img
                 src={imgSrc}
                 alt="No tasks"
                 className="mx-auto mb-4 h-14 w-14 opacity-30"
               />
               <h3 className="mb-1 text-base font-extrabold tracking-wide text-gray-700 uppercase dark:text-slate-100">
-                Chưa có nhiệm vụ!
+                {t("noTasksTitle")}
               </h3>
               <p className="mx-auto max-w-sm text-xs leading-relaxed font-medium text-gray-500 dark:text-slate-300">
-                Hiện tại chưa có nhiệm vụ khác nào khả dụng. Hãy thử hoàn thành
-                các nhiệm vụ hàng ngày trước nhé!
+                {t("noTasksDesc")}
               </p>
-            </div>
+            </Card>
           )}
         </div>
         <div className="mt-6 shrink-0">
@@ -210,7 +215,7 @@ const TasksList = ({
                 />
               </svg>
             </span>
-            Nhiệm Vụ Đã Hoàn Thành ({tasks ? tasks.length : 0})
+            {t("completedTasksTitle")} ({tasks ? tasks.length : 0})
           </h2>
 
           {tasks && tasks.length > 0 ? (
@@ -221,9 +226,9 @@ const TasksList = ({
                   currentPage * (taskPerPage || 4),
                 )
                 .map((task) => (
-                  <div
+                  <Card
                     key={task.id}
-                    className="flex items-center gap-3.5 rounded-2xl border border-gray-200 bg-gray-50/50 p-4.5 transition-all duration-300 hover:border-emerald-300/40 hover:bg-emerald-50/5 hover:shadow-xs dark:border-zinc-800 dark:bg-zinc-800/40 dark:hover:border-green-500/40 dark:hover:bg-green-500/10"
+                    className="shadow-3xs flex items-center gap-3.5 rounded-2xl border border-gray-200 bg-gray-50/50 p-4.5 transition-all duration-300 hover:border-emerald-300/40 hover:bg-emerald-50/5 hover:shadow-xs dark:border-zinc-800 dark:bg-slate-900/80 dark:hover:border-green-500/40 dark:hover:bg-green-500/10"
                   >
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-emerald-100 bg-emerald-50 dark:border-emerald-400/30 dark:bg-emerald-400/10">
                       <img
@@ -236,41 +241,41 @@ const TasksList = ({
                       <h3 className="flex items-center gap-1.5 text-xs leading-snug font-bold text-gray-800 dark:text-slate-100">
                         <span className="truncate">{task.tasks.title}</span>
                         <span className="inline-flex shrink-0 items-center rounded-lg border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-[9px] font-extrabold text-emerald-800 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-200">
-                          ✓ Đã xong
+                          {t("doneStatus")}
                         </span>
                       </h3>
                       <p className="mt-1 text-[10px] font-semibold text-gray-400 dark:text-slate-400">
-                        Hoàn thành:{" "}
-                        {new Date(task.completed_at).toLocaleDateString(
-                          "vi-VN",
-                          {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          },
-                        )}
+                        {t("completedAt", {
+                          date: new Date(task.completed_at).toLocaleDateString(
+                            dateLocaleString,
+                            {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            },
+                          ),
+                        })}
                       </p>
                     </div>
-                  </div>
+                  </Card>
                 ))}
             </div>
           ) : (
-            <div className="shadow-3xs mx-auto max-w-lg rounded-2xl border border-emerald-100/40 bg-emerald-50/30 px-4 py-16 text-center dark:border-emerald-400/20 dark:bg-emerald-400/10">
+            <Card className="shadow-3xs mx-auto flex max-w-lg flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white/50 px-4 py-16 text-center dark:border-zinc-800 dark:bg-slate-900/80">
               <img
                 src={imgSrc}
                 alt="No tasks"
                 className="mx-auto mb-4 h-14 w-14 opacity-30"
               />
               <h3 className="mb-1 text-base font-extrabold tracking-wide text-gray-700 uppercase dark:text-slate-100">
-                Chưa hoàn thành nhiệm vụ nào!
+                {t("noCompletedTitle")}
               </h3>
               <p className="mx-auto max-w-sm text-xs leading-relaxed font-medium text-gray-500 dark:text-slate-300">
-                Bạn chưa hoàn thành nhiệm vụ nào. Hãy bắt đầu với nhiệm vụ hàng
-                ngày để nhận các phần quà giá trị!
+                {t("noCompletedDesc")}
               </p>
-            </div>
+            </Card>
           )}
         </div>
         <div className="mt-6 shrink-0">

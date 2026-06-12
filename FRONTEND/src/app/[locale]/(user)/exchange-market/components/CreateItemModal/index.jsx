@@ -2,6 +2,8 @@ import { Coins, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
+import { Dialog, DialogContent, DialogTitle } from "@/src/components/ui/dialog";
+
 import ImageUpload from "../ImageUpload";
 
 export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
@@ -99,41 +101,40 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-md"
-        onClick={onCancel}
-      ></div>
-
-      {/* Modal Container */}
-      <div className="relative z-10 w-full max-w-2xl transform rounded-2xl border border-slate-800/80 bg-slate-900/95 p-6 shadow-2xl transition-all">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
+      <DialogContent
+        showCloseButton={false}
+        className="z-50 flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-zinc-800 dark:bg-zinc-900"
+      >
         {/* Decorative Glow */}
-        <div className="absolute -top-20 -left-20 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl" />
-        <div className="absolute -right-20 -bottom-20 h-40 w-40 rounded-full bg-blue-500/10 blur-3xl" />
+        <div className="pointer-events-none absolute -top-20 -left-20 h-40 w-40 rounded-full bg-emerald-500/5 blur-3xl dark:bg-emerald-500/10" />
+        <div className="pointer-events-none absolute -right-20 -bottom-20 h-40 w-40 rounded-full bg-blue-500/5 blur-3xl dark:bg-blue-500/10" />
 
         {/* Close Button */}
         <button
           onClick={onCancel}
-          className="absolute top-4 right-4 rounded-full p-1.5 text-slate-400 transition-all duration-200 hover:bg-slate-800/80 hover:text-white"
+          className="dark:hover:bg-zinc-805 absolute top-4 right-4 rounded-full p-1.5 text-slate-400 transition-all duration-200 hover:bg-slate-100 hover:text-slate-800 dark:hover:text-white"
         >
           <X className="h-5 w-5" />
         </button>
 
         {/* Header */}
-        <div className="mb-6">
-          <h2 className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-xl font-bold text-transparent">
+        <div className="mb-5 shrink-0">
+          <DialogTitle className="bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-xl font-bold text-transparent dark:from-emerald-400 dark:to-teal-300">
             {isEditing
               ? t("createModal.titleEdit")
               : t("createModal.titleCreate")}
-          </h2>
-          <p className="mt-1 text-xs text-slate-400">{t("createModal.desc")}</p>
+          </DialogTitle>
+          <p className="text-slate-450 mt-1 text-xs dark:text-zinc-400">
+            {t("createModal.desc")}
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="relative space-y-4">
+        <form
+          onSubmit={handleSubmit}
+          className="flex-1 space-y-4 overflow-y-auto pr-1"
+        >
           <ImageUpload
             image={formData.image}
             onImageChange={(imageUrl) =>
@@ -149,7 +150,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
             <div>
               <label
                 htmlFor="name"
-                className="flex items-center gap-1 text-sm font-semibold text-slate-300"
+                className="flex items-center gap-1 text-sm font-semibold text-slate-700 dark:text-zinc-300"
               >
                 {t("createModal.fieldName")}{" "}
                 <span className="text-red-500">*</span>
@@ -160,9 +161,9 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className={`mt-1.5 w-full border bg-slate-950/40 ${
-                  errors.name ? "border-red-500" : "border-slate-800"
-                } rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none`}
+                className={`text-slate-850 mt-1.5 w-full rounded-lg border border-slate-200 bg-slate-50/50 px-3 py-2 text-sm placeholder-slate-400 transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950/40 dark:text-white dark:placeholder-zinc-600 ${
+                  errors.name ? "border-red-500 dark:border-red-500" : ""
+                }`}
                 placeholder={t("createModal.placeholderName")}
               />
               {errors.name && (
@@ -174,7 +175,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
               <div>
                 <label
                   htmlFor="price"
-                  className="flex items-center gap-1 text-sm font-semibold text-slate-300"
+                  className="flex items-center gap-1 text-sm font-semibold text-slate-700 dark:text-zinc-300"
                 >
                   {t("createModal.fieldPrice")}{" "}
                   <span className="text-red-500">*</span>
@@ -186,13 +187,13 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
                     name="price"
                     value={formData.price}
                     onChange={handleChange}
-                    className={`w-full border bg-slate-950/40 ${
-                      errors.price ? "border-red-500" : "border-slate-800"
-                    } rounded-lg py-2 pr-3 pl-8 text-sm text-white placeholder-slate-600 transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none`}
+                    className={`text-slate-850 placeholder-slate-450 dark:placeholder-zinc-650 w-full rounded-lg border border-slate-200 bg-slate-50/50 py-2 pr-3 pl-8 text-sm transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950/40 dark:text-white ${
+                      errors.price ? "border-red-500 dark:border-red-500" : ""
+                    }`}
                     placeholder="100"
                     min="1"
                   />
-                  <Coins className="absolute top-2.5 left-2.5 h-4 w-4 text-slate-500" />
+                  <Coins className="absolute top-2.5 left-2.5 h-4 w-4 text-slate-400 dark:text-zinc-500" />
                 </div>
                 {errors.price && (
                   <p className="mt-1 text-xs text-red-500">{errors.price}</p>
@@ -202,7 +203,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
               <div>
                 <label
                   htmlFor="stock"
-                  className="flex items-center gap-1 text-sm font-semibold text-slate-300"
+                  className="flex items-center gap-1 text-sm font-semibold text-slate-700 dark:text-zinc-300"
                 >
                   {t("createModal.fieldStock")}{" "}
                   <span className="text-red-500">*</span>
@@ -213,9 +214,9 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
                   name="stock"
                   value={formData.stock}
                   onChange={handleChange}
-                  className={`mt-1.5 w-full border bg-slate-950/40 ${
-                    errors.stock ? "border-red-500" : "border-slate-800"
-                  } rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none`}
+                  className={`text-slate-850 placeholder-slate-450 dark:placeholder-zinc-655 mt-1.5 w-full rounded-lg border border-slate-200 bg-slate-50/50 px-3 py-2 text-sm transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950/40 dark:text-white ${
+                    errors.stock ? "border-red-500 dark:border-red-500" : ""
+                  }`}
                   placeholder="1"
                   min="1"
                 />
@@ -230,7 +231,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
           <div>
             <label
               htmlFor="description"
-              className="flex items-center gap-1 text-sm font-semibold text-slate-300"
+              className="flex items-center gap-1 text-sm font-semibold text-slate-700 dark:text-zinc-300"
             >
               {t("createModal.fieldDesc")}{" "}
               <span className="text-red-500">*</span>
@@ -241,9 +242,9 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
               value={formData.description}
               onChange={handleChange}
               rows="4"
-              className={`mt-1.5 w-full border bg-slate-950/40 ${
-                errors.description ? "border-red-500" : "border-slate-800"
-              } rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none`}
+              className={`text-slate-850 mt-1.5 w-full rounded-lg border border-slate-200 bg-slate-50/50 px-3 py-2 text-sm placeholder-slate-400 transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950/40 dark:text-white dark:placeholder-zinc-600 ${
+                errors.description ? "border-red-500 dark:border-red-500" : ""
+              }`}
               placeholder={t("createModal.placeholderDesc")}
             ></textarea>
             {errors.description && (
@@ -256,7 +257,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
             <div>
               <label
                 htmlFor="category"
-                className="text-sm font-semibold text-slate-300"
+                className="text-sm font-semibold text-slate-700 dark:text-zinc-300"
               >
                 {t("createModal.fieldCategory")}
               </label>
@@ -265,7 +266,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                className="mt-1.5 w-full rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-300 transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+                className="text-slate-750 mt-1.5 w-full rounded-lg border border-slate-200 bg-slate-50/50 px-3 py-2 text-sm transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300"
               >
                 <option value="handicraft">{t("categories.handicraft")}</option>
                 <option value="recycled">{t("categories.recycled")}</option>
@@ -278,7 +279,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
             <div>
               <label
                 htmlFor="product_status"
-                className="text-sm font-semibold text-slate-300"
+                className="text-sm font-semibold text-slate-700 dark:text-zinc-300"
               >
                 {t("createModal.fieldCondition")}
               </label>
@@ -287,7 +288,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
                 name="product_status"
                 value={formData.product_status}
                 onChange={handleChange}
-                className="mt-1.5 w-full rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-300 transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+                className="text-slate-750 mt-1.5 w-full rounded-lg border border-slate-200 bg-slate-50/50 px-3 py-2 text-sm transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300"
               >
                 <option value="new">{t("conditions.new")}</option>
                 <option value="like-new">{t("conditions.like-new")}</option>
@@ -300,17 +301,17 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
           </div>
 
           {/* Submit Buttons */}
-          <div className="mt-2 flex justify-end gap-3 border-t border-slate-800/60 pt-5">
+          <div className="mt-2 flex shrink-0 justify-end gap-3 border-t border-slate-100 pt-5 dark:border-zinc-800/80">
             <button
               type="button"
               onClick={onCancel}
-              className="rounded-lg border border-slate-800 bg-slate-950/80 px-4 py-2 text-sm font-medium text-slate-300 transition-all duration-200 hover:bg-slate-800 hover:text-white"
+              className="text-slate-650 dark:hover:bg-zinc-850 cursor-pointer rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold transition-all duration-200 hover:bg-slate-50 active:scale-95 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300"
             >
               {t("common.cancel")}
             </button>
             <button
               type="submit"
-              className="rounded-lg bg-emerald-600 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-emerald-600/10 transition-all duration-200 hover:bg-emerald-500 active:scale-95"
+              className="cursor-pointer rounded-xl bg-emerald-600 px-5.5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/15 transition-all duration-200 hover:bg-emerald-500 active:scale-95"
             >
               {isEditing
                 ? t("createModal.btnUpdate")
@@ -318,7 +319,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -2,6 +2,8 @@ import { format } from "date-fns";
 import { Calendar, Coins, Tag, User, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { Dialog, DialogContent, DialogTitle } from "@/src/components/ui/dialog";
+
 import { statusConfig } from "../MarketplaceItemCard";
 
 export default function DetailsModal({
@@ -14,7 +16,7 @@ export default function DetailsModal({
 }) {
   const t = useTranslations("exchangeMarket");
 
-  if (!isOpen) return null;
+  if (!item) return null;
 
   const handleEdit = () => {
     if (!item || !item.id) {
@@ -27,157 +29,178 @@ export default function DetailsModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-md transition-opacity duration-300"
-        onClick={onClose}
-      />
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent
+        showCloseButton={false}
+        className="z-50 flex max-h-[90vh] flex-col overflow-hidden rounded-3xl border border-gray-200 bg-white p-0 shadow-2xl sm:max-w-2xl dark:border-zinc-800/80 dark:bg-zinc-900/95"
+      >
+        <div className="flex max-h-[90vh] flex-col overflow-hidden md:flex-row">
+          {/* Left Panel: Image Section */}
+          <div className="relative flex h-52 w-full shrink-0 items-center justify-center overflow-hidden bg-slate-900 md:h-auto md:w-[45%]">
+            <img
+              src={item.image || "/placeholder.svg"}
+              alt={item.name}
+              className="h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/50 via-transparent to-transparent md:bg-gradient-to-r" />
 
-      {/* Modal Container */}
-      <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative w-full max-w-md transform overflow-hidden rounded-3xl border border-gray-200 bg-white p-6 text-left align-middle shadow-2xl transition-all duration-300 dark:border-zinc-800/80 dark:bg-zinc-900/95">
-          {/* Decorative Glow */}
-          <div className="absolute -top-20 -left-20 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl" />
-          <div className="absolute -right-20 -bottom-20 h-40 w-40 rounded-full bg-blue-500/10 blur-3xl" />
+            {/* Close Button for Mobile (Floating) */}
+            <button
+              onClick={onClose}
+              className="absolute top-3 left-3 z-20 rounded-full bg-black/40 p-2 text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-black/60 active:scale-95 md:hidden"
+            >
+              <X size={18} />
+            </button>
+          </div>
 
-          {/* Close Button */}
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 rounded-full p-1.5 text-slate-400 transition-all duration-200 hover:bg-gray-100 hover:text-slate-800 dark:hover:bg-slate-800/85 dark:hover:text-white"
-          >
-            <X size={20} />
-          </button>
-
-          {/* Title */}
-          <h3 className="bg-gradient-to-r from-emerald-600 to-teal-500 dark:from-emerald-450 dark:to-teal-300 bg-clip-text pr-8 text-xl font-bold text-transparent">
-            {t("detailsModal.title")}
-          </h3>
-
-          <div className="mt-5 space-y-5">
-            {/* Image Container with Glow */}
-            <div className="group relative overflow-hidden rounded-2xl border border-gray-200 dark:border-zinc-800">
-              <img
-                src={item.image || "/placeholder.svg"}
-                alt={item.name}
-                className="h-52 w-full transform object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+          {/* Right Panel: Content Section */}
+          <div className="flex w-full flex-col overflow-hidden bg-white md:w-[55%] dark:bg-zinc-900">
+            {/* Header */}
+            <div className="flex shrink-0 items-center justify-between border-b border-slate-100 p-5 dark:border-zinc-800">
+              <DialogTitle className="dark:from-emerald-450 bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-lg font-bold text-transparent dark:to-teal-300">
+                {t("detailsModal.title")}
+              </DialogTitle>
+              <button
+                onClick={onClose}
+                className="hidden items-center justify-center rounded-full p-1.5 text-slate-400 transition-all duration-200 hover:bg-slate-100 hover:text-slate-800 md:flex dark:hover:bg-zinc-800 dark:hover:text-white"
+              >
+                <X size={18} />
+              </button>
             </div>
 
-            {/* Info Grid */}
-            <div className="space-y-3">
-              <div>
-                <h4 className="text-lg font-semibold tracking-wide text-slate-900 dark:text-white">
+            {/* Scrollable details */}
+            <div className="flex-1 space-y-4 overflow-y-auto p-5">
+              {/* Product Title & Badge */}
+              <div className="space-y-2">
+                <h1 className="text-xl leading-tight font-extrabold tracking-tight text-slate-950 dark:text-white">
                   {item.name}
-                </h4>
-                <div className="mt-1 flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-650 dark:text-emerald-400">
-                    <Tag size={12} />
+                </h1>
+                <div className="flex flex-wrap gap-1.5">
+                  <span className="text-emerald-650 dark:text-emerald-450 inline-flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-bold">
+                    <Tag size={11} />
                     {item.category
                       ? t("categories." + item.category)
                       : t("categories.unknown")}
                   </span>
+                  {isEditMode && item.postStatus && (
+                    <span
+                      className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-bold ${
+                        statusConfig[item.postStatus]?.color ||
+                        "bg-slate-800 text-slate-400"
+                      }`}
+                    >
+                      {t("statuses." + item.postStatus)}
+                    </span>
+                  )}
                 </div>
               </div>
 
-              {/* Description */}
-              <p className="rounded-xl border border-gray-200/50 bg-gray-50/50 p-3 text-sm leading-relaxed text-slate-650 dark:border-zinc-800/50 dark:bg-zinc-950/40 dark:text-zinc-300">
-                {item.description}
-              </p>
-
-              {/* Price & Status */}
-              <div className="flex items-center justify-between rounded-xl border border-gray-200/50 bg-gray-50/50 dark:border-zinc-800/50 dark:bg-zinc-950/40 p-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-slate-500 dark:text-zinc-400">
+              {/* Pricing Banner */}
+              <div className="border-amber-250 flex items-center justify-between rounded-xl border bg-amber-50/15 p-4 shadow-xs dark:border-amber-500/15 dark:bg-amber-950/10">
+                <div className="space-y-0.5">
+                  <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
                     {t("detailsModal.priceLabel")}
                   </span>
                   <div className="flex items-center gap-1">
-                    <span className="text-lg font-bold text-amber-600 dark:text-amber-400">
+                    <span className="text-2xl font-black text-amber-600 dark:text-amber-400">
                       {item.price}
                     </span>
                     <Coins className="h-5 w-5 animate-pulse text-amber-500 dark:text-amber-400" />
                   </div>
                 </div>
-
-                {isEditMode && item.postStatus && (
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs text-slate-500 dark:text-zinc-400">
-                      {t("detailsModal.statusLabel")}
-                    </span>
-                    <span
-                      className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                        statusConfig[item.postStatus]?.color ||
-                        "bg-slate-800 text-slate-400"
-                      }`}
-                    >
-                      {item.postStatus
-                        ? t("statuses." + item.postStatus)
-                        : t("statuses.unknown")}
-                    </span>
+                <div className="space-y-0.5 text-right">
+                  <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                    Số lượng còn lại
+                  </span>
+                  <div className="text-slate-850 dark:text-zinc-250 text-base font-bold">
+                    {item.stock}
                   </div>
-                )}
+                </div>
               </div>
 
-              {/* Seller / Creation Date */}
-              <div className="space-y-1.5 border-t border-gray-100 dark:border-zinc-800/60 pt-2.5 text-xs text-slate-500 dark:text-zinc-400">
-                <div className="flex items-center gap-1.5">
-                  <User size={13} className="text-emerald-600/70 dark:text-emerald-400/70" />
-                  <span>
-                    {t("detailsModal.sellerLabel")}{" "}
-                    <strong className="font-semibold text-slate-700 dark:text-zinc-350">
+              {/* Description Section */}
+              <div className="space-y-1.5">
+                <h3 className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                  Mô tả sản phẩm
+                </h3>
+                <p className="text-slate-650 rounded-xl border border-slate-100 bg-slate-50/50 p-3.5 text-xs leading-relaxed whitespace-pre-wrap dark:border-zinc-800/40 dark:bg-zinc-950/35 dark:text-zinc-300">
+                  {item.description || "Không có mô tả cho sản phẩm này."}
+                </p>
+              </div>
+
+              {/* Detailed Meta Grid */}
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {/* Seller Info */}
+                <div className="flex items-center gap-2.5 rounded-xl border border-slate-100 bg-slate-50/30 p-3 shadow-xs dark:border-zinc-800/50 dark:bg-zinc-950/15">
+                  <div className="shrink-0 rounded-lg bg-emerald-500/10 p-2 text-emerald-600 dark:text-emerald-400">
+                    <User size={16} />
+                  </div>
+                  <div>
+                    <div className="text-[10px] font-medium text-slate-400 dark:text-zinc-500">
+                      {t("detailsModal.sellerLabel")}
+                    </div>
+                    <div className="text-slate-850 mt-0.5 text-xs font-semibold dark:text-zinc-300">
                       {item.seller || t("categories.unknown")}
-                    </strong>
-                  </span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <Calendar size={13} className="text-emerald-600/70 dark:text-emerald-400/70" />
-                  <span>
-                    {t("detailsModal.dateLabel")}{" "}
-                    <strong className="font-semibold text-slate-700 dark:text-zinc-350">
+
+                {/* Date Info */}
+                <div className="flex items-center gap-2.5 rounded-xl border border-slate-100 bg-slate-50/30 p-3 shadow-xs dark:border-zinc-800/50 dark:bg-zinc-950/15">
+                  <div className="shrink-0 rounded-lg bg-emerald-500/10 p-2 text-emerald-600 dark:text-emerald-400">
+                    <Calendar size={16} />
+                  </div>
+                  <div>
+                    <div className="text-[10px] font-medium text-slate-400 dark:text-zinc-500">
+                      {t("detailsModal.dateLabel")}
+                    </div>
+                    <div className="text-slate-850 mt-0.5 text-xs font-semibold dark:text-zinc-300">
                       {item.createdAt &&
                         format(new Date(item.createdAt), "dd/MM/yyyy")}
-                    </strong>
-                  </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Action Buttons */}
-          <div className="mt-6 flex justify-end gap-3 border-t border-gray-150 dark:border-zinc-800/60 pt-4">
-            <button
-              type="button"
-              className="inline-flex justify-center rounded-xl border border-gray-200 bg-white dark:border-zinc-800 dark:bg-zinc-950/80 px-4 py-2 text-sm font-semibold text-slate-600 dark:text-zinc-300 transition-all duration-200 hover:bg-gray-50 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-white"
-              onClick={onClose}
-            >
-              {t("common.close")}
-            </button>
-            {isEditMode ? (
+            {/* Footer Actions */}
+            <div className="dark:border-zinc-850 flex shrink-0 justify-end gap-3 border-t border-slate-100 bg-slate-50/50 p-5 dark:bg-zinc-950/40">
               <button
                 type="button"
-                className="inline-flex justify-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition-all duration-200 hover:bg-blue-500 active:scale-95"
-                onClick={handleEdit}
+                className="text-slate-650 inline-flex justify-center rounded-xl border border-slate-200 bg-white px-4.5 py-2.5 text-xs font-bold transition-all hover:bg-slate-50 active:scale-95 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-900"
+                onClick={onClose}
               >
-                {t("common.edit")}
+                {t("common.close")}
               </button>
-            ) : (
-              <button
-                type="button"
-                disabled={item.stock <= 0}
-                className={`inline-flex justify-center rounded-xl px-4 py-2 text-sm font-semibold text-white transition-all duration-200 ${
-                  item.stock <= 0
-                    ? "bg-slate-400 text-slate-200 dark:bg-zinc-800 dark:text-zinc-500 cursor-not-allowed"
-                    : "bg-emerald-600 shadow-lg shadow-emerald-600/20 hover:bg-emerald-500 active:scale-95"
-                }`}
-                onClick={onPurchase}
-              >
-                {item.stock <= 0 ? t("list.outOfStockBtn") : t("list.redeemBtn")}
-              </button>
-            )}
+
+              {isEditMode ? (
+                <button
+                  type="button"
+                  className="inline-flex justify-center rounded-xl bg-blue-600 px-4.5 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-500 active:scale-95"
+                  onClick={handleEdit}
+                >
+                  {t("common.edit")}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  disabled={item.stock <= 0}
+                  className={`inline-flex justify-center rounded-xl px-4.5 py-2.5 text-xs font-bold text-white transition-all ${
+                    item.stock <= 0
+                      ? "dark:bg-zinc-850 cursor-not-allowed bg-slate-400 text-slate-200 dark:text-zinc-500"
+                      : "bg-emerald-600 shadow-lg shadow-emerald-600/20 hover:bg-emerald-500 active:scale-95"
+                  }`}
+                  onClick={onPurchase}
+                >
+                  {item.stock <= 0
+                    ? t("list.outOfStockBtn")
+                    : t("list.redeemBtn")}
+                </button>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

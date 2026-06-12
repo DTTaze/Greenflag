@@ -161,7 +161,7 @@ function Mission() {
             />
 
             {/* Task List */}
-            <div className="rounded-b-3xl border border-gray-200 bg-white p-6 shadow-sm transition-colors duration-300 dark:border-zinc-800 dark:bg-zinc-900">
+            <div className="rounded-b-3xl border border-gray-200 bg-white p-6 transition-colors duration-300 dark:bg-slate-900/80 dark:border-emerald-500/15">
               {selectedTab === "daily" && dailyTasks.length === 0 ? (
                 <div className="py-12 text-center">
                   <p className="text-sm font-semibold text-slate-400">

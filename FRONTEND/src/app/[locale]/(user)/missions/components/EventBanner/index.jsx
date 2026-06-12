@@ -148,7 +148,7 @@ const EventBanner = ({ userInfo }) => {
               <div className="flex items-center gap-1">
                 <Calendar className="h-3.5 w-3.5" />
                 <span>
-                  {new Date(currentEvent.start_time).toLocaleDateString(
+                  {new Date(currentEvent.startTime).toLocaleDateString(
                     "vi-VN",
                     {
                       month: "long",

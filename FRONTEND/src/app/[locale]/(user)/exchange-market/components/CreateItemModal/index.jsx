@@ -21,6 +21,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
 
   const [errors, setErrors] = useState({});
   const [isEditing, setIsEditing] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
 
   useEffect(() => {
     if (item) {
@@ -34,6 +35,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
         product_status: item.product_status || "new",
       });
       setIsEditing(true);
+      setImageFile(null);
     } else {
       setFormData({
         name: "",
@@ -45,6 +47,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
         product_status: "new",
       });
       setIsEditing(false);
+      setImageFile(null);
     }
   }, [item]);
 
@@ -96,6 +99,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
         ...formData,
         price: Number(formData.price),
         stock: Number(formData.stock),
+        images: imageFile ? [imageFile] : [],
       };
       onSubmit(formattedData, isEditing);
     }
@@ -137,16 +141,18 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
         >
           <ImageUpload
             image={formData.image}
-            onImageChange={(imageUrl) =>
-              setFormData((prev) => ({ ...prev, image: imageUrl }))
-            }
-            onRemoveImage={() =>
-              setFormData((prev) => ({ ...prev, image: "" }))
-            }
+            onImageChange={(imageUrl, file) => {
+              setFormData((prev) => ({ ...prev, image: imageUrl }));
+              setImageFile(file);
+            }}
+            onRemoveImage={() => {
+              setFormData((prev) => ({ ...prev, image: "" }));
+              setImageFile(null);
+            }}
           />
 
           {/* Basic Information */}
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="space-y-4">
             <div>
               <label
                 htmlFor="name"
@@ -171,7 +177,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label
                   htmlFor="price"
@@ -187,7 +193,7 @@ export default function CreateItemModal({ isOpen, item, onSubmit, onCancel }) {
                     name="price"
                     value={formData.price}
                     onChange={handleChange}
-                    className={`text-slate-850 placeholder-slate-450 dark:placeholder-zinc-650 w-full rounded-lg border border-slate-200 bg-slate-50/50 py-2 pr-3 pl-8 text-sm transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950/40 dark:text-white ${
+                    className={`text-slate-850 placeholder-slate-450 dark:placeholder-zinc-655 w-full rounded-lg border border-slate-200 bg-slate-50/50 py-2 pr-3 pl-8 text-sm transition-all focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950/40 dark:text-white ${
                       errors.price ? "border-red-500 dark:border-red-500" : ""
                     }`}
                     placeholder="100"

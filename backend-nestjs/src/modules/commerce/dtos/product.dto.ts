@@ -33,6 +33,10 @@ export class CreateProductDto {
   @IsEnum(PRODUCT_POST_STATUS)
   @IsOptional()
   post_status?: PRODUCT_POST_STATUS;
+
+  @IsString({ each: true })
+  @IsOptional()
+  images?: string[];
 }
 
 export class UpdateProductDto {
@@ -65,4 +69,8 @@ export class UpdateProductDto {
   @IsEnum(PRODUCT_POST_STATUS)
   @IsOptional()
   post_status?: PRODUCT_POST_STATUS;
+
+  @IsString({ each: true })
+  @IsOptional()
+  images?: string[];
 }

@@ -9,7 +9,7 @@ export default function ImageUpload({ image, onImageChange, onRemoveImage }) {
     const file = e.target.files[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
-      onImageChange(imageUrl);
+      onImageChange(imageUrl, file);
     }
   };
 

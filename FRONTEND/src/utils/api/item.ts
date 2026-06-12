@@ -45,6 +45,7 @@ const mapToProductDto = (raw: any) => {
     category: data.category,
     product_status: data.product_status || data.productStatus || "new",
     post_status: data.post_status || data.postStatus || "pending",
+    images: data.images,
   };
 };
 

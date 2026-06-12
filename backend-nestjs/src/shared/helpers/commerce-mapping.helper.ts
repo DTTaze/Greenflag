@@ -20,6 +20,7 @@ export function mapToProductEntity(
   if ('post_status' in dto && dto.post_status !== undefined) {
     entity.postStatus = dto.post_status;
   }
+  if (dto.images !== undefined) entity.images = dto.images;
   return entity;
 }
 

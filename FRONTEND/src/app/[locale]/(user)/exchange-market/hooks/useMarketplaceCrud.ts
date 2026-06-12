@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import React, { useCallback, useState } from "react";
 
 import { useAuthStore } from "@/src/store/auth/authStore";
+import mediaServices from "@/src/services/media";
 
 import {
   createProduct,
@@ -240,16 +241,38 @@ export function useMarketplaceCrud({
         return;
       }
 
-      const formDataToSend = new FormData();
-      Object.keys(productData).forEach((key) => {
-        formDataToSend.append(key, String(productData[key]));
-      });
-
+      // 1. Upload raw images to Cloudinary
+      const imageUrls: string[] = [];
       if (images && images.length > 0) {
-        images.forEach((image: any) => {
-          formDataToSend.append("images", image as Blob | string);
-        });
+        for (const file of images) {
+          if (file instanceof File) {
+            const uploadRes = await mediaServices.uploadFile(file);
+            const url = uploadRes.data?.secureUrl || uploadRes.data?.secure_url;
+            if (url) {
+              imageUrls.push(url);
+            }
+          } else if (typeof file === "string") {
+            imageUrls.push(file);
+          }
+        }
       }
+
+      // If no new image uploaded but we have an existing image URL, preserve it
+      if (imageUrls.length === 0 && productData.image) {
+        imageUrls.push(productData.image);
+      }
+
+      // 2. Prepare JSON payload
+      const payload = {
+        name: productData.name,
+        description: productData.description,
+        price: productData.price,
+        stock: productData.stock,
+        category: productData.category,
+        product_status: productData.product_status,
+        post_status: isEditing ? (itemToEdit?.postStatus || "pending") : "pending",
+        images: imageUrls,
+      };
 
       if (isEditing) {
         if (!itemToEdit || !itemToEdit.id) {
@@ -258,7 +281,7 @@ export function useMarketplaceCrud({
           return;
         }
 
-        const response = await updateProduct(itemToEdit.id, formDataToSend);
+        const response = await updateProduct(itemToEdit.id, payload);
         if (response?.data) {
           const updatedProduct = {
             ...itemToEdit,
@@ -294,7 +317,7 @@ export function useMarketplaceCrud({
           alert(t("alerts.updateFailed"));
         }
       } else {
-        const response = await createProduct(formDataToSend);
+        const response = await createProduct(payload);
         if (response?.data) {
           const newItem = {
             ...productData,

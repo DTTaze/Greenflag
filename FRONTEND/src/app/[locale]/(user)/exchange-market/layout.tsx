@@ -52,7 +52,7 @@ function ExchangeMarketContent({ children }: { children: React.ReactNode }) {
         <CatalogHeader />
         <MarketViewNavigation />
 
-        <section className="relative overflow-hidden rounded-[1.75rem] border border-emerald-200/50 bg-white/85 p-4 shadow-[0_24px_70px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-5 lg:p-6 dark:border-emerald-500/20 dark:bg-slate-900/80 dark:shadow-[0_24px_70px_rgba(0,0,0,0.3)]">
+        <section className="relative mt-8 overflow-hidden rounded-[1.75rem] border border-emerald-200/50 bg-white/85 p-4 shadow-[0_24px_70px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-5 lg:p-6 dark:border-emerald-500/20 dark:bg-slate-900/80 dark:shadow-[0_24px_70px_rgba(0,0,0,0.3)]">
           <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-emerald-300/70 to-transparent dark:via-emerald-500/40" />
 
           {error && (

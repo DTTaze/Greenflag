@@ -82,7 +82,7 @@ export class AuthService {
   }
 
   protected getEmailSubject(content: string): string {
-    return `[${this.configService.get(ENV_KEY.APP_NAME, 'HEARTIFY').toUpperCase()}] - ${content}`;
+    return `[${this.configService.get(ENV_KEY.APP_NAME, 'GREENFLAG').toUpperCase()}] - ${content}`;
   }
 
   protected resetPasswordUrl(email: string, otpCode: string): string {

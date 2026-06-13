@@ -62,7 +62,7 @@ export class EmailService implements EmailSender {
       const smtpUsername = this.configService.get(ENV_KEY.SMTP_USERNAME);
 
       const fromAddress =
-        mailOptions.from || `"Heartify Support" <${smtpUsername}>`;
+        mailOptions.from || `"GreenFlag Support" <${smtpUsername}>`;
 
       const info = await this.transporter.sendMail({
         ...mailOptions,

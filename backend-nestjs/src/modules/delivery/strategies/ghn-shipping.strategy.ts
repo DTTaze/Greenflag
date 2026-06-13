@@ -416,7 +416,7 @@ export class GhnShippingStrategy implements IShippingProvider {
 
     return {
       payment_type_id: 1, // Shop pays fee
-      note: 'Giao hang tu heartify platform',
+      note: 'Giao hang tu GreenFlag platform',
       required_note: 'KHONGCHOXEMHANG',
       to_name: payload.receiverAddress.name,
       to_phone: payload.receiverAddress.phone,

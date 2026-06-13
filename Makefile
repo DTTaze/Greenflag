@@ -73,4 +73,4 @@ clean:
 	docker network rm greenflag-net || true
 
 seed:
-	docker compose exec -T backend yarn db:seed
+	docker compose exec -T backend node dist/scripts/seed.js

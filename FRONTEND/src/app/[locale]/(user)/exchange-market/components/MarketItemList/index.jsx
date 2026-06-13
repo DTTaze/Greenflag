@@ -34,7 +34,7 @@ function MarketItemList({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className={marketListView === "list" ? "space-y-3" : "w-full"}
+      className={marketListView === "list" ? "space-y-3 mt-8" : "w-full mt-8"}
     >
       {marketListView === "list" ? (
         <motion.div

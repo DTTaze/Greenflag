@@ -310,6 +310,7 @@ function TasksManagementContent() {
       coins: data.coins ? Number(data.coins) : 0,
       difficulty: data.difficulty,
       total: data.total ? Number(data.total) : undefined,
+      type: data.type,
     };
 
     if (mode === "add") {

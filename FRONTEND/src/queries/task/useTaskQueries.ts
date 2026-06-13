@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { adminGetTaskTypes } from "@/src/services/admin/task.service";
 
 import {
   acceptTaskFn,
@@ -109,6 +110,20 @@ export const useSubmitTaskMutation = () => {
 };
 
 /** Admin Query & Mutation Hooks */
+
+export const useAdminTaskTypesQuery = () => {
+  return useQuery({
+    queryKey: ["adminTaskTypes"],
+    queryFn: async () => {
+      const res = await adminGetTaskTypes();
+      if (!res.success) {
+        throw new Error(res.message || "Failed to fetch task types");
+      }
+      return res.data;
+    },
+  });
+};
+
 
 export const useAdminTasksQuery = (showDeleted?: boolean) => {
   return useQuery({

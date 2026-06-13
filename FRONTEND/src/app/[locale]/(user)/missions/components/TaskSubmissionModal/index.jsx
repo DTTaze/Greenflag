@@ -1,6 +1,7 @@
 import { UploadCloud, X } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import { useSubmitTaskMutation } from "@/src/queries/task/useTaskQueries";
 
 export default function TaskSubmissionModal({
   isOpen,
@@ -11,6 +12,7 @@ export default function TaskSubmissionModal({
 }) {
   const [files, setFiles] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const submitTaskMutation = useSubmitTaskMutation();
 
   if (!isOpen || !task) return null;
 
@@ -27,14 +29,16 @@ export default function TaskSubmissionModal({
 
     setIsSubmitting(true);
     try {
-      const prevProgress = task.progress_count || 0;
-      const numOfProgress = Math.min(files.length, task.total - prevProgress);
-      await handleTaskCompletion(userID, task.id, numOfProgress);
-      toast.success("Nhiệm vụ đã được cập nhật thành công!");
+      await submitTaskMutation.mutateAsync({
+        taskId: task.id,
+        description: "",
+        images: files,
+      });
+      toast.success("Nộp minh chứng thành công! Đang chờ Admin duyệt.");
       onClose();
     } catch (error) {
       console.error("Error submitting task:", error);
-      toast.error(error.message || "Đã xảy ra lỗi khi xử lý nhiệm vụ");
+      toast.error(error.message || "Đã xảy ra lỗi khi nộp minh chứng");
     } finally {
       setIsSubmitting(false);
     }

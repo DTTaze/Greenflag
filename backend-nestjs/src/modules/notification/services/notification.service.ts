@@ -8,6 +8,7 @@ import { Post } from '@modules/forum/entities/post.entity';
 import { User } from '@modules/user/entities/user.entity';
 
 import { EVENT_KEYS } from '@shared/constants';
+import { ROLE } from '@shared/enums';
 
 import {
   Notification,
@@ -266,6 +267,57 @@ export class NotificationService {
     } catch (error) {
       this.logger.error(
         `Error processing notification.order_refunded: ${error.message}`,
+      );
+    }
+  }
+
+  @OnEvent(EVENT_KEYS.TASK_SUBMITTED)
+  async handleTaskSubmittedNotification(payload: {
+    submissionId: string;
+    userId: string;
+    userFullName: string;
+    taskId: string;
+    taskTitle: string;
+    creatorId: string;
+  }) {
+    try {
+      this.logger.log(
+        `Handling task.submitted event for submission ${payload.submissionId}`,
+      );
+
+      const creator = await this.userRepository.findOne({
+        where: { id: payload.creatorId },
+      });
+
+      const content = `Người dùng **${payload.userFullName}** đã nộp minh chứng cho nhiệm vụ **${payload.taskTitle}**. Vui lòng kiểm duyệt.`;
+
+      if (creator && creator.role === ROLE.PARTNER) {
+        const link = `/partner/content/missions?tab=submissions&submissionId=${payload.submissionId}`;
+        await this.createNotification(
+          payload.creatorId,
+          payload.userId,
+          NotificationType.TASK_SUBMITTED,
+          content,
+          link,
+        );
+      } else {
+        const admins = await this.userRepository.find({
+          where: { role: ROLE.ADMIN },
+        });
+        const link = `/admin/content/missions?tab=submissions&submissionId=${payload.submissionId}`;
+        for (const admin of admins) {
+          await this.createNotification(
+            admin.id,
+            payload.userId,
+            NotificationType.TASK_SUBMITTED,
+            content,
+            link,
+          );
+        }
+      }
+    } catch (error) {
+      this.logger.error(
+        `Error processing task.submitted notification: ${error.message}`,
       );
     }
   }

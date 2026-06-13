@@ -49,6 +49,11 @@ export class CreateTaskDto {
   @IsArray()
   @IsString({ each: true })
   typeIds?: string[];
+
+  @ApiPropertyOptional({ example: 'daily' })
+  @IsOptional()
+  @IsString()
+  type?: string;
 }
 
 export class UpdateTaskDto {
@@ -94,6 +99,11 @@ export class UpdateTaskDto {
   @IsArray()
   @IsString({ each: true })
   typeIds?: string[];
+
+  @ApiPropertyOptional({ example: 'daily' })
+  @IsOptional()
+  @IsString()
+  type?: string;
 }
 
 export class SubmitTaskDto {

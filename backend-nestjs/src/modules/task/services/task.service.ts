@@ -76,6 +76,20 @@ export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
     const { title, content, description, coins, difficulty, total, typeIds } =
       dto;
 
+    let finalTypeIds = typeIds;
+    if (dto.type) {
+      const typeRes = await this.typeService.findOne({ type: dto.type });
+      if (typeRes.success && typeRes.data) {
+        finalTypeIds = [typeRes.data.id];
+      }
+    }
+    if (!finalTypeIds || finalTypeIds.length === 0) {
+      const defaultTypeRes = await this.typeService.findOne({ type: 'others' });
+      if (defaultTypeRes.success && defaultTypeRes.data) {
+        finalTypeIds = [defaultTypeRes.data.id];
+      }
+    }
+
     const savedTask = await this.model.manager.transaction(
       async (transactionalEntityManager) => {
         const task = transactionalEntityManager.create(Task, {
@@ -91,8 +105,8 @@ export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
 
         const saved = await transactionalEntityManager.save(Task, task);
 
-        if (typeIds && typeIds.length > 0) {
-          const taskTypes = typeIds.map((typeId) =>
+        if (finalTypeIds && finalTypeIds.length > 0) {
+          const taskTypes = finalTypeIds.map((typeId) =>
             transactionalEntityManager.create(TaskType, {
               taskId: saved.id,
               typeId,
@@ -149,17 +163,29 @@ export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
 
     const savedTask = await this.model.manager.transaction(
       async (transactionalEntityManager) => {
-        const { typeIds, ...updateFields } = dto;
+        const { typeIds, type, ...updateFields } = dto;
 
         Object.assign(task, updateFields);
         await transactionalEntityManager.save(Task, task);
 
-        if (typeIds !== undefined) {
+        let finalTypeIds = typeIds;
+        if (type !== undefined) {
+          if (type) {
+            const typeRes = await this.typeService.findOne({ type });
+            if (typeRes.success && typeRes.data) {
+              finalTypeIds = [typeRes.data.id];
+            }
+          } else {
+            finalTypeIds = [];
+          }
+        }
+
+        if (finalTypeIds !== undefined) {
           // Clear old mappings
           await transactionalEntityManager.delete(TaskType, { taskId: id });
 
-          if (typeIds.length > 0) {
-            const taskTypes = typeIds.map((typeId) =>
+          if (finalTypeIds.length > 0) {
+            const taskTypes = finalTypeIds.map((typeId) =>
               transactionalEntityManager.create(TaskType, {
                 taskId: id,
                 typeId,
@@ -290,6 +316,25 @@ export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
         taskSubmitRes.code || 'create_failed',
         taskSubmitRes.message,
       );
+    }
+
+    try {
+      const task = await this.taskRepository.findOne({ where: { id: taskId } });
+      const userRes = await this.userService.getUserByID(userId);
+      if (task && userRes.success) {
+        const user = userRes.data;
+        const userFullName = user.profile?.fullName || user.username || 'Người dùng';
+        this.eventEmitter.emit(EVENT_KEYS.TASK_SUBMITTED, {
+          submissionId: taskSubmitRes.data.id,
+          userId,
+          userFullName,
+          taskId,
+          taskTitle: task.title,
+          creatorId: task.creatorId,
+        });
+      }
+    } catch (err) {
+      // Ignore or log error to prevent breaking user flow on notification emission errors
     }
 
     return generateSuccessResult({
@@ -663,5 +708,9 @@ export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
     }
     const taskUsers = taskUsersRes.data;
     return generateSuccessResult(taskUsers);
+  }
+
+  async getAllTaskTypes(): Promise<OperationResult<Type[]>> {
+    return this.typeService.findAll();
   }
 }

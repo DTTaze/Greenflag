@@ -182,6 +182,7 @@ export const EVENT_KEYS = {
   NOTIFICATION_NEW_COMMENT: 'notification.new_comment',
   NOTIFICATION_COIN_RECEIVED: 'notification.coin_received',
   NOTIFICATION_ORDER_REFUNDED: 'notification.order_refunded',
+  TASK_SUBMITTED: 'task.submitted',
 };
 
 export const DEFAULT_MAX_CONCURRENT_CALL = 1;

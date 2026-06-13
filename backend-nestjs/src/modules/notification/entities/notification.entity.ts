@@ -18,6 +18,7 @@ export enum NotificationType {
   MENTION = 'MENTION',
   COIN_RECEIVED = 'COIN_RECEIVED',
   ORDER_REFUNDED = 'ORDER_REFUNDED',
+  TASK_SUBMITTED = 'TASK_SUBMITTED',
 }
 
 @Entity('notifications')

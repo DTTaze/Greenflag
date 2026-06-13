@@ -55,6 +55,12 @@ export class AdminTaskController {
     return this.taskSubmitService.getPendingCount();
   }
 
+  @Get('types')
+  @ApiOperation({ summary: 'Get all task types' })
+  async getAllTaskTypes(): Promise<HttpResponse> {
+    return this.taskService.getAllTaskTypes();
+  }
+
   @Get('submissions/:customerId')
   @ApiOperation({ summary: "Get submissions for any customer's tasks" })
   async getTaskSubmissions(

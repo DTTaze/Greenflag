@@ -555,8 +555,9 @@ export class NotificationService {
     try {
       this.logger.log(`Handling task.moderated for submission ${payload.submissionId}`);
       const isApproved = payload.decision.toLowerCase() === 'approved';
-      const decisionText = isApproved ? 'Phê duyệt' : 'Từ chối';
-      const content = `Nhiệm vụ "${payload.taskTitle}" của bạn đã được ${decisionText}. Vui lòng kiểm tra lại.`;
+      const content = isApproved
+        ? `Nhiệm vụ "${payload.taskTitle}" của bạn đã được chấp nhận.`
+        : `Nhiệm vụ "${payload.taskTitle}" của bạn đã bị từ chối. Vui lòng kiểm tra lại.`;
       const link = `/missions`;
 
       await this.createNotification(

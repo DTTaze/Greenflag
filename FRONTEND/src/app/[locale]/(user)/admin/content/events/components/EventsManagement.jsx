@@ -132,7 +132,7 @@ export default function EventsManagement() {
         rows={events}
         onAdd={handleAddEvent}
         onEdit={handleEditEvent}
-        onDelete={handleDeleteItem}
+        onDelete={handleDeleteEvent}
         onBulkDelete={handleBulkDeleteEvents}
         loading={loading}
         showDeleted={showDeleted}

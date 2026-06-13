@@ -271,6 +271,9 @@ export default function PartnerEventsPage() {
           viewQr: t("events.viewQr"),
           deleteConfirm: t("events.deleteConfirm"),
           deleteBtn: t("events.deleteBtn"),
+          statusUpcoming: t("events.statusUpcoming"),
+          statusOngoing: t("events.statusOngoing"),
+          statusFinished: t("events.statusFinished"),
         }}
       />
 

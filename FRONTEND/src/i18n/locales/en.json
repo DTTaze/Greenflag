@@ -417,6 +417,9 @@
       "loadingEvents": "Loading events...",
       "participants": "Participants",
       "viewQr": "View QR",
+      "statusUpcoming": "Upcoming",
+      "statusOngoing": "Ongoing",
+      "statusFinished": "Finished",
       "errors": {
         "requiredTitle": "Please enter an event title.",
         "requiredDescription": "Please enter an event description.",

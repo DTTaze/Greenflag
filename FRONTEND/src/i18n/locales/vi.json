@@ -417,7 +417,10 @@
       "loadingEvents": "Đang tải sự kiện...",
       "participants": "Người tham gia",
       "viewQr": "Xem QR",
-       "errors": {
+      "statusUpcoming": "Sắp diễn ra",
+      "statusOngoing": "Đang diễn ra",
+      "statusFinished": "Đã kết thúc",
+      "errors": {
         "requiredTitle": "Vui lòng nhập tiêu đề sự kiện.",
         "requiredDescription": "Vui lòng nhập mô tả sự kiện.",
         "requiredLocation": "Vui lòng nhập địa điểm tổ chức.",

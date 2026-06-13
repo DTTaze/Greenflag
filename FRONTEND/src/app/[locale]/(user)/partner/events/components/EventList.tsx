@@ -22,6 +22,9 @@ type EventListLabels = {
   viewQr: string;
   deleteConfirm?: string;
   deleteBtn?: string;
+  statusUpcoming?: string;
+  statusOngoing?: string;
+  statusFinished?: string;
 };
 
 type EventListProps = {
@@ -128,7 +131,11 @@ export function EventList({
                         <span
                           className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${STATUS_STYLES[event.status] || STATUS_STYLES.finished}`}
                         >
-                          {event.status}
+                          {String(event.status).toLowerCase() === "upcoming"
+                            ? (labels.statusUpcoming || "Upcoming")
+                            : String(event.status).toLowerCase() === "ongoing"
+                            ? (labels.statusOngoing || "Ongoing")
+                            : (labels.statusFinished || "Finished")}
                         </span>
                       </div>
                       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 dark:text-slate-400">

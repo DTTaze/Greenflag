@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 
 import { eventServices } from "@/src/services/event";
 import { getUserByIdHandler } from "@/src/services/user/userHandlers";
-import { EventType } from "@/src/types/event/event.type";
+import { EventType, EVENT_STATUS } from "@/src/types/event/event.type";
 import { UserType } from "@/src/types/user/user.type";
 
 export function usePartnerScanner() {
@@ -67,9 +67,13 @@ export function usePartnerScanner() {
         const res = await eventServices.partnerGetMyEvents();
         const data = res?.data || res || [];
         if (Array.isArray(data)) {
-          setEvents(data);
-          if (data.length > 0) {
-            setSelectedEventId(data[0].id);
+          // Filter to only display ongoing events
+          const ongoingEvents = data.filter((event: EventType) => event.status === EVENT_STATUS.ONGOING);
+          setEvents(ongoingEvents);
+          if (ongoingEvents.length > 0) {
+            setSelectedEventId(ongoingEvents[0].id);
+          } else {
+            setSelectedEventId("");
           }
         }
       } catch (err) {

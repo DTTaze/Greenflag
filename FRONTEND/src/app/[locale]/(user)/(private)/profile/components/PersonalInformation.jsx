@@ -63,8 +63,9 @@ function PersonalInformation() {
         else if (!/^[a-zA-ZÀ-ỹà-ỹ\s]+$/.test(value)) error = tAuth("fullNameInvalid");
         break;
       case "phoneNumber":
-        if (!value.trim()) error = t("phoneInvalid");
-        else if (!/^(84|0[3|5|7|8|9])+([0-9]{8})\b$/.test(value)) error = t("phoneInvalid");
+        if (value.trim() !== "" && !/^(84|0[3|5|7|8|9])+([0-9]{8})\b$/.test(value)) {
+          error = t("phoneInvalid");
+        }
         break;
       default:
         break;
@@ -300,6 +301,7 @@ function PersonalInformation() {
               onChange={handleChange}
               error={errors.fullName}
               disabled={!isEditing || updateProfileMutation.isPending}
+              required={isEditing}
               className={!isEditing ? "bg-zinc-50/50 dark:bg-zinc-950/40" : ""}
             />
 

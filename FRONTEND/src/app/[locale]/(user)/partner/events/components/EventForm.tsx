@@ -86,7 +86,7 @@ export function EventForm({
           {/* Title */}
           <div className="flex flex-col gap-2">
             <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-              {labels.titleLabel}
+              {labels.titleLabel} <span className="text-red-500 ml-0.5">*</span>
             </Label>
             <Input
               placeholder={labels.titlePlaceholder}
@@ -101,7 +101,7 @@ export function EventForm({
           {/* Description */}
           <div className="flex flex-col gap-2">
             <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-              {labels.descriptionLabel}
+              {labels.descriptionLabel} <span className="text-red-500 ml-0.5">*</span>
             </Label>
             <textarea
               placeholder={labels.descriptionPlaceholder}
@@ -117,7 +117,7 @@ export function EventForm({
           {/* Location */}
           <div className="flex flex-col gap-2">
             <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-              {labels.locationLabel}
+              {labels.locationLabel} <span className="text-red-500 ml-0.5">*</span>
             </Label>
             <Input
               placeholder={labels.locationPlaceholder}
@@ -133,7 +133,7 @@ export function EventForm({
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
               <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-                {labels.capacityLabel}
+                {labels.capacityLabel} <span className="text-red-500 ml-0.5">*</span>
               </Label>
               <Input
                 type="number"
@@ -147,7 +147,7 @@ export function EventForm({
             </div>
             <div className="flex flex-col gap-2">
               <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-                {labels.coinsLabel}
+                {labels.coinsLabel} <span className="text-red-500 ml-0.5">*</span>
               </Label>
               <Input
                 type="number"
@@ -164,7 +164,7 @@ export function EventForm({
           {/* Registration Deadline */}
           <div className="flex flex-col gap-2">
             <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-              {labels.endSignLabel}
+              {labels.endSignLabel} <span className="text-red-500 ml-0.5">*</span>
             </Label>
             <Input
               type="datetime-local"
@@ -180,7 +180,7 @@ export function EventForm({
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
               <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-                {labels.startTimeLabel}
+                {labels.startTimeLabel} <span className="text-red-500 ml-0.5">*</span>
               </Label>
               <Input
                 type="datetime-local"
@@ -193,7 +193,7 @@ export function EventForm({
             </div>
             <div className="flex flex-col gap-2">
               <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-                {labels.endTimeLabel}
+                {labels.endTimeLabel} <span className="text-red-500 ml-0.5">*</span>
               </Label>
               <Input
                 type="datetime-local"

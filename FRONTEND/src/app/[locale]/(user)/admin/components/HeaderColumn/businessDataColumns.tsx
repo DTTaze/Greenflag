@@ -1,4 +1,4 @@
-import React from "react";
+import { Image as LucideImage } from "lucide-react";
 
 import {
   DELIVERY_STATUS_MAP,
@@ -169,6 +169,37 @@ export const ordersColumns = [
 ];
 
 export const eventsColumns = [
+  {
+    field: "images",
+    headerName: "Hình ảnh",
+    width: 100,
+    render: (value: any, row: any) => {
+      const imageUrl =
+        Array.isArray(value) && value.length > 0 ? value[0] : null;
+      return (
+        <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-zinc-800 dark:bg-zinc-800">
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              alt={row.title || "Hình ảnh sự kiện"}
+              className="h-full w-full object-cover"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src =
+                  "/images/default-item.webp";
+              }}
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-gray-100 text-gray-400 dark:bg-zinc-800 dark:text-zinc-500">
+              <LucideImage
+                size={20}
+                className="text-gray-400 dark:text-zinc-500"
+              />
+            </div>
+          )}
+        </div>
+      );
+    },
+  },
   { field: "title", headerName: "Tên sự kiện", width: 200 },
   {
     field: "creator",

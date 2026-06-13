@@ -64,8 +64,10 @@ export function TaskForm({
 
       <form className="space-y-5" onSubmit={onSubmit}>
         <div className="grid gap-4 sm:grid-cols-2">
-          <label className="space-y-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-            {labels.titleLabel}
+          <label className="space-y-2 text-sm font-medium text-gray-700 dark:text-gray-200 block">
+            <span className="block">
+              {labels.titleLabel} <span className="text-red-500 ml-0.5">*</span>
+            </span>
             <input
               value={form.title}
               onChange={(event) =>
@@ -75,8 +77,10 @@ export function TaskForm({
               className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 transition outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100"
             />
           </label>
-          <label className="space-y-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-            {labels.difficultyLabel}
+          <label className="space-y-2 text-sm font-medium text-gray-700 dark:text-gray-200 block">
+            <span className="block">
+              {labels.difficultyLabel} <span className="text-red-500 ml-0.5">*</span>
+            </span>
             <select
               value={form.difficulty}
               onChange={(event) =>
@@ -100,8 +104,10 @@ export function TaskForm({
           </label>
         </div>
 
-        <label className="space-y-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-          {labels.descriptionLabel}
+        <label className="space-y-2 text-sm font-medium text-gray-700 dark:text-gray-200 block">
+          <span className="block">
+            {labels.descriptionLabel} <span className="text-red-500 ml-0.5">*</span>
+          </span>
           <textarea
             value={form.description}
             onChange={(event) =>
@@ -114,8 +120,10 @@ export function TaskForm({
         </label>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <label className="space-y-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-            {labels.rewardLabel}
+          <label className="space-y-2 text-sm font-medium text-gray-700 dark:text-gray-200 block">
+            <span className="block">
+              {labels.rewardLabel} <span className="text-red-500 ml-0.5">*</span>
+            </span>
             <input
               type="number"
               min={0}

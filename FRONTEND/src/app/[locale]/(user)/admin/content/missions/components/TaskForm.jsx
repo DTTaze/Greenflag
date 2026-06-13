@@ -84,7 +84,9 @@ export default function TaskForm({
 
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="title">Tiêu đề</Label>
+            <Label htmlFor="title">
+              Tiêu đề <span className="text-red-500 ml-0.5">*</span>
+            </Label>
             <Input
               id="title"
               name="title"
@@ -96,7 +98,9 @@ export default function TaskForm({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="description">Mô tả</Label>
+            <Label htmlFor="description">
+              Mô tả <span className="text-red-500 ml-0.5">*</span>
+            </Label>
             <textarea
               id="description"
               name="description"
@@ -111,7 +115,9 @@ export default function TaskForm({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="coins">Số xu thưởng</Label>
+              <Label htmlFor="coins">
+                Số xu thưởng <span className="text-red-500 ml-0.5">*</span>
+              </Label>
               <Input
                 id="coins"
                 name="coins"
@@ -123,7 +129,9 @@ export default function TaskForm({
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="difficulty">Độ khó</Label>
+              <Label htmlFor="difficulty">
+                Độ khó <span className="text-red-500 ml-0.5">*</span>
+              </Label>
               <select
                 id="difficulty"
                 name="difficulty"
@@ -153,7 +161,9 @@ export default function TaskForm({
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="type">Phân loại nhiệm vụ</Label>
+              <Label htmlFor="type">
+                Phân loại nhiệm vụ <span className="text-red-500 ml-0.5">*</span>
+              </Label>
               <select
                 id="type"
                 name="type"

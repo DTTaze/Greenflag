@@ -100,8 +100,21 @@ export default function EventsManagement() {
 
   const handleSubmitEvent = async (data, mode) => {
     try {
+      const { id, images, ...rest } = data;
+      const dto = {
+        title: rest.title,
+        description: rest.description,
+        location: rest.location,
+        start_time: rest.start_time ? new Date(rest.start_time).toISOString() : undefined,
+        end_time: rest.end_time ? new Date(rest.end_time).toISOString() : undefined,
+        end_sign: rest.end_sign ? new Date(rest.end_sign).toISOString() : undefined,
+        capacity: rest.capacity ? Number(rest.capacity) : undefined,
+        coins: rest.coins !== undefined ? Number(rest.coins) : undefined,
+        status: rest.status,
+      };
+
       if (mode === "add") {
-        const result = await createEvent(data, data.images);
+        const result = await createEvent(dto, images);
         if (result.success) {
           toast.success(tEvents("errors.createSuccess"));
           fetchEvents();
@@ -109,7 +122,7 @@ export default function EventsManagement() {
           toast.error(tEvents("errors.createFailed"));
         }
       } else if (mode === "edit") {
-        const result = await updateEvent(data.id, data, data.images);
+        const result = await updateEvent(id, dto, images);
         if (result.success) {
           toast.success(tEvents("errors.updateSuccess"));
           fetchEvents();

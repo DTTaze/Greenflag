@@ -164,7 +164,7 @@ export default function CategoriesManagement() {
 
             <form className="space-y-4" onSubmit={handleSubmit}>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Tên danh mục
+                Tên danh mục <span className="text-red-500 ml-0.5">*</span>
                 <input
                   value={name}
                   onChange={(event) => setName(event.target.value)}
@@ -174,7 +174,7 @@ export default function CategoriesManagement() {
                 />
               </label>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Mô tả
+                Mô tả <span className="text-red-500 ml-0.5">*</span>
                 <textarea
                   value={description}
                   onChange={(event) => setDescription(event.target.value)}

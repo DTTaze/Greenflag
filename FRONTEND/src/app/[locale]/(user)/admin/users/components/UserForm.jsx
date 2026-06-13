@@ -84,7 +84,9 @@ export default function UserForm({
         <form onSubmit={onSubmit} className="space-y-6">
           <div className="space-y-6">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="full_name">Họ tên</Label>
+              <Label htmlFor="full_name">
+                Họ tên <span className="text-red-500 ml-0.5">*</span>
+              </Label>
               <Input
                 id="full_name"
                 name="full_name"
@@ -96,7 +98,9 @@ export default function UserForm({
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="username">Tên người dùng</Label>
+              <Label htmlFor="username">
+                Tên người dùng <span className="text-red-500 ml-0.5">*</span>
+              </Label>
               <Input
                 id="username"
                 name="username"
@@ -108,7 +112,9 @@ export default function UserForm({
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">
+                Email <span className="text-red-500 ml-0.5">*</span>
+              </Label>
               <Input
                 id="email"
                 name="email"
@@ -122,7 +128,9 @@ export default function UserForm({
 
             {mode === "add" && (
               <div className="flex flex-col gap-2">
-                <Label htmlFor="password">Mật khẩu</Label>
+                <Label htmlFor="password">
+                  Mật khẩu <span className="text-red-500 ml-0.5">*</span>
+                </Label>
                 <Input
                   id="password"
                   name="password"

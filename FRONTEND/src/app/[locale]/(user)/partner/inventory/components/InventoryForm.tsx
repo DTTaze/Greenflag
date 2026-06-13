@@ -75,7 +75,7 @@ export function InventoryForm({
         <form className="grid gap-5" onSubmit={onSubmit}>
           <div className="flex flex-col gap-2">
             <Label className="text-sm font-semibold text-gray-700 dark:text-zinc-300">
-              {t("inventory.itemNameLabel")}
+              {t("inventory.itemNameLabel")} <span className="text-red-500 ml-0.5">*</span>
             </Label>
             <Input
               value={form.name}
@@ -88,7 +88,7 @@ export function InventoryForm({
           <div className="grid gap-5 sm:grid-cols-2">
             <div className="flex flex-col gap-2">
               <Label className="text-sm font-semibold text-gray-700 dark:text-zinc-300">
-                {t("inventory.stockLabel")}
+                {t("inventory.stockLabel")} <span className="text-red-500 ml-0.5">*</span>
               </Label>
               <Input
                 type="number"
@@ -102,7 +102,7 @@ export function InventoryForm({
             </div>
             <div className="flex flex-col gap-2">
               <Label className="text-sm font-semibold text-gray-700 dark:text-zinc-300">
-                {t("inventory.pointsLabel")}
+                {t("inventory.pointsLabel")} <span className="text-red-500 ml-0.5">*</span>
               </Label>
               <Input
                 type="number"

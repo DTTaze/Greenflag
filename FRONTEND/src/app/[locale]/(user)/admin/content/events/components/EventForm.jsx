@@ -27,8 +27,9 @@ export default function EventForm({
     location: "",
     start_time: "",
     end_time: "",
-    max_participants: "",
-    points: "",
+    capacity: "",
+    coins: "",
+    end_sign: "",
     status: "active",
     images: [],
   });
@@ -42,14 +43,23 @@ export default function EventForm({
         title: initialData?.title || "",
         description: initialData?.description || "",
         location: initialData?.location || "",
-        start_time: initialData?.start_time
-          ? new Date(initialData.start_time).toISOString().slice(0, 16)
+        start_time: initialData?.start_time || initialData?.startTime
+          ? new Date(initialData.start_time || initialData.startTime)
+              .toISOString()
+              .slice(0, 16)
           : "",
-        end_time: initialData?.end_time
-          ? new Date(initialData.end_time).toISOString().slice(0, 16)
+        end_time: initialData?.end_time || initialData?.endTime
+          ? new Date(initialData.end_time || initialData.endTime)
+              .toISOString()
+              .slice(0, 16)
           : "",
-        max_participants: initialData?.max_participants || "",
-        points: initialData?.points || "",
+        capacity: initialData?.capacity || "",
+        coins: initialData?.coins || "",
+        end_sign: initialData?.end_sign || initialData?.endSign
+          ? new Date(initialData.end_sign || initialData.endSign)
+              .toISOString()
+              .slice(0, 16)
+          : "",
         status: initialData?.status || "active",
         images: initialData?.images || [],
       });
@@ -69,8 +79,9 @@ export default function EventForm({
         location: "",
         start_time: "",
         end_time: "",
-        max_participants: "",
-        points: "",
+        capacity: "",
+        coins: "",
+        end_sign: "",
         status: "active",
         images: [],
       });
@@ -121,7 +132,9 @@ export default function EventForm({
 
         <form onSubmit={onSubmit} className="space-y-6">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="title">Tên sự kiện</Label>
+            <Label htmlFor="title">
+              Tên sự kiện <span className="text-red-500 ml-0.5">*</span>
+            </Label>
             <Input
               id="title"
               name="title"
@@ -133,7 +146,9 @@ export default function EventForm({
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="description">Mô tả</Label>
+            <Label htmlFor="description">
+              Mô tả <span className="text-red-500 ml-0.5">*</span>
+            </Label>
             <textarea
               id="description"
               name="description"
@@ -147,7 +162,9 @@ export default function EventForm({
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="location">Địa điểm</Label>
+            <Label htmlFor="location">
+              Địa điểm <span className="text-red-500 ml-0.5">*</span>
+            </Label>
             <Input
               id="location"
               name="location"
@@ -160,7 +177,9 @@ export default function EventForm({
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="start_time">Thời gian bắt đầu</Label>
+              <Label htmlFor="start_time">
+                Thời gian bắt đầu <span className="text-red-500 ml-0.5">*</span>
+              </Label>
               <Input
                 id="start_time"
                 name="start_time"
@@ -172,7 +191,9 @@ export default function EventForm({
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="end_time">Thời gian kết thúc</Label>
+              <Label htmlFor="end_time">
+                Thời gian kết thúc <span className="text-red-500 ml-0.5">*</span>
+              </Label>
               <Input
                 id="end_time"
                 name="end_time"
@@ -184,14 +205,30 @@ export default function EventForm({
             </div>
           </div>
 
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="end_sign">
+              Hạn chót đăng kí <span className="text-red-500 ml-0.5">*</span>
+            </Label>
+            <Input
+              id="end_sign"
+              name="end_sign"
+              type="datetime-local"
+              value={formData.end_sign}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="max_participants">Số người tham gia tối đa</Label>
+              <Label htmlFor="capacity">
+                Số người tham gia tối đa <span className="text-red-500 ml-0.5">*</span>
+              </Label>
               <Input
-                id="max_participants"
-                name="max_participants"
+                id="capacity"
+                name="capacity"
                 type="number"
-                value={formData.max_participants}
+                value={formData.capacity}
                 onChange={handleChange}
                 required
                 placeholder="100"
@@ -199,12 +236,14 @@ export default function EventForm({
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="points">Điểm thưởng</Label>
+              <Label htmlFor="coins">
+                Điểm thưởng <span className="text-red-500 ml-0.5">*</span>
+              </Label>
               <Input
-                id="points"
-                name="points"
+                id="coins"
+                name="coins"
                 type="number"
-                value={formData.points}
+                value={formData.coins}
                 onChange={handleChange}
                 required
                 placeholder="50"
@@ -212,20 +251,22 @@ export default function EventForm({
             </div>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="status">Trạng thái</Label>
-            <select
-              id="status"
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              className="h-8 w-full rounded-lg border border-emerald-600/20 bg-transparent px-2.5 py-1 text-sm focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600/20 focus:outline-none dark:border-zinc-800 dark:bg-slate-800 dark:focus:border-emerald-500"
-            >
-              <option value="active">Hoạt động</option>
-              <option value="inactive">Không hoạt động</option>
-              <option value="completed">Đã kết thúc</option>
-            </select>
-          </div>
+          {mode === "edit" && (
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="status">Trạng thái</Label>
+              <select
+                id="status"
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                className="h-8 w-full rounded-lg border border-emerald-600/20 bg-transparent px-2.5 py-1 text-sm focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600/20 focus:outline-none dark:border-zinc-800 dark:bg-slate-800 dark:focus:border-emerald-500"
+              >
+                <option value="active">Hoạt động</option>
+                <option value="inactive">Không hoạt động</option>
+                <option value="completed">Đã kết thúc</option>
+              </select>
+            </div>
+          )}
 
           {/* Image Upload list */}
           <div className="space-y-2.5 pt-2">

@@ -146,7 +146,9 @@ export default function ItemForm({
 
         <form onSubmit={onSubmit} className="space-y-6">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="name">Tên vật phẩm</Label>
+            <Label htmlFor="name">
+              Tên vật phẩm <span className="text-red-500 ml-0.5">*</span>
+            </Label>
             <Input
               id="name"
               name="name"
@@ -227,7 +229,9 @@ export default function ItemForm({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="price">Giá trị (xu)</Label>
+              <Label htmlFor="price">
+                Giá trị (xu) <span className="text-red-500 ml-0.5">*</span>
+              </Label>
               <Input
                 id="price"
                 name="price"
@@ -239,7 +243,9 @@ export default function ItemForm({
               />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="stock">Tồn kho</Label>
+              <Label htmlFor="stock">
+                Tồn kho <span className="text-red-500 ml-0.5">*</span>
+              </Label>
               <Input
                 id="stock"
                 name="stock"
@@ -254,7 +260,9 @@ export default function ItemForm({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="weight">Cân nặng (g)</Label>
+              <Label htmlFor="weight">
+                Cân nặng (g) <span className="text-red-500 ml-0.5">*</span>
+              </Label>
               <Input
                 id="weight"
                 name="weight"
@@ -266,7 +274,9 @@ export default function ItemForm({
               />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="status">Trạng thái</Label>
+              <Label htmlFor="status">
+                Trạng thái <span className="text-red-500 ml-0.5">*</span>
+              </Label>
               <select
                 id="status"
                 name="status"
@@ -285,7 +295,9 @@ export default function ItemForm({
 
           <div className="grid grid-cols-3 gap-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="length">Chiều dài (cm)</Label>
+              <Label htmlFor="length">
+                Chiều dài (cm) <span className="text-red-500 ml-0.5">*</span>
+              </Label>
               <Input
                 id="length"
                 name="length"
@@ -297,7 +309,9 @@ export default function ItemForm({
               />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="width">Chiều rộng (cm)</Label>
+              <Label htmlFor="width">
+                Chiều rộng (cm) <span className="text-red-500 ml-0.5">*</span>
+              </Label>
               <Input
                 id="width"
                 name="width"
@@ -309,7 +323,9 @@ export default function ItemForm({
               />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="height">Chiều cao (cm)</Label>
+              <Label htmlFor="height">
+                Chiều cao (cm) <span className="text-red-500 ml-0.5">*</span>
+              </Label>
               <Input
                 id="height"
                 name="height"
@@ -340,7 +356,9 @@ export default function ItemForm({
             </div>
             {isLimited && (
               <div className="mt-2 flex flex-col gap-2">
-                <Label htmlFor="purchase_limit_per_day">Số lượt mua tối đa trong ngày</Label>
+                <Label htmlFor="purchase_limit_per_day">
+                  Số lượt mua tối đa trong ngày <span className="text-red-500 ml-0.5">*</span>
+                </Label>
                 <Input
                   id="purchase_limit_per_day"
                   name="purchase_limit_per_day"

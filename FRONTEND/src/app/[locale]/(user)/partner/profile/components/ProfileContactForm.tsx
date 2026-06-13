@@ -29,7 +29,9 @@ export function ProfileContactForm({
       </CardHeader>
       <CardContent className="p-0 space-y-5">
         <label className="flex flex-col gap-2 text-sm font-semibold text-gray-700 dark:text-zinc-300">
-          {t("profile.fullName")}
+          <span>
+            {t("profile.fullName")} <span className="text-red-500 ml-0.5">*</span>
+          </span>
           <Input
             value={profile?.full_name || ""}
             onChange={(e) => onProfileChange("full_name", e.target.value)}
@@ -37,7 +39,9 @@ export function ProfileContactForm({
           />
         </label>
         <label className="flex flex-col gap-2 text-sm font-semibold text-gray-700 dark:text-zinc-300">
-          {t("profile.email")}
+          <span>
+            {t("profile.email")} <span className="text-red-500 ml-0.5">*</span>
+          </span>
           <Input
             value={profile?.email || ""}
             onChange={(e) => onProfileChange("email", e.target.value)}

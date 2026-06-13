@@ -73,7 +73,7 @@ export default function UserCreateModal({
           <form onSubmit={handleSubmit} className="space-y-6 px-6 py-6 md:p-8">
             <div className="grid gap-6 sm:grid-cols-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">
-                {tCommon("username")}
+                {tCommon("username")} <span className="text-red-500 ml-0.5">*</span>
                 <input
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
@@ -84,7 +84,7 @@ export default function UserCreateModal({
               </label>
 
               <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">
-                {tCommon("email")}
+                {tCommon("email")} <span className="text-red-500 ml-0.5">*</span>
                 <input
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -98,7 +98,7 @@ export default function UserCreateModal({
 
             <div className="grid gap-6 sm:grid-cols-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">
-                {t("fullName")}
+                {t("fullName")} <span className="text-red-500 ml-0.5">*</span>
                 <input
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
@@ -109,7 +109,7 @@ export default function UserCreateModal({
               </label>
 
               <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">
-                {t("password") || "Mật khẩu"}
+                {t("password") || "Mật khẩu"} <span className="text-red-500 ml-0.5">*</span>
                 <input
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

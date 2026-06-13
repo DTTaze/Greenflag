@@ -133,7 +133,9 @@ export default function ProductForm({
 
         <form onSubmit={onSubmit} className="space-y-6">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="name">Tên sản phẩm</Label>
+            <Label htmlFor="name">
+              Tên sản phẩm <span className="text-red-500 ml-0.5">*</span>
+            </Label>
             <Input
               id="name"
               name="name"
@@ -242,7 +244,9 @@ export default function ProductForm({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="price">Giá trị (VNĐ)</Label>
+              <Label htmlFor="price">
+                Giá trị (VNĐ) <span className="text-red-500 ml-0.5">*</span>
+              </Label>
               <Input
                 id="price"
                 name="price"
@@ -254,7 +258,9 @@ export default function ProductForm({
               />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="stock">Số lượng tồn kho</Label>
+              <Label htmlFor="stock">
+                Số lượng tồn kho <span className="text-red-500 ml-0.5">*</span>
+              </Label>
               <Input
                 id="stock"
                 name="stock"
@@ -270,7 +276,9 @@ export default function ProductForm({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="category">Danh mục</Label>
+              <Label htmlFor="category">
+                Danh mục <span className="text-red-500 ml-0.5">*</span>
+              </Label>
               <select
                 id="category"
                 name="category"
@@ -288,7 +296,9 @@ export default function ProductForm({
               </select>
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="product_status">Tình trạng sản phẩm</Label>
+              <Label htmlFor="product_status">
+                Tình trạng sản phẩm <span className="text-red-500 ml-0.5">*</span>
+              </Label>
               <select
                 id="product_status"
                 name="product_status"
@@ -305,7 +315,9 @@ export default function ProductForm({
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="post_status">Trạng thái bài đăng</Label>
+            <Label htmlFor="post_status">
+              Trạng thái bài đăng <span className="text-red-500 ml-0.5">*</span>
+            </Label>
             <select
               id="post_status"
               name="post_status"

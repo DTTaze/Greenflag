@@ -260,7 +260,12 @@ Output STRICTLY as a JSON object:
       }
     }
 
-    if (
+    if (status === FORUM_POST_STATUS.APPROVED && isAdminPost) {
+      this.eventEmitter.emit(EVENT_KEYS.POST_CREATED_BY_ADMIN, {
+        postId: savedPost.id,
+        authorId,
+      });
+    } else if (
       status === FORUM_POST_STATUS.PENDING &&
       isAutoEnabled &&
       postRoles.includes(userRole)
@@ -627,6 +632,7 @@ Output STRICTLY as a JSON object:
       dto.isDraft === undefined ? undefined : dto.isDraft === true;
 
     let shouldEmitEvent = false;
+    let shouldEmitAdminPostEvent = false;
 
     // Security Draft Publication Moderation Check
     if (post.status === FORUM_POST_STATUS.DRAFT && isDraftVal === false) {
@@ -634,6 +640,7 @@ Output STRICTLY as a JSON object:
         post.status = FORUM_POST_STATUS.APPROVED;
         post.isAdminPost = true;
         post.flaggedReason = null;
+        shouldEmitAdminPostEvent = true;
       } else {
         const isAutoEnabled =
           (await this.systemConfigService.get(
@@ -669,6 +676,13 @@ Output STRICTLY as a JSON object:
 
     if (shouldEmitEvent) {
       this.eventEmitter.emit(EVENT_KEYS.POST_CREATED, { postId: savedPost.id });
+    }
+
+    if (shouldEmitAdminPostEvent) {
+      this.eventEmitter.emit(EVENT_KEYS.POST_CREATED_BY_ADMIN, {
+        postId: savedPost.id,
+        authorId: userId,
+      });
     }
 
     return savedPost;

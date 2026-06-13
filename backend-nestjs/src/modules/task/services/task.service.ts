@@ -13,6 +13,7 @@ import { UserService } from '@modules/user/services/user.service';
 
 import { ERR_CODE, EVENT_KEYS, getStorageFolder } from '@shared/constants';
 import {
+  ROLE,
   TASK_DIFFICULTY,
   TASK_SUBMIT_STATUS,
   TASK_VISIBILITY,
@@ -118,6 +119,15 @@ export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
         return saved;
       },
     );
+
+    const creatorRes = await this.userService.getUserByID(creatorId);
+    if (creatorRes.success && creatorRes.data && creatorRes.data.role === ROLE.ADMIN) {
+      this.eventEmitter.emit(EVENT_KEYS.TASK_CREATED, {
+        taskId: savedTask.id,
+        taskTitle: savedTask.title,
+        creatorId,
+      });
+    }
 
     return generateSuccessResult(savedTask);
   }
@@ -595,6 +605,16 @@ export class TaskService extends BaseCRUDService<Task> implements OnModuleInit {
           progressResult.message,
         );
       }
+    }
+
+    if (taskSubmit.taskUser) {
+      this.eventEmitter.emit(EVENT_KEYS.TASK_MODERATED, {
+        submissionId: taskSubmit.id,
+        taskId: taskSubmit.taskUser.taskId || taskSubmit.taskUser.task?.id,
+        taskTitle: taskSubmit.taskUser.task?.title || 'nhiệm vụ',
+        userId: taskSubmit.taskUser.userId,
+        decision,
+      });
     }
 
     return generateSuccessResult(updated);

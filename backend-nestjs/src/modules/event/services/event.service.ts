@@ -2,12 +2,13 @@ import { nanoid } from 'nanoid';
 import { In, Repository } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EVENT_STATUS } from '@shared/enums';
 
 import { CloudinaryService } from '@modules/cloudinary/services/cloudinary.service';
 
-import { ERR_CODE, getStorageFolder } from '@shared/constants';
+import { ERR_CODE, EVENT_KEYS, getStorageFolder } from '@shared/constants';
 import {
   OperationResult,
   generateForbiddenResult,
@@ -25,6 +26,7 @@ export class EventService extends BaseCRUDService<Event> {
     @InjectRepository(Event)
     private readonly eventRepository: Repository<Event>,
     private readonly cloudinaryService: CloudinaryService,
+    private readonly eventEmitter: EventEmitter2,
   ) {
     super(eventRepository);
   }
@@ -141,6 +143,12 @@ export class EventService extends BaseCRUDService<Event> {
       images: event.images || [],
     };
 
+    this.eventEmitter.emit(EVENT_KEYS.EVENT_CREATED, {
+      eventId: event.id,
+      eventTitle: event.title,
+      creatorId,
+    });
+
     return generateSuccessResult(mapped);
   }
 
@@ -200,6 +208,12 @@ export class EventService extends BaseCRUDService<Event> {
     }
 
     await this.eventRepository.update(eventId, updateFields);
+
+    this.eventEmitter.emit(EVENT_KEYS.EVENT_UPDATED, {
+      eventId,
+      eventTitle: dto.title || event.title,
+      updaterId: currentUserId,
+    });
 
     return this.getEventById(eventId);
   }

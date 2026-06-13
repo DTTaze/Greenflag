@@ -10,6 +10,7 @@ import { Repository } from 'typeorm';
 
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { DeliveryAccount } from '@modules/delivery/entities/delivery-account.entity';
@@ -18,7 +19,7 @@ import { StandardShippingPayload } from '@modules/delivery/interfaces/shipping-p
 import { ShippingFactoryService } from '@modules/delivery/services/shipping-factory.service';
 import { MetricsService } from '@modules/global/metrics.service';
 
-import { JOB_NAME, QUEUE_NAME } from '@shared/constants';
+import { EVENT_KEYS, JOB_NAME, QUEUE_NAME } from '@shared/constants';
 import { TRANSACTION_STATUS } from '@shared/enums';
 
 import { Transaction } from '../entities/transaction.entity';
@@ -38,6 +39,7 @@ export class CommerceProcessor extends WorkerHost {
     private readonly transactionService: TransactionService,
     private readonly shippingFactoryService: ShippingFactoryService,
     private readonly metricsService: MetricsService,
+    private readonly eventEmitter: EventEmitter2,
   ) {
     super();
   }
@@ -170,6 +172,14 @@ export class CommerceProcessor extends WorkerHost {
           // 5. Update transaction status to ACCEPTED
           await this.transactionRepository.update(transaction.id, {
             status: TRANSACTION_STATUS.ACCEPTED,
+          });
+
+          // Emit transaction.created event
+          this.eventEmitter.emit(EVENT_KEYS.TRANSACTION_CREATED, {
+            transactionId: transaction.id,
+            buyerId: transaction.buyerId,
+            totalPrice: transaction.totalPrice,
+            name: transaction.name,
           });
 
           this.logger.log(

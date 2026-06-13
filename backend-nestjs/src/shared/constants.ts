@@ -19,10 +19,12 @@ export const INJECTION_TOKEN = {
 
 export const QUEUE_NAME = {
   COMMERCE: 'COMMERCE_QUEUE',
+  NOTIFICATION: 'NOTIFICATION_QUEUE',
 };
 
 export const JOB_NAME = {
   PROCESS_ITEM_PURCHASE: 'process-item-purchase',
+  BROADCAST_NOTIFICATION: 'broadcast-notification',
 };
 
 export const CACHE_TTL = {
@@ -183,6 +185,13 @@ export const EVENT_KEYS = {
   NOTIFICATION_COIN_RECEIVED: 'notification.coin_received',
   NOTIFICATION_ORDER_REFUNDED: 'notification.order_refunded',
   TASK_SUBMITTED: 'task.submitted',
+  TASK_CREATED: 'task.created',
+  POST_CREATED_BY_ADMIN: 'post.created_by_admin',
+  EVENT_CREATED: 'event.created',
+  EVENT_UPDATED: 'event.updated',
+  TRANSACTION_CREATED: 'transaction.created',
+  SHIPPING_STATUS_CHANGED: 'delivery.status_updated',
+  TASK_MODERATED: 'task.moderated',
 };
 
 export const DEFAULT_MAX_CONCURRENT_CALL = 1;

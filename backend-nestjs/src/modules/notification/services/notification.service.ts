@@ -1,13 +1,17 @@
-import { Repository } from 'typeorm';
+import { Queue } from 'bullmq';
+import { Not, Repository } from 'typeorm';
 
+import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 
+import { Transaction } from '@modules/commerce/entities/transaction.entity';
+import { EventUser } from '@modules/event/entities/event-user.entity';
 import { Post } from '@modules/forum/entities/post.entity';
 import { User } from '@modules/user/entities/user.entity';
 
-import { EVENT_KEYS } from '@shared/constants';
+import { EVENT_KEYS, JOB_NAME, QUEUE_NAME } from '@shared/constants';
 import { ROLE } from '@shared/enums';
 
 import {
@@ -27,6 +31,12 @@ export class NotificationService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
+    @InjectRepository(EventUser)
+    private readonly eventUserRepository: Repository<EventUser>,
+    @InjectRepository(Transaction)
+    private readonly transactionRepository: Repository<Transaction>,
+    @InjectQueue(QUEUE_NAME.NOTIFICATION)
+    private readonly notificationQueue: Queue,
     private readonly notificationGateway: NotificationGateway,
   ) {}
 
@@ -319,6 +329,245 @@ export class NotificationService {
       this.logger.error(
         `Error processing task.submitted notification: ${error.message}`,
       );
+    }
+  }
+
+  private async addBroadcastJob(payload: {
+    type: NotificationType;
+    content: string;
+    link: string | null;
+    senderId: string | null;
+    recipientIds?: string[];
+    excludeUserIds?: string[];
+  }) {
+    await this.notificationQueue.add(
+      JOB_NAME.BROADCAST_NOTIFICATION,
+      payload,
+      {
+        removeOnComplete: true,
+        removeOnFail: { count: 100 },
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 2000 },
+      },
+    );
+  }
+
+  @OnEvent(EVENT_KEYS.TASK_CREATED)
+  async handleTaskCreated(payload: {
+    taskId: string;
+    taskTitle: string;
+    creatorId: string;
+  }) {
+    try {
+      this.logger.log(`Handling task.created for task ${payload.taskId}`);
+      await this.addBroadcastJob({
+        type: NotificationType.TASK_CREATED,
+        content: `Nhiệm vụ mới: "${payload.taskTitle}" đã được tạo. Tham gia ngay!`,
+        link: `/missions?taskId=${payload.taskId}`,
+        senderId: payload.creatorId,
+        excludeUserIds: [payload.creatorId],
+      });
+    } catch (error) {
+      this.logger.error(`Error queuing task.created: ${error.message}`);
+    }
+  }
+
+  @OnEvent(EVENT_KEYS.POST_CREATED_BY_ADMIN)
+  async handlePostCreatedByAdmin(payload: {
+    postId: string;
+    authorId: string;
+  }) {
+    try {
+      this.logger.log(`Handling post.created_by_admin for post ${payload.postId}`);
+      const post = await this.postRepository.findOne({ where: { id: payload.postId } });
+      if (!post) return;
+      const snippet = post.content ? (post.content.length > 50 ? post.content.substring(0, 50) + '...' : post.content) : '';
+      
+      await this.addBroadcastJob({
+        type: NotificationType.POST_CREATED_BY_ADMIN,
+        content: `Bài viết mới từ Admin: "${snippet}". Xem ngay!`,
+        link: `/forum/post/${payload.postId}`,
+        senderId: payload.authorId,
+        excludeUserIds: [payload.authorId],
+      });
+    } catch (error) {
+      this.logger.error(`Error queuing post.created_by_admin: ${error.message}`);
+    }
+  }
+
+  @OnEvent(EVENT_KEYS.EVENT_CREATED)
+  async handleEventCreated(payload: {
+    eventId: string;
+    eventTitle: string;
+    creatorId: string;
+  }) {
+    try {
+      this.logger.log(`Handling event.created for event ${payload.eventId}`);
+      await this.addBroadcastJob({
+        type: NotificationType.EVENT_CREATED,
+        content: `Sự kiện mới sắp diễn ra: "${payload.eventTitle}". Đăng ký tham gia ngay!`,
+        link: `/events/${payload.eventId}`,
+        senderId: payload.creatorId,
+        excludeUserIds: [payload.creatorId],
+      });
+    } catch (error) {
+      this.logger.error(`Error queuing event.created: ${error.message}`);
+    }
+  }
+
+  @OnEvent(EVENT_KEYS.EVENT_UPDATED)
+  async handleEventUpdated(payload: {
+    eventId: string;
+    eventTitle: string;
+    updaterId: string;
+  }) {
+    try {
+      this.logger.log(`Handling event.updated for event ${payload.eventId}`);
+      const registrations = await this.eventUserRepository.find({
+        where: { eventId: payload.eventId },
+        select: ['userId'],
+      });
+      const recipientIds = registrations
+        .map((reg) => reg.userId)
+        .filter((id) => id !== payload.updaterId);
+
+      if (recipientIds.length > 0) {
+        await this.addBroadcastJob({
+          type: NotificationType.EVENT_UPDATED,
+          content: `Sự kiện "${payload.eventTitle}" mà bạn đăng ký đã cập nhật thông tin mới.`,
+          link: `/events/${payload.eventId}`,
+          senderId: payload.updaterId,
+          recipientIds,
+        });
+      }
+    } catch (error) {
+      this.logger.error(`Error queuing event.updated: ${error.message}`);
+    }
+  }
+
+  @OnEvent(EVENT_KEYS.TRANSACTION_CREATED)
+  async handleTransactionCreated(payload: {
+    transactionId: string;
+    buyerId: string;
+    totalPrice: number;
+    name: string;
+  }) {
+    try {
+      this.logger.log(`Handling transaction.created for transaction ${payload.transactionId}`);
+      const admins = await this.userRepository.find({
+        where: { role: ROLE.ADMIN },
+        select: ['id'],
+      });
+      const adminIds = admins.map((admin) => admin.id);
+
+      const transaction = await this.transactionRepository.findOne({
+        where: { id: payload.transactionId },
+      });
+      const sellerId = transaction?.sellerId;
+
+      const recipientIdsSet = new Set<string>(adminIds);
+      if (sellerId && sellerId !== payload.buyerId) {
+        recipientIdsSet.add(sellerId);
+      }
+
+      const buyer = await this.userRepository.findOne({
+        where: { id: payload.buyerId },
+        relations: ['profile'],
+      });
+      const buyerName = buyer?.profile?.fullName || buyer?.username || 'Thành viên';
+      
+      const recipientIds = Array.from(recipientIdsSet);
+      if (recipientIds.length > 0) {
+        await this.addBroadcastJob({
+          type: NotificationType.TRANSACTION_CREATED,
+          content: `${buyerName} đã thực hiện giao dịch "${payload.name}" trị giá ${payload.totalPrice} EcoCoins.`,
+          link: `/profile/history`,
+          senderId: payload.buyerId,
+          recipientIds,
+        });
+      }
+    } catch (error) {
+      this.logger.error(`Error queuing transaction.created: ${error.message}`);
+    }
+  }
+
+  @OnEvent(EVENT_KEYS.SHIPPING_STATUS_CHANGED)
+  async handleShippingStatusChanged(payload: {
+    orderCode: string;
+    status: string;
+    buyerId: string;
+    sellerId: string;
+  }) {
+    try {
+      this.logger.log(
+        `Handling delivery.status_updated for order ${payload.orderCode} with status ${payload.status}`,
+      );
+      
+      const statusTranslations: Record<string, string> = {
+        ready_to_pick: 'Sẵn sàng lấy hàng',
+        picking: 'Đang lấy hàng',
+        money_collect_picking: 'Đang lấy hàng và thu tiền',
+        picked: 'Đã lấy hàng',
+        storing: 'Đang lưu kho',
+        transporting: 'Đang vận chuyển',
+        sorting: 'Đang phân loại',
+        delivering: 'Đang giao hàng',
+        delivered: 'Đã giao hàng thành công',
+        money_collect_delivering: 'Đang giao hàng và thu tiền',
+        delivery_fail: 'Giao hàng thất bại',
+        waiting_to_return: 'Chờ chuyển hoàn',
+        return: 'Chuyển hoàn',
+        return_transporting: 'Đang vận chuyển hoàn',
+        return_sorting: 'Đang phân loại hàng hoàn',
+        returning: 'Đang chuyển hoàn',
+        return_fail: 'Chuyển hoàn thất bại',
+        returned: 'Đã nhận lại hàng hoàn',
+        cancel: 'Đơn hàng đã bị hủy',
+        exception: 'Đơn hàng ngoại lệ',
+        lost: 'Đơn hàng bị mất',
+        damage: 'Đơn hàng bị hỏng',
+      };
+      
+      const friendlyStatus = statusTranslations[payload.status] || payload.status;
+      const content = `Trạng thái vận chuyển đơn hàng #${payload.orderCode} đã cập nhật: ${friendlyStatus}.`;
+      const link = `/profile/history`;
+
+      await this.createNotification(
+        payload.buyerId,
+        null,
+        NotificationType.SHIPPING_STATUS_CHANGED,
+        content,
+        link,
+      );
+    } catch (error) {
+      this.logger.error(`Error processing delivery.status_updated: ${error.message}`);
+    }
+  }
+
+  @OnEvent(EVENT_KEYS.TASK_MODERATED)
+  async handleTaskModerated(payload: {
+    submissionId: string;
+    taskId: string;
+    taskTitle: string;
+    userId: string;
+    decision: string;
+  }) {
+    try {
+      this.logger.log(`Handling task.moderated for submission ${payload.submissionId}`);
+      const isApproved = payload.decision.toLowerCase() === 'approved';
+      const decisionText = isApproved ? 'Phê duyệt' : 'Từ chối';
+      const content = `Nhiệm vụ "${payload.taskTitle}" của bạn đã được ${decisionText}. Vui lòng kiểm tra lại.`;
+      const link = `/missions`;
+
+      await this.createNotification(
+        payload.userId,
+        null,
+        NotificationType.TASK_MODERATED,
+        content,
+        link,
+      );
+    } catch (error) {
+      this.logger.error(`Error processing task.moderated: ${error.message}`);
     }
   }
 }

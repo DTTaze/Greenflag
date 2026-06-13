@@ -1,12 +1,13 @@
 import { DataSource, Repository } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { ReceiverInformation } from '@modules/delivery/entities/receiver-information.entity';
 import { Coin } from '@modules/user/entities/coin.entity';
 
-import { ERR_CODE } from '@shared/constants';
+import { ERR_CODE, EVENT_KEYS } from '@shared/constants';
 import { PRODUCT_POST_STATUS, TRANSACTION_STATUS, ROLE } from '@shared/enums';
 import {
   OperationResult,
@@ -28,6 +29,7 @@ export class ProductService extends BaseCRUDService<Product> {
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
     private readonly dataSource: DataSource,
+    private readonly eventEmitter: EventEmitter2,
   ) {
     super(productRepository);
   }
@@ -370,6 +372,13 @@ export class ProductService extends BaseCRUDService<Product> {
 
       // Commit DB Transaction
       await queryRunner.commitTransaction();
+
+      this.eventEmitter.emit(EVENT_KEYS.TRANSACTION_CREATED, {
+        transactionId: savedTransaction.id,
+        buyerId: userId,
+        totalPrice: totalCost,
+        name,
+      });
 
       return generateSuccessResult({
         message: 'Purchase successful',
